@@ -31,7 +31,7 @@ Duel 1 contre 1 inspiré de Marvel Snap, avec les cartes de [Youl TCG](https://g
 
 ### Règles de deck (phase 2b)
 
-- **Terrain** (optionnel) : chaque joueur peut apporter une carte de terrain en plus de ses 12 cartes. **C'est une carte qu'il possède dans ytcg** : les **cartes « lieu » des univers** (Monde-Ruche, Niveau 24, Les rues de New LA, Colonie martienne, Ruins of the Cult…) servent de terrains (décision du 2026-10-07) (pas de carte, pas de terrain — vérifié en phase 3) ; sans terrain, un terrain aléatoire prend sa place. Les terrains choisis et les terrains aléatoires sont répartis **au hasard** sur les 3 positions, donc révélés aux tours 1, 2 et 3 dans un ordre imprévisible. Une fois révélé, un terrain indique s'il est le tien ou celui de l'adversaire.
+- **Terrain** (optionnel) : chaque joueur peut apporter une carte de terrain en plus de ses 12 cartes. **C'est une carte qu'il possède dans ytcg** : les **cartes « lieu » des univers** servent de terrains (voir [Terrains](#terrains)) (pas de carte, pas de terrain — vérifié en phase 3) ; sans terrain, un terrain aléatoire prend sa place. Les terrains choisis et les terrains aléatoires sont répartis **au hasard** sur les 3 positions, donc révélés aux tours 1, 2 et 3 dans un ordre imprévisible. Une fois révélé, un terrain indique s'il est le tien ou celui de l'adversaire.
 - **Quota de coûts** (`rules.ts`, réglable) : au moins 2 cartes à 1, 2 à 2 et 2 à 3 ; au plus 3 cartes à 5 ou plus.
 - **Main de départ garantie** : parmi les 4 cartes vues avant de jouer au tour 1 (3 en main + la pioche du tour), au moins une coûte 1.
 - **Repioche** : une fois, au tour 1, avant de poser quoi que ce soit ; la main repart dans le deck, mélangée, avec la même garantie. L'adversaire voit seulement qu'une main a été repiochée.
@@ -41,7 +41,36 @@ Duel 1 contre 1 inspiré de Marvel Snap, avec les cartes de [Youl TCG](https://g
 
 `make import-assets` génère `data/cards/<univers>.json` à partir des manifestes de YoulzAssets (cartes déjà en prod, univers refusés exclus) : 200 cartes sur 12 univers au 2026-10-07. L'`id` d'une carte est son uuid ytcg. Statistiques de base **sans capacité** : coût selon la rareté (common 1-2, uncommon 2-3, rare 3-4, legendary 5-6, 1/1 = 6), puissance sur la courbe 1→2, 2→3, 3→4, 4→6, 5→9, 6→12. Relancer l'import ne touche jamais aux valeurs de jeu d'une carte déjà connue (coût, puissance, tags, capacités) : seuls le nom, la rareté et le drapeau 1/1 suivent le manifeste.
 
-Les lieux (`data/locations/locations.json`) sont provisoires : un par univers (« les cartes de cet univers ici ont +2 », des deux camps) plus un lieu neutre.
+**Illustrations** : chaque carte et chaque terrain porte le nom de fichier de son illustration ytcg (`image`, l'`imageName` de ytcg). Le client l'affiche depuis `${VITE_YTCG_URL}/uploads/cards/<image>` (défaut `https://ytcg.youlz.fr`) : les images restent servies par ytcg, seul le nom est figé dans les données. `make import-assets PROD_CARDS=<dump>` remplit ou rafraîchit ces noms depuis un export de prod de ytcg (cartes appariées par uuid, valeurs de jeu intactes).
+
+### Terrains
+
+Décisions du 2026-10-07 (phase 3a) :
+
+- Les **cartes « lieu » des univers ytcg sont des terrains, et seulement des terrains** : elles ne sont jamais jouables comme cartes. Elles vivent dans `data/locations/<univers>.json` et non plus dans `data/cards/` ; l'`id` d'un terrain est l'uuid de la carte ytcg (pour vérifier la possession). Le catalogue refuse un id à la fois carte et terrain, et l'import ne les remet jamais en cartes.
+- Les **univers sans carte lieu n'ont pas de terrain** pour l'instant (Bleach, KDA, Eldia, l'album des Youlz, Magic, Cyberpunk, Psychedelic) : pas de terrain inventé. Les anciens lieux provisoires (`loc-*`, « Terrain vague ») sont supprimés ; les terrains aléatoires sont tirés parmi les 15 terrains réels.
+- Un terrain appartient à personne : ses effets touchent **les deux camps** (`side: "all"`). Effets modérés, dans le ton de la carte et de son univers.
+- Cartes de ces univers qui ne sont **pas** des lieux, restées jouables : La pègre de New LA, Gala de charité, Storm of Time.
+
+| Terrain | Univers | Effet |
+|---|---|---|
+| Monde-Ruche | 40K | Continu : +2 aux cartes 40K ici. |
+| Colonie martienne | Cosmonaut | Continu : +2 aux cartes Cosmonaut ici. |
+| Centre des opérations | Cosmonaut | Révélation : chaque joueur pioche 1 carte. |
+| Ruins of the Cult | Divinity | Révélation : rend folles les cartes ici. Continu : +2 aux cartes folles ici. |
+| New Los Angeles | Replicant | Continu : +2 aux cartes Replicant ici. |
+| Les rues de New LA | Replicant | Continu : +2 aux cartes défoncées ici. |
+| Bureau de l'inspecteur | Replicant | Fin de tour : retire tous les états des cartes ici (Coriace compris). |
+| Appartement de Bébou Linette | Replicant | Continu : +2 aux Linettes ici. |
+| Niveau 24 | Space Nomad | Continu : +2 aux cartes Space Nomad ici. |
+| Niveau 330 | Space Nomad | Fin de tour : +1 à la carte la plus faible ici. |
+| Marché noir du niveau 24 | Space Nomad | Révélation : chaque joueur pioche 2 cartes. |
+| Cité d'or du niveau 776 | Space Nomad | Fin de tour : +1 à une carte ici au hasard. |
+| Planète Treon CH77 | Space Nomad | Continu : +2 aux cartes coriaces ici. |
+| Surface de Treon CH77 | Space Nomad | Fin de tour : −1 à la carte la plus forte ici. |
+| Spatio-gare | Space Nomad | Continu : +2 aux machines ici. |
+
+Le texte exact généré est dans [`cards.md`](cards.md).
 
 ## Effets (modèle de données)
 
@@ -130,7 +159,7 @@ Les **états ne sont liés à aucun personnage** : n'importe quelle carte peut e
 
 Traits ajoutés : `trait:machine` (vaisseaux, robots, armes), `trait:epee` (les deux épées d'Eldia, qui se renforcent ensemble). D'autres traits et états viendront au fil de l'eau. **Bankai** (Bleach) : prévu plus tard, avec une brique « transformation ».
 
-Équilibrage indicatif (bots aléatoires, 6000 parties en decks mono-univers) : tous les univers entre 48 et 53 % de victoires. Les bots ne jouent pas les synergies (Veli seul, combos Benj) : ces chiffres repèrent les cartes cassées, ils ne remplacent pas des parties réelles.
+Équilibrage indicatif (bots aléatoires, 6000 parties en decks mono-univers, phase 3a) : tous les univers entre 47 et 53 % de victoires (KDA 52,9 %, Eldia 47,2 %). Depuis que les cartes lieu sont devenues des terrains, **Divinity, Replicant et Space Nomad ne peuvent plus former un deck mono-univers** (une seule carte à 1 de coût, le quota en demande 2 ; Cosmonaut, 6 cartes, ne le pouvait déjà pas) : la simulation par univers les ignore, ils restent jouables en deck mixte. Les bots ne jouent pas les synergies (Veli seul, combos Benj) : ces chiffres repèrent les cartes cassées, ils ne remplacent pas des parties réelles.
 
 ## Backlog du polish (phase 4)
 
@@ -141,7 +170,7 @@ Noté le 2026-10-07, à faire après l'intégration ytcg :
 - **Pause de lecture à la révélation** : après la résolution d'un tour, laisser ~5 s pour lire les cartes posées et leurs effets avant que le chrono du tour suivant ne démarre (côté serveur : l'échéance du tour suivant tient compte de cette pause).
 - **Infobulles** sur les effets des cartes et sur les états (règle de Folie, Défonce, Coriace…).
 - **Bonus et malus visibles sur les cartes** : puissance de base vs actuelle, détail des modificateurs (permanents et continus), états avec leur nombre de cumuls.
-- Illustrations des cartes et rendu façon ytcg (cadre, tilt, holo), bundle client découpé.
+- Rendu façon ytcg (cadre, tilt, holo), bundle client découpé. Les illustrations sont déjà affichées (phase 3a), en simple bandeau en haut de la tuile.
 - Colyseus **monitor** et **playground** au déploiement.
 
 ## Phases
@@ -149,14 +178,15 @@ Noté le 2026-10-07, à faire après l'intégration ytcg :
 1. **Phase 0 — moteur** : `packages/engine`, règles complètes, registre d'effets, cartes importées de YoulzAssets, tests, simulation par bots.
 2. **Phase 1 — mécaniques** : états (Folie, Défonce, Coriace), effets multiples, capacités des cartes par personnage et par univers, texte français généré (`cards.md`).
 3. **Phase 2 — multijoueur** (+ **2b, règles de deck** : terrain, quota de coûts, main garantie, repioche, pose cachée) : serveur Colyseus (session de jeu pure + room privée à deux), auth par le cookie JWT ytcg (pseudo libre en dev), vue et événements filtrés par joueur, chrono de tour, reconnexion, forfait, client React minimal jouable.
-4. **Phase 3 — intégration ytcg** (PR côté youl-tcg) : tags sur les cartes (gérés sur le site, filtres joueurs), entités de deck, API de deck validé, lien vers le jeu.
-5. **Phase 4+** : invitations entre amis, rendu soigné, déploiement derrière Traefik, Bankai.
-6. **Phase finale — bots d'équilibrage** : un bot glouton rapide (simule ses poses avant de jouer), puis un bot plus malin (Monte Carlo) ; decks d'archétype et constructeur de decks évolutif ; rapport des combos (gain par paire de cartes, popularité dans les decks gagnants).
+4. **Phase 3a — terrains et illustrations** : les cartes lieu deviennent des terrains (non jouables), lieux inventés supprimés, nom de fichier des illustrations ytcg dans les données, affichage dans le client.
+5. **Phase 3 — intégration ytcg** (PR côté youl-tcg) : tags sur les cartes (gérés sur le site, filtres joueurs), entités de deck, API de deck validé, lien vers le jeu.
+6. **Phase 4+** : invitations entre amis, rendu soigné, déploiement derrière Traefik, Bankai.
+7. **Phase finale — bots d'équilibrage** : un bot glouton rapide (simule ses poses avant de jouer), puis un bot plus malin (Monte Carlo) ; decks d'archétype et constructeur de decks évolutif ; rapport des combos (gain par paire de cartes, popularité dans les decks gagnants).
 
 ## Questions ouvertes
 
-- **Cartes lieu** : une carte lieu sert de terrain ; reste-t-elle aussi jouable comme carte normale (Monde-Ruche est aujourd'hui une 1/1 dans les données), ou devient-elle uniquement un terrain ? Et les univers sans carte lieu (Bleach, KDA, Eldia, l'album…) : on leur en crée une ?
-- Le nom et les visuels d'une carte viennent de ytcg : on les récupère à l'exécution (API) ou on les fige dans un export au moment du build ?
+- Le nom d'une carte vient de ytcg : on le récupère à l'exécution (API) ou on garde la copie des données de jeu (comme le nom de fichier de l'illustration aujourd'hui) ?
+- Divinity, Replicant et Space Nomad n'ont plus qu'une carte à 1 de coût, donc plus de deck mono-univers : passer une carte à 1 dans chacun (coûts) si l'on veut ces decks ?
 - Comment évoluent les lieux : tirés au hasard parmi tous les univers, ou liés aux univers des decks ?
 - Un nouveau joueur a-t-il assez de cartes distinctes pour composer 12 cartes dès ses premiers jours ?
 - Que devient une carte vendue ou échangée alors qu'elle est dans un deck : le deck devient invalide, ou on bloque la vente ?

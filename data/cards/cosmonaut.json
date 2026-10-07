@@ -9,6 +9,7 @@
       "name": "Veli, chef du parti",
       "rarity": "legendary",
       "unique": false,
+      "image": "veli-chef-du-parti-6ac0f0d3ae9b2918475425.png",
       "cost": 6,
       "power": 7,
       "tags": [
@@ -45,6 +46,7 @@
       "name": "Julian, héros de la nation",
       "rarity": "rare",
       "unique": false,
+      "image": "hero-de-la-nation-julian-6ac0f0d42fc1b530085453.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -69,6 +71,7 @@
       "name": "Kosmonaut Warny",
       "rarity": "rare",
       "unique": false,
+      "image": "kosmonaut-warny-6ac0f0bc310cb741565932.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -94,32 +97,11 @@
       ]
     },
     {
-      "id": "01a101ac-6154-711f-8f92-11496957b359",
-      "name": "Colonie martienne",
-      "rarity": "uncommon",
-      "unique": false,
-      "cost": 2,
-      "power": 2,
-      "tags": [],
-      "abilities": [
-        {
-          "trigger": "ongoing",
-          "target": {
-            "type": "cards",
-            "tag": "universe:cosmonaut"
-          },
-          "effect": {
-            "type": "addPower",
-            "amount": 1
-          }
-        }
-      ]
-    },
-    {
       "id": "01a101ac-6338-7d12-9389-a09fbc53788c",
       "name": "Komrade Farf",
       "rarity": "uncommon",
       "unique": false,
+      "image": "komrade-farf-6ac0f0bd36ff7904517211.png",
       "cost": 3,
       "power": 6,
       "tags": [
@@ -143,6 +125,7 @@
       "name": "Bernard, membre du parti",
       "rarity": "common",
       "unique": false,
+      "image": "bernard-membre-du-parti-6ac0f0d4a372f612871931.png",
       "cost": 1,
       "power": 1,
       "tags": [
@@ -163,27 +146,11 @@
       ]
     },
     {
-      "id": "01a101ac-6604-7a2f-aa33-43b4e23861c6",
-      "name": "Centre des opérations",
-      "rarity": "common",
-      "unique": false,
-      "cost": 1,
-      "power": 1,
-      "tags": [],
-      "abilities": [
-        {
-          "trigger": "onReveal",
-          "effect": {
-            "type": "draw"
-          }
-        }
-      ]
-    },
-    {
       "id": "01a101ac-67e4-7436-8689-68bcee2ea5ed",
       "name": "Ingénieur Barlito",
       "rarity": "common",
       "unique": false,
+      "image": "ingenieur-barlito-6ac0f0be688d2335274695.png",
       "cost": 2,
       "power": 2,
       "tags": [

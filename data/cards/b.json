@@ -9,6 +9,7 @@
       "name": "Barlito Bankai",
       "rarity": "legendary",
       "unique": false,
+      "image": "barlito-bankai-6abe5c1b95904404861804.png",
       "cost": 6,
       "power": 10,
       "tags": [
@@ -35,6 +36,7 @@
       "name": "Benj Bankai",
       "rarity": "legendary",
       "unique": false,
+      "image": "benj-bankai-6abe5c1c22e43181576986.png",
       "cost": 6,
       "power": 8,
       "tags": [
@@ -71,6 +73,7 @@
       "name": "Farf Bankai",
       "rarity": "legendary",
       "unique": false,
+      "image": "farf-bankai-6abe5c1c9c819095396301.png",
       "cost": 5,
       "power": 8,
       "tags": [
@@ -100,6 +103,7 @@
       "name": "Veli Kenpachi",
       "rarity": "legendary",
       "unique": true,
+      "image": "veli-kenpachi-6abe5c1d2921d365321891.png",
       "cost": 6,
       "power": 9,
       "tags": [
@@ -141,6 +145,7 @@
       "name": "Babou Linette Bankai",
       "rarity": "rare",
       "unique": false,
+      "image": "babou-linette-bankai-6abe5c1daadd9542890351.png",
       "cost": 3,
       "power": 4,
       "tags": [
@@ -166,6 +171,7 @@
       "name": "Commandant-Capitaine Benj",
       "rarity": "rare",
       "unique": false,
+      "image": "commandant-capitaine-benj-6abe5c1e26ce6168157853.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -192,6 +198,7 @@
       "name": "Julian Resurrección",
       "rarity": "rare",
       "unique": false,
+      "image": "julian-resurreccion-6abe5c1ea3181614971992.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -223,6 +230,7 @@
       "name": "Nairy Vasto Lorde",
       "rarity": "rare",
       "unique": false,
+      "image": "nairy-vasto-lorde-6abe5c1f2ad41703395943.png",
       "cost": 4,
       "power": 5,
       "tags": [
@@ -256,6 +264,7 @@
       "name": "Warny Vollständig",
       "rarity": "rare",
       "unique": false,
+      "image": "warny-vollstandig-6abe5c1f94e13443240236.png",
       "cost": 3,
       "power": 4,
       "tags": [
@@ -283,6 +292,7 @@
       "name": "Bébou Linette, Lame Écarlate",
       "rarity": "uncommon",
       "unique": false,
+      "image": "bebou-linette-lame-ecarlate-6abe5c2018f8b937227714.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -320,6 +330,7 @@
       "name": "Capitaine Barlito",
       "rarity": "uncommon",
       "unique": false,
+      "image": "capitaine-barlito-6abe5c208f7ec051847887.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -335,6 +346,7 @@
       "name": "Capitaine Bernard",
       "rarity": "uncommon",
       "unique": false,
+      "image": "capitaine-bernard-6abe5c0edfeaf430976439.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -365,6 +377,7 @@
       "name": "Capitaine Farf",
       "rarity": "uncommon",
       "unique": false,
+      "image": "capitaine-farf-6abe5c2188020467585065.png",
       "cost": 3,
       "power": 4,
       "tags": [
@@ -389,6 +402,7 @@
       "name": "Hollow Zaraki",
       "rarity": "uncommon",
       "unique": false,
+      "image": "hollow-zaraki-6abe5c22049db788307874.png",
       "cost": 3,
       "power": 4,
       "tags": [],
@@ -418,6 +432,7 @@
       "name": "Vice-capitaine Bibou Linette",
       "rarity": "uncommon",
       "unique": false,
+      "image": "vice-capitaine-bibou-linette-6abe5c2274e12299415215.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -443,6 +458,7 @@
       "name": "Bébou Linette Shikai",
       "rarity": "common",
       "unique": false,
+      "image": "bebou-linette-shikai-6abe5c22e7168076692021.png",
       "cost": 1,
       "power": 2,
       "tags": [
@@ -469,6 +485,7 @@
       "name": "Capitaine Babou Linette",
       "rarity": "common",
       "unique": false,
+      "image": "capitaine-babou-linette-6abe5c2364860699491493.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -494,6 +511,7 @@
       "name": "Frieda Linette \"R\" La Rapide",
       "rarity": "common",
       "unique": false,
+      "image": "frieda-linette-r-la-rapide-6abe5c23d3e70799235360.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -514,6 +532,7 @@
       "name": "Hollow",
       "rarity": "common",
       "unique": false,
+      "image": "hollow-6abe5c244980f344024286.png",
       "cost": 1,
       "power": 2,
       "tags": [],
@@ -524,6 +543,7 @@
       "name": "Numéro 4, Julian",
       "rarity": "common",
       "unique": false,
+      "image": "numero-4-julian-6abe5c24ba75e414042127.png",
       "cost": 1,
       "power": 1,
       "tags": [
@@ -549,6 +569,7 @@
       "name": "Numéro 8, Nairy Zaranega",
       "rarity": "common",
       "unique": false,
+      "image": "numero-8-nairy-zaranega-6abe5c2545d94756446081.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -574,6 +595,7 @@
       "name": "Veli de la 11e Division",
       "rarity": "common",
       "unique": false,
+      "image": "veli-de-la-11e-division-6abe5c2799c11357700210.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -598,6 +620,7 @@
       "name": "Warny Stern Ritter",
       "rarity": "common",
       "unique": false,
+      "image": "warny-stern-ritter-6abe5c2816c0c039950742.png",
       "cost": 2,
       "power": 2,
       "tags": [

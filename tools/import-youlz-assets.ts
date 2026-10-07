@@ -1,5 +1,8 @@
 // Seeds data/cards/<universe>.json from the YoulzAssets manifests (cards already in prod only).
 // Re-running it never touches the game values of a known card (cost, power, tags, abilities).
+// Terrains (data/locations/*.json) are never re-added as playable cards.
+// Optional ytcg prod dump: fills/refreshes the `image` of cards and terrains, matched by uuid.
+// Inputs are trusted local files (manifests, dump, data/): their shape is cast, not validated.
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -12,6 +15,8 @@ interface ManifestCard {
   prodId?: string;
 }
 
+type ProdCard = ManifestCard & { prodId: string };
+
 interface Manifest {
   extension: { name: string; slug?: string; status?: string };
   cards: ManifestCard[];
@@ -22,6 +27,7 @@ interface GameCard {
   name: string;
   rarity: Rarity;
   unique: boolean;
+  image?: string;
   cost: number;
   power: number;
   tags: string[];
@@ -32,6 +38,13 @@ interface CardFile {
   extension: { slug: string; name: string };
   cards: GameCard[];
 }
+
+interface LocationFile {
+  locations: { id: string; image?: string }[];
+}
+
+// Production dump of ytcg: { "<slug>": { "cards": [{ "id", "imageName" }] } }.
+type ProdDump = Record<string, { cards: { id: string; imageName?: string | null }[] }>;
 
 const COST_RANGE: Record<Rarity, number[]> = { common: [1, 2], uncommon: [2, 3], rare: [3, 4], legendary: [5, 6] };
 const VANILLA_POWER = [1, 2, 3, 4, 6, 9, 12];
@@ -67,7 +80,7 @@ function hash(value: string): number {
   return h >>> 0;
 }
 
-function baselineCost(card: ManifestCard & { prodId: string }): number {
+function baselineCost(card: ProdCard): number {
   if (card.unique === true) {
     return 6;
   }
@@ -89,59 +102,119 @@ function guessTags(name: string): string[] {
   return tags;
 }
 
-const [assetsDir, outDir = 'data/cards'] = process.argv.slice(2);
-if (assetsDir === undefined) {
-  console.error('Usage: node tools/import-youlz-assets.ts <YoulzAssets dir> [out dir]');
-  process.exit(1);
+function readJson(path: string): unknown {
+  return JSON.parse(readFileSync(path, 'utf8'));
 }
 
-const ytcgDir = join(assetsDir, 'YTCG');
-for (const folder of readdirSync(ytcgDir).sort()) {
-  const manifestPath = join(ytcgDir, folder, 'manifest.json');
-  if (!existsSync(manifestPath)) {
-    continue;
+function writeJson(path: string, content: unknown): void {
+  writeFileSync(path, `${JSON.stringify(content, null, 2)}\n`);
+}
+
+function readImages(dumpPath: string | undefined): Map<string, string> {
+  const images = new Map<string, string>();
+  if (dumpPath === undefined) {
+    return images;
   }
-  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as Manifest;
+  for (const { cards } of Object.values(readJson(dumpPath) as ProdDump)) {
+    for (const card of cards) {
+      if (typeof card.imageName === 'string' && card.imageName !== '') {
+        images.set(card.id, card.imageName);
+      }
+    }
+  }
+  return images;
+}
+
+// Unknown to the dump (or no dump given): the current image stays.
+function withImage<T extends { id: string; image?: string }>(entry: T, images: Map<string, string>): T {
+  const image = images.get(entry.id);
+  return image === undefined ? entry : { ...entry, image };
+}
+
+// Returns every terrain id, after refreshing their images.
+function refreshTerrains(locationsDir: string, images: Map<string, string>): Set<string> {
+  const ids = new Set<string>();
+  if (!existsSync(locationsDir)) {
+    return ids;
+  }
+  for (const file of readdirSync(locationsDir).filter((name) => name.endsWith('.json'))) {
+    const path = join(locationsDir, file);
+    const content = readJson(path) as LocationFile;
+    content.locations = content.locations.map((location) => withImage(location, images));
+    content.locations.forEach((location) => ids.add(location.id));
+    if (images.size > 0) {
+      writeJson(path, content);
+    }
+  }
+  return ids;
+}
+
+function newCard(card: ProdCard, image: string | undefined): GameCard {
+  const cost = baselineCost(card);
+  return {
+    id: card.prodId,
+    name: card.name,
+    rarity: card.rarity,
+    unique: card.unique === true,
+    ...(image === undefined ? {} : { image }),
+    cost,
+    power: VANILLA_POWER[cost] ?? cost * 2,
+    tags: guessTags(card.name),
+    abilities: [],
+  };
+}
+
+interface ImportContext {
+  outDir: string;
+  terrains: ReadonlySet<string>;
+  images: Map<string, string>;
+}
+
+function importManifest(manifest: Manifest, context: ImportContext): void {
   const slug = manifest.extension.slug;
   if (manifest.extension.status === 'rejected' || slug === undefined) {
-    continue;
+    return;
   }
-
-  const outPath = join(outDir, `${slug}.json`);
-  const existing = existsSync(outPath) ? (JSON.parse(readFileSync(outPath, 'utf8')) as CardFile) : null;
+  const outPath = join(context.outDir, `${slug}.json`);
+  const existing = existsSync(outPath) ? (readJson(outPath) as CardFile) : null;
   const known = new Map((existing?.cards ?? []).map((card) => [card.id, card]));
-  const seen = new Set<string>();
   let added = 0;
 
   const cards = manifest.cards
-    .filter((card): card is ManifestCard & { prodId: string } => typeof card.prodId === 'string')
+    .filter((card): card is ProdCard => typeof card.prodId === 'string' && !context.terrains.has(card.prodId))
     .map((card): GameCard => {
-      seen.add(card.prodId);
       const previous = known.get(card.prodId);
-      if (previous !== undefined) {
-        return { ...previous, name: card.name, rarity: card.rarity, unique: card.unique === true };
+      known.delete(card.prodId);
+      if (previous === undefined) {
+        added++;
+        return newCard(card, context.images.get(card.prodId));
       }
-      added++;
-      const cost = baselineCost(card);
-      return {
-        id: card.prodId,
-        name: card.name,
-        rarity: card.rarity,
-        unique: card.unique === true,
-        cost,
-        power: VANILLA_POWER[cost] ?? cost * 2,
-        tags: guessTags(card.name),
-        abilities: [],
-      };
+      const updated = { ...previous, name: card.name, rarity: card.rarity, unique: card.unique === true };
+      return withImage(updated, context.images);
     });
 
-  const orphans = [...known.values()].filter((card) => !seen.has(card.id));
-  cards.push(...orphans);
+  const orphans = [...known.values()].filter((card) => !context.terrains.has(card.id));
+  cards.push(...orphans.map((card) => withImage(card, context.images)));
   for (const orphan of orphans) {
     console.warn(`  ! ${slug}: ${orphan.name} (${orphan.id}) is no longer in the manifest, kept as is`);
   }
 
-  const file: CardFile = { extension: { slug, name: manifest.extension.name }, cards };
-  writeFileSync(outPath, `${JSON.stringify(file, null, 2)}\n`);
+  writeJson(outPath, { extension: { slug, name: manifest.extension.name }, cards } satisfies CardFile);
   console.log(`${slug}: ${cards.length} cards (${added} new)`);
+}
+
+const [assetsDir, outDir = 'data/cards', dumpPath] = process.argv.slice(2);
+if (assetsDir === undefined) {
+  console.error('Usage: node tools/import-youlz-assets.ts <YoulzAssets dir> [cards dir] [ytcg prod dump]');
+  process.exit(1);
+}
+
+const images = readImages(dumpPath);
+const context: ImportContext = { outDir, images, terrains: refreshTerrains(join(outDir, '..', 'locations'), images) };
+const ytcgDir = join(assetsDir, 'YTCG');
+for (const folder of readdirSync(ytcgDir).sort()) {
+  const manifestPath = join(ytcgDir, folder, 'manifest.json');
+  if (existsSync(manifestPath)) {
+    importManifest(readJson(manifestPath) as Manifest, context);
+  }
 }

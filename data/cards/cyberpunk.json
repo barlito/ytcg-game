@@ -9,6 +9,7 @@
       "name": "Babou \"Iron\" Linette",
       "rarity": "common",
       "unique": false,
+      "image": "babou-linette-2-cyberpunk-6a7634b988a94667524732.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -25,6 +26,7 @@
       "name": "Babou Linette \"Queen\"",
       "rarity": "legendary",
       "unique": true,
+      "image": "babou-linette-3-cyberpunk-6a7634b984d27206041700.png",
       "cost": 6,
       "power": 6,
       "tags": [
@@ -62,6 +64,7 @@
       "name": "Barlito \"Vector\"",
       "rarity": "common",
       "unique": false,
+      "image": "barlito-1-cyberpunk-6a7634b97f5cb648855315.png",
       "cost": 1,
       "power": 3,
       "tags": [
@@ -77,6 +80,7 @@
       "name": "Bébou Linette \"Overclock\"",
       "rarity": "uncommon",
       "unique": false,
+      "image": "bebou-linette-5-cyberpunk-6a7634b980eb8822860595.png",
       "cost": 3,
       "power": 4,
       "tags": [
@@ -104,6 +108,7 @@
       "name": "Bébou \"Néon\" Linette",
       "rarity": "common",
       "unique": false,
+      "image": "bebou-linette-3-cyberpunk-6a7634b9858fa161601324.png",
       "cost": 1,
       "power": 1,
       "tags": [
@@ -129,6 +134,7 @@
       "name": "Benj Cyberpsycho",
       "rarity": "legendary",
       "unique": false,
+      "image": "benj-cyberpsycho-cyberpunk-6a7634b98a3d6068319120.png",
       "cost": 6,
       "power": 7,
       "tags": [
@@ -173,6 +179,7 @@
       "name": "Benj \"Le bleu\"",
       "rarity": "common",
       "unique": false,
+      "image": "benj-2-cyberpunk-2-6a7634b98652b806177801.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -198,6 +205,7 @@
       "name": "Benj Ledjo",
       "rarity": "rare",
       "unique": false,
+      "image": "benj-ledjo-evo-cyberpunk-1-6a7634b989750868992247.png",
       "cost": 3,
       "power": 5,
       "tags": [
@@ -224,6 +232,7 @@
       "name": "Bernard \"Overdrive\"",
       "rarity": "rare",
       "unique": false,
+      "image": "bernard-1-cyberpunk-6a7634b981aad295806549.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -250,6 +259,7 @@
       "name": "Bibou \"Intel\" Linette",
       "rarity": "common",
       "unique": false,
+      "image": "bibou-linette-cyberpunk-alt-2-6a7634b98b32d195237449.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -270,6 +280,7 @@
       "name": "Bibou \"Ōyamaneko\" Linette",
       "rarity": "rare",
       "unique": false,
+      "image": "bibou-linette-cyberpunk-6a7634b982795709913210.png",
       "cost": 3,
       "power": 2,
       "tags": [
@@ -295,6 +306,7 @@
       "name": "CyberMiaou",
       "rarity": "legendary",
       "unique": false,
+      "image": "1-cyberpunk-6a7634b98c63d964328785.png",
       "cost": 5,
       "power": 7,
       "tags": [
@@ -322,6 +334,7 @@
       "name": "Julian \"Kuzu\" Delavega",
       "rarity": "uncommon",
       "unique": false,
+      "image": "julian-1-cyberpunk-6a7634b987dfa667186364.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -347,6 +360,7 @@
       "name": "Pharph \"Glitch\"",
       "rarity": "uncommon",
       "unique": false,
+      "image": "farph-cyberpunk-6a7634b987231272217372.png",
       "cost": 3,
       "power": 5,
       "tags": [
@@ -370,6 +384,7 @@
       "name": "Veli \"Alpha\"",
       "rarity": "common",
       "unique": false,
+      "image": "veli-cyberpunk-6a7634b9834c5456961353.png",
       "cost": 1,
       "power": 1,
       "tags": [
@@ -394,6 +409,7 @@
       "name": "Weebou \"Chemtech\"",
       "rarity": "common",
       "unique": false,
+      "image": "weebou-cyberpunk-6a7634b98411d683446330.png",
       "cost": 1,
       "power": 1,
       "tags": [

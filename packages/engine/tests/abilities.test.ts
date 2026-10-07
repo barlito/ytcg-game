@@ -7,6 +7,7 @@ const catalog = catalogWith(
     card('benj', { tags: ['character:benj'] }),
     card('v1'),
     card('v2'),
+    card('giant', { power: 5 }),
     card('benj-fan', {
       abilities: [
         {
@@ -61,6 +62,17 @@ const catalog = catalogWith(
       ],
     },
     { id: 'loc-library', name: 'Bibliothèque', abilities: [{ trigger: 'onReveal', effect: { type: 'draw' } }] },
+    {
+      id: 'loc-erosion',
+      name: 'Érosion',
+      abilities: [
+        {
+          trigger: 'endOfTurn',
+          target: { type: 'cards', side: 'all', pick: 'strongest' },
+          effect: { type: 'addPower', amount: -1 },
+        },
+      ],
+    },
   ],
 );
 
@@ -215,6 +227,16 @@ describe('locations', () => {
     expect(turn2.players.map((player) => player.hand.length)).toEqual(
       hands.map((size) => Math.min(size + 2, MAX_HAND)),
     );
+  });
+});
+
+describe('terrains at the end of the turn', () => {
+  it('hit the strongest card here, whatever its side', () => {
+    const state = newGame(catalog, { p0: ['giant'], p1: ['v1'], locations: ['loc-erosion', 'loc-a', 'loc-b'] });
+    const turn2 = playTurn(catalog, state, { p0: [['giant', 0]], p1: [['v1', 0]] }).state;
+    expect(powerAt(catalog, turn2, 0, 'giant')).toBe(4);
+    expect(powerAt(catalog, turn2, 1, 'v1')).toBe(1);
+    expect(powerAt(catalog, skipToTurn(catalog, turn2, 3), 0, 'giant')).toBe(3);
   });
 });
 

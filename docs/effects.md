@@ -24,7 +24,7 @@ Partagé par la condition `count`, la cible `cards` et l'effet `addPowerPerCard`
 | `status` | `mad`, `high`, `tough` (voir États) | aucun |
 | `includeSelf` | la carte elle-même compte-t-elle ? | `false` |
 
-Sur un **lieu**, seul `side: "all"` a du sens (un lieu n'appartient à personne) et `self` n'existe pas.
+Sur un **lieu** (terrain), seul `side: "all"` a du sens (un terrain n'appartient à personne) et `self` n'existe pas.
 
 ## États (statuts)
 
@@ -85,9 +85,14 @@ Une carte peut porter un état **inné**, posé dès sa révélation : `"statuse
 { "trigger": "onReveal", "target": { "type": "cards", "side": "enemy", "pick": "weakest" }, "effect": { "type": "destroy" } }
 ```
 
-Lieu « Seireitei » : « Les cartes Bleach ici ont +2 » (des deux camps).
+Terrain « Les rues de New LA » : « Les cartes défoncées ici ont +2 » (des deux camps).
 ```json
-{ "trigger": "ongoing", "target": { "type": "cards", "side": "all", "tag": "universe:b" }, "effect": { "type": "addPower", "amount": 2 } }
+{ "trigger": "ongoing", "target": { "type": "cards", "side": "all", "status": "high" }, "effect": { "type": "addPower", "amount": 2 } }
+```
+
+Terrain « Surface de Treon CH77 » : « En fin de tour : −1 à la carte la plus forte ici » (quel que soit son camp).
+```json
+{ "trigger": "endOfTurn", "target": { "type": "cards", "side": "all", "pick": "strongest" }, "effect": { "type": "addPower", "amount": -1 } }
 ```
 
 « À la révélation : +3 à une autre carte alliée ici au hasard et la rend défoncée » (Jben Alchemist).

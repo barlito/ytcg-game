@@ -9,6 +9,7 @@
       "name": "Ahri \"MORE\"",
       "rarity": "legendary",
       "unique": false,
+      "image": "ahri-alt-kda-6ac0f100d7f53450058351.png",
       "cost": 5,
       "power": 6,
       "tags": [
@@ -33,6 +34,7 @@
       "name": "Benj \"Big Boss\"",
       "rarity": "legendary",
       "unique": false,
+      "image": "benj-kda-2-6ac0f10151959251174092.png",
       "cost": 6,
       "power": 7,
       "tags": [
@@ -58,6 +60,7 @@
       "name": "Benj le manager",
       "rarity": "legendary",
       "unique": true,
+      "image": "benj-kda-6ac0f101cef8b762016948.png",
       "cost": 6,
       "power": 6,
       "tags": [
@@ -102,6 +105,7 @@
       "name": "Jean \"Neon\" Raoul",
       "rarity": "legendary",
       "unique": false,
+      "image": "jr-alt-kda-fond-scene-6ac0f1024b089992335526.png",
       "cost": 5,
       "power": 5,
       "tags": [
@@ -125,6 +129,7 @@
       "name": "Julian, fan n°1",
       "rarity": "legendary",
       "unique": false,
+      "image": "julian-alt-kda-6ac0f102b38a9678297608.png",
       "cost": 6,
       "power": 5,
       "tags": [
@@ -150,6 +155,7 @@
       "name": "Akali \"THE BADDEST\"",
       "rarity": "rare",
       "unique": false,
+      "image": "akali-alt-kda-6ac0f1032f914224462448.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -175,6 +181,7 @@
       "name": "DJ Barlito",
       "rarity": "rare",
       "unique": false,
+      "image": "barlito-kda-6ac0f103a31a0904880559.png",
       "cost": 4,
       "power": 3,
       "tags": [
@@ -203,6 +210,7 @@
       "name": "Evelynn \"VILLAIN\"",
       "rarity": "rare",
       "unique": false,
+      "image": "evelynn-alt-kda-6ac0f1042945e618631164.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -233,6 +241,7 @@
       "name": "Kai'Sa \"DRUM GO DUM\"",
       "rarity": "rare",
       "unique": false,
+      "image": "kaisa-alt-kda-6ac0f1049ea85845203822.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -257,6 +266,7 @@
       "name": "Warny le producteur",
       "rarity": "rare",
       "unique": false,
+      "image": "warny-kda-6ac0f105374d7424489163.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -286,6 +296,7 @@
       "name": "Ahri",
       "rarity": "uncommon",
       "unique": false,
+      "image": "ahri-kda-6ac0f105b9cdb101430962.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -309,6 +320,7 @@
       "name": "Farf pianiste",
       "rarity": "uncommon",
       "unique": false,
+      "image": "farf-kda-6ac0f1063e5b8139000315.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -332,6 +344,7 @@
       "name": "Jinx",
       "rarity": "uncommon",
       "unique": false,
+      "image": "jinx-kda-6ac0f106b76d6016658017.png",
       "cost": 3,
       "power": 5,
       "tags": [],
@@ -354,6 +367,7 @@
       "name": "Veli le garde du corps",
       "rarity": "uncommon",
       "unique": false,
+      "image": "veli-kda-6ac0f1073d131627020237.png",
       "cost": 2,
       "power": 3,
       "tags": [
@@ -378,6 +392,7 @@
       "name": "Akali",
       "rarity": "common",
       "unique": false,
+      "image": "akali-kda-6ac0f107b32b3096671667.png",
       "cost": 2,
       "power": 3,
       "tags": [
@@ -390,6 +405,7 @@
       "name": "Evelynn",
       "rarity": "common",
       "unique": false,
+      "image": "evelynn-kda-6ac0f1082ed11825759162.png",
       "cost": 1,
       "power": 1,
       "tags": [
@@ -415,6 +431,7 @@
       "name": "Jean Raoul",
       "rarity": "common",
       "unique": false,
+      "image": "jr-kda-fond-coulisses-6ac0f108a1fd3387203101.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -440,6 +457,7 @@
       "name": "Julian",
       "rarity": "common",
       "unique": false,
+      "image": "julian-kda-6ac0f109226fd537142492.png",
       "cost": 1,
       "power": 2,
       "tags": [
@@ -465,6 +483,7 @@
       "name": "Kai'Sa",
       "rarity": "common",
       "unique": false,
+      "image": "kaisa-kda-6ac0f109932c0310828067.png",
       "cost": 2,
       "power": 1,
       "tags": [

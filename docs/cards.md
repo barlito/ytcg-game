@@ -8,7 +8,7 @@
 - **Défonce** (`high`) : perd 1 puissance par cumul à chaque fin de tour
 - **Coriace** (`tough`) : ne peut être ni détruite ni affaiblie
 
-## 40K (`40k`) — 18 cartes, 16 avec effet
+## 40K (`40k`) — 17 cartes, 15 avec effet
 
 | Carte | Rareté | Coût | Puiss. | Tags | Effet |
 |---|---|---|---|---|---|
@@ -26,7 +26,6 @@
 | Combattant eldar | commune | 1 | 1 |  | En continu : s'il y a une autre carte 40K alliée ici, +1 puissance. |
 | Démon du Chaos | commune | 1 | 2 |  | À la révélation : devient folle. |
 | Guerrier nécron | commune | 1 | 2 | machine | — |
-| Monde-Ruche | commune | 1 | 1 |  | En continu : +1 puissance aux autres cartes 40K alliées ici. |
 | Ork de la WAAAGH! | commune | 1 | 1 |  | En continu : +1 puissance par autre carte alliée ici. |
 | Soldat du peuple T'au | commune | 2 | 3 |  | — |
 | Space Marine du Chaos | commune | 2 | 3 |  | À la révélation : devient folle. |
@@ -59,17 +58,15 @@
 | Veli de la 11e Division | commune | 2 | 2 | Veli | En continu : s'il n'y a aucune autre carte alliée ici, +2 puissance. |
 | Warny Stern Ritter | commune | 2 | 2 | Warny | À la révélation : pioche 1 carte. |
 
-## Cosmonaut (`cosmonaut`) — 8 cartes, 8 avec effet
+## Cosmonaut (`cosmonaut`) — 6 cartes, 6 avec effet
 
 | Carte | Rareté | Coût | Puiss. | Tags | Effet |
 |---|---|---|---|---|---|
 | Veli, chef du parti | légendaire | 6 | 7 | Veli | En continu : +2 puissance aux autres cartes Cosmonaut alliées sur le plateau.<br>En continu : s'il n'y a aucune autre carte alliée ici, +4 puissance. |
 | Julian, héros de la nation | rare | 3 | 3 | Julian | En continu : +2 puissance par autre carte Linette alliée sur le plateau. |
 | Kosmonaut Warny | rare | 3 | 3 | Warny | À la révélation : +3 puissance aux autres cartes alliées ici et les rend défoncées. |
-| Colonie martienne | peu commune | 2 | 2 |  | En continu : +1 puissance aux autres cartes Cosmonaut alliées ici. |
 | Komrade Farf | peu commune | 3 | 6 | Farf | En continu : −1 puissance aux autres cartes alliées ici. |
 | Bernard, membre du parti | commune | 1 | 1 | Bernard | En continu : +1 puissance par autre carte Cosmonaut alliée sur le plateau. |
-| Centre des opérations | commune | 1 | 1 |  | À la révélation : pioche 1 carte. |
 | Ingénieur Barlito | commune | 2 | 2 | Barlito | Coriace (ne peut être ni détruite ni affaiblie).<br>En continu : +1 puissance aux autres cartes machine alliées ici. |
 
 ## Cyberpunk (`cyberpunk`) — 16 cartes, 16 avec effet
@@ -93,7 +90,7 @@
 | Benj "Le bleu" | commune | 2 | 2 | Benj | En continu : +1 puissance par autre carte Benj sur le plateau. |
 | Bibou "Intel" Linette | commune | 2 | 2 | Bibou Linette, Linette | À la révélation : pioche 1 carte. |
 
-## Divinity (`divinity`) — 18 cartes, 17 avec effet
+## Divinity (`divinity`) — 17 cartes, 16 avec effet
 
 | Carte | Rareté | Coût | Puiss. | Tags | Effet |
 |---|---|---|---|---|---|
@@ -109,7 +106,6 @@
 | Farf The Beyonder | peu commune | 3 | 2 | Farf | En fin de tour : +1 puissance aux autres cartes alliées ici. |
 | Xizta The Demented | peu commune | 3 | 3 | Xizta | À la révélation : rend les cartes ennemies ici folles.<br>En continu : +1 puissance par autre carte folle sur le plateau. |
 | Cult of Ahlototh | commune | 1 | 1 | Ahlototh | En continu : s'il y a une autre carte Ahlototh alliée sur le plateau, +3 puissance. |
-| Ruins of the Cult | commune | 1 | 1 |  | En continu : +1 puissance par autre carte Divinity alliée ici. |
 | Book of Xizta The Demented | commune | 2 | 2 | Xizta | En continu : s'il y a une autre carte Xizta alliée sur le plateau, +3 puissance. |
 | Herald of Zocnoth | commune | 2 | 2 | Zocnoth | En continu : s'il y a une autre carte Zocnoth alliée sur le plateau, +3 puissance. |
 | Julian The Unremarkable | commune | 2 | 3 | Julian | — |
@@ -219,7 +215,7 @@
 | Bibou Linette | commune | 1 | 1 | Bibou Linette, Linette | En continu : +1 puissance par autre carte défoncée alliée sur le plateau. |
 | Velo | commune | 1 | 1 | Veli | À la révélation : +3 puissance et devient défoncée. |
 
-## Replicant (`replicant`) — 19 cartes, 18 avec effet
+## Replicant (`replicant`) — 15 cartes, 15 avec effet
 
 | Carte | Rareté | Coût | Puiss. | Tags | Effet |
 |---|---|---|---|---|---|
@@ -227,7 +223,6 @@
 | Veli le corpo | légendaire | 6 | 10 | Veli | À la révélation : détruit les autres cartes alliées ici.<br>En continu : s'il n'y a aucune autre carte alliée ici, +3 puissance. |
 | Barlito, maire de New LA | rare | 3 | 3 | Barlito | Coriace (ne peut être ni détruite ni affaiblie).<br>En continu : +1 puissance aux autres cartes Replicant alliées sur le plateau. |
 | Gala de charité | rare | 3 | 3 |  | À la révélation : pioche 1 carte.<br>À la révélation : +1 puissance aux autres cartes alliées ici. |
-| New Los Angeles | rare | 3 | 2 |  | En continu : +1 puissance aux autres cartes Replicant alliées sur le plateau. |
 | Inspecteur Farf | rare | 4 | 5 | Farf | En continu : −1 puissance aux cartes ennemies ici. |
 | Mercenaire Bone | rare | 4 | 4 |  | À la révélation : détruit la carte ennemie la plus faible ici. |
 | Bernard le robot | peu commune | 2 | 3 | Bernard, machine | En continu : +1 puissance aux autres cartes machine alliées sur le plateau. |
@@ -236,14 +231,11 @@
 | Bébou Linette la disparue | peu commune | 3 | 3 | Bebou Linette, Linette | En continu : s'il n'y a aucune autre carte alliée ici, +4 puissance. |
 | Julian le baroudeur | peu commune | 3 | 3 | Julian | En continu : +2 puissance par autre carte Linette alliée ici. |
 | ACP 2038 .22 LR | commune | 1 | 1 | machine | À la révélation : −2 puissance à une carte ennemie ici au hasard. |
-| Appartement de Bébou Linette | commune | 1 | 1 | Bebou Linette, Linette | En continu : +1 puissance aux autres cartes Linette alliées ici. |
-| Bureau de l'inspecteur | commune | 2 | 2 |  | En continu : s'il y a une autre carte Farf alliée sur le plateau, +2 puissance. |
 | La pègre de New LA | commune | 2 | 2 |  | À la révélation : rend une carte ennemie ici au hasard défoncée. |
-| Les rues de New LA | commune | 2 | 3 |  | — |
 | Recrue Judith | commune | 2 | 1 |  | En fin de tour : +1 puissance. |
 | Warny le street kid | commune | 2 | 2 | Warny | À la révélation : +2 puissance et devient défoncée. |
 
-## Space Nomad (`space-nomad`) — 22 cartes, 16 avec effet
+## Space Nomad (`space-nomad`) — 15 cartes, 12 avec effet
 
 | Carte | Rareté | Coût | Puiss. | Tags | Effet |
 |---|---|---|---|---|---|
@@ -254,19 +246,12 @@
 | Vaisseau corsaire | rare | 3 | 4 | machine | En continu : s'il y a une autre carte Veli alliée ici, +3 puissance. |
 | Benj l'aristocrate | rare | 4 | 5 | Benj | En continu : s'il y a une autre carte alliée ici, +3 puissance. |
 | Brex, maître contrebandier | rare | 4 | 5 |  | À la révélation : pioche 2 cartes. |
-| Cité d'or du niveau 776 | rare | 4 | 4 |  | En continu : +1 puissance aux autres cartes alliées ici. |
 | Warny le marchand | peu commune | 2 | 2 | Warny | À la révélation : pioche 1 carte. |
 | Farf, chef d'escadron | peu commune | 3 | 3 | Farf | En continu : +1 puissance aux autres cartes machine alliées sur le plateau. |
 | Hipo le vice-capitaine | peu commune | 3 | 4 |  | En continu : s'il y a une autre carte Veli alliée sur le plateau, +2 puissance. |
-| Planète Treon CH77 | peu commune | 3 | 3 |  | En continu : +1 puissance aux autres cartes Space Nomad alliées ici. |
 | Transport luxueux | peu commune | 3 | 5 | machine | — |
 | Excavateur d'hélium | commune | 1 | 2 | machine | — |
-| Niveau 24 | commune | 1 | 2 |  | — |
-| Spatio-gare | commune | 1 | 1 |  | En continu : +1 puissance aux autres cartes machine alliées ici. |
-| Surface de Treon CH77 | commune | 1 | 2 |  | — |
 | Benj, soldat de l'Union | commune | 2 | 2 | Benj | En continu : +1 puissance par autre carte Benj sur le plateau. |
-| Marché noir du niveau 24 | commune | 2 | 3 |  | À la révélation : pioche 1 carte. |
-| Niveau 330 | commune | 2 | 3 |  | — |
 | Pilote de l'Union | commune | 2 | 3 |  | En continu : s'il y a une autre carte machine alliée ici, +2 puissance. |
 | Vaisseau de fret | commune | 2 | 3 | machine | — |
 
@@ -274,12 +259,18 @@
 
 | Lieu | Univers | Effet |
 |---|---|---|
+| Appartement de Bébou Linette | Replicant | En continu : +2 puissance aux cartes Linette ici. |
+| Bureau de l'inspecteur | Replicant | En fin de tour : retire tous les états des cartes ici. |
+| Centre des opérations | Cosmonaut | À la révélation : chaque joueur pioche 1 carte. |
+| Cité d'or du niveau 776 | Space Nomad | En fin de tour : +1 puissance à une carte ici au hasard. |
 | Colonie martienne | Cosmonaut | En continu : +2 puissance aux cartes Cosmonaut ici. |
-| L'arbre d'Eldia | Les Fables d'Eldia | En continu : +2 puissance aux cartes Les Fables d'Eldia ici. |
-| La grande scène | KDA | En continu : +2 puissance aux cartes KDA ici. |
-| Les rues de New LA | Replicant | En continu : +2 puissance aux cartes Replicant ici. |
+| Les rues de New LA | Replicant | En continu : +2 puissance aux cartes défoncées ici. |
+| Marché noir du niveau 24 | Space Nomad | À la révélation : chaque joueur pioche 2 cartes. |
 | Monde-Ruche | 40K | En continu : +2 puissance aux cartes 40K ici. |
+| New Los Angeles | Replicant | En continu : +2 puissance aux cartes Replicant ici. |
 | Niveau 24 | Space Nomad | En continu : +2 puissance aux cartes Space Nomad ici. |
-| Ruines du culte | Divinity | En continu : +2 puissance aux cartes Divinity ici. |
-| Seireitei | Bleach | En continu : +2 puissance aux cartes Bleach ici. |
-| Terrain vague | — | — |
+| Niveau 330 | Space Nomad | En fin de tour : +1 puissance à la carte la plus faible ici. |
+| Planète Treon CH77 | Space Nomad | En continu : +2 puissance aux cartes coriaces ici. |
+| Ruins of the Cult | Divinity | À la révélation : rend les cartes ici folles.<br>En continu : +2 puissance aux cartes folles ici. |
+| Spatio-gare | Space Nomad | En continu : +2 puissance aux cartes machine ici. |
+| Surface de Treon CH77 | Space Nomad | En fin de tour : −1 puissance à la carte la plus forte ici. |

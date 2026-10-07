@@ -1,9 +1,31 @@
 {
   "locations": [
     {
-      "id": "loc-40k",
-      "name": "Monde-Ruche",
-      "extension": "40k",
+      "id": "01a101ad-1608-7d27-9798-f2495871a6bd",
+      "name": "Cité d'or du niveau 776",
+      "extension": "space-nomad",
+      "image": "cite-d-or-du-niveau-776-6ac0f0eb02fe0715274162.png",
+      "abilities": [
+        {
+          "trigger": "endOfTurn",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "pick": "random"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "01a101ad-2076-7d82-9fc4-c60e0ff8da17",
+      "name": "Planète Treon CH77",
+      "extension": "space-nomad",
+      "image": "planete-treon-ch77-6ac0f0eda6260290463854.png",
       "abilities": [
         {
           "trigger": "ongoing",
@@ -11,7 +33,7 @@
             "type": "cards",
             "side": "all",
             "scope": "here",
-            "tag": "universe:40k"
+            "status": "tough"
           },
           "effect": {
             "type": "addPower",
@@ -21,129 +43,25 @@
       ]
     },
     {
-      "id": "loc-b",
-      "name": "Seireitei",
-      "extension": "b",
+      "id": "01a101ad-2b84-797d-90dd-bb44ce146dff",
+      "name": "Marché noir du niveau 24",
+      "extension": "space-nomad",
+      "image": "marche-noir-du-niveau-24-6ac0f0f07bd6a656152128.png",
       "abilities": [
         {
-          "trigger": "ongoing",
-          "target": {
-            "type": "cards",
-            "side": "all",
-            "scope": "here",
-            "tag": "universe:b"
-          },
+          "trigger": "onReveal",
           "effect": {
-            "type": "addPower",
-            "amount": 2
+            "type": "draw",
+            "count": 2
           }
         }
       ]
     },
     {
-      "id": "loc-cosmonaut",
-      "name": "Colonie martienne",
-      "extension": "cosmonaut",
-      "abilities": [
-        {
-          "trigger": "ongoing",
-          "target": {
-            "type": "cards",
-            "side": "all",
-            "scope": "here",
-            "tag": "universe:cosmonaut"
-          },
-          "effect": {
-            "type": "addPower",
-            "amount": 2
-          }
-        }
-      ]
-    },
-    {
-      "id": "loc-divinity",
-      "name": "Ruines du culte",
-      "extension": "divinity",
-      "abilities": [
-        {
-          "trigger": "ongoing",
-          "target": {
-            "type": "cards",
-            "side": "all",
-            "scope": "here",
-            "tag": "universe:divinity"
-          },
-          "effect": {
-            "type": "addPower",
-            "amount": 2
-          }
-        }
-      ]
-    },
-    {
-      "id": "loc-kda",
-      "name": "La grande scène",
-      "extension": "kda",
-      "abilities": [
-        {
-          "trigger": "ongoing",
-          "target": {
-            "type": "cards",
-            "side": "all",
-            "scope": "here",
-            "tag": "universe:kda"
-          },
-          "effect": {
-            "type": "addPower",
-            "amount": 2
-          }
-        }
-      ]
-    },
-    {
-      "id": "loc-les-fables-d-eldia",
-      "name": "L'arbre d'Eldia",
-      "extension": "les-fables-d-eldia",
-      "abilities": [
-        {
-          "trigger": "ongoing",
-          "target": {
-            "type": "cards",
-            "side": "all",
-            "scope": "here",
-            "tag": "universe:les-fables-d-eldia"
-          },
-          "effect": {
-            "type": "addPower",
-            "amount": 2
-          }
-        }
-      ]
-    },
-    {
-      "id": "loc-replicant",
-      "name": "Les rues de New LA",
-      "extension": "replicant",
-      "abilities": [
-        {
-          "trigger": "ongoing",
-          "target": {
-            "type": "cards",
-            "side": "all",
-            "scope": "here",
-            "tag": "universe:replicant"
-          },
-          "effect": {
-            "type": "addPower",
-            "amount": 2
-          }
-        }
-      ]
-    },
-    {
-      "id": "loc-space-nomad",
+      "id": "01a101ad-2e2c-7289-800e-82b1aeb87e5a",
       "name": "Niveau 24",
       "extension": "space-nomad",
+      "image": "niveau-24-6ac0f0f12dfac534593626.png",
       "abilities": [
         {
           "trigger": "ongoing",
@@ -161,10 +79,67 @@
       ]
     },
     {
-      "id": "loc-terrain-vague",
-      "name": "Terrain vague",
-      "extension": null,
-      "abilities": []
+      "id": "01a101ad-302e-7986-90f7-4d158b6884ba",
+      "name": "Niveau 330",
+      "extension": "space-nomad",
+      "image": "niveau-330-6ac0f0f1abdbb042544625.png",
+      "abilities": [
+        {
+          "trigger": "endOfTurn",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "pick": "weakest"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "01a101ad-33f3-7d67-a325-6edd970eec68",
+      "name": "Spatio-gare",
+      "extension": "space-nomad",
+      "image": "spatio-gare-6ac0f0f2a330d337166122.png",
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "tag": "trait:machine"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "01a101ad-3602-76cd-9280-93aa45d56b73",
+      "name": "Surface de Treon CH77",
+      "extension": "space-nomad",
+      "image": "surface-de-treon-ch77-6ac0f0f32f827253779939.png",
+      "abilities": [
+        {
+          "trigger": "endOfTurn",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "pick": "strongest"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": -1
+          }
+        }
+      ]
     }
   ]
 }

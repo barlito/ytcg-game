@@ -9,6 +9,7 @@
       "name": "Babou Linette la chromée",
       "rarity": "legendary",
       "unique": false,
+      "image": "babou-linette-la-chrome-6ac0f10ae8b82130575979.png",
       "cost": 5,
       "power": 7,
       "tags": [
@@ -39,6 +40,7 @@
       "name": "Veli le corpo",
       "rarity": "legendary",
       "unique": false,
+      "image": "veli-le-corpo-6ac0f10b6a27e289250423.png",
       "cost": 6,
       "power": 10,
       "tags": [
@@ -72,6 +74,7 @@
       "name": "Barlito, maire de New LA",
       "rarity": "rare",
       "unique": false,
+      "image": "barlito-maire-de-new-la-6ac0f10bde7f4399159602.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -100,6 +103,7 @@
       "name": "Gala de charité",
       "rarity": "rare",
       "unique": false,
+      "image": "gala-de-charite-6ac0f10c68704647674760.png",
       "cost": 3,
       "power": 3,
       "tags": [],
@@ -127,6 +131,7 @@
       "name": "Inspecteur Farf",
       "rarity": "rare",
       "unique": false,
+      "image": "inspecteur-farf-6ac0f10ce84b9928551003.png",
       "cost": 4,
       "power": 5,
       "tags": [
@@ -151,6 +156,7 @@
       "name": "Mercenaire Bone",
       "rarity": "rare",
       "unique": false,
+      "image": "mercenaire-bone-6ac0f10d741c8322213947.png",
       "cost": 4,
       "power": 4,
       "tags": [],
@@ -169,33 +175,11 @@
       ]
     },
     {
-      "id": "01a101ad-9e7b-7904-9b33-6a1b710a5a07",
-      "name": "New Los Angeles",
-      "rarity": "rare",
-      "unique": false,
-      "cost": 3,
-      "power": 2,
-      "tags": [],
-      "abilities": [
-        {
-          "trigger": "ongoing",
-          "target": {
-            "type": "cards",
-            "scope": "everywhere",
-            "tag": "universe:replicant"
-          },
-          "effect": {
-            "type": "addPower",
-            "amount": 1
-          }
-        }
-      ]
-    },
-    {
       "id": "01a101ad-a0a0-7c2e-88e3-213ca194e075",
       "name": "Bernard le robot",
       "rarity": "uncommon",
       "unique": false,
+      "image": "bernard-le-robot-6ac0f10e770de191391845.png",
       "cost": 2,
       "power": 3,
       "tags": [
@@ -222,6 +206,7 @@
       "name": "Bibou Linette",
       "rarity": "uncommon",
       "unique": false,
+      "image": "bibou-linette-6ac0f10f04028592927303.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -247,6 +232,7 @@
       "name": "Bébou Linette la disparue",
       "rarity": "uncommon",
       "unique": false,
+      "image": "bebou-linette-la-disparue-6ac0f10f7a6e6159734001.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -272,6 +258,7 @@
       "name": "Julian le baroudeur",
       "rarity": "uncommon",
       "unique": false,
+      "image": "julian-le-baroudeur-6ac0f11009d37374189059.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -295,6 +282,7 @@
       "name": "Officier Benj",
       "rarity": "uncommon",
       "unique": false,
+      "image": "officier-benj-6ac0f1107d228353869139.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -326,6 +314,7 @@
       "name": "ACP 2038 .22 LR",
       "rarity": "common",
       "unique": false,
+      "image": "acp-2038-22-lr-6ac0f110f326e022709140.png",
       "cost": 1,
       "power": 1,
       "tags": [
@@ -347,58 +336,11 @@
       ]
     },
     {
-      "id": "01a101ad-ac42-73c5-9d43-ce1beb559959",
-      "name": "Appartement de Bébou Linette",
-      "rarity": "common",
-      "unique": false,
-      "cost": 1,
-      "power": 1,
-      "tags": [
-        "character:bebou-linette",
-        "family:linette"
-      ],
-      "abilities": [
-        {
-          "trigger": "ongoing",
-          "target": {
-            "type": "cards",
-            "tag": "family:linette"
-          },
-          "effect": {
-            "type": "addPower",
-            "amount": 1
-          }
-        }
-      ]
-    },
-    {
-      "id": "01a101ad-ae5c-7f48-8180-d55139f7984f",
-      "name": "Bureau de l'inspecteur",
-      "rarity": "common",
-      "unique": false,
-      "cost": 2,
-      "power": 2,
-      "tags": [],
-      "abilities": [
-        {
-          "trigger": "ongoing",
-          "condition": {
-            "type": "count",
-            "scope": "everywhere",
-            "tag": "character:farf"
-          },
-          "effect": {
-            "type": "addPower",
-            "amount": 2
-          }
-        }
-      ]
-    },
-    {
       "id": "01a101ad-b051-71cd-9d37-ff43b92f8485",
       "name": "La pègre de New LA",
       "rarity": "common",
       "unique": false,
+      "image": "la-pegre-de-new-la-6ac0f1127ba86798688433.png",
       "cost": 2,
       "power": 2,
       "tags": [],
@@ -418,20 +360,11 @@
       ]
     },
     {
-      "id": "01a101ad-ce11-7d75-a6f9-9bb4a81a79d4",
-      "name": "Les rues de New LA",
-      "rarity": "common",
-      "unique": false,
-      "cost": 2,
-      "power": 3,
-      "tags": [],
-      "abilities": []
-    },
-    {
       "id": "01a101ad-d00c-7c9d-8a9a-144042d26f4b",
       "name": "Recrue Judith",
       "rarity": "common",
       "unique": false,
+      "image": "recrue-judith-6ac0f11a99c7b470050367.png",
       "cost": 2,
       "power": 1,
       "tags": [],
@@ -450,6 +383,7 @@
       "name": "Warny le street kid",
       "rarity": "common",
       "unique": false,
+      "image": "warny-le-street-kid-6ac0f11b2ec23391937835.png",
       "cost": 2,
       "power": 2,
       "tags": [

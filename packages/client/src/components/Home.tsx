@@ -82,7 +82,7 @@ function LocationPicker({
         <option value={NO_LOCATION}>Aucun terrain (aléatoire)</option>
         {[...catalog.locations.values()].map((option) => (
           <option key={option.id} value={option.id}>
-            {option.name}
+            {option.name} ({catalog.extensions.get(option.extension ?? '') ?? 'neutre'})
           </option>
         ))}
       </select>

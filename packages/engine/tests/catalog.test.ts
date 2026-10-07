@@ -25,6 +25,17 @@ describe('game data (data/)', () => {
       expect(definition.tags).toContain(`universe:${definition.extension}`);
     }
   });
+
+  it('only holds real terrains of a known universe, each with its ytcg artwork', () => {
+    const catalog = loadDataDir();
+    for (const location of catalog.locations.values()) {
+      expect(location.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(catalog.extensions.has(location.extension ?? '')).toBe(true);
+      expect(location.image).not.toBeNull();
+      expect(catalog.cards.has(location.id)).toBe(false);
+    }
+    expect([...catalog.cards.values()].filter((definition) => definition.image === null)).toEqual([]);
+  });
 });
 
 describe('catalog validation', () => {
@@ -59,6 +70,22 @@ describe('catalog validation', () => {
     expect(issuesOf([], [{ id: 'l2', name: 'l2', abilities: [{ ...buff, target: { type: 'cards' } }] }])[0]).toContain(
       'side "all"',
     );
+  });
+
+  it('reads the optional artwork of cards and locations', () => {
+    const catalog = catalogWith(
+      [card('x', { image: 'x-6a7634b988a9.png' }), card('y')],
+      [{ id: 'l', name: 'l', image: 'l-6a7634b988a9.webp' }],
+    );
+    expect(catalog.card('x').image).toBe('x-6a7634b988a9.png');
+    expect(catalog.card('y').image).toBeNull();
+    expect(catalog.location('l').image).toBe('l-6a7634b988a9.webp');
+    expect(catalog.location('loc-a').image).toBeNull();
+    expect(issuesOf([card('x', { image: '../secret.png' })])).toHaveLength(1);
+  });
+
+  it('refuses a terrain that is also a playable card', () => {
+    expect(issuesOf([card('place')], [{ id: 'place', name: 'Lieu' }])).toEqual(['place is both a card and a location']);
   });
 
   it('refuses duplicate ids', () => {

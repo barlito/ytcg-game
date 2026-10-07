@@ -1,5 +1,6 @@
 import { type LocationView, describeLocation } from '@ytcg-game/engine';
 import { catalog } from '../catalog.ts';
+import { Artwork } from './Artwork.tsx';
 import { CardTile } from './CardTile.tsx';
 
 interface Props {
@@ -23,6 +24,7 @@ function LocationHeader({ defId, chosenBy }: Pick<LocationView, 'defId' | 'chose
   const location = catalog.location(defId);
   return (
     <header className="location-header">
+      <Artwork key={location.id} image={location.image} className="location-art" />
       {chosenBy !== null && <span className={`location-owner owner-${chosenBy}`}>{OWNER_LABEL[chosenBy]}</span>}
       <span className="location-name">{location.name}</span>
       <span className="location-text">{describeLocation(catalog, location).join(' ') || 'Aucun effet.'}</span>

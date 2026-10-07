@@ -10,11 +10,19 @@ export type Rarity = (typeof RARITIES)[number];
 
 const slugSchema = z.string().regex(/^[a-z0-9-]+$/);
 
+// File name of the ytcg artwork, served by ytcg under /uploads/cards/.
+const imageSchema = z
+  .string()
+  .regex(/^[\w.-]+$/)
+  .nullable()
+  .default(null);
+
 const cardSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   rarity: z.enum(RARITIES),
   unique: z.boolean().default(false),
+  image: imageSchema,
   cost: z.number().int().min(0).max(10),
   power: z.number().int(),
   tags: z.array(tagSchema).default([]),
@@ -34,6 +42,7 @@ const locationSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   extension: slugSchema.nullable().default(null),
+  image: imageSchema,
   abilities: z.array(abilitySchema).default([]),
 });
 
@@ -47,6 +56,7 @@ export interface CardDefinition {
   readonly extension: string;
   readonly rarity: Rarity;
   readonly unique: boolean;
+  readonly image: string | null;
   readonly cost: number;
   readonly power: number;
   readonly tags: readonly string[];
@@ -58,6 +68,7 @@ export interface LocationDefinition {
   readonly id: string;
   readonly name: string;
   readonly extension: string | null;
+  readonly image: string | null;
   readonly abilities: readonly CompiledAbility[];
 }
 
@@ -113,6 +124,12 @@ export function loadCatalog(source: CatalogSource): Catalog {
   for (const file of source.locationFiles) {
     loadLocationFile(file, locations, issues);
   }
+  // A terrain shares its ytcg uuid with no playable card: a place is only ever a terrain.
+  for (const id of locations.keys()) {
+    if (cards.has(id)) {
+      issues.push(`${id} is both a card and a location`);
+    }
+  }
   if (issues.length > 0) {
     throw new CatalogError(issues);
   }
@@ -144,6 +161,7 @@ function loadCardFile(
       extension: extension.slug,
       rarity: card.rarity,
       unique: card.unique,
+      image: card.image,
       cost: card.cost,
       power: card.power,
       tags: [...new Set([`universe:${extension.slug}`, ...card.tags])],

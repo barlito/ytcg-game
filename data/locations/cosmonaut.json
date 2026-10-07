@@ -1,0 +1,39 @@
+{
+  "locations": [
+    {
+      "id": "01a101ac-6154-711f-8f92-11496957b359",
+      "name": "Colonie martienne",
+      "extension": "cosmonaut",
+      "image": "colonie-martienne-6ac0f0bcb70fc821720415.png",
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "tag": "universe:cosmonaut"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "01a101ac-6604-7a2f-aa33-43b4e23861c6",
+      "name": "Centre des opérations",
+      "extension": "cosmonaut",
+      "image": "centre-des-operations-6ac0f0bde5123378872628.png",
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "draw"
+          }
+        }
+      ]
+    }
+  ]
+}

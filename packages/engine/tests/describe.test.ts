@@ -59,6 +59,20 @@ const catalog = catalogWith(
         },
       ],
     },
+    {
+      id: 'loc-ruins',
+      name: 'Ruines',
+      abilities: [
+        { trigger: 'onReveal', target: { type: 'cards', side: 'all' }, effect: { type: 'addStatus', status: 'mad' } },
+        {
+          trigger: 'ongoing',
+          target: { type: 'cards', side: 'all', status: 'mad' },
+          effect: { type: 'addPower', amount: 2 },
+        },
+        { trigger: 'endOfTurn', target: { type: 'cards', side: 'all' }, effect: { type: 'removeStatus' } },
+        { trigger: 'onReveal', effect: { type: 'draw', count: 2 } },
+      ],
+    },
   ],
 );
 
@@ -87,6 +101,12 @@ describe('effect text', () => {
   it('writes location abilities in French', () => {
     expect(describeLocation(catalog, catalog.location('loc-kda'))).toEqual([
       'En continu : +2 puissance aux cartes Test ici.',
+    ]);
+    expect(describeLocation(catalog, catalog.location('loc-ruins'))).toEqual([
+      'À la révélation : rend les cartes ici folles.',
+      'En continu : +2 puissance aux cartes folles ici.',
+      'En fin de tour : retire tous les états des cartes ici.',
+      'À la révélation : chaque joueur pioche 2 cartes.',
     ]);
   });
 });

@@ -1,5 +1,6 @@
 import { DECK_SIZE, validateDeck } from '@ytcg-game/engine';
 import { describe, expect, it } from 'vitest';
+import { artworkUrl } from '../src/artwork.ts';
 import { catalog, randomDeck } from '../src/catalog.ts';
 import { actionErrorText } from '../src/errors.ts';
 import { describeEvent } from '../src/events.ts';
@@ -19,6 +20,15 @@ describe('bundled catalog', () => {
     for (let i = 0; i < 20; i++) {
       expect(validateDeck(catalog, randomDeck())).toEqual([]);
     }
+  });
+});
+
+describe('artwork', () => {
+  it('points at the ytcg uploads, only for cards and terrains with an image', () => {
+    expect(artworkUrl('barlito 1.png')).toBe('https://ytcg.youlz.fr/uploads/cards/barlito%201.png');
+    expect(artworkUrl(null)).toBeNull();
+    const [terrain] = catalog.locations.values();
+    expect(terrain?.image).toEqual(expect.any(String));
   });
 });
 
