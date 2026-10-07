@@ -1,10 +1,12 @@
 import type { CompiledAbility } from '../abilities/ability.ts';
 import { type AbilitySource, type Board, type CardFilter, isOngoingEffect } from '../abilities/board.ts';
+import { STATUS_IDS, type StatusId } from '../abilities/statuses.ts';
 import type { CardDefinition, Catalog } from '../catalog.ts';
 import { Rng } from '../rng.ts';
 import { MAX_HAND } from '../rules.ts';
 import { type GameEvent, type GameState, PLAYERS, type PlayerIndex, opponentOf } from '../state.ts';
 import { cardAt, locationAt } from './state-access.ts';
+import { hasRule, stacksOf } from './statuses.ts';
 
 interface AbilityHolder {
   abilities: readonly CompiledAbility[];
@@ -50,10 +52,11 @@ export class GameBoard implements Board {
     if (card.zone !== 'board') {
       return base;
     }
+    const keepsLosses = !hasRule(card, 'preventsPowerLoss');
     let bonus = 0;
     for (const { abilities, source } of this.ongoingHolders()) {
       for (const ability of abilities) {
-        bonus += this.ongoingBonusFor(uid, ability, source);
+        bonus += this.ongoingBonusFor(uid, ability, source, keepsLosses);
       }
     }
     return base + bonus;
@@ -66,7 +69,7 @@ export class GameBoard implements Board {
 
   addPower(uid: string, delta: number): void {
     const card = cardAt(this.state, uid);
-    if (card.zone !== 'board' || delta === 0) {
+    if (card.zone !== 'board' || delta === 0 || (delta < 0 && hasRule(card, 'preventsPowerLoss'))) {
       return;
     }
     card.powerModifier += delta;
@@ -89,7 +92,7 @@ export class GameBoard implements Board {
 
   destroy(uid: string): void {
     const card = cardAt(this.state, uid);
-    if (card.zone !== 'board' || card.location === null) {
+    if (card.zone !== 'board' || card.location === null || hasRule(card, 'preventsDestroy')) {
       return;
     }
     const slot = locationAt(this.state, card.location).cards[card.owner];
@@ -98,21 +101,50 @@ export class GameBoard implements Board {
     this.events.push({ type: 'cardDestroyed', card: uid });
   }
 
+  addStatus(uid: string, status: StatusId, stacks: number): void {
+    const card = cardAt(this.state, uid);
+    if (card.zone !== 'board' || stacks <= 0) {
+      return;
+    }
+    const total = stacksOf(card, status) + stacks;
+    card.statuses[status] = total;
+    this.events.push({ type: 'statusChanged', card: uid, status, stacks: total });
+  }
+
+  removeStatus(uid: string, status: StatusId | null): void {
+    const card = cardAt(this.state, uid);
+    for (const id of status === null ? STATUS_IDS : [status]) {
+      if (stacksOf(card, id) > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- statuses is a plain JSON record
+        delete card.statuses[id];
+        this.events.push({ type: 'statusChanged', card: uid, status: id, stacks: 0 });
+      }
+    }
+  }
+
   private matches(uid: string, source: AbilitySource, filter: CardFilter): boolean {
     if (!filter.includeSelf && uid === source.card) {
+      return false;
+    }
+    if (filter.status !== undefined && stacksOf(cardAt(this.state, uid), filter.status) === 0) {
       return false;
     }
     return filter.tag === undefined || this.definitionOf(uid).tags.includes(filter.tag);
   }
 
-  private ongoingBonusFor(uid: string, ability: CompiledAbility, source: AbilitySource): number {
+  // A card protected from power loss ignores the negative ongoing bonuses.
+  private ongoingBonusFor(uid: string, ability: CompiledAbility, source: AbilitySource, keepsLosses: boolean): number {
     if (ability.trigger !== 'ongoing' || !(ability.condition?.isMet(this, source) ?? true)) {
       return 0;
     }
     if (!ability.target.select(this, source).includes(uid)) {
       return 0;
     }
-    return isOngoingEffect(ability.effect) ? ability.effect.ongoingBonus(this, source) : 0;
+    return ability.effects
+      .filter(isOngoingEffect)
+      .map((effect) => effect.ongoingBonus(this, source))
+      .filter((bonus) => bonus > 0 || keepsLosses)
+      .reduce((sum, bonus) => sum + bonus, 0);
   }
 
   private *ongoingHolders(): Generator<AbilityHolder> {

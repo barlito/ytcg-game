@@ -1,8 +1,10 @@
+import { statusRule } from '../abilities/statuses.ts';
 import { LOCATION_COUNT, MAX_TURNS } from '../rules.ts';
 import { type GameEvent, type GameResult, PLAYERS, type PlayerIndex, opponentOf } from '../state.ts';
 import type { AbilityRunner } from './abilities.ts';
 import type { GameBoard } from './board.ts';
 import { cardAt, locationAt } from './state-access.ts';
+import { activeStatuses, stacksOf } from './statuses.ts';
 
 // Turn lifecycle: start (energy, draw, location reveal), resolution (reveals, end of turn), end of game.
 export class TurnFlow {
@@ -69,20 +71,34 @@ export class TurnFlow {
     card.zone = 'board';
     locationAt(this.board.state, card.location).cards[card.owner].push(uid);
     this.events.push({ type: 'cardRevealed', card: uid, player: card.owner, location: card.location });
+    for (const status of this.board.definitionOf(uid).statuses) {
+      this.board.addStatus(uid, status, 1);
+    }
     this.abilities.fireCard(uid, 'onReveal');
   }
 
-  // Locations first (left to right), then the cards in reveal priority order.
+  // Locations first (left to right), then the cards in reveal priority order, then the status rules.
   private endOfTurn(order: readonly PlayerIndex[]): void {
-    const { locations } = this.board.state;
-    locations.forEach((_, index) => {
+    this.board.state.locations.forEach((_, index) => {
       this.abilities.fireLocation(index, 'endOfTurn');
     });
-    for (const player of order) {
-      for (const location of locations) {
-        for (const uid of [...location.cards[player]]) {
-          this.abilities.fireCard(uid, 'endOfTurn');
-        }
+    for (const uid of this.boardCards(order)) {
+      this.abilities.fireCard(uid, 'endOfTurn');
+    }
+    for (const uid of this.boardCards(order)) {
+      this.applyStatusRules(uid);
+    }
+  }
+
+  private boardCards(order: readonly PlayerIndex[]): string[] {
+    return order.flatMap((player) => this.board.state.locations.flatMap((location) => [...location.cards[player]]));
+  }
+
+  private applyStatusRules(uid: string): void {
+    const card = cardAt(this.board.state, uid);
+    for (const status of activeStatuses(card)) {
+      if (card.zone === 'board') {
+        statusRule(status).endOfTurn?.(this.board, uid, stacksOf(card, status));
       }
     }
   }

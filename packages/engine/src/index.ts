@@ -3,6 +3,7 @@ export * from './abilities/ability.ts';
 export * from './abilities/board.ts';
 export * from './abilities/conditions.ts';
 export * from './abilities/effects.ts';
+export * from './abilities/statuses.ts';
 export * from './abilities/targets.ts';
 export * from './catalog.ts';
 export * from './errors.ts';

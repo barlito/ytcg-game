@@ -1,3 +1,4 @@
+import type { StatusId } from './abilities/statuses.ts';
 import type { RngState } from './rng.ts';
 
 export type PlayerIndex = 0 | 1;
@@ -18,6 +19,8 @@ export interface CardInstance {
   location: number | null;
   powerModifier: number;
   playOrder: number | null;
+  // Status → stacks, only while on the board.
+  statuses: Partial<Record<StatusId, number>>;
 }
 
 export interface PlayerState {
@@ -63,4 +66,5 @@ export type GameEvent =
   | { type: 'cardRevealed'; card: string; player: PlayerIndex; location: number }
   | { type: 'powerChanged'; card: string; delta: number }
   | { type: 'cardDestroyed'; card: string }
+  | { type: 'statusChanged'; card: string; status: StatusId; stacks: number }
   | { type: 'gameEnded'; result: GameResult };

@@ -1,3 +1,4 @@
+import type { StatusId } from './abilities/statuses.ts';
 import type { Catalog } from './catalog.ts';
 import { locationPowers, powerOf } from './game.ts';
 import { MAX_TURNS } from './rules.ts';
@@ -8,6 +9,7 @@ export interface CardView {
   defId: string;
   cost: number;
   power: number;
+  statuses: Partial<Record<StatusId, number>>;
 }
 
 export interface LocationView {
@@ -45,7 +47,13 @@ export function projectForPlayer(catalog: Catalog, state: GameState, player: Pla
     if (card === undefined) {
       throw new RangeError(`Unknown card instance "${uid}"`);
     }
-    return { uid, defId: card.defId, cost: catalog.card(card.defId).cost, power: powerOf(catalog, state, uid) };
+    return {
+      uid,
+      defId: card.defId,
+      cost: catalog.card(card.defId).cost,
+      power: powerOf(catalog, state, uid),
+      statuses: { ...card.statuses },
+    };
   };
   const pendingAt = (uids: readonly string[], index: number): string[] =>
     uids.filter((uid) => state.cards[uid]?.location === index);
