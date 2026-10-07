@@ -12,7 +12,7 @@ Two-player duel game (Marvel Snap-like: 3 locations, 6 turns, simultaneous revea
 - `packages/server` — authoritative Colyseus server wrapping the engine. See its CLAUDE.md.
 - `packages/client` — React + Vite client. See its CLAUDE.md.
 - Dev: `make up` starts the dev server (:2567, players pick a name) and the client (http://localhost:5173); `make down`, `make logs`.
-- `data/cards`, `data/locations` — versioned game data (JSON), keyed by the ytcg card uuid.
+- `data/cards`, `data/locations` — versioned game data (JSON), keyed by the ytcg card uuid. `data/locations/<universe>.json` holds the terrains: the ytcg « place » cards, never playable (an id is never both a card and a terrain). Universes without a place card have no terrain. `image` = the ytcg `imageName` of the artwork.
 
 ## Boundaries with ytcg
 
@@ -24,7 +24,7 @@ Two-player duel game (Marvel Snap-like: 3 locations, 6 turns, simultaneous revea
 ## Environment
 
 - No Node on the host: everything runs in Docker (`node:24-alpine`) through the Makefile: `make install`, `make check` (typecheck + lint + tests, what CI runs), `make fix` (Prettier + ESLint autofix), `make sim`, `make cards-doc`, `make import-assets`, `make sh`.
-- `data/cards` is seeded from `~/YoulzAssets/YTCG/*/manifest.json` by `tools/import-youlz-assets.ts`; re-running it keeps the game values of known cards. Hand-tune cards in the JSON, never in the importer, then `make cards-doc`.
+- `data/cards` is seeded from `~/YoulzAssets/YTCG/*/manifest.json` by `tools/import-youlz-assets.ts`; re-running it keeps the game values of known cards and skips every terrain id of `data/locations`. `make import-assets PROD_CARDS=<ytcg prod dump>` also fills/refreshes `image` (cards and terrains, matched by uuid). Hand-tune cards in the JSON, never in the importer, then `make cards-doc`.
 
 ## Code quality
 
