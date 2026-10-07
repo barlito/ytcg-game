@@ -1,5 +1,6 @@
 import { type CardView, STATUS_IDS, describeCard, statusRule } from '@ytcg-game/engine';
 import { catalog } from '../catalog.ts';
+import { Artwork } from './Artwork.tsx';
 
 interface Props {
   card: CardView;
@@ -27,6 +28,7 @@ export function CardTile({
       onClick={onClick}
       disabled={onClick === undefined}
     >
+      <Artwork key={definition.id} image={definition.image} className="card-art" />
       <span className="card-cost">{card.cost}</span>
       <span className="card-power">{card.power}</span>
       <span className="card-name">{definition.name}</span>

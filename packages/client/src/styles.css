@@ -234,6 +234,13 @@ input {
   background: var(--surface-2);
   clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
 }
+.location-art {
+  display: block;
+  width: calc(100% + 1rem);
+  height: 64px;
+  margin: -0.5rem -0.5rem 0.4rem;
+  object-fit: cover;
+}
 .location-header.is-hidden {
   opacity: 0.5;
 }
@@ -272,6 +279,15 @@ input {
   border: 2px solid var(--rarity-common);
   text-align: left;
   cursor: default;
+}
+.card-art {
+  display: block;
+  width: calc(100% + 0.8rem);
+  height: 72px;
+  margin: -1.6rem -0.4rem 0;
+  object-fit: cover;
+  object-position: top;
+  pointer-events: none;
 }
 .card[data-rarity='uncommon'] {
   border-color: var(--rarity-uncommon);
