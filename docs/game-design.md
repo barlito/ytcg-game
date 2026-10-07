@@ -109,6 +109,8 @@ Identités données par l'utilisateur, traduites en capacités (détail carte pa
 | Warny, Bernard | drogues et alcool ; Bernard est aussi mécano | gros bonus immédiat puis **Défonce** ; Bernard renforce les **machines** |
 | Linettes | souvent des sœurs, persos atypiques | **+1 par autre Linette** ; variantes selon l'univers |
 
+Les **états ne sont liés à aucun personnage** : n'importe quelle carte peut en poser ou en subir un (Barlito peut finir Ivre). Idées validées, à implémenter au fil de l'eau : **Ivre** (fin de tour : +2 ou −2 au hasard), **Endormie** (capacités coupées N tours), **Charmée** (capacités coupées tant que la carte qui charme est en jeu), **Saignement** (−1 par tour, soignable), **Protégée** (encaisse la prochaine destruction ou le prochain malus), **Marquée** (prime pour qui la détruit), **Surchauffe** (détruite à 3 cumuls), **Enragée** (+1 par tour, insensible aux bonus alliés).
+
 Traits ajoutés : `trait:machine` (vaisseaux, robots, armes), `trait:epee` (les deux épées d'Eldia, qui se renforcent ensemble). D'autres traits et états viendront au fil de l'eau. **Bankai** (Bleach) : prévu plus tard, avec une brique « transformation ».
 
 Équilibrage indicatif (bots aléatoires, 6000 parties en decks mono-univers) : tous les univers entre 48 et 53 % de victoires. Les bots ne jouent pas les synergies (Veli seul, combos Benj) : ces chiffres repèrent les cartes cassées, ils ne remplacent pas des parties réelles.
@@ -120,6 +122,7 @@ Traits ajoutés : `trait:machine` (vaisseaux, robots, armes), `trait:epee` (les 
 3. **Phase 2 — multijoueur** : room Colyseus autour du moteur, auth JWT, état filtré, client minimal jouable.
 4. **Phase 3 — intégration ytcg** (PR côté youl-tcg) : tags sur les cartes (gérés sur le site, filtres joueurs), entités de deck, API de deck validé, lien vers le jeu.
 5. **Phase 4+** : invitations entre amis, rendu soigné, déploiement derrière Traefik, Bankai.
+6. **Phase finale — bots d'équilibrage** : un bot glouton rapide (simule ses poses avant de jouer), puis un bot plus malin (Monte Carlo) ; decks d'archétype et constructeur de decks évolutif ; rapport des combos (gain par paire de cartes, popularité dans les decks gagnants).
 
 ## Questions ouvertes
 
