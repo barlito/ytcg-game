@@ -2,7 +2,7 @@ import type { StatusId } from './abilities/statuses.ts';
 import type { Catalog } from './catalog.ts';
 import { locationPowers, powerOf } from './game.ts';
 import { MAX_TURNS } from './rules.ts';
-import { type GameResult, type GameState, type PlayerIndex, opponentOf } from './state.ts';
+import { type GameEvent, type GameResult, type GameState, type PlayerIndex, opponentOf } from './state.ts';
 
 export interface CardView {
   uid: string;
@@ -80,4 +80,15 @@ export function projectForPlayer(catalog: Catalog, state: GameState, player: Pla
     })),
     result: state.result,
   };
+}
+
+// The opponent's draws are announced without the card drawn.
+export type PlayerEvent =
+  Exclude<GameEvent, { type: 'cardDrawn' }> | { type: 'cardDrawn'; player: PlayerIndex; card: string | null };
+
+// Every other event is about public facts (revealed cards, locations, result).
+export function projectEventsForPlayer(events: readonly GameEvent[], player: PlayerIndex): PlayerEvent[] {
+  return events.map((event) =>
+    event.type === 'cardDrawn' && event.player !== player ? { ...event, card: null } : event,
+  );
 }
