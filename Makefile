@@ -2,7 +2,7 @@ COMPOSE = docker compose
 RUN = $(COMPOSE) run --rm -T node
 ASSETS ?= $(HOME)/YoulzAssets
 
-.PHONY: install sh typecheck lint fix test check sim import-assets
+.PHONY: install sh typecheck lint fix test check sim import-assets cards-doc
 
 install: ## Install every workspace dependency (inside Docker, no Node on the host)
 	$(RUN) npm install
@@ -29,3 +29,6 @@ sim: ## Bot simulation report (ARGS="--games 2000 --mode universe")
 
 import-assets: ## Seed data/cards from the YoulzAssets manifests (ASSETS=path, default ~/YoulzAssets)
 	$(COMPOSE) run --rm -T -v $(ASSETS):/assets:ro node node tools/import-youlz-assets.ts /assets data/cards
+
+cards-doc: ## Regenerate docs/cards.md (every card and location with its effect text)
+	$(RUN) npm run cards-doc -w @ytcg-game/engine
