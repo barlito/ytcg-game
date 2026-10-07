@@ -10,13 +10,22 @@ export const actionInputSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('play'), card: z.string().min(1), location: z.number().int().min(0) }),
   z.object({ type: z.literal('cancel'), card: z.string().min(1) }),
   z.object({ type: z.literal('endTurn') }),
+  z.object({ type: z.literal('mulligan') }),
 ]);
 
 export type ActionInput = z.output<typeof actionInputSchema>;
 
 // Options sent when creating or joining a room. Authentication itself comes from the ytcg cookie in production.
+// 12 cards plus the location card the player brings.
+export const deckChoiceSchema = z.object({
+  cards: z.array(z.string().min(1)).max(50),
+  location: z.string().min(1),
+});
+
+export type DeckChoice = z.output<typeof deckChoiceSchema>;
+
 export const joinOptionsSchema = z.object({
-  deck: z.array(z.string().min(1)).max(50),
+  deck: deckChoiceSchema,
   name: z.string().trim().min(1).max(30).optional(),
 });
 

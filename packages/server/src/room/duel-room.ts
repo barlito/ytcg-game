@@ -5,6 +5,7 @@ import type { DeckProvider } from '../decks/deck-provider.ts';
 import type { PlayerIdentity } from '../identity.ts';
 import {
   type ActionInput,
+  type DeckChoice,
   type ErrorMessage,
   type GameMessage,
   type LobbyMessage,
@@ -28,7 +29,7 @@ export interface RoomServices {
 
 interface SeatAuth {
   identity: PlayerIdentity;
-  deck: string[];
+  deck: DeckChoice;
 }
 
 type DuelClient = Client<{
@@ -63,7 +64,7 @@ export abstract class DuelRoom extends Room<{ client: DuelClient }> {
   override async onAuth(_client: DuelClient, options: unknown, context: AuthContext): Promise<SeatAuth> {
     const identity = await this.services.authenticator.authenticate(context, options);
     if (this.session.seatOf(identity.id) !== null) {
-      throw new SessionError('alreadySeated', `${identity.name} is already in this game`);
+      throw new SessionError('alreadySeated', `${identity.name} est déjà dans cette partie.`);
     }
     return { identity, deck: await this.services.decks.deckFor(identity, options) };
   }

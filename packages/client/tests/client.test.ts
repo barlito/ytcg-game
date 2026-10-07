@@ -1,6 +1,7 @@
 import { DECK_SIZE, validateDeck } from '@ytcg-game/engine';
 import { describe, expect, it } from 'vitest';
 import { catalog, randomDeck } from '../src/catalog.ts';
+import { actionErrorText } from '../src/errors.ts';
 import { describeEvent } from '../src/events.ts';
 
 const seats = [
@@ -41,5 +42,12 @@ describe('game log', () => {
   it('stays vague about unknown cards and silent about draws', () => {
     expect(describeEvent({ type: 'cardDestroyed', card: 'p0c9' }, known, seats)).toBe('Une carte est détruite.');
     expect(describeEvent({ type: 'cardDrawn', player: 1, card: null }, known, seats)).toBeNull();
+  });
+});
+
+describe('error messages', () => {
+  it('shows engine refusals in French and keeps unknown messages', () => {
+    expect(actionErrorText('notEnoughEnergy', 'card p0c1 costs 3, 1 energy left')).toBe("Pas assez d'énergie.");
+    expect(actionErrorText('somethingNew', 'Message du serveur.')).toBe('Message du serveur.');
   });
 });

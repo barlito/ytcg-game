@@ -7,7 +7,7 @@ export class DevAuthenticator implements Authenticator {
   authenticate(_context: unknown, options: unknown): Promise<PlayerIdentity> {
     const name = joinOptionsSchema.safeParse(options).data?.name;
     if (name === undefined) {
-      return Promise.reject(new AuthenticationError('a name is required in development'));
+      return Promise.reject(new AuthenticationError('Choisis un pseudo pour jouer.'));
     }
     return Promise.resolve({ id: `dev:${name.toLowerCase()}`, name });
   }

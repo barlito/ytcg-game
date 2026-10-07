@@ -1,6 +1,7 @@
 import { Client, type Room } from '@colyseus/sdk';
 import type { ActionInput, ErrorMessage, GameMessage, JoinOptions, LobbyMessage } from '@ytcg-game/server/protocol';
 import { MESSAGE_ACTION, MESSAGE_ERROR, MESSAGE_GAME, MESSAGE_LOBBY, ROOM_NAME } from '@ytcg-game/server/protocol';
+import { actionErrorText } from './errors.ts';
 import { type Dispatch, type SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 
 export type DuelPhase =
@@ -29,7 +30,7 @@ function listen(joined: Room, setPhase: SetPhase, setError: (error: string | nul
     setError(null);
   });
   joined.onMessage(MESSAGE_ERROR, (message: ErrorMessage) => {
-    setError(message.message);
+    setError(actionErrorText(message.code, message.message));
   });
   joined.onLeave(() => {
     sessionStorage.removeItem(RECONNECT_KEY);

@@ -7,6 +7,7 @@ interface Props {
   seats: SeatInfo[];
   turnDeadline: number | null;
   onEndTurn: () => void;
+  onMulligan: () => void;
 }
 
 function useSecondsLeft(deadline: number | null): number | null {
@@ -46,7 +47,7 @@ function OpponentInfo({ view, seats }: { view: PlayerView; seats: SeatInfo[] }):
   );
 }
 
-export function StatusBar({ view, seats, turnDeadline, onEndTurn }: Props): React.JSX.Element {
+export function StatusBar({ view, seats, turnDeadline, onEndTurn, onMulligan }: Props): React.JSX.Element {
   return (
     <div className="status-bar">
       <TurnInfo view={view} turnDeadline={turnDeadline} />
@@ -54,6 +55,11 @@ export function StatusBar({ view, seats, turnDeadline, onEndTurn }: Props): Reac
         Énergie <strong>{view.energy - view.spent}</strong>/{view.energy}
       </div>
       <OpponentInfo view={view} seats={seats} />
+      {view.canMulligan && (
+        <button type="button" className="btn-ghost" onClick={onMulligan}>
+          Repiocher ma main
+        </button>
+      )}
       <button type="button" className="btn-arcade" disabled={view.ready || view.status === 'ended'} onClick={onEndTurn}>
         {view.ready ? 'En attente…' : 'Fin du tour'}
       </button>

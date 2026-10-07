@@ -9,7 +9,9 @@ interface Props {
   onCancel: (uid: string) => void;
 }
 
-function LocationHeader({ defId }: { defId: string | null }): React.JSX.Element {
+const OWNER_LABEL = { you: 'Ton terrain', opponent: 'Terrain adverse' } as const;
+
+function LocationHeader({ defId, chosenBy }: Pick<LocationView, 'defId' | 'chosenBy'>): React.JSX.Element {
   if (defId === null) {
     return (
       <header className="location-header is-hidden">
@@ -21,6 +23,7 @@ function LocationHeader({ defId }: { defId: string | null }): React.JSX.Element 
   const location = catalog.location(defId);
   return (
     <header className="location-header">
+      {chosenBy !== null && <span className={`location-owner owner-${chosenBy}`}>{OWNER_LABEL[chosenBy]}</span>}
       <span className="location-name">{location.name}</span>
       <span className="location-text">{describeLocation(catalog, location).join(' ') || 'Aucun effet.'}</span>
     </header>
@@ -38,7 +41,7 @@ export function LocationColumn({ location, canPlay, onPlay, onCancel }: Props): 
         ))}
       </div>
       <div className="location-power opponent">{power.opponent}</div>
-      <LocationHeader defId={location.defId} />
+      <LocationHeader defId={location.defId} chosenBy={location.chosenBy} />
       <div className="location-power you">{power.you}</div>
       <div className="location-side you">
         {location.cards.you.map((card) => (

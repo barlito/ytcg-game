@@ -1,6 +1,7 @@
 import type { JoinOptions } from '@ytcg-game/server/protocol';
 import { useState } from 'react';
-import { catalog, randomDeck } from '../catalog.ts';
+import { describeLocation } from '@ytcg-game/engine';
+import { catalog, randomDeck, randomLocation } from '../catalog.ts';
 
 interface Props {
   error: string | null;
@@ -13,16 +14,18 @@ const NAME_KEY = 'ytcg-game:name';
 function DeckPreview({ deck, onReroll }: { deck: string[]; onReroll: () => void }): React.JSX.Element {
   return (
     <section className="deck">
-      <h2 className="eyebrow">Ton deck (aléatoire en attendant les decks ytcg)</h2>
+      <h2 className="eyebrow">Ton deck (aléatoire en attendant les decks ytcg, courbe de coûts respectée)</h2>
       <ul>
-        {deck.map((id) => {
-          const card = catalog.card(id);
-          return (
-            <li key={id} data-rarity={card.rarity}>
-              {card.cost} · {card.name} · {card.power}
-            </li>
-          );
-        })}
+        {[...deck]
+          .sort((a, b) => catalog.card(a).cost - catalog.card(b).cost)
+          .map((id) => {
+            const card = catalog.card(id);
+            return (
+              <li key={id} data-rarity={card.rarity}>
+                {card.cost} · {card.name} · {card.power}
+              </li>
+            );
+          })}
       </ul>
       <button type="button" className="btn-ghost" onClick={onReroll}>
         Nouveau deck
@@ -56,12 +59,57 @@ function JoinForm({ onJoin }: { onJoin: (code: string) => void }): React.JSX.Ele
   );
 }
 
+function LocationPicker({
+  location,
+  onChange,
+}: {
+  location: string;
+  onChange: (id: string) => void;
+}): React.JSX.Element {
+  const chosen = catalog.location(location);
+  return (
+    <section className="deck">
+      <h2 className="eyebrow">Ton terrain (placé sur un des trois lieux)</h2>
+      <select
+        value={location}
+        onChange={(event) => {
+          onChange(event.target.value);
+        }}
+      >
+        {[...catalog.locations.values()].map((option) => (
+          <option key={option.id} value={option.id}>
+            {option.name}
+          </option>
+        ))}
+      </select>
+      <p className="location-help">{describeLocation(catalog, chosen).join(' ') || 'Aucun effet.'}</p>
+    </section>
+  );
+}
+
+function NameField({ name, onChange }: { name: string; onChange: (name: string) => void }): React.JSX.Element {
+  return (
+    <label className="field">
+      Pseudo (dev)
+      <input
+        value={name}
+        maxLength={30}
+        onChange={(event) => {
+          onChange(event.target.value);
+        }}
+      />
+    </label>
+  );
+}
+
 export function Home({ error, onCreate, onJoin }: Props): React.JSX.Element {
   const [name, setName] = useState(() => localStorage.getItem(NAME_KEY) ?? '');
-  const [deck, setDeck] = useState(randomDeck);
+  const [cards, setCards] = useState(randomDeck);
+  const [location, setLocation] = useState(randomLocation);
   const options = (): JoinOptions => {
     localStorage.setItem(NAME_KEY, name);
     const trimmed = name.trim();
+    const deck = { cards, location };
     return trimmed === '' ? { deck } : { name: trimmed, deck };
   };
 
@@ -70,22 +118,14 @@ export function Home({ error, onCreate, onJoin }: Props): React.JSX.Element {
       <h1 className="title">
         Youl TCG <span>Duel</span>
       </h1>
-      <label className="field">
-        Pseudo (dev)
-        <input
-          value={name}
-          maxLength={30}
-          onChange={(event) => {
-            setName(event.target.value);
-          }}
-        />
-      </label>
+      <NameField name={name} onChange={setName} />
       <DeckPreview
-        deck={deck}
+        deck={cards}
         onReroll={() => {
-          setDeck(randomDeck());
+          setCards(randomDeck());
         }}
       />
+      <LocationPicker location={location} onChange={setLocation} />
       <div className="home-actions">
         <button
           type="button"
