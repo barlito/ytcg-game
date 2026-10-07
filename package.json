@@ -1,0 +1,11 @@
+{
+  "name": "ytcg-game",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=24"
+  }
+}
