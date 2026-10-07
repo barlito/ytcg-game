@@ -1,0 +1,286 @@
+{
+  "extension": {
+    "slug": "b",
+    "name": "Bleach"
+  },
+  "cards": [
+    {
+      "id": "01a0f797-cbe2-7c95-a774-b2747847181a",
+      "name": "Barlito Bankai",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 6,
+      "power": 12,
+      "tags": [
+        "character:barlito"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-cdf3-7efe-995d-344c707467d6",
+      "name": "Benj Bankai",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 6,
+      "power": 12,
+      "tags": [
+        "character:benj"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-cfe8-75f3-af38-6efcd0f24ed0",
+      "name": "Farf Bankai",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 5,
+      "power": 9,
+      "tags": [
+        "character:farf"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-d1f4-70cd-a463-9eec0d2b76c4",
+      "name": "Veli Kenpachi",
+      "rarity": "legendary",
+      "unique": true,
+      "cost": 6,
+      "power": 12,
+      "tags": [
+        "character:veli"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-d40a-7eba-9b20-59fc5b843aa8",
+      "name": "Babou Linette Bankai",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:babou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-d5d5-7a90-91bf-9e5d2dbbe3db",
+      "name": "Commandant-Capitaine Benj",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:benj"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-d7d1-703d-afdd-e7d17592bafb",
+      "name": "Julian Resurrección",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:julian"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-d9cf-7611-b98b-977eaad27260",
+      "name": "Nairy Vasto Lorde",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [
+        "character:nairy"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-db7e-7d39-b837-95db48c86822",
+      "name": "Warny Vollständig",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:warny"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-dd69-78a0-8cc6-f75837a6cfd0",
+      "name": "Bébou Linette, Lame Écarlate",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:bebou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-df4f-7848-9ecb-bbcfd6a361e3",
+      "name": "Capitaine Barlito",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:barlito"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-9a5f-7f83-93e3-f5f84affb416",
+      "name": "Capitaine Bernard",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:bernard"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-e31c-7085-a860-c53a70ea33a6",
+      "name": "Capitaine Farf",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:farf"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-e4e5-7dc9-894d-892f0715def9",
+      "name": "Hollow Zaraki",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-e6b1-7931-a122-7a6032319565",
+      "name": "Vice-capitaine Bibou Linette",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:bibou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-e897-756f-ae2f-e529c927e55f",
+      "name": "Bébou Linette Shikai",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:bebou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-ea56-722b-857b-9170cab3e598",
+      "name": "Capitaine Babou Linette",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:babou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-ec23-72e4-b10d-11486d42cb4d",
+      "name": "Frieda Linette \"R\" La Rapide",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:frieda-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-edd1-7745-80c5-b46f4a672f96",
+      "name": "Hollow",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-efa2-7165-bd82-5f4f75d1fa1e",
+      "name": "Numéro 4, Julian",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:julian"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-f1ac-7c8b-a882-c5382f534e03",
+      "name": "Numéro 8, Nairy Zaranega",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:nairy"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-fad1-7370-9312-9e043c903eb8",
+      "name": "Veli de la 11e Division",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:veli"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a0f797-fca8-7904-9cac-ecde625087db",
+      "name": "Warny Stern Ritter",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:warny"
+      ],
+      "abilities": []
+    }
+  ]
+}

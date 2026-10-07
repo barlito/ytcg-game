@@ -1,0 +1,204 @@
+{
+  "extension": {
+    "slug": "cyberpunk",
+    "name": "Cyberpunk"
+  },
+  "cards": [
+    {
+      "id": "019fddbd-f4d9-7c7a-9c7a-aad56ddc8d8c",
+      "name": "Babou \"Iron\" Linette",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:babou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fddbd-f4c9-7f45-85cf-4924c5d0cdfd",
+      "name": "Babou Linette \"Queen\"",
+      "rarity": "legendary",
+      "unique": true,
+      "cost": 6,
+      "power": 12,
+      "tags": [
+        "character:babou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fddbd-f4b6-7e98-b518-38d8aa447a3f",
+      "name": "Barlito \"Vector\"",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:barlito"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fddbd-f4b9-7ece-a77f-3e8895cf6f2c",
+      "name": "Bébou Linette \"Overclock\"",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:bebou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fddbd-f4cc-7f99-90c8-628df4812d41",
+      "name": "Bébou \"Néon\" Linette",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:bebou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fddbd-f4e0-7427-890f-1446b6b7125d",
+      "name": "Benj Cyberpsycho",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 6,
+      "power": 12,
+      "tags": [
+        "character:benj"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fddbd-f4d0-7778-aae4-5614311e2884",
+      "name": "Benj \"Le bleu\"",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:benj"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fddbd-f4dd-7220-9108-d47c968a0d60",
+      "name": "Benj Ledjo",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:benj"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fddbd-f4bd-726b-ad65-a3e982345172",
+      "name": "Bernard \"Overdrive\"",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:bernard"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fddbd-f4e5-7b4f-b7e6-7f39953c9300",
+      "name": "Bibou \"Intel\" Linette",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:bibou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fddbd-f4c0-7a66-a8ad-e890d9972e73",
+      "name": "Bibou \"Ōyamaneko\" Linette",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:bibou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fddbd-f4e9-738e-895b-5ba43c6a876d",
+      "name": "CyberMiaou",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 5,
+      "power": 9,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fddbd-f4d6-7a10-bd86-ad9166001a6b",
+      "name": "Julian \"Kuzu\" Delavega",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:julian"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fddbd-f4d3-767a-9f35-f4221c10185b",
+      "name": "Pharph \"Glitch\"",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:farf"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fddbd-f4c3-7d66-8fb4-4007c8bc1a5d",
+      "name": "Veli \"Alpha\"",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:veli"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fddbd-f4c6-7f03-b23a-b0464036eab7",
+      "name": "Weebou \"Chemtech\"",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:warny"
+      ],
+      "abilities": []
+    }
+  ]
+}

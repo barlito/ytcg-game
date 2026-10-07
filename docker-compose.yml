@@ -4,5 +4,7 @@ services:
     working_dir: /app
     volumes:
       - .:/app
-    user: "${UID:-1000}:${GID:-1000}"
-    command: ["sleep", "infinity"]
+    user: '${UID:-1000}:${GID:-1000}'
+    environment:
+      NPM_CONFIG_UPDATE_NOTIFIER: 'false'
+    command: ['sleep', 'infinity']

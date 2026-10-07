@@ -1,0 +1,131 @@
+{
+  "extension": {
+    "slug": "psychedelic",
+    "name": "Psychedelic"
+  },
+  "cards": [
+    {
+      "id": "019fe745-980b-7d38-80c1-2e5a50416442",
+      "name": "Babou Linette",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:babou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe745-97ef-778d-9408-658ef40da927",
+      "name": "Barlito Waa",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:barlito"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe745-9802-79a9-a081-08c6777ec944",
+      "name": "Bébou Linette",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:bebou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe745-97fe-7ea5-a215-8a8429096137",
+      "name": "Benjamen",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:benj"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe745-980f-7556-beaa-9321b0397690",
+      "name": "Bibou Linette",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:bibou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe745-9808-711e-af6c-101bbafba70e",
+      "name": "Farf",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [
+        "character:farf"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe745-97eb-7811-8872-e84bd8f0008b",
+      "name": "Jean Raoulz",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 5,
+      "power": 9,
+      "tags": [
+        "character:jean-raoul"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe745-97f3-737f-b265-e3953a828fa0",
+      "name": "Julieng",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:julian"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe745-97f7-7390-a89b-0c1764f4137b",
+      "name": "Velo",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:veli"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe745-97fb-7250-a416-4ea6f1453e4c",
+      "name": "Warnyx",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 6,
+      "power": 12,
+      "tags": [
+        "character:warny"
+      ],
+      "abilities": []
+    }
+  ]
+}

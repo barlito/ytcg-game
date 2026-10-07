@@ -1,0 +1,199 @@
+{
+  "extension": {
+    "slug": "les-fables-d-eldia",
+    "name": "Les Fables d'Eldia"
+  },
+  "cards": [
+    {
+      "id": "01a101ad-3d79-7b5c-aa29-92a277c79a82",
+      "name": "Julien, roi d'Eldia",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 6,
+      "power": 12,
+      "tags": [
+        "character:julian"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-40c4-7078-8867-335fdaed10cf",
+      "name": "Rog le dragon céleste",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 6,
+      "power": 12,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-4303-73b7-98b6-0f71d15cacc7",
+      "name": "Babou Linette, la joueuse de mort",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [
+        "character:babou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-44f0-7d23-ba83-831af05376e2",
+      "name": "Barlito le prince de glace",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [
+        "character:barlito"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-46f9-714e-b4b2-2dff644a6415",
+      "name": "L'épée divine Enc",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-48f0-719c-8b75-f04fd4cb4930",
+      "name": "L'épée démoniaque Ulé",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-4aef-786f-a15e-ceba051da430",
+      "name": "Benj, gardien de l'arbre",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:benj"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-4cf1-7b16-9b47-d1ec2759ef25",
+      "name": "Chevalier de la lumière",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-5035-72ab-a21d-bfd8efd6ee87",
+      "name": "L'enchantement de Bibou Linette",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:bibou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-524d-7bcb-9003-91e2a3b3ef9d",
+      "name": "Le miroir des confins",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-5443-7e3f-8411-d912e1b657af",
+      "name": "Bande de hobgobelins",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-565e-7ad7-8b0b-2cd51d93d6ab",
+      "name": "Billy le frénétique",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-5870-7516-a126-ebef3e8ef0a1",
+      "name": "Farf le farfade",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:farf"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-5a60-7e7a-be96-e79740315bb6",
+      "name": "Le charme du marchand de sable",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-5c6d-7f31-a413-3d2495b213c0",
+      "name": "Le sommeil de Bébou Linette",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:bebou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-5e61-7cf0-8904-c405b2c331ce",
+      "name": "Veli l'ogre des sables",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:veli"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-61fc-71eb-849d-79918d56e004",
+      "name": "Warny le paysan",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:warny"
+      ],
+      "abilities": []
+    }
+  ]
+}
