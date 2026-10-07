@@ -16,6 +16,8 @@ export interface LocationView {
   index: number;
   // null while unrevealed: its effect is not known yet.
   defId: string | null;
+  // Whose location card it is, once revealed.
+  chosenBy: 'you' | 'opponent' | null;
   cards: { you: CardView[]; opponent: CardView[] };
   power: { you: number; opponent: number };
   yourPending: CardView[];
@@ -29,12 +31,20 @@ export interface PlayerView {
   energy: number;
   spent: number;
   ready: boolean;
+  canMulligan: boolean;
   hand: CardView[];
   deckCount: number;
   // Face-down plays of the opponent this turn: a total only, never where they went.
   opponent: { id: string; handCount: number; deckCount: number; pendingCount: number; ready: boolean };
   locations: LocationView[];
   result: GameResult | null;
+}
+
+function chooser(chosenBy: PlayerIndex | null, player: PlayerIndex): 'you' | 'opponent' | null {
+  if (chosenBy === null) {
+    return null;
+  }
+  return chosenBy === player ? 'you' : 'opponent';
 }
 
 // What one player is allowed to know: opponent hand, deck and face-down cards are reduced to counts.
@@ -67,6 +77,7 @@ export function projectForPlayer(catalog: Catalog, state: GameState, player: Pla
     energy: me.energy,
     spent: me.spent,
     ready: me.ready,
+    canMulligan: state.turn === 1 && !me.mulliganUsed && !me.ready && me.pending.length === 0,
     hand: me.hand.map(view),
     deckCount: me.deck.length,
     opponent: {
@@ -79,6 +90,7 @@ export function projectForPlayer(catalog: Catalog, state: GameState, player: Pla
     locations: state.locations.map((location, index) => ({
       index,
       defId: location.revealed ? location.defId : null,
+      chosenBy: location.revealed ? chooser(location.chosenBy, player) : null,
       cards: { you: location.cards[player].map(view), opponent: location.cards[opponent].map(view) },
       power: { you: powers[index]?.[player] ?? 0, opponent: powers[index]?.[opponent] ?? 0 },
       yourPending: pendingAt(me.pending, index).map(view),

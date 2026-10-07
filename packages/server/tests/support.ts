@@ -1,10 +1,14 @@
-import { type Catalog, Rng } from '@ytcg-game/engine';
+import { type Catalog, Rng, buildRandomDeck } from '@ytcg-game/engine';
 import { loadDataDir } from '@ytcg-game/engine/node';
 
 export const catalog: Catalog = loadDataDir();
 
 export function randomDeck(seed: number): string[] {
-  return new Rng({ s: seed }).shuffle([...catalog.cards.keys()]).slice(0, 12);
+  const deck = buildRandomDeck(catalog, new Rng({ s: seed }));
+  if (deck === null) {
+    throw new Error('no legal deck');
+  }
+  return deck;
 }
 
 export const ALICE = { id: 'dev:alice', name: 'Alice' };

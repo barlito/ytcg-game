@@ -1,6 +1,6 @@
 import type { Catalog } from '../catalog.ts';
 import { createGame } from '../game.ts';
-import { DECK_SIZE } from '../rules.ts';
+import { buildRandomDeck } from '../deck.ts';
 import { Rng, seedFromString } from '../rng.ts';
 import { type GameState, PLAYERS } from '../state.ts';
 import { playRandomTurn } from './bot.ts';
@@ -35,21 +35,36 @@ function tally(map: Map<string, Tally>, key: string, won: boolean): void {
 }
 
 function buildDeck(catalog: Catalog, rng: Rng, mode: DeckMode): SimulatedDeck {
-  const cards = [...catalog.cards.values()];
+  const location = rng.pick([...catalog.locations.keys()]);
   if (mode === 'random') {
-    return { deck: rng.shuffle(cards.map((card) => card.id)).slice(0, DECK_SIZE), universe: null };
+    return { deck: buildRandomDeck(catalog, rng) ?? [], universe: null, location };
   }
-  const universes = [...new Set(cards.map((card) => card.extension))]
-    .sort()
-    .filter((universe) => cards.filter((card) => card.extension === universe).length >= DECK_SIZE);
-  const universe = rng.pick(universes);
-  const pool = cards.filter((card) => card.extension === universe).map((card) => card.id);
-  return { deck: rng.shuffle(pool).slice(0, DECK_SIZE), universe };
+  const universe = rng.pick(buildableUniverses(catalog));
+  const pool = [...catalog.cards.values()].filter((card) => card.extension === universe).map((card) => card.id);
+  return { deck: buildRandomDeck(catalog, rng, pool) ?? [], universe, location };
+}
+
+const buildable = new WeakMap<Catalog, string[]>();
+
+// Universes able to field a curve-legal deck on their own (tried with a few seeds), computed once per catalog.
+function buildableUniverses(catalog: Catalog): string[] {
+  const known = buildable.get(catalog);
+  if (known !== undefined) {
+    return known;
+  }
+  const cards = [...catalog.cards.values()];
+  const universes = [...new Set(cards.map((card) => card.extension))].sort().filter((universe) => {
+    const pool = cards.filter((card) => card.extension === universe).map((card) => card.id);
+    return [1, 2, 3].every((seed) => buildRandomDeck(catalog, new Rng({ s: seed }), pool) !== null);
+  });
+  buildable.set(catalog, universes);
+  return universes;
 }
 
 interface SimulatedDeck {
   deck: string[];
   universe: string | null;
+  location: string;
 }
 
 export function simulate(catalog: Catalog, options: SimulationOptions): SimulationReport {
@@ -79,8 +94,8 @@ function playGame(catalog: Catalog, seed: string, decks: [SimulatedDeck, Simulat
   let { state } = createGame(catalog, {
     seed,
     players: [
-      { id: 'bot-0', deck: decks[0].deck },
-      { id: 'bot-1', deck: decks[1].deck },
+      { id: 'bot-0', deck: decks[0].deck, location: decks[0].location },
+      { id: 'bot-1', deck: decks[1].deck, location: decks[1].location },
     ],
   });
   while (state.status === 'playing') {

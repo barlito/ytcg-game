@@ -6,7 +6,8 @@ export type IllegalActionCode =
   | 'cardNotPending'
   | 'notEnoughEnergy'
   | 'unknownLocation'
-  | 'locationFull';
+  | 'locationFull'
+  | 'mulliganUnavailable';
 
 export class IllegalActionError extends Error {
   readonly code: IllegalActionCode;

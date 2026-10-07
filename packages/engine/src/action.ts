@@ -8,6 +8,7 @@ export const gameActionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('play'), player: playerSchema, card: cardSchema, location: z.number().int().min(0) }),
   z.object({ type: z.literal('cancel'), player: playerSchema, card: cardSchema }),
   z.object({ type: z.literal('endTurn'), player: playerSchema }),
+  z.object({ type: z.literal('mulligan'), player: playerSchema }),
 ]);
 
 export type GameAction = z.output<typeof gameActionSchema>;
