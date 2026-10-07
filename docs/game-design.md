@@ -161,16 +161,20 @@ Traits ajoutés : `trait:machine` (vaisseaux, robots, armes), `trait:epee` (les 
 
 Équilibrage indicatif (bots aléatoires, 6000 parties en decks mono-univers, phase 3a) : tous les univers entre 47 et 53 % de victoires (KDA 52,9 %, Eldia 47,2 %). Depuis que les cartes lieu sont devenues des terrains, **Divinity, Replicant et Space Nomad ne peuvent plus former un deck mono-univers** (une seule carte à 1 de coût, le quota en demande 2 ; Cosmonaut, 6 cartes, ne le pouvait déjà pas) : la simulation par univers les ignore, ils restent jouables en deck mixte. Les bots ne jouent pas les synergies (Veli seul, combos Benj) : ces chiffres repèrent les cartes cassées, ils ne remplacent pas des parties réelles.
 
-## Backlog du polish (phase 4)
+## Polish du jeu (phase 4)
 
-Noté le 2026-10-07, à faire après l'intégration ytcg :
+Décisions du 2026-10-08 :
 
-- **Drag & drop** des cartes de la main vers les lieux (dnd-kit + effet de vent repris de `../ytcg-game-hex-prototype`).
-- **Une animation pour chaque événement** : pioche, pose sur un lieu, révélation, gain/perte de puissance, destruction, état posé/retiré, révélation d'un lieu, repioche, fin de partie. Le flux d'événements par joueur (`projectEventsForPlayer`) est déjà ordonné pour être rejoué en séquence.
-- **Pause de lecture à la révélation** : après la résolution d'un tour, laisser ~5 s pour lire les cartes posées et leurs effets avant que le chrono du tour suivant ne démarre (côté serveur : l'échéance du tour suivant tient compte de cette pause).
-- **Infobulles** sur les effets des cartes et sur les états (règle de Folie, Défonce, Coriace…).
-- **Bonus et malus visibles sur les cartes** : puissance de base vs actuelle, détail des modificateurs (permanents et continus), états avec leur nombre de cumuls.
-- Rendu façon ytcg (cadre, tilt, holo), bundle client découpé. Les illustrations sont déjà affichées (phase 3a), en simple bandeau en haut de la tuile.
+- **Drag & drop** (dnd-kit, effet de vent repris de `../ytcg-game-hex-prototype`) : une carte de la main se glisse sur un lieu ; les lieux où elle peut aller s'allument, les autres s'éteignent. Le moteur décide via la vue (`playableCards`, `openLocations`), le client ne recalcule aucune règle. Une carte posée face cachée ce tour-ci se reprend en la glissant vers la main (ou se déplace vers un autre lieu : reprise puis pose). Le clic (choisir la carte puis « Poser ici ») reste disponible, au clavier aussi.
+- **Rendu façon ytcg**, version légère : illustration plein cadre, tapis sombre et liseré néon, lueur de rareté (`--rarity-*`), coût et puissance, tilt au survol (souris). Pas de holo : trop coûteux pour un plateau de 24 cartes et sans effet en jeu. Sur le plateau, les cartes sont petites : illustration et chiffres seulement, le reste est dans l'infobulle.
+- **Chaque événement est rejoué** en séquence courte par-dessus la vue finale : pioche, pose révélée (retournement), gain/perte de puissance (+N/−N flottant), destruction (la carte reste affichée le temps de son animation), état posé/retiré, lieu révélé, repiocher, ordre de révélation, fin de partie (le résultat attend la fin de la séquence). Rien ne bloque les actions ; un bouton « Passer l'animation » vide la file. Avec `prefers-reduced-motion`, rien n'est rejoué.
+- **Pause de lecture** : après la résolution d'un tour, le chrono du tour suivant ne démarre qu'après `REVEAL_PAUSE_SECONDS` (5 s par défaut), côté serveur. Le message porte `revealUntil` ; l'interface affiche « Révélations · N s » puis le chrono. Les joueurs peuvent déjà poser pendant la pause.
+- **Infobulles** (survol, focus clavier, toucher) sur les cartes de la main, du plateau et les terrains : texte complet (`describeCard`), états avec leur règle et leurs cumuls.
+- **Bonus et malus** : la puissance est verte au-dessus de la puissance imprimée, rouge en dessous ; l'infobulle détaille base, effets subis (modificateurs permanents) et chaque bonus continu par source (carte ou terrain). Le moteur fournit ce détail (`CardView.breakdown`).
+- Un événement `cardRevealed` nomme la carte révélée (`defId`) : elle est publique, et une carte détruite aussitôt reste ainsi nommée dans le journal et animée.
+
+### Backlog
+
 - Colyseus **monitor** et **playground** au déploiement.
 
 ## Phases
@@ -180,8 +184,9 @@ Noté le 2026-10-07, à faire après l'intégration ytcg :
 3. **Phase 2 — multijoueur** (+ **2b, règles de deck** : terrain, quota de coûts, main garantie, repioche, pose cachée) : serveur Colyseus (session de jeu pure + room privée à deux), auth par le cookie JWT ytcg (pseudo libre en dev), vue et événements filtrés par joueur, chrono de tour, reconnexion, forfait, client React minimal jouable.
 4. **Phase 3a — terrains et illustrations** : les cartes lieu deviennent des terrains (non jouables), lieux inventés supprimés, nom de fichier des illustrations ytcg dans les données, affichage dans le client.
 5. **Phase 3 — intégration ytcg** (PR côté youl-tcg) : tags sur les cartes (gérés sur le site, filtres joueurs), entités de deck, API de deck validé, lien vers le jeu.
-6. **Phase 4+** : invitations entre amis, rendu soigné, déploiement derrière Traefik, Bankai.
-7. **Phase finale — bots d'équilibrage** : un bot glouton rapide (simule ses poses avant de jouer), puis un bot plus malin (Monte Carlo) ; decks d'archétype et constructeur de decks évolutif ; rapport des combos (gain par paire de cartes, popularité dans les decks gagnants).
+6. **Phase 4 — polish** : drag & drop, rendu façon ytcg, animation de chaque événement, pause de lecture, infobulles, bonus/malus visibles, bundle découpé.
+7. **Phase 5+** : invitations entre amis, déploiement derrière Traefik, Bankai.
+8. **Phase finale — bots d'équilibrage** : un bot glouton rapide (simule ses poses avant de jouer), puis un bot plus malin (Monte Carlo) ; decks d'archétype et constructeur de decks évolutif ; rapport des combos (gain par paire de cartes, popularité dans les decks gagnants).
 
 ## Questions ouvertes
 
