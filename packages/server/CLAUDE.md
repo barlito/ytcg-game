@@ -7,3 +7,4 @@ Authoritative Colyseus server (phase 1). Not started yet.
 - `onAuth` verifies the ytcg JWT cookie with the ytcg public key (same domain behind Traefik, path prefix).
 - At join, fetch the deck from ytcg validated against ownership at that moment.
 - Per-player state filtering: the opponent hand is only a count, unrevealed cards are never synced to the other client.
+- Sync `projectForPlayer()` (engine) per client, never the raw `GameState`: it holds both decks in order and the RNG state. Engine events also leak hidden data (`cardDrawn` carries the uid) and must be filtered per player before being sent.

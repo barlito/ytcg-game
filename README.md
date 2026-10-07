@@ -7,13 +7,16 @@ Jeu de duel en 1 contre 1 autour des cartes de [Youl TCG](https://github.com/bar
 - `packages/client` : client React + Vite
 - `data/` : données de jeu des cartes et des lieux (JSON versionné)
 
-Game design et décisions : [`docs/game-design.md`](docs/game-design.md).
+Game design et décisions : [`docs/game-design.md`](docs/game-design.md). Briques d'effets : [`docs/effects.md`](docs/effects.md).
 
 ## Développement
 
 Node tourne dans Docker, rien à installer sur l'hôte :
 
 ```bash
-make install   # npm install sur tous les workspaces
-make sh        # shell dans un conteneur Node
+make install         # npm install sur tous les workspaces
+make check           # typecheck + tests (ce que lance la CI)
+make sim ARGS="--games 2000 --mode universe"   # parties entre bots aléatoires
+make import-assets   # (re)génère data/cards depuis ~/YoulzAssets (ASSETS=… pour un autre chemin)
+make sh              # shell dans un conteneur Node
 ```

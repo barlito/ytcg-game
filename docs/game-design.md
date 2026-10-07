@@ -11,6 +11,15 @@ Duel 1 contre 1 inspiré de Marvel Snap, avec les cartes de [Youl TCG](https://g
 - **Pose simultanée** : les deux joueurs posent leurs cartes face cachée, puis tout est révélé en fin de tour.
 - Un lieu est contrôlé par le joueur qui y a le plus de **puissance**. Le joueur qui contrôle **2 lieux sur 3** gagne.
 - Les **combos et références** viennent des **tags** des cartes : personnage, faction, univers.
+- **Pas de « snap »** (doubler l'enjeu) : sans mise ni classement, la mécanique n'a pas de sens. Elle pourra revenir avec les mises.
+
+### Règles fines (implémentées en phase 0, à valider en jouant)
+
+- Main de départ : 3 cartes, plus 1 pioche au début de chaque tour. Main limitée à 7 cartes : au-delà, on ne pioche pas.
+- 4 cartes maximum par joueur et par lieu. Une carte posée peut être reprise tant que le joueur n'a pas fini son tour.
+- Les lieux se révèlent aux tours 1, 2 et 3, de gauche à droite.
+- Ordre de révélation : le joueur qui gagne le plus de lieux révèle en premier, puis celui qui a le plus de puissance totale, sinon pile ou face. Chaque joueur révèle ses cartes dans l'ordre où il les a posées.
+- Fin de partie : 2 lieux sur 3 l'emportent ; à égalité de lieux, la puissance totale départage ; sinon match nul.
 
 ## Cartes et decks
 
@@ -19,6 +28,12 @@ Duel 1 contre 1 inspiré de Marvel Snap, avec les cartes de [Youl TCG](https://g
 - Environ 200 cartes uniques au catalogue.
 - **Rareté ≠ puissance brute**. Une rare ou une légendaire n'est pas « la même carte en plus fort », sinon le jeu devient pay-to-win (boosters achetables en Youl Coin). Une carte rare peut être plus puissante, mais elle le paie : **coût plus élevé, sacrifice, condition de pose**. Le budget de puissance se règle par le coût, pas par la rareté.
 - **Les 1/1 sont jouables** : ce sont des cartes très puissantes, avec une contrepartie forte. Leur équilibrage est à valider en jeu.
+
+### Données de départ
+
+`make import-assets` génère `data/cards/<univers>.json` à partir des manifestes de YoulzAssets (cartes déjà en prod, univers refusés exclus). L'`id` d'une carte est son uuid ytcg. Statistiques de base **sans capacité** : coût selon la rareté (common 1-2, uncommon 2-3, rare 3-4, legendary 5-6, 1/1 = 6), puissance sur la courbe 1→2, 2→3, 3→4, 4→6, 5→9, 6→12. Relancer l'import ne touche jamais aux valeurs de jeu d'une carte déjà connue (coût, puissance, tags, capacités) : seuls le nom, la rareté et le drapeau 1/1 suivent le manifeste.
+
+Les lieux (`data/locations/locations.json`) sont provisoires : un par univers (« les cartes de cet univers ici ont +2 », des deux camps) plus un lieu neutre.
 
 ## Effets (modèle de données)
 
@@ -31,24 +46,26 @@ Une carte du jeu = des statistiques et des capacités. Une capacité se compose 
 | **Effet** | ajouter de la puissance, déplacer, détruire, piocher, modifier un coût |
 | **Cible** | cette carte, les alliées ici, les ennemies ici, un lieu adjacent, une carte au hasard |
 
-Chaque type (déclencheur, condition, effet, cible) est **une classe dans un registre**. Les données de la carte ne portent que le type et les paramètres, validés par un schéma :
+Chaque condition, cible et effet est **une classe dans un registre** (les déclencheurs sont des moments fixes du tour). Les données de la carte ne portent que le type et les paramètres, validés par un schéma. La liste des briques disponibles et leurs paramètres : [`effects.md`](effects.md).
 
 ```json
 {
-  "ytcgCardId": "<uuid de la carte ytcg>",
+  "id": "<uuid de la carte ytcg>",
   "cost": 2,
   "power": 3,
-  "tags": ["ichigo", "shinigami", "bleach"],
+  "tags": ["character:barlito", "faction:shinigami"],
   "abilities": [
     {
       "trigger": "onReveal",
-      "condition": { "type": "tagPresentHere", "tag": "shinigami" },
+      "condition": { "type": "count", "tag": "faction:shinigami" },
       "effect": { "type": "addPower", "amount": 2 },
-      "target": "self"
+      "target": { "type": "self" }
     }
   ]
 }
 ```
+
+**Les tags sont gérés sur le site ytcg**, où ils servent aussi de filtres aux joueurs (décision du 2026-10-07). En attendant la phase 2, l'import devine les tags `character:` et `family:linette` depuis le nom des cartes ; ils seront remplacés par ceux de ytcg.
 
 Les lieux suivent le même modèle (`data/locations/`), avec leur univers et leurs capacités.
 
@@ -87,9 +104,11 @@ Les lieux suivent le même modèle (`data/locations/`), avec leur univers et leu
 
 ## Questions ouvertes
 
-- Où vivent les **tags** : sur la carte ytcg (utiles aussi au site : filtres, pages personnage) ou seulement dans les données de jeu ?
 - Le nom et les visuels d'une carte viennent de ytcg : on les récupère à l'exécution (API) ou on les fige dans un export au moment du build ?
-- La mécanique du « snap » (doubler l'enjeu) : sans mise ni classement, elle sert à quoi ? À retirer ou à réinventer.
 - Comment évoluent les lieux : tirés au hasard parmi tous les univers, ou liés aux univers des decks ?
 - Un nouveau joueur a-t-il assez de cartes distinctes pour composer 12 cartes dès ses premiers jours ?
 - Que devient une carte vendue ou échangée alors qu'elle est dans un deck : le deck devient invalide, ou on bloque la vente ?
+- **Univers publiés sans manifeste** (Cyberpunk, Magic, Psychedelic, L'album des Youlz) : absents des données de jeu, alors que ce sont les cartes que les joueurs possèdent le plus. À récupérer depuis ytcg (API admin) avec leur rareté.
+- « Julien, roi d'Eldia » est-il Julian ? Il n'a pas de tag personnage pour l'instant.
+- Cosmonaut n'a que 8 cartes : impossible d'en faire un deck mono-univers.
+- Mécaniques propres aux univers et aux personnages : à définir ensemble (prochaine étape).
