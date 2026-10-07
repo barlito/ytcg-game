@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@colyseus/sdk": "^0.18.5",
+    "@dnd-kit/core": "^6.3.1",
     "@ytcg-game/engine": "*",
     "@ytcg-game/server": "*",
     "react": "^19.3.0",

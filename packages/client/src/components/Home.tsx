@@ -110,7 +110,7 @@ function NameField({ name, onChange }: { name: string; onChange: (name: string) 
   );
 }
 
-export function Home({ error, onCreate, onJoin }: Props): React.JSX.Element {
+export default function Home({ error, onCreate, onJoin }: Props): React.JSX.Element {
   const [name, setName] = useState(() => localStorage.getItem(NAME_KEY) ?? '');
   const [cards, setCards] = useState(randomDeck);
   const [location, setLocation] = useState(NO_LOCATION);
