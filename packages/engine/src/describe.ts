@@ -6,6 +6,8 @@ import { type StatusId, statusRule } from './abilities/statuses.ts';
 import type { TargetParams } from './abilities/targets.ts';
 import type { CardDefinition, Catalog, LocationDefinition } from './catalog.ts';
 
+const TRAIT_LABEL: Record<string, string> = { epee: 'épée' };
+
 const TRIGGER_TEXT: Record<AbilityParams['trigger'], string> = {
   onReveal: 'À la révélation',
   ongoing: 'En continu',
@@ -32,7 +34,7 @@ export function describeLocation(catalog: Catalog, location: LocationDefinition)
 export function describeAbility(catalog: Catalog, ability: AbilityParams, onLocation: boolean): string {
   const context: Context = { catalog, onLocation };
   const condition = ability.condition === undefined ? '' : `${describeCondition(context, ability.condition)}, `;
-  const effects = ability.effect.map((effect) => describeEffect(context, effect, ability.target)).join(' et ');
+  const effects = ability.effect.map((effect, index) => describeEffect(context, effect, ability.target, index > 0)).join(' et ');
   return `${TRIGGER_TEXT[ability.trigger]} : ${condition}${effects}.`;
 }
 
@@ -42,7 +44,7 @@ export function tagLabel(catalog: Catalog, tag: string): string {
     return catalog.extensions.get(value) ?? value;
   }
   if (family === 'trait') {
-    return value;
+    return TRAIT_LABEL[value] ?? value;
   }
   return value
     .split('-')
@@ -150,8 +152,30 @@ function statusAdjective(status: StatusId, plural: boolean): string {
   return plural && !adjective.endsWith('s') ? `${adjective}s` : adjective;
 }
 
-function describeEffect(context: Context, effect: EffectParams, targetParams: TargetParams): string {
+// After the first effect of an ability, the same targets are referred to by a pronoun.
+function describeFollowingEffect(effect: EffectParams, plural: boolean): string | null {
+  switch (effect.type) {
+    case 'addPower':
+      return `${plural ? 'leur' : 'lui'} donne ${signed(effect.amount)} puissance`;
+    case 'addStatus':
+      return `${plural ? 'les' : 'la'} rend ${statusAdjective(effect.status, plural)}${effect.stacks > 1 ? ` (×${effect.stacks})` : ''}`;
+    case 'destroy':
+      return `${plural ? 'les' : 'la'} détruit`;
+    case 'removeStatus':
+      return `${plural ? 'leur' : 'lui'} retire ${effect.status === undefined ? 'tous les états' : `la ${statusRule(effect.status).name}`}`;
+    default:
+      return null;
+  }
+}
+
+function describeEffect(context: Context, effect: EffectParams, targetParams: TargetParams, following: boolean): string {
   const target = describeTarget(context, targetParams);
+  if (following && !target.self) {
+    const text = describeFollowingEffect(effect, target.plural);
+    if (text !== null) {
+      return text;
+    }
+  }
   switch (effect.type) {
     case 'addPower':
       return target.self

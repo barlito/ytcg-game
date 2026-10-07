@@ -68,7 +68,7 @@ describe('effect text', () => {
       "En continu : s'il n'y a aucune autre carte alliée ici, +4 puissance.",
     ]);
     expect(describeCard(catalog, catalog.card('benj'))).toEqual([
-      'À la révélation : −1 puissance aux autres cartes ici et rend les autres cartes ici folles.',
+      'À la révélation : −1 puissance aux autres cartes ici et les rend folles.',
       'En continu : +2 puissance aux autres cartes Benj ici.',
     ]);
     expect(describeCard(catalog, catalog.card('linette'))).toEqual([

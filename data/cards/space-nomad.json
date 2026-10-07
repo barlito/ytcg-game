@@ -10,9 +10,24 @@
       "rarity": "legendary",
       "unique": false,
       "cost": 5,
-      "power": 9,
-      "tags": [],
-      "abilities": []
+      "power": 7,
+      "tags": [
+        "trait:machine"
+      ],
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "scope": "everywhere",
+            "tag": "trait:machine"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-0e23-70a5-a3cb-1eb30436bcb2",
@@ -20,11 +35,27 @@
       "rarity": "legendary",
       "unique": false,
       "cost": 6,
-      "power": 12,
+      "power": 9,
       "tags": [
         "character:veli"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "condition": {
+            "type": "count",
+            "max": 0
+          },
+          "target": {
+            "type": "cards",
+            "side": "enemy",
+            "pick": "strongest"
+          },
+          "effect": {
+            "type": "destroy"
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-101e-73a0-a5d6-898d1f13e5b8",
@@ -32,11 +63,21 @@
       "rarity": "rare",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 5,
       "tags": [
         "character:barlito"
       ],
-      "abilities": []
+      "statuses": [
+        "tough"
+      ],
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "draw"
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-121f-7181-893b-c06ee518ac5d",
@@ -44,11 +85,22 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
+      "power": 5,
       "tags": [
         "character:benj"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 3
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-140f-7e93-a546-a53c241b66b1",
@@ -56,9 +108,17 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
+      "power": 5,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "draw",
+            "count": 2
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-1608-7d27-9798-f2495871a6bd",
@@ -66,9 +126,20 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
+      "power": 4,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-1829-7b8f-86c1-e786f43b4a67",
@@ -80,7 +151,15 @@
       "tags": [
         "character:julian"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "draw",
+            "count": 2
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-1a67-7b9e-99b7-c4048ab83c67",
@@ -89,8 +168,22 @@
       "unique": false,
       "cost": 3,
       "power": 4,
-      "tags": [],
-      "abilities": []
+      "tags": [
+        "trait:machine"
+      ],
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count",
+            "tag": "character:veli"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 3
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-1c34-76f3-bd75-05012a56eae9",
@@ -98,11 +191,24 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [
         "character:farf"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "scope": "everywhere",
+            "tag": "trait:machine"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-1e73-7be4-8b39-f5122127ed59",
@@ -112,7 +218,20 @@
       "cost": 3,
       "power": 4,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count",
+            "scope": "everywhere",
+            "tag": "character:veli"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-2076-7d82-9fc4-c60e0ff8da17",
@@ -120,9 +239,21 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "tag": "universe:space-nomad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-228a-7e2e-9561-5c25f62b6bf3",
@@ -130,8 +261,10 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 3,
-      "power": 4,
-      "tags": [],
+      "power": 5,
+      "tags": [
+        "trait:machine"
+      ],
       "abilities": []
     },
     {
@@ -140,11 +273,18 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [
         "character:warny"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "draw"
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-2712-7a07-b468-4d6bdf3a4d97",
@@ -152,11 +292,24 @@
       "rarity": "common",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [
         "character:benj"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "side": "all",
+              "scope": "everywhere",
+              "tag": "character:benj"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-2924-7b31-a242-b42692fb87ba",
@@ -165,7 +318,9 @@
       "unique": false,
       "cost": 1,
       "power": 2,
-      "tags": [],
+      "tags": [
+        "trait:machine"
+      ],
       "abilities": []
     },
     {
@@ -176,7 +331,14 @@
       "cost": 2,
       "power": 3,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "draw"
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-2e2c-7289-800e-82b1aeb87e5a",
@@ -206,7 +368,19 @@
       "cost": 2,
       "power": 3,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count",
+            "tag": "trait:machine"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-33f3-7d67-a325-6edd970eec68",
@@ -214,9 +388,21 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "tag": "trait:machine"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-3602-76cd-9280-93aa45d56b73",
@@ -235,7 +421,9 @@
       "unique": false,
       "cost": 2,
       "power": 3,
-      "tags": [],
+      "tags": [
+        "trait:machine"
+      ],
       "abilities": []
     }
   ]

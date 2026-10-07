@@ -10,9 +10,21 @@
       "rarity": "legendary",
       "unique": false,
       "cost": 6,
-      "power": 12,
+      "power": 7,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "scope": "everywhere"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b3-eb3a-7cfd-8cf9-8e1ae6be1c4a",
@@ -20,11 +32,32 @@
       "rarity": "legendary",
       "unique": false,
       "cost": 5,
-      "power": 9,
+      "power": 6,
       "tags": [
         "character:zocnoth"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 2,
+            "count": {
+              "side": "all"
+            }
+          }
+        },
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "all"
+          },
+          "effect": {
+            "type": "destroy"
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b3-ed78-7d7f-9b4d-84b5cf13a60e",
@@ -36,7 +69,21 @@
       "tags": [
         "character:ahlototh"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "enemy",
+            "scope": "everywhere",
+            "pick": "random"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": -2
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b3-ef64-7bb7-a000-969cce1684a9",
@@ -44,11 +91,23 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
+      "power": 4,
       "tags": [
         "character:julian"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "pick": "strongest"
+          },
+          "effect": {
+            "type": "destroy"
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b3-f146-727b-bf7c-7cc30110e982",
@@ -56,11 +115,24 @@
       "rarity": "rare",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [
         "character:benj"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "endOfTurn",
+          "condition": {
+            "type": "count",
+            "side": "all",
+            "status": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b3-f336-792f-94ab-7f14e910a5e8",
@@ -68,11 +140,27 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
+      "power": 5,
       "tags": [
         "character:veli"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "condition": {
+            "type": "count",
+            "max": 0
+          },
+          "target": {
+            "type": "cards",
+            "side": "enemy",
+            "pick": "weakest"
+          },
+          "effect": {
+            "type": "destroy"
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b3-f57b-7bf2-beb2-141c5ede05cd",
@@ -80,11 +168,26 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [
         "character:barlito"
       ],
-      "abilities": []
+      "statuses": [
+        "tough"
+      ],
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "pick": "random"
+          },
+          "effect": {
+            "type": "addStatus",
+            "status": "tough"
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b3-f75b-72f6-94b6-b3e193ca3ba1",
@@ -92,11 +195,23 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [
         "character:bernard"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "tag": "universe:divinity"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b3-f932-7278-8aad-4ec2e33c0a8c",
@@ -104,11 +219,22 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 2,
       "tags": [
         "character:farf"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "endOfTurn",
+          "target": {
+            "type": "cards"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b3-fb53-7146-ab7d-dd07c28fb55a",
@@ -116,11 +242,24 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [
         "character:warny"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "side": "all",
+              "scope": "everywhere",
+              "status": "high"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b3-fd54-78ca-894b-0762df6ef74f",
@@ -128,11 +267,35 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [
         "character:xizta"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "enemy"
+          },
+          "effect": {
+            "type": "addStatus",
+            "status": "mad"
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "side": "all",
+              "scope": "everywhere",
+              "status": "mad"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b3-ffba-7a8e-b6b9-4efe1d209904",
@@ -140,11 +303,22 @@
       "rarity": "common",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [
         "character:veli"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "tag": "universe:divinity"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b4-01ca-702b-8abb-b501d3da2396",
@@ -164,11 +338,24 @@
       "rarity": "common",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [
         "character:zocnoth"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count",
+            "scope": "everywhere",
+            "tag": "character:zocnoth"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 3
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b4-05d5-73cf-a3e7-6cf31c22795c",
@@ -176,11 +363,24 @@
       "rarity": "common",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [
         "character:xizta"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count",
+            "scope": "everywhere",
+            "tag": "character:xizta"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 3
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b4-07a2-72c5-9a3d-72ca819b377f",
@@ -188,11 +388,24 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [
         "character:ahlototh"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count",
+            "scope": "everywhere",
+            "tag": "character:ahlototh"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 3
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b4-107d-7eae-ac13-f412b421165d",
@@ -200,9 +413,20 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "tag": "universe:divinity"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "01a0f7b4-129d-798e-9e09-3e54bc7faca3",
@@ -210,9 +434,21 @@
       "rarity": "common",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "enemy"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": -1
+          }
+        }
+      ]
     }
   ]
 }

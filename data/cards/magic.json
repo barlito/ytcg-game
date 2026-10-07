@@ -10,11 +10,23 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
+      "power": 5,
       "tags": [
         "character:julian"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 2,
+            "count": {
+              "scope": "everywhere",
+              "tag": "family:linette"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "019fe735-1796-70f8-9210-f2a4790d460f",
@@ -22,12 +34,24 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [
         "character:babou-linette",
         "family:linette"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "scope": "everywhere",
+              "tag": "family:linette"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "019fe735-1790-78bf-a671-36ea82260f5a",
@@ -35,12 +59,20 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
+      "power": 5,
       "tags": [
         "character:babou-linette",
         "family:linette"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "draw",
+            "count": 2
+          }
+        }
+      ]
     },
     {
       "id": "019fe735-179e-74f0-8762-ee0d46a4d40b",
@@ -53,7 +85,20 @@
         "character:bebou-linette",
         "family:linette"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "scope": "everywhere",
+            "tag": "family:linette"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "019fe735-1781-75e8-84c6-8462aaf132f8",
@@ -61,11 +106,22 @@
       "rarity": "legendary",
       "unique": false,
       "cost": 5,
-      "power": 9,
+      "power": 7,
       "tags": [
         "character:bernard"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards"
+          },
+          "effect": {
+            "type": "addStatus",
+            "status": "tough"
+          }
+        }
+      ]
     },
     {
       "id": "019fe735-17a1-75c8-ab1b-85a3e63d245e",
@@ -78,7 +134,14 @@
         "character:bibou-linette",
         "family:linette"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "draw"
+          }
+        }
+      ]
     },
     {
       "id": "019fe735-1775-7401-bfa1-6a478cf98653",
@@ -86,11 +149,32 @@
       "rarity": "legendary",
       "unique": true,
       "cost": 6,
-      "power": 12,
+      "power": 9,
       "tags": [
         "character:julian"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 2,
+            "count": {
+              "side": "all"
+            }
+          }
+        },
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "all"
+          },
+          "effect": {
+            "type": "destroy"
+          }
+        }
+      ]
     },
     {
       "id": "019fe735-178a-72b9-88d6-55100e2b3336",
@@ -102,7 +186,28 @@
       "tags": [
         "character:farf"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "endOfTurn",
+          "target": {
+            "type": "cards"
+          },
+          "effect": {
+            "type": "removeStatus"
+          }
+        },
+        {
+          "trigger": "endOfTurn",
+          "target": {
+            "type": "cards",
+            "pick": "weakest"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "019fe735-1784-7505-956b-9508abd55571",
@@ -110,11 +215,24 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [
         "character:julian"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "enemy",
+            "pick": "weakest"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": -2
+          }
+        }
+      ]
     },
     {
       "id": "019fe735-17a4-7074-ba3a-f2ae8118e28d",
@@ -122,11 +240,29 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [
         "character:benj"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "pick": "random"
+          },
+          "effect": [
+            {
+              "type": "addPower",
+              "amount": 3
+            },
+            {
+              "type": "addStatus",
+              "status": "high"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "019fe735-17a7-726a-9e22-224aac64fce0",
@@ -134,11 +270,31 @@
       "rarity": "rare",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [
         "character:benj"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "draw"
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "everywhere",
+            "tag": "character:benj"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
     },
     {
       "id": "019fe735-1778-7837-9bbc-1975bf6ee0ad",
@@ -150,7 +306,20 @@
       "tags": [
         "character:julian"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count",
+            "side": "enemy",
+            "min": 2
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 3
+          }
+        }
+      ]
     },
     {
       "id": "019fe735-177b-7884-a72f-1197fbbe7567",
@@ -158,11 +327,24 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
+      "power": 4,
       "tags": [
         "character:julian"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 2,
+            "count": {
+              "side": "all",
+              "scope": "everywhere",
+              "tag": "family:linette"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "019fe735-17a9-7aa7-b72c-2364e1d300ff",

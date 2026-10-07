@@ -10,11 +10,35 @@
       "rarity": "legendary",
       "unique": false,
       "cost": 6,
-      "power": 12,
+      "power": 7,
       "tags": [
         "character:veli"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "scope": "everywhere",
+            "tag": "universe:cosmonaut"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count",
+            "max": 0
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 4
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-bce6-784e-bde6-53466f6e5f59",
@@ -22,11 +46,23 @@
       "rarity": "rare",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [
         "character:julian"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 2,
+            "count": {
+              "scope": "everywhere",
+              "tag": "family:linette"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-5f46-7197-85ba-ad731bedf46c",
@@ -34,11 +70,28 @@
       "rarity": "rare",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [
         "character:warny"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards"
+          },
+          "effect": [
+            {
+              "type": "addPower",
+              "amount": 3
+            },
+            {
+              "type": "addStatus",
+              "status": "high"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "01a101ac-6154-711f-8f92-11496957b359",
@@ -46,9 +99,21 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "tag": "universe:cosmonaut"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-6338-7d12-9389-a09fbc53788c",
@@ -56,11 +121,22 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 6,
       "tags": [
         "character:farf"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": -1
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-bebf-7d4b-899a-8baeef067608",
@@ -68,11 +144,23 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [
         "character:bernard"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "scope": "everywhere",
+              "tag": "universe:cosmonaut"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-6604-7a2f-aa33-43b4e23861c6",
@@ -80,9 +168,16 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "draw"
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-67e4-7436-8689-68bcee2ea5ed",
@@ -90,11 +185,26 @@
       "rarity": "common",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [
         "character:barlito"
       ],
-      "abilities": []
+      "statuses": [
+        "tough"
+      ],
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "tag": "trait:machine"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     }
   ]
 }
