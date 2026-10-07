@@ -31,7 +31,7 @@ Duel 1 contre 1 inspiré de Marvel Snap, avec les cartes de [Youl TCG](https://g
 
 ### Règles de deck (phase 2b)
 
-- **Terrain** (optionnel) : chaque joueur peut apporter une carte de terrain en plus de ses 12 cartes. **C'est une carte qu'il possède dans ytcg** (pas de carte, pas de terrain — vérifié en phase 3) ; sans terrain, un terrain aléatoire prend sa place. Les terrains choisis et les terrains aléatoires sont répartis **au hasard** sur les 3 positions, donc révélés aux tours 1, 2 et 3 dans un ordre imprévisible. Une fois révélé, un terrain indique s'il est le tien ou celui de l'adversaire.
+- **Terrain** (optionnel) : chaque joueur peut apporter une carte de terrain en plus de ses 12 cartes. **C'est une carte qu'il possède dans ytcg** : les **cartes « lieu » des univers** (Monde-Ruche, Niveau 24, Les rues de New LA, Colonie martienne, Ruins of the Cult…) servent de terrains (décision du 2026-10-07) (pas de carte, pas de terrain — vérifié en phase 3) ; sans terrain, un terrain aléatoire prend sa place. Les terrains choisis et les terrains aléatoires sont répartis **au hasard** sur les 3 positions, donc révélés aux tours 1, 2 et 3 dans un ordre imprévisible. Une fois révélé, un terrain indique s'il est le tien ou celui de l'adversaire.
 - **Quota de coûts** (`rules.ts`, réglable) : au moins 2 cartes à 1, 2 à 2 et 2 à 3 ; au plus 3 cartes à 5 ou plus.
 - **Main de départ garantie** : parmi les 4 cartes vues avant de jouer au tour 1 (3 en main + la pioche du tour), au moins une coûte 1.
 - **Repioche** : une fois, au tour 1, avant de poser quoi que ce soit ; la main repart dans le deck, mélangée, avec la même garantie. L'adversaire voit seulement qu'une main a été repiochée.
@@ -132,6 +132,18 @@ Traits ajoutés : `trait:machine` (vaisseaux, robots, armes), `trait:epee` (les 
 
 Équilibrage indicatif (bots aléatoires, 6000 parties en decks mono-univers) : tous les univers entre 48 et 53 % de victoires. Les bots ne jouent pas les synergies (Veli seul, combos Benj) : ces chiffres repèrent les cartes cassées, ils ne remplacent pas des parties réelles.
 
+## Backlog du polish (phase 4)
+
+Noté le 2026-10-07, à faire après l'intégration ytcg :
+
+- **Drag & drop** des cartes de la main vers les lieux (dnd-kit + effet de vent repris de `../ytcg-game-hex-prototype`).
+- **Une animation pour chaque événement** : pioche, pose sur un lieu, révélation, gain/perte de puissance, destruction, état posé/retiré, révélation d'un lieu, repioche, fin de partie. Le flux d'événements par joueur (`projectEventsForPlayer`) est déjà ordonné pour être rejoué en séquence.
+- **Pause de lecture à la révélation** : après la résolution d'un tour, laisser ~5 s pour lire les cartes posées et leurs effets avant que le chrono du tour suivant ne démarre (côté serveur : l'échéance du tour suivant tient compte de cette pause).
+- **Infobulles** sur les effets des cartes et sur les états (règle de Folie, Défonce, Coriace…).
+- **Bonus et malus visibles sur les cartes** : puissance de base vs actuelle, détail des modificateurs (permanents et continus), états avec leur nombre de cumuls.
+- Illustrations des cartes et rendu façon ytcg (cadre, tilt, holo), bundle client découpé.
+- Colyseus **monitor** et **playground** au déploiement.
+
 ## Phases
 
 1. **Phase 0 — moteur** : `packages/engine`, règles complètes, registre d'effets, cartes importées de YoulzAssets, tests, simulation par bots.
@@ -143,6 +155,7 @@ Traits ajoutés : `trait:machine` (vaisseaux, robots, armes), `trait:epee` (les 
 
 ## Questions ouvertes
 
+- **Cartes lieu** : une carte lieu sert de terrain ; reste-t-elle aussi jouable comme carte normale (Monde-Ruche est aujourd'hui une 1/1 dans les données), ou devient-elle uniquement un terrain ? Et les univers sans carte lieu (Bleach, KDA, Eldia, l'album…) : on leur en crée une ?
 - Le nom et les visuels d'une carte viennent de ytcg : on les récupère à l'exécution (API) ou on les fige dans un export au moment du build ?
 - Comment évoluent les lieux : tirés au hasard parmi tous les univers, ou liés aux univers des decks ?
 - Un nouveau joueur a-t-il assez de cartes distinctes pour composer 12 cartes dès ses premiers jours ?
