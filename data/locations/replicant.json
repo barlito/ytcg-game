@@ -1,0 +1,86 @@
+{
+  "locations": [
+    {
+      "id": "01a101ad-9e7b-7904-9b33-6a1b710a5a07",
+      "name": "New Los Angeles",
+      "extension": "replicant",
+      "image": "new-los-angeles-6ac0f10de5b7f570335317.png",
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "tag": "universe:replicant"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "01a101ad-ac42-73c5-9d43-ce1beb559959",
+      "name": "Appartement de Bébou Linette",
+      "extension": "replicant",
+      "image": "appartement-de-bebou-linette-6ac0f11172123522754072.png",
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "tag": "family:linette"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "01a101ad-ae5c-7f48-8180-d55139f7984f",
+      "name": "Bureau de l'inspecteur",
+      "extension": "replicant",
+      "image": "bureau-de-l-inspecteur-6ac0f11201f20936230595.png",
+      "abilities": [
+        {
+          "trigger": "endOfTurn",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here"
+          },
+          "effect": {
+            "type": "removeStatus"
+          }
+        }
+      ]
+    },
+    {
+      "id": "01a101ad-ce11-7d75-a6f9-9bb4a81a79d4",
+      "name": "Les rues de New LA",
+      "extension": "replicant",
+      "image": "rue-de-new-la-6ac0f11a1dbde553145786.png",
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
+    }
+  ]
+}

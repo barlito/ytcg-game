@@ -9,6 +9,7 @@
       "name": "Ancient Foreign King",
       "rarity": "rare",
       "unique": false,
+      "image": "ancient-foreign-king-6a78a10c29d66134055863.png",
       "cost": 4,
       "power": 5,
       "tags": [
@@ -33,6 +34,7 @@
       "name": "Babou Linette",
       "rarity": "common",
       "unique": false,
+      "image": "babou-linette-6a78a10c2b914675261921.png",
       "cost": 1,
       "power": 1,
       "tags": [
@@ -58,6 +60,7 @@
       "name": "Babou Linette Scout",
       "rarity": "rare",
       "unique": false,
+      "image": "babou-linette-scout-6a78a10c2aa58414391778.png",
       "cost": 4,
       "power": 5,
       "tags": [
@@ -79,6 +82,7 @@
       "name": "Bébou Linette Empress",
       "rarity": "rare",
       "unique": false,
+      "image": "bebou-linette-empress-6a78a10c2db31577189173.png",
       "cost": 3,
       "power": 4,
       "tags": [
@@ -105,6 +109,7 @@
       "name": "Bernard The Enchanter",
       "rarity": "legendary",
       "unique": false,
+      "image": "bernard-the-enchanter-6a78a10c26ed4388879112.png",
       "cost": 5,
       "power": 7,
       "tags": [
@@ -128,6 +133,7 @@
       "name": "Bibou Linette Cartographer",
       "rarity": "uncommon",
       "unique": false,
+      "image": "bibou-linette-cartographer-6a78a10c2eb96684575432.png",
       "cost": 3,
       "power": 4,
       "tags": [
@@ -148,6 +154,7 @@
       "name": "Demon King Julian",
       "rarity": "legendary",
       "unique": true,
+      "image": "demon-king-julian-6a78a10c23a88420917200.png",
       "cost": 6,
       "power": 9,
       "tags": [
@@ -181,6 +188,7 @@
       "name": "Elder Farph",
       "rarity": "uncommon",
       "unique": false,
+      "image": "elder-farph-6a78a10c290fe190660944.png",
       "cost": 3,
       "power": 4,
       "tags": [
@@ -214,6 +222,7 @@
       "name": "Hunter Julian",
       "rarity": "common",
       "unique": false,
+      "image": "hunter-julian-6a78a10c27a66749587599.png",
       "cost": 1,
       "power": 1,
       "tags": [
@@ -239,6 +248,7 @@
       "name": "Jben Alchemist",
       "rarity": "uncommon",
       "unique": false,
+      "image": "jben-alchemist-6a78a10c2f6e0244641286.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -269,6 +279,7 @@
       "name": "Jben The Wise",
       "rarity": "rare",
       "unique": false,
+      "image": "jben-the-wise-6a78a10c3022e017274212.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -301,6 +312,7 @@
       "name": "King Julian The Brave",
       "rarity": "uncommon",
       "unique": false,
+      "image": "king-julian-the-brave-6a78a10c24b61954220785.png",
       "cost": 2,
       "power": 3,
       "tags": [
@@ -326,6 +338,7 @@
       "name": "Old King Julian The Fool",
       "rarity": "rare",
       "unique": false,
+      "image": "old-king-julian-the-fool-6a78a10c257ed753551307.png",
       "cost": 4,
       "power": 4,
       "tags": [
@@ -351,6 +364,7 @@
       "name": "Veli Foreigner",
       "rarity": "common",
       "unique": false,
+      "image": "veli-foreigner-6a78a10c30d41262794018.png",
       "cost": 2,
       "power": 3,
       "tags": [
@@ -363,6 +377,7 @@
       "name": "Warny Novice",
       "rarity": "common",
       "unique": false,
+      "image": "warny-novice-6a78a10c26385191535658.png",
       "cost": 2,
       "power": 3,
       "tags": [
@@ -375,6 +390,7 @@
       "name": "Warny The Fortune Teller",
       "rarity": "rare",
       "unique": false,
+      "image": "warny-the-fortune-teller-6a78a10c285f6564869916.png",
       "cost": 3,
       "power": 4,
       "tags": [

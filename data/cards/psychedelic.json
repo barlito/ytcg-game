@@ -9,6 +9,7 @@
       "name": "Babou Linette",
       "rarity": "common",
       "unique": false,
+      "image": "babou-linette-6a78a5459c96f759652666.png",
       "cost": 1,
       "power": 1,
       "tags": [
@@ -34,6 +35,7 @@
       "name": "Barlito Waa",
       "rarity": "uncommon",
       "unique": false,
+      "image": "barlito-waa-6a78a54595a79656789198.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -63,6 +65,7 @@
       "name": "Bébou Linette",
       "rarity": "common",
       "unique": false,
+      "image": "bebou-linette-6a78a5459a5f7017495943.png",
       "cost": 1,
       "power": 1,
       "tags": [
@@ -90,6 +93,7 @@
       "name": "Benjamen",
       "rarity": "rare",
       "unique": false,
+      "image": "benjamen-6a78a545996f6280355200.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -126,6 +130,7 @@
       "name": "Bibou Linette",
       "rarity": "common",
       "unique": false,
+      "image": "bibou-linette-6a78a5459d7c3168230674.png",
       "cost": 1,
       "power": 1,
       "tags": [
@@ -151,6 +156,7 @@
       "name": "Farf",
       "rarity": "rare",
       "unique": false,
+      "image": "farf-6a78a5459b63f708336453.png",
       "cost": 4,
       "power": 5,
       "tags": [
@@ -182,6 +188,7 @@
       "name": "Jean Raoulz",
       "rarity": "legendary",
       "unique": false,
+      "image": "jean-raoulz-6a78a545947ac834330884.png",
       "cost": 5,
       "power": 5,
       "tags": [
@@ -207,6 +214,7 @@
       "name": "Julieng",
       "rarity": "uncommon",
       "unique": false,
+      "image": "julieng-6a78a5459694c933712969.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -230,6 +238,7 @@
       "name": "Velo",
       "rarity": "common",
       "unique": false,
+      "image": "velo-6a78a54597831208598804.png",
       "cost": 1,
       "power": 1,
       "tags": [
@@ -256,6 +265,7 @@
       "name": "Warnyx",
       "rarity": "legendary",
       "unique": false,
+      "image": "warnyx-6a78a545987b8822916245.png",
       "cost": 6,
       "power": 7,
       "tags": [

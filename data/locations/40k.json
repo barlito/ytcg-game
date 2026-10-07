@@ -1,0 +1,25 @@
+{
+  "locations": [
+    {
+      "id": "01a101ad-016a-7764-a0ca-fc96a5e7d562",
+      "name": "Monde-Ruche",
+      "extension": "40k",
+      "image": "monde-ruche-6ac0f0e5b2811068709784.png",
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "tag": "universe:40k"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
+    }
+  ]
+}

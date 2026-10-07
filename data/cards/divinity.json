@@ -9,6 +9,7 @@
       "name": "God Almighty",
       "rarity": "legendary",
       "unique": false,
+      "image": "god-almighty-6abe634e1cd5c554848044.png",
       "cost": 6,
       "power": 7,
       "tags": [],
@@ -31,6 +32,7 @@
       "name": "Zocnoth The World Eater",
       "rarity": "legendary",
       "unique": false,
+      "image": "zocnoth-the-world-eater-6abe634e99e76687267420.png",
       "cost": 5,
       "power": 6,
       "tags": [
@@ -64,6 +66,7 @@
       "name": "Ahlototh The Sightless",
       "rarity": "rare",
       "unique": false,
+      "image": "ahlototh-the-sightless-6abe634f35292964067155.png",
       "cost": 3,
       "power": 4,
       "tags": [
@@ -90,6 +93,7 @@
       "name": "Julian The God Killer",
       "rarity": "rare",
       "unique": false,
+      "image": "julian-the-god-killer-6abe634fad84f943644743.png",
       "cost": 4,
       "power": 4,
       "tags": [
@@ -114,6 +118,7 @@
       "name": "Benj The Eternal",
       "rarity": "rare",
       "unique": false,
+      "image": "benj-the-eternal-6abe63502f83f312437180.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -139,6 +144,7 @@
       "name": "Veli The Fiery",
       "rarity": "rare",
       "unique": false,
+      "image": "veli-the-fiery-6abe6350a835f669356924.png",
       "cost": 4,
       "power": 5,
       "tags": [
@@ -167,6 +173,7 @@
       "name": "Barlito The Arcane Master",
       "rarity": "uncommon",
       "unique": false,
+      "image": "barlito-the-arcane-master-6abe6351419ba326874712.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -194,6 +201,7 @@
       "name": "Bernard The Father",
       "rarity": "uncommon",
       "unique": false,
+      "image": "bernard-the-father-6abe6351b66f3121026801.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -218,6 +226,7 @@
       "name": "Farf The Beyonder",
       "rarity": "uncommon",
       "unique": false,
+      "image": "farf-the-beyonder-6abe6352356e6203231842.png",
       "cost": 3,
       "power": 2,
       "tags": [
@@ -241,6 +250,7 @@
       "name": "Warny The Watcher",
       "rarity": "uncommon",
       "unique": false,
+      "image": "warny-the-watcher-6abe6352ba65f097679089.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -266,6 +276,7 @@
       "name": "Xizta The Demented",
       "rarity": "uncommon",
       "unique": false,
+      "image": "xizta-the-demented-6abe6353439a7958200767.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -302,6 +313,7 @@
       "name": "Veli The Devout",
       "rarity": "common",
       "unique": false,
+      "image": "veli-the-devout-6abe6353da209002369194.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -325,6 +337,7 @@
       "name": "Julian The Unremarkable",
       "rarity": "common",
       "unique": false,
+      "image": "julian-the-unremarkable-6abe6354669d1349578856.png",
       "cost": 2,
       "power": 3,
       "tags": [
@@ -337,6 +350,7 @@
       "name": "Herald of Zocnoth",
       "rarity": "common",
       "unique": false,
+      "image": "herald-of-zocnoth-6abe6354e399c717976191.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -362,6 +376,7 @@
       "name": "Book of Xizta The Demented",
       "rarity": "common",
       "unique": false,
+      "image": "book-of-xizta-the-demented-6abe63556e8af538762044.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -387,6 +402,7 @@
       "name": "Cult of Ahlototh",
       "rarity": "common",
       "unique": false,
+      "image": "cult-of-ahlototh-6abe6355df863233097978.png",
       "cost": 1,
       "power": 1,
       "tags": [
@@ -408,31 +424,11 @@
       ]
     },
     {
-      "id": "01a0f7b4-107d-7eae-ac13-f412b421165d",
-      "name": "Ruins of the Cult",
-      "rarity": "common",
-      "unique": false,
-      "cost": 1,
-      "power": 1,
-      "tags": [],
-      "abilities": [
-        {
-          "trigger": "ongoing",
-          "effect": {
-            "type": "addPowerPerCard",
-            "amount": 1,
-            "count": {
-              "tag": "universe:divinity"
-            }
-          }
-        }
-      ]
-    },
-    {
       "id": "01a0f7b4-129d-798e-9e09-3e54bc7faca3",
       "name": "Storm of Time",
       "rarity": "common",
       "unique": false,
+      "image": "storm-of-time-6abe6358b1018183895418.png",
       "cost": 2,
       "power": 2,
       "tags": [],

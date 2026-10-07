@@ -9,6 +9,7 @@
       "name": "Empereur de l'Humanité",
       "rarity": "legendary",
       "unique": false,
+      "image": "empereur-de-l-humanite-6ac0f0de90412661071961.png",
       "cost": 5,
       "power": 7,
       "tags": [],
@@ -32,6 +33,7 @@
       "name": "Prince démon du Chaos",
       "rarity": "legendary",
       "unique": false,
+      "image": "prince-demon-du-chaos-6ac0f0df1d414699592510.png",
       "cost": 5,
       "power": 6,
       "tags": [],
@@ -65,6 +67,7 @@
       "name": "Benj, champion du Chaos",
       "rarity": "rare",
       "unique": false,
+      "image": "benj-champion-du-chaos-6ac0f0dfa7583540869556.png",
       "cost": 4,
       "power": 4,
       "tags": [
@@ -107,6 +110,7 @@
       "name": "Nuée de Tyranides",
       "rarity": "rare",
       "unique": false,
+      "image": "nuee-de-tyranides-6ac0f0e02a6e6406561156.png",
       "cost": 3,
       "power": 3,
       "tags": [],
@@ -126,6 +130,7 @@
       "name": "Princeps du Mechanicus",
       "rarity": "rare",
       "unique": false,
+      "image": "princeps-du-mechanicus-6ac0f0e0afcb4330539412.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -151,6 +156,7 @@
       "name": "Tempête du Warp",
       "rarity": "rare",
       "unique": false,
+      "image": "tempete-du-warp-6ac0f0e131f84519006713.png",
       "cost": 4,
       "power": 5,
       "tags": [],
@@ -179,6 +185,7 @@
       "name": "Barlito de la 4e Légion",
       "rarity": "uncommon",
       "unique": false,
+      "image": "barlito-de-la-4e-legion-6ac0f0e1a8c14420084663.png",
       "cost": 2,
       "power": 3,
       "tags": [
@@ -194,6 +201,7 @@
       "name": "Farf de la 8e Légion",
       "rarity": "uncommon",
       "unique": false,
+      "image": "farf-de-la-8e-legion-6ac0f0e2311be597444682.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -218,6 +226,7 @@
       "name": "Julian de la 7e Légion",
       "rarity": "uncommon",
       "unique": false,
+      "image": "julian-de-la-7e-legion-6ac0f0e2a59d2040102139.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -241,6 +250,7 @@
       "name": "Veli de la 3e Légion",
       "rarity": "uncommon",
       "unique": false,
+      "image": "veli-de-la-3e-legion-6ac0f0e321a27186507908.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -265,6 +275,7 @@
       "name": "Warny de la 13e Légion",
       "rarity": "uncommon",
       "unique": false,
+      "image": "warny-de-la-13e-legion-6ac0f0e39fec1020245710.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -291,6 +302,7 @@
       "name": "Combattant eldar",
       "rarity": "common",
       "unique": false,
+      "image": "combattant-eldar-6ac0f0e42cd91971552847.png",
       "cost": 1,
       "power": 1,
       "tags": [],
@@ -313,6 +325,7 @@
       "name": "Démon du Chaos",
       "rarity": "common",
       "unique": false,
+      "image": "demon-du-chaos-6ac0f0e4a474c266048453.png",
       "cost": 1,
       "power": 2,
       "tags": [],
@@ -331,6 +344,7 @@
       "name": "Guerrier nécron",
       "rarity": "common",
       "unique": false,
+      "image": "guerrier-necron-6ac0f0e5395da388797858.png",
       "cost": 1,
       "power": 2,
       "tags": [
@@ -339,32 +353,11 @@
       "abilities": []
     },
     {
-      "id": "01a101ad-016a-7764-a0ca-fc96a5e7d562",
-      "name": "Monde-Ruche",
-      "rarity": "common",
-      "unique": false,
-      "cost": 1,
-      "power": 1,
-      "tags": [],
-      "abilities": [
-        {
-          "trigger": "ongoing",
-          "target": {
-            "type": "cards",
-            "tag": "universe:40k"
-          },
-          "effect": {
-            "type": "addPower",
-            "amount": 1
-          }
-        }
-      ]
-    },
-    {
       "id": "01a101ad-0352-710b-98f7-fa35d76a6aae",
       "name": "Ork de la WAAAGH!",
       "rarity": "common",
       "unique": false,
+      "image": "ork-de-la-waaagh-6ac0f0e6355f1682590802.png",
       "cost": 1,
       "power": 1,
       "tags": [],
@@ -384,6 +377,7 @@
       "name": "Soldat du peuple T'au",
       "rarity": "common",
       "unique": false,
+      "image": "soldat-du-peuple-t-au-6ac0f0e6a59c8375762232.png",
       "cost": 2,
       "power": 3,
       "tags": [],
@@ -394,6 +388,7 @@
       "name": "Space Marine du Chaos",
       "rarity": "common",
       "unique": false,
+      "image": "space-marine-du-chaos-6ac0f0e72dfb7839730252.png",
       "cost": 2,
       "power": 3,
       "tags": [],

@@ -1,0 +1,37 @@
+{
+  "locations": [
+    {
+      "id": "01a0f7b4-107d-7eae-ac13-f412b421165d",
+      "name": "Ruins of the Cult",
+      "extension": "divinity",
+      "image": "ruins-of-the-cult-6abe63582c8ad011355566.png",
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here"
+          },
+          "effect": {
+            "type": "addStatus",
+            "status": "mad"
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "status": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
+    }
+  ]
+}

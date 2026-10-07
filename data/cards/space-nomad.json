@@ -9,6 +9,7 @@
       "name": "Vaisseau-Monde",
       "rarity": "legendary",
       "unique": false,
+      "image": "vaisseau-monde-6ac0f0e876c12165076008.png",
       "cost": 5,
       "power": 7,
       "tags": [
@@ -34,6 +35,7 @@
       "name": "Veli, capitaine corsaire",
       "rarity": "legendary",
       "unique": false,
+      "image": "veli-capitaine-corsair-6ac0f0e8f19b8215448517.png",
       "cost": 6,
       "power": 9,
       "tags": [
@@ -62,6 +64,7 @@
       "name": "Barlito le nomade",
       "rarity": "rare",
       "unique": false,
+      "image": "barlito-6ac0f0e979760225702925.png",
       "cost": 3,
       "power": 5,
       "tags": [
@@ -84,6 +87,7 @@
       "name": "Benj l'aristocrate",
       "rarity": "rare",
       "unique": false,
+      "image": "benj-l-aristocrate-6ac0f0ea0155d196486313.png",
       "cost": 4,
       "power": 5,
       "tags": [
@@ -107,6 +111,7 @@
       "name": "Brex, maître contrebandier",
       "rarity": "rare",
       "unique": false,
+      "image": "brex-maitre-contrebandier-6ac0f0ea7b3bb746909920.png",
       "cost": 4,
       "power": 5,
       "tags": [],
@@ -121,31 +126,11 @@
       ]
     },
     {
-      "id": "01a101ad-1608-7d27-9798-f2495871a6bd",
-      "name": "Cité d'or du niveau 776",
-      "rarity": "rare",
-      "unique": false,
-      "cost": 4,
-      "power": 4,
-      "tags": [],
-      "abilities": [
-        {
-          "trigger": "ongoing",
-          "target": {
-            "type": "cards"
-          },
-          "effect": {
-            "type": "addPower",
-            "amount": 1
-          }
-        }
-      ]
-    },
-    {
       "id": "01a101ad-1829-7b8f-86c1-e786f43b4a67",
       "name": "Julian, chef du marché noir",
       "rarity": "rare",
       "unique": false,
+      "image": "julian-chef-du-marche-noir-6ac0f0eb87537755182092.png",
       "cost": 3,
       "power": 4,
       "tags": [
@@ -166,6 +151,7 @@
       "name": "Vaisseau corsaire",
       "rarity": "rare",
       "unique": false,
+      "image": "vaisseau-de-corsair-6ac0f0ec1f0e8446362252.png",
       "cost": 3,
       "power": 4,
       "tags": [
@@ -190,6 +176,7 @@
       "name": "Farf, chef d'escadron",
       "rarity": "uncommon",
       "unique": false,
+      "image": "farf-chef-d-escadron-6ac0f0ec90df5008878786.png",
       "cost": 3,
       "power": 3,
       "tags": [
@@ -215,6 +202,7 @@
       "name": "Hipo le vice-capitaine",
       "rarity": "uncommon",
       "unique": false,
+      "image": "hipo-le-vice-capitaine-6ac0f0ed28271593504505.png",
       "cost": 3,
       "power": 4,
       "tags": [],
@@ -234,32 +222,11 @@
       ]
     },
     {
-      "id": "01a101ad-2076-7d82-9fc4-c60e0ff8da17",
-      "name": "Planète Treon CH77",
-      "rarity": "uncommon",
-      "unique": false,
-      "cost": 3,
-      "power": 3,
-      "tags": [],
-      "abilities": [
-        {
-          "trigger": "ongoing",
-          "target": {
-            "type": "cards",
-            "tag": "universe:space-nomad"
-          },
-          "effect": {
-            "type": "addPower",
-            "amount": 1
-          }
-        }
-      ]
-    },
-    {
       "id": "01a101ad-228a-7e2e-9561-5c25f62b6bf3",
       "name": "Transport luxueux",
       "rarity": "uncommon",
       "unique": false,
+      "image": "transport-luxueux-6ac0f0ee33954309799763.png",
       "cost": 3,
       "power": 5,
       "tags": [
@@ -272,6 +239,7 @@
       "name": "Warny le marchand",
       "rarity": "uncommon",
       "unique": false,
+      "image": "marchand-warny-6ac0f0eed0d41305457781.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -291,6 +259,7 @@
       "name": "Benj, soldat de l'Union",
       "rarity": "common",
       "unique": false,
+      "image": "benj-soldat-de-l-union-6ac0f0ef5aee2685739106.png",
       "cost": 2,
       "power": 2,
       "tags": [
@@ -316,6 +285,7 @@
       "name": "Excavateur d'hélium",
       "rarity": "common",
       "unique": false,
+      "image": "excavateur-d-helium-6ac0f0efdc1a7345981595.png",
       "cost": 1,
       "power": 2,
       "tags": [
@@ -324,47 +294,11 @@
       "abilities": []
     },
     {
-      "id": "01a101ad-2b84-797d-90dd-bb44ce146dff",
-      "name": "Marché noir du niveau 24",
-      "rarity": "common",
-      "unique": false,
-      "cost": 2,
-      "power": 3,
-      "tags": [],
-      "abilities": [
-        {
-          "trigger": "onReveal",
-          "effect": {
-            "type": "draw"
-          }
-        }
-      ]
-    },
-    {
-      "id": "01a101ad-2e2c-7289-800e-82b1aeb87e5a",
-      "name": "Niveau 24",
-      "rarity": "common",
-      "unique": false,
-      "cost": 1,
-      "power": 2,
-      "tags": [],
-      "abilities": []
-    },
-    {
-      "id": "01a101ad-302e-7986-90f7-4d158b6884ba",
-      "name": "Niveau 330",
-      "rarity": "common",
-      "unique": false,
-      "cost": 2,
-      "power": 3,
-      "tags": [],
-      "abilities": []
-    },
-    {
       "id": "01a101ad-3211-7ece-a516-0cb01f87c1d8",
       "name": "Pilote de l'Union",
       "rarity": "common",
       "unique": false,
+      "image": "pilote-de-l-union-6ac0f0f22dbda160770746.png",
       "cost": 2,
       "power": 3,
       "tags": [],
@@ -383,42 +317,11 @@
       ]
     },
     {
-      "id": "01a101ad-33f3-7d67-a325-6edd970eec68",
-      "name": "Spatio-gare",
-      "rarity": "common",
-      "unique": false,
-      "cost": 1,
-      "power": 1,
-      "tags": [],
-      "abilities": [
-        {
-          "trigger": "ongoing",
-          "target": {
-            "type": "cards",
-            "tag": "trait:machine"
-          },
-          "effect": {
-            "type": "addPower",
-            "amount": 1
-          }
-        }
-      ]
-    },
-    {
-      "id": "01a101ad-3602-76cd-9280-93aa45d56b73",
-      "name": "Surface de Treon CH77",
-      "rarity": "common",
-      "unique": false,
-      "cost": 1,
-      "power": 2,
-      "tags": [],
-      "abilities": []
-    },
-    {
       "id": "01a101ad-3802-7575-9ef5-d4c393b279a8",
       "name": "Vaisseau de fret",
       "rarity": "common",
       "unique": false,
+      "image": "vaisseau-de-fret-6ac0f0f3ad562703957208.png",
       "cost": 2,
       "power": 3,
       "tags": [
