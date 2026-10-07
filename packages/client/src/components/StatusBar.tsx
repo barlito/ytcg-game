@@ -37,6 +37,9 @@ function OpponentInfo({ view, seats }: { view: PlayerView; seats: SeatInfo[] }):
   return (
     <div className="status-opponent">
       {opponent?.name ?? 'Adversaire'} · {view.opponent.handCount} en main
+      {view.opponent.pendingCount > 0 && (
+        <span className="badge-pending">{view.opponent.pendingCount} posée(s) face cachée</span>
+      )}
       {opponent?.connected === false && <span className="badge-warning">déconnecté</span>}
       {view.opponent.ready && <span className="badge-ready">a fini son tour</span>}
     </div>

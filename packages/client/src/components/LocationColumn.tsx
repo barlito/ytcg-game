@@ -36,9 +36,6 @@ export function LocationColumn({ location, canPlay, onPlay, onCancel }: Props): 
         {location.cards.opponent.map((card) => (
           <CardTile key={card.uid} card={card} />
         ))}
-        {Array.from({ length: location.opponentPendingCount }, (_, index) => (
-          <div key={index} className="card card-back" />
-        ))}
       </div>
       <div className="location-power opponent">{power.opponent}</div>
       <LocationHeader defId={location.defId} />

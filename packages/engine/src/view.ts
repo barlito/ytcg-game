@@ -19,7 +19,6 @@ export interface LocationView {
   cards: { you: CardView[]; opponent: CardView[] };
   power: { you: number; opponent: number };
   yourPending: CardView[];
-  opponentPendingCount: number;
 }
 
 export interface PlayerView {
@@ -32,7 +31,8 @@ export interface PlayerView {
   ready: boolean;
   hand: CardView[];
   deckCount: number;
-  opponent: { id: string; handCount: number; deckCount: number; ready: boolean };
+  // Face-down plays of the opponent this turn: a total only, never where they went.
+  opponent: { id: string; handCount: number; deckCount: number; pendingCount: number; ready: boolean };
   locations: LocationView[];
   result: GameResult | null;
 }
@@ -69,14 +69,19 @@ export function projectForPlayer(catalog: Catalog, state: GameState, player: Pla
     ready: me.ready,
     hand: me.hand.map(view),
     deckCount: me.deck.length,
-    opponent: { id: them.id, handCount: them.hand.length, deckCount: them.deck.length, ready: them.ready },
+    opponent: {
+      id: them.id,
+      handCount: them.hand.length,
+      deckCount: them.deck.length,
+      pendingCount: them.pending.length,
+      ready: them.ready,
+    },
     locations: state.locations.map((location, index) => ({
       index,
       defId: location.revealed ? location.defId : null,
       cards: { you: location.cards[player].map(view), opponent: location.cards[opponent].map(view) },
       power: { you: powers[index]?.[player] ?? 0, opponent: powers[index]?.[opponent] ?? 0 },
       yourPending: pendingAt(me.pending, index).map(view),
-      opponentPendingCount: pendingAt(them.pending, index).length,
     })),
     result: state.result,
   };

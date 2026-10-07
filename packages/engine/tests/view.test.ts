@@ -25,7 +25,7 @@ describe('player view', () => {
     expect(view.hand.map((card) => card.uid)).toEqual(played.players[0].hand);
     expect(view.opponent.handCount).toBe(played.players[1].hand.length);
     expect(view.opponent.deckCount).toBe(played.players[1].deck.length);
-    expect(view.locations[0]?.opponentPendingCount).toBe(1);
+    expect(view.opponent.pendingCount).toBe(1);
     expect(view.locations[2]?.defId).toBeNull();
 
     const serialized = JSON.stringify(view);
@@ -51,6 +51,21 @@ describe('player view', () => {
     const location = projectForPlayer(catalog, revealed, 0).locations[1];
     expect(location?.cards.opponent.map((card) => card.defId)).toEqual(['secret-b']);
     expect(location?.power).toEqual({ you: 1, opponent: 4 });
+  });
+});
+
+describe('face-down plays', () => {
+  it('never tell the opponent where a card was played', () => {
+    const state = newGame(catalog, { p1: ['secret-a'] });
+    const at = (location: number): string =>
+      JSON.stringify(
+        projectForPlayer(
+          catalog,
+          act(catalog, state, { type: 'play', player: 1, card: uidOf(state, 1, 'secret-a'), location }).state,
+          0,
+        ),
+      );
+    expect(at(0)).toBe(at(2));
   });
 });
 
