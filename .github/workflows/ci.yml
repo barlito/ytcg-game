@@ -16,6 +16,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
+      - run: npm run lint
       - run: npm test
       - name: Bot simulation smoke run
         run: npm run sim -w @ytcg-game/engine -- --games 200 --mode universe --top 3

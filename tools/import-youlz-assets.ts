@@ -76,8 +76,13 @@ function baselineCost(card: ManifestCard & { prodId: string }): number {
 }
 
 function guessTags(name: string): string[] {
-  const normalized = name.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
-  const tags = CHARACTERS.filter(([pattern]) => pattern.test(normalized)).map(([, character]) => `character:${character}`);
+  const normalized = name
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase();
+  const tags = CHARACTERS.filter(([pattern]) => pattern.test(normalized)).map(
+    ([, character]) => `character:${character}`,
+  );
   if (/\blinette\b/.test(normalized)) {
     tags.push('family:linette');
   }
