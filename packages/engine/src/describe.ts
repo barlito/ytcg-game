@@ -34,7 +34,13 @@ export function describeLocation(catalog: Catalog, location: LocationDefinition)
 export function describeAbility(catalog: Catalog, ability: AbilityParams, onLocation: boolean): string {
   const context: Context = { catalog, onLocation };
   const condition = ability.condition === undefined ? '' : `${describeCondition(context, ability.condition)}, `;
-  const effects = ability.effect.map((effect, index) => describeEffect(context, effect, ability.target, index > 0)).join(' et ');
+  const target = describeTarget(context, ability.target);
+  const effects = ability.effect
+    .map((effect, index) => {
+      const pronoun = index > 0 && !target.self ? describeFollowingEffect(effect, target.plural) : null;
+      return pronoun ?? describeEffect(context, effect, target);
+    })
+    .join(' et ');
   return `${TRIGGER_TEXT[ability.trigger]} : ${condition}${effects}.`;
 }
 
@@ -154,54 +160,58 @@ function statusAdjective(status: StatusId, plural: boolean): string {
 
 // After the first effect of an ability, the same targets are referred to by a pronoun.
 function describeFollowingEffect(effect: EffectParams, plural: boolean): string | null {
+  const direct = plural ? 'les' : 'la';
+  const indirect = plural ? 'leur' : 'lui';
   switch (effect.type) {
     case 'addPower':
-      return `${plural ? 'leur' : 'lui'} donne ${signed(effect.amount)} puissance`;
+      return `${indirect} donne ${signed(effect.amount)} puissance`;
     case 'addStatus':
-      return `${plural ? 'les' : 'la'} rend ${statusAdjective(effect.status, plural)}${effect.stacks > 1 ? ` (×${effect.stacks})` : ''}`;
+      return `${direct} rend ${statusAdjective(effect.status, plural)}${stacksSuffix(effect.stacks)}`;
     case 'destroy':
-      return `${plural ? 'les' : 'la'} détruit`;
+      return `${direct} détruit`;
     case 'removeStatus':
-      return `${plural ? 'leur' : 'lui'} retire ${effect.status === undefined ? 'tous les états' : `la ${statusRule(effect.status).name}`}`;
-    default:
+      return `${indirect} retire ${removedStatus(effect.status)}`;
+    case 'addPowerPerCard':
+    case 'draw':
       return null;
   }
 }
 
-function describeEffect(context: Context, effect: EffectParams, targetParams: TargetParams, following: boolean): string {
-  const target = describeTarget(context, targetParams);
-  if (following && !target.self) {
-    const text = describeFollowingEffect(effect, target.plural);
-    if (text !== null) {
-      return text;
-    }
-  }
+function describeEffect(context: Context, effect: EffectParams, target: TargetText): string {
   switch (effect.type) {
     case 'addPower':
-      return target.self
-        ? `${signed(effect.amount)} puissance`
-        : `${signed(effect.amount)} puissance ${to(target.text)}`;
-    case 'addPowerPerCard': {
-      const per = `par ${cards(context, effect.count, false)} ${scope(effect.count)}`;
-      return target.self
-        ? `${signed(effect.amount)} puissance ${per}`
-        : `${signed(effect.amount)} puissance ${to(target.text)} ${per}`;
-    }
-    case 'draw': {
-      const what = `${effect.count} carte${effect.count > 1 ? 's' : ''}`;
-      return context.onLocation ? `chaque joueur pioche ${what}` : `pioche ${what}`;
-    }
+      return withTarget(`${signed(effect.amount)} puissance`, target);
+    case 'addPowerPerCard':
+      return `${withTarget(`${signed(effect.amount)} puissance`, target)} par ${cards(context, effect.count, false)} ${scope(effect.count)}`;
+    case 'draw':
+      return `${context.onLocation ? 'chaque joueur pioche' : 'pioche'} ${plural(effect.count, 'carte')}`;
     case 'destroy':
       return `détruit ${target.text}`;
-    case 'addStatus': {
-      const stacks = effect.stacks > 1 ? ` (×${effect.stacks})` : '';
-      return target.self
-        ? `devient ${statusAdjective(effect.status, false)}${stacks}`
-        : `rend ${target.text} ${statusAdjective(effect.status, target.plural)}${stacks}`;
-    }
-    case 'removeStatus': {
-      const what = effect.status === undefined ? 'tous les états' : `la ${statusRule(effect.status).name}`;
-      return `retire ${what} ${of(target.text)}`;
-    }
+    case 'addStatus':
+      return `${statusVerb(effect.status, target)}${stacksSuffix(effect.stacks)}`;
+    case 'removeStatus':
+      return `retire ${removedStatus(effect.status)} ${of(target.text)}`;
   }
+}
+
+function withTarget(text: string, target: TargetText): string {
+  return target.self ? text : `${text} ${to(target.text)}`;
+}
+
+function statusVerb(status: StatusId, target: TargetText): string {
+  return target.self
+    ? `devient ${statusAdjective(status, false)}`
+    : `rend ${target.text} ${statusAdjective(status, target.plural)}`;
+}
+
+function removedStatus(status: StatusId | undefined): string {
+  return status === undefined ? 'tous les états' : `la ${statusRule(status).name}`;
+}
+
+function stacksSuffix(stacks: number): string {
+  return stacks > 1 ? ` (×${stacks})` : '';
+}
+
+function plural(count: number, noun: string): string {
+  return `${count} ${noun}${count > 1 ? 's' : ''}`;
 }
