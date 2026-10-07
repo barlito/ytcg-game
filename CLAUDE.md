@@ -11,6 +11,7 @@ Two-player duel game (Marvel Snap-like: 3 locations, 6 turns, simultaneous revea
 - `packages/engine` — pure TypeScript rules + effect registry. No I/O, deterministic (seeded RNG). See its CLAUDE.md.
 - `packages/server` — authoritative Colyseus server wrapping the engine. See its CLAUDE.md.
 - `packages/client` — React + Vite client. See its CLAUDE.md.
+- Dev: `make up` starts the dev server (:2567, players pick a name) and the client (http://localhost:5173); `make down`, `make logs`.
 - `data/cards`, `data/locations` — versioned game data (JSON), keyed by the ytcg card uuid.
 
 ## Boundaries with ytcg

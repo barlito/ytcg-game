@@ -15,6 +15,8 @@ Node tourne dans Docker, rien à installer sur l'hôte :
 
 ```bash
 make install         # npm install sur tous les workspaces
+make up              # serveur de jeu (:2567) + client (http://localhost:5173), pseudo libre en dev
+make down            # arrête le serveur et le client
 make check           # typecheck + tests (ce que lance la CI)
 make sim ARGS="--games 2000 --mode universe"   # parties entre bots aléatoires
 make import-assets   # (re)génère data/cards depuis ~/YoulzAssets (ASSETS=… pour un autre chemin)
