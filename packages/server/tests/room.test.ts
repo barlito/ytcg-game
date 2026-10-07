@@ -23,6 +23,7 @@ beforeAll(async () => {
     authenticator: new DevAuthenticator(),
     decks: new CatalogDeckProvider(catalog),
     turnSeconds: 1,
+    revealPauseSeconds: 0.5,
     reconnectSeconds: 0,
     newSeed: () => 'room-test',
     now: () => clock,
@@ -71,6 +72,7 @@ describe('duel room', () => {
     expect(game.view.turn).toBe(1);
     expect(game.seats.map((seat) => seat.name)).toEqual(['Alice', 'Bob']);
     expect(game.turnDeadline).toBe(clock + 1000);
+    expect(game.revealUntil).toBeNull();
   });
 
   it('refuses a join without a legal deck and a third player', async () => {
@@ -93,6 +95,20 @@ describe('duel room', () => {
     const message = await nextTurn;
     expect(message.view.turn).toBe(2);
     expect(message.events.some((event) => event.type === 'turnStarted')).toBe(true);
+  });
+
+  it('starts the next turn timer only after the reading pause', async () => {
+    const { alice, bob } = await startDuel();
+    alice.send(MESSAGE_ACTION, { type: 'endTurn' });
+    const resolved = nextMessage<GameMessage>(bob, MESSAGE_GAME, (update) => update.view.turn === 2);
+    bob.send(MESSAGE_ACTION, { type: 'endTurn' });
+    const message = await resolved;
+    const resolvedAt = performance.now();
+    expect(message.revealUntil).toBe(clock + 500);
+    expect(message.turnDeadline).toBe(clock + 1500);
+
+    await nextMessage<GameMessage>(bob, MESSAGE_GAME, (update) => update.view.turn === 3);
+    expect(performance.now() - resolvedAt).toBeGreaterThanOrEqual(1400);
   });
 
   it('answers an illegal action with an error, to the sender only', async () => {

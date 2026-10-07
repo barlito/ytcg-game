@@ -1,11 +1,9 @@
 import type { PlayerEvent, PlayerIndex, PlayerView } from '@ytcg-game/engine';
 import { z } from 'zod';
 
-export const ROOM_NAME = 'duel';
+export * from './messages.ts';
 
 // Client → server. The player index is never sent: the server knows who is speaking.
-export const MESSAGE_ACTION = 'action';
-
 export const actionInputSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('play'), card: z.string().min(1), location: z.number().int().min(0) }),
   z.object({ type: z.literal('cancel'), card: z.string().min(1) }),
@@ -32,10 +30,6 @@ export const joinOptionsSchema = z.object({
 export type JoinOptions = z.output<typeof joinOptionsSchema>;
 
 // Server → client.
-export const MESSAGE_LOBBY = 'lobby';
-export const MESSAGE_GAME = 'game';
-export const MESSAGE_ERROR = 'error';
-
 export interface SeatInfo {
   name: string;
   connected: boolean;
@@ -53,6 +47,8 @@ export interface GameMessage {
   events: PlayerEvent[];
   // Epoch milliseconds at which the current turn is ended automatically, null once the game is over.
   turnDeadline: number | null;
+  // Epoch milliseconds at which the reading pause after a reveal ends (the turn timer runs after it), else null.
+  revealUntil: number | null;
   outcome: Outcome | null;
 }
 
