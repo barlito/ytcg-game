@@ -22,8 +22,8 @@ Two-player duel game (Marvel Snap-like: 3 locations, 6 turns, simultaneous revea
 
 ## Environment
 
-- No Node on the host: everything runs in Docker (`node:24-alpine`) through the Makefile: `make install`, `make check` (typecheck + lint + tests, what CI runs), `make fix` (Prettier + ESLint autofix), `make sim`, `make import-assets`, `make sh`.
-- `data/cards` is seeded from `~/YoulzAssets/YTCG/*/manifest.json` by `tools/import-youlz-assets.ts`; re-running it keeps the game values of known cards. Hand-tune cards in the JSON, never in the importer.
+- No Node on the host: everything runs in Docker (`node:24-alpine`) through the Makefile: `make install`, `make check` (typecheck + lint + tests, what CI runs), `make fix` (Prettier + ESLint autofix), `make sim`, `make cards-doc`, `make import-assets`, `make sh`.
+- `data/cards` is seeded from `~/YoulzAssets/YTCG/*/manifest.json` by `tools/import-youlz-assets.ts`; re-running it keeps the game values of known cards. Hand-tune cards in the JSON, never in the importer, then `make cards-doc`.
 
 ## Code quality
 

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { type CompiledAbility, abilitySchema, compileAbility, locationAbilityIssues } from './abilities/ability.ts';
 import { tagSchema } from './abilities/board.ts';
+import { type StatusId, statusSchema } from './abilities/statuses.ts';
 import { CatalogError } from './errors.ts';
 
 export const RARITIES = ['common', 'uncommon', 'rare', 'legendary'] as const;
@@ -17,6 +18,8 @@ const cardSchema = z.object({
   cost: z.number().int().min(0).max(10),
   power: z.number().int(),
   tags: z.array(tagSchema).default([]),
+  // Statuses the card carries from the moment it is revealed.
+  statuses: z.array(statusSchema).default([]),
   abilities: z.array(abilitySchema).default([]),
 });
 
@@ -47,6 +50,7 @@ export interface CardDefinition {
   readonly cost: number;
   readonly power: number;
   readonly tags: readonly string[];
+  readonly statuses: readonly StatusId[];
   readonly abilities: readonly CompiledAbility[];
 }
 
@@ -60,10 +64,17 @@ export interface LocationDefinition {
 export class Catalog {
   readonly cards: ReadonlyMap<string, CardDefinition>;
   readonly locations: ReadonlyMap<string, LocationDefinition>;
+  // Universe slug → display name.
+  readonly extensions: ReadonlyMap<string, string>;
 
-  constructor(cards: ReadonlyMap<string, CardDefinition>, locations: ReadonlyMap<string, LocationDefinition>) {
+  constructor(
+    cards: ReadonlyMap<string, CardDefinition>,
+    locations: ReadonlyMap<string, LocationDefinition>,
+    extensions: ReadonlyMap<string, string>,
+  ) {
     this.cards = cards;
     this.locations = locations;
+    this.extensions = extensions;
   }
 
   card(id: string): CardDefinition {
@@ -95,8 +106,9 @@ export function loadCatalog(source: CatalogSource): Catalog {
   const issues: string[] = [];
   const cards = new Map<string, CardDefinition>();
   const locations = new Map<string, LocationDefinition>();
+  const extensions = new Map<string, string>();
   for (const file of source.cardFiles) {
-    loadCardFile(file, cards, issues);
+    loadCardFile(file, cards, extensions, issues);
   }
   for (const file of source.locationFiles) {
     loadLocationFile(file, locations, issues);
@@ -104,17 +116,23 @@ export function loadCatalog(source: CatalogSource): Catalog {
   if (issues.length > 0) {
     throw new CatalogError(issues);
   }
-  return new Catalog(cards, locations);
+  return new Catalog(cards, locations, extensions);
 }
 
 // Every card gets the "universe:<slug>" tag of its file, so the data never repeats it.
-function loadCardFile(file: DataFile, cards: Map<string, CardDefinition>, issues: string[]): void {
+function loadCardFile(
+  file: DataFile,
+  cards: Map<string, CardDefinition>,
+  extensions: Map<string, string>,
+  issues: string[],
+): void {
   const parsed = cardFileSchema.safeParse(file.content);
   if (!parsed.success) {
     issues.push(`${file.name}: ${z.prettifyError(parsed.error)}`);
     return;
   }
   const { extension } = parsed.data;
+  extensions.set(extension.slug, extension.name);
   for (const card of parsed.data.cards) {
     if (cards.has(card.id)) {
       issues.push(`${file.name}: duplicate card id ${card.id}`);
@@ -129,6 +147,7 @@ function loadCardFile(file: DataFile, cards: Map<string, CardDefinition>, issues
       cost: card.cost,
       power: card.power,
       tags: [...new Set([`universe:${extension.slug}`, ...card.tags])],
+      statuses: [...new Set(card.statuses)],
       abilities: card.abilities.map(compileAbility),
     });
   }

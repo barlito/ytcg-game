@@ -95,12 +95,34 @@ Les lieux suivent le même modèle (`data/locations/`), avec leur univers et leu
 - **Parties entre amis uniquement** (invitation), pas de matchmaking classé.
 - **Pas de mise** en Youl Coin (peut-être plus tard), **pas de récompense**.
 
+## Personnages et mécaniques
+
+Identités données par l'utilisateur, traduites en capacités (détail carte par carte : [`cards.md`](cards.md)). Un personnage n'a pas un archétype figé : ses cartes varient selon l'univers, pour faire tourner les effets. S'y ajoutent de petites synergies au sein de chaque univers (« +1 aux autres cartes KDA ici »…).
+
+| Personnage | Identité | Mécaniques principales |
+|---|---|---|
+| Veli | brute, la joue solo à fond | bonus s'il est **seul** ici ; légendaires qui **détruisent leurs propres alliés** ici (contrepartie) |
+| Benj | parfois smart, parfois fou ; rend fou les autres et sa folie le booste | rend les cartes **folles** et gagne par carte folle ; **renforce les autres Benj, alliés comme ennemis** |
+| Julian | idiot, aime les femmes | bonus **par Linette** (parfois même ennemie : il est idiot) ; God Killer détruit la carte la plus forte, même alliée |
+| Barlito | dur à défaire | état inné **Coriace** |
+| Farf | healer, râleur | soigne (+1 à l'allié le plus faible, retire les états) ou râle (−1 aux ennemis, voire à ses alliés) |
+| Warny, Bernard | drogues et alcool ; Bernard est aussi mécano | gros bonus immédiat puis **Défonce** ; Bernard renforce les **machines** |
+| Linettes | souvent des sœurs, persos atypiques | **+1 par autre Linette** ; variantes selon l'univers |
+
+Les **états ne sont liés à aucun personnage** : n'importe quelle carte peut en poser ou en subir un (Barlito peut finir Ivre). Idées validées, à implémenter au fil de l'eau : **Ivre** (fin de tour : +2 ou −2 au hasard), **Endormie** (capacités coupées N tours), **Charmée** (capacités coupées tant que la carte qui charme est en jeu), **Saignement** (−1 par tour, soignable), **Protégée** (encaisse la prochaine destruction ou le prochain malus), **Marquée** (prime pour qui la détruit), **Surchauffe** (détruite à 3 cumuls), **Enragée** (+1 par tour, insensible aux bonus alliés).
+
+Traits ajoutés : `trait:machine` (vaisseaux, robots, armes), `trait:epee` (les deux épées d'Eldia, qui se renforcent ensemble). D'autres traits et états viendront au fil de l'eau. **Bankai** (Bleach) : prévu plus tard, avec une brique « transformation ».
+
+Équilibrage indicatif (bots aléatoires, 6000 parties en decks mono-univers) : tous les univers entre 48 et 53 % de victoires. Les bots ne jouent pas les synergies (Veli seul, combos Benj) : ces chiffres repèrent les cartes cassées, ils ne remplacent pas des parties réelles.
+
 ## Phases
 
-1. **Phase 0 — moteur** : `packages/engine`, règles complètes, registre d'effets, environ 15 cartes et 3 lieux en JSON, tests, simulation de parties par des bots aléatoires pour repérer les cartes cassées.
-2. **Phase 1 — multijoueur** : room Colyseus autour du moteur, auth JWT, état filtré, client minimal jouable.
-3. **Phase 2 — intégration ytcg** (PR côté youl-tcg) : tags sur les cartes, entités de deck, API de deck validé, lien vers le jeu.
-4. **Phase 3+** : invitations entre amis, rendu soigné, déploiement derrière Traefik.
+1. **Phase 0 — moteur** : `packages/engine`, règles complètes, registre d'effets, cartes importées de YoulzAssets, tests, simulation par bots.
+2. **Phase 1 — mécaniques** : états (Folie, Défonce, Coriace), effets multiples, capacités des cartes par personnage et par univers, texte français généré (`cards.md`).
+3. **Phase 2 — multijoueur** : room Colyseus autour du moteur, auth JWT, état filtré, client minimal jouable.
+4. **Phase 3 — intégration ytcg** (PR côté youl-tcg) : tags sur les cartes (gérés sur le site, filtres joueurs), entités de deck, API de deck validé, lien vers le jeu.
+5. **Phase 4+** : invitations entre amis, rendu soigné, déploiement derrière Traefik, Bankai.
+6. **Phase finale — bots d'équilibrage** : un bot glouton rapide (simule ses poses avant de jouer), puis un bot plus malin (Monte Carlo) ; decks d'archétype et constructeur de decks évolutif ; rapport des combos (gain par paire de cartes, popularité dans les decks gagnants).
 
 ## Questions ouvertes
 
@@ -109,4 +131,4 @@ Les lieux suivent le même modèle (`data/locations/`), avec leur univers et leu
 - Un nouveau joueur a-t-il assez de cartes distinctes pour composer 12 cartes dès ses premiers jours ?
 - Que devient une carte vendue ou échangée alors qu'elle est dans un deck : le deck devient invalide, ou on bloque la vente ?
 - Le slug de Bleach est temporairement `benj-reviens` en prod ; les données de jeu gardent `b` (manifeste) jusqu'à la synchronisation avec ytcg.
-- Mécaniques propres aux univers et aux personnages : à définir ensemble (prochaine étape).
+- Valeurs des capacités : première version à relire dans `cards.md`, à rejouer en vrai.

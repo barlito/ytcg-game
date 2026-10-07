@@ -10,12 +10,24 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [
         "character:babou-linette",
         "family:linette"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "scope": "everywhere",
+              "tag": "family:linette"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "019fe745-97ef-778d-9408-658ef40da927",
@@ -23,11 +35,28 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [
         "character:barlito"
       ],
-      "abilities": []
+      "statuses": [
+        "tough"
+      ],
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": [
+            {
+              "type": "addPower",
+              "amount": 3
+            },
+            {
+              "type": "addStatus",
+              "status": "high"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "019fe745-9802-79a9-a081-08c6777ec944",
@@ -35,12 +64,26 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [
         "character:bebou-linette",
         "family:linette"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": [
+            {
+              "type": "addPower",
+              "amount": 2
+            },
+            {
+              "type": "addStatus",
+              "status": "high"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "019fe745-97fe-7ea5-a215-8a8429096137",
@@ -48,11 +91,35 @@
       "rarity": "rare",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [
         "character:benj"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "all"
+          },
+          "effect": {
+            "type": "addStatus",
+            "status": "mad"
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "side": "all",
+              "scope": "everywhere",
+              "status": "mad"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "019fe745-980f-7556-beaa-9321b0397690",
@@ -60,12 +127,24 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [
         "character:bibou-linette",
         "family:linette"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "scope": "everywhere",
+              "status": "high"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "019fe745-9808-711e-af6c-101bbafba70e",
@@ -73,11 +152,30 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
+      "power": 5,
       "tags": [
         "character:farf"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "scope": "everywhere",
+            "status": "high"
+          },
+          "effect": [
+            {
+              "type": "removeStatus",
+              "status": "high"
+            },
+            {
+              "type": "addPower",
+              "amount": 2
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "019fe745-97eb-7811-8872-e84bd8f0008b",
@@ -85,11 +183,24 @@
       "rarity": "legendary",
       "unique": false,
       "cost": 5,
-      "power": 9,
+      "power": 5,
       "tags": [
         "character:jean-raoul"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "enemy"
+          },
+          "effect": {
+            "type": "addStatus",
+            "status": "high",
+            "stacks": 2
+          }
+        }
+      ]
     },
     {
       "id": "019fe745-97f3-737f-b265-e3953a828fa0",
@@ -97,11 +208,22 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [
         "character:julian"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 2,
+            "count": {
+              "tag": "family:linette"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "019fe745-97f7-7390-a89b-0c1764f4137b",
@@ -109,11 +231,25 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [
         "character:veli"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": [
+            {
+              "type": "addPower",
+              "amount": 3
+            },
+            {
+              "type": "addStatus",
+              "status": "high"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "019fe745-97fb-7250-a416-4ea6f1453e4c",
@@ -121,11 +257,35 @@
       "rarity": "legendary",
       "unique": false,
       "cost": 6,
-      "power": 12,
+      "power": 7,
       "tags": [
         "character:warny"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "all"
+          },
+          "effect": {
+            "type": "addStatus",
+            "status": "high"
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 2,
+            "count": {
+              "side": "all",
+              "scope": "everywhere",
+              "status": "high"
+            }
+          }
+        }
+      ]
     }
   ]
 }

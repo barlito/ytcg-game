@@ -226,3 +226,105 @@ describe('test helpers', () => {
     expect(state.players[0].deck).not.toContain(uid);
   });
 });
+
+describe('statuses', () => {
+  const statusCatalog = catalogWith([
+    card('v1'),
+    card('v2', { power: 3 }),
+    card('barlito', { power: 2, statuses: ['tough'] }),
+    card('benj-mad', {
+      abilities: [
+        {
+          trigger: 'onReveal',
+          target: { type: 'cards', side: 'all' },
+          effect: [
+            { type: 'addPower', amount: -1 },
+            { type: 'addStatus', status: 'mad' },
+          ],
+        },
+        {
+          trigger: 'ongoing',
+          effect: { type: 'addPowerPerCard', amount: 2, count: { side: 'all', scope: 'everywhere', status: 'mad' } },
+        },
+      ],
+    }),
+    card('warny', {
+      power: 2,
+      abilities: [
+        {
+          trigger: 'onReveal',
+          effect: [
+            { type: 'addPower', amount: 4 },
+            { type: 'addStatus', status: 'high' },
+          ],
+        },
+      ],
+    }),
+    card('farf', {
+      abilities: [
+        {
+          trigger: 'onReveal',
+          target: { type: 'cards', side: 'all', scope: 'everywhere' },
+          effect: { type: 'removeStatus' },
+        },
+      ],
+    }),
+    card('assassin', {
+      abilities: [{ trigger: 'onReveal', target: { type: 'cards', side: 'enemy' }, effect: { type: 'destroy' } }],
+    }),
+    card('shrinker', {
+      abilities: [
+        { trigger: 'ongoing', target: { type: 'cards', side: 'enemy' }, effect: { type: 'addPower', amount: -2 } },
+      ],
+    }),
+  ]);
+
+  it('applies several effects to the same targets and lets an ongoing ability count statuses', () => {
+    const state = newGame(statusCatalog, { p0: ['v1', 'benj-mad'], p1: ['v2'] });
+    const turn2 = playTurn(statusCatalog, state, { p0: [['v1', 0]], p1: [['v2', 0]] }).state;
+    turn2.players[0].energy = 10;
+    const { state: next, events } = playTurn(statusCatalog, turn2, { p0: [['benj-mad', 0]] });
+
+    expect(next.cards[uidOf(next, 0, 'v1')]?.statuses).toEqual({ mad: 1 });
+    expect(next.cards[uidOf(next, 1, 'v2')]?.statuses).toEqual({ mad: 1 });
+    expect(events).toContainEqual({ type: 'statusChanged', card: uidOf(next, 1, 'v2'), status: 'mad', stacks: 1 });
+    expect(powerAt(statusCatalog, next, 1, 'v2')).toBe(2);
+    expect(powerAt(statusCatalog, next, 0, 'benj-mad')).toBe(5);
+  });
+
+  it('makes a high card lose power at every end of turn, until a cure', () => {
+    const state = newGame(statusCatalog, { p0: ['warny', 'farf'] });
+    const turn2 = playTurn(statusCatalog, state, { p0: [['warny', 0]] }).state;
+    expect(powerAt(statusCatalog, turn2, 0, 'warny')).toBe(5);
+    const turn3 = skipToTurn(statusCatalog, turn2, 3);
+    expect(powerAt(statusCatalog, turn3, 0, 'warny')).toBe(4);
+
+    const cured = playTurn(statusCatalog, turn3, { p0: [['farf', 1]] }).state;
+    expect(cured.cards[uidOf(cured, 0, 'warny')]?.statuses).toEqual({});
+    expect(powerAt(statusCatalog, cured, 0, 'warny')).toBe(4);
+  });
+
+  it('keeps a tough card from being destroyed or weakened, ongoing maluses included', () => {
+    const state = newGame(statusCatalog, { p0: ['barlito', 'v1'], p1: ['assassin', 'shrinker', 'benj-mad'] });
+    const turn2 = playTurn(statusCatalog, state, {
+      p0: [
+        ['barlito', 0],
+        ['v1', 0],
+      ],
+    }).state;
+    expect(turn2.cards[uidOf(turn2, 0, 'barlito')]?.statuses).toEqual({ tough: 1 });
+    turn2.players[1].energy = 10;
+
+    const next = playTurn(statusCatalog, turn2, {
+      p1: [
+        ['assassin', 0],
+        ['shrinker', 0],
+        ['benj-mad', 0],
+      ],
+    }).state;
+    expect(next.cards[uidOf(next, 0, 'v1')]?.zone).toBe('destroyed');
+    expect(next.cards[uidOf(next, 0, 'barlito')]?.zone).toBe('board');
+    expect(powerAt(statusCatalog, next, 0, 'barlito')).toBe(2);
+    expect(next.cards[uidOf(next, 0, 'barlito')]?.statuses).toEqual({ tough: 1, mad: 1 });
+  });
+});

@@ -10,9 +10,22 @@
       "rarity": "legendary",
       "unique": false,
       "cost": 5,
-      "power": 9,
+      "power": 7,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "scope": "everywhere",
+            "tag": "universe:40k"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-e797-7604-9f19-1d35e535f6a5",
@@ -20,9 +33,32 @@
       "rarity": "legendary",
       "unique": false,
       "cost": 5,
-      "power": 9,
+      "power": 6,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "all"
+          },
+          "effect": {
+            "type": "addStatus",
+            "status": "mad"
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "side": "all",
+              "status": "mad"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-e9cc-7f85-8403-c4f3d0a332bb",
@@ -30,11 +66,41 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
+      "power": 4,
       "tags": [
         "character:benj"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "all"
+          },
+          "effect": [
+            {
+              "type": "addPower",
+              "amount": -1
+            },
+            {
+              "type": "addStatus",
+              "status": "mad"
+            }
+          ]
+        },
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "side": "all",
+              "scope": "everywhere",
+              "status": "mad"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-ebb5-7700-8b31-1b3f2c4c6593",
@@ -42,9 +108,18 @@
       "rarity": "rare",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {}
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-edd8-7325-bf52-5568bb6dd82f",
@@ -52,9 +127,24 @@
       "rarity": "rare",
       "unique": false,
       "cost": 3,
-      "power": 4,
-      "tags": [],
-      "abilities": []
+      "power": 3,
+      "tags": [
+        "trait:machine"
+      ],
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "scope": "everywhere",
+            "tag": "trait:machine"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-efbc-7d20-809f-fc88e2903873",
@@ -62,9 +152,27 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
+      "power": 5,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "all"
+          },
+          "effect": [
+            {
+              "type": "addPower",
+              "amount": -2
+            },
+            {
+              "type": "addStatus",
+              "status": "mad"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "01a101ac-f1a2-7a87-a052-4486d7ea0bb9",
@@ -76,6 +184,9 @@
       "tags": [
         "character:barlito"
       ],
+      "statuses": [
+        "tough"
+      ],
       "abilities": []
     },
     {
@@ -84,11 +195,23 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [
         "character:farf"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "endOfTurn",
+          "target": {
+            "type": "cards",
+            "pick": "weakest"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-f57b-71b7-8946-55312c0f9f09",
@@ -96,11 +219,22 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [
         "character:julian"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 2,
+            "count": {
+              "tag": "family:linette"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-f747-7cda-943f-0a9e33c76a42",
@@ -108,11 +242,23 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [
         "character:veli"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count",
+            "max": 0
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 3
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-f94e-73cc-af73-557b8cbc7d90",
@@ -120,11 +266,25 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [
         "character:warny"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": [
+            {
+              "type": "addPower",
+              "amount": 3
+            },
+            {
+              "type": "addStatus",
+              "status": "high"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "01a101ac-fb5c-7f53-9446-dee90a623b60",
@@ -132,9 +292,21 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count",
+            "tag": "universe:40k"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-fd4a-7039-8fbf-8f53a8ffefa4",
@@ -144,7 +316,15 @@
       "cost": 1,
       "power": 2,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "addStatus",
+            "status": "mad"
+          }
+        }
+      ]
     },
     {
       "id": "01a101ac-ff7a-7f81-8b19-4219f20117a5",
@@ -153,7 +333,9 @@
       "unique": false,
       "cost": 1,
       "power": 2,
-      "tags": [],
+      "tags": [
+        "trait:machine"
+      ],
       "abilities": []
     },
     {
@@ -162,9 +344,21 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "tag": "universe:40k"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-0352-710b-98f7-fa35d76a6aae",
@@ -172,9 +366,18 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {}
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-0532-7e8a-9d3d-b6957f34db28",
@@ -194,7 +397,15 @@
       "cost": 2,
       "power": 3,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "addStatus",
+            "status": "mad"
+          }
+        }
+      ]
     }
   ]
 }

@@ -43,7 +43,16 @@ export function startGame(catalog: Catalog, setup: GameSetup): Runtime {
     // Instance ids are given after the shuffle so they say nothing about the deck list order.
     rng.shuffle([...setup.players[player].deck]).forEach((defId, index) => {
       const uid = `p${player}c${index + 1}`;
-      state.cards[uid] = { uid, defId, owner: player, zone: 'deck', location: null, powerModifier: 0, playOrder: null };
+      state.cards[uid] = {
+        uid,
+        defId,
+        owner: player,
+        zone: 'deck',
+        location: null,
+        powerModifier: 0,
+        playOrder: null,
+        statuses: {},
+      };
       state.players[player].deck.push(uid);
     });
   }

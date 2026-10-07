@@ -1,6 +1,6 @@
 # Briques d'effets disponibles
 
-La boîte à outils pour décrire les capacités des cartes et des lieux dans `data/`. Une capacité = **déclencheur** + **condition** (optionnelle) + **cible** + **effet**. Toute combinaison invalide est refusée au chargement, avec un message qui dit où.
+La boîte à outils pour décrire les capacités des cartes et des lieux dans `data/`. Une capacité = **déclencheur** + **condition** (optionnelle) + **cible** + **un effet ou une liste d'effets** (appliqués dans l'ordre aux mêmes cibles). Toute combinaison invalide est refusée au chargement, avec un message qui dit où. Le texte joueur de chaque carte est généré dans [`cards.md`](cards.md) (`make cards-doc`).
 
 ## Déclencheurs (`trigger`)
 
@@ -20,10 +20,23 @@ Partagé par la condition `count`, la cible `cards` et l'effet `addPowerPerCard`
 |---|---|---|
 | `side` | `ally`, `enemy`, `all` | `ally` |
 | `scope` | `here` (ce lieu), `elsewhere` (les deux autres), `everywhere` | `here` |
-| `tag` | `universe:kda`, `character:benj`, `family:linette`… | aucun |
+| `tag` | `universe:kda`, `character:benj`, `family:linette`, `trait:machine`, `trait:epee`… | aucun |
+| `status` | `mad`, `high`, `tough` (voir États) | aucun |
 | `includeSelf` | la carte elle-même compte-t-elle ? | `false` |
 
 Sur un **lieu**, seul `side: "all"` a du sens (un lieu n'appartient à personne) et `self` n'existe pas.
+
+## États (statuts)
+
+Marqueurs posés sur une carte du plateau pendant la partie, cumulables. Registre extensible : `packages/engine/src/abilities/statuses.ts`.
+
+| Id | Nom | Règle |
+|---|---|---|
+| `mad` | Folie | aucune : lue par d'autres cartes (Benj, Chaos…) |
+| `high` | Défonce | perd 1 puissance par cumul à chaque fin de tour |
+| `tough` | Coriace | ne peut être ni détruite ni affaiblie (malus continus compris) |
+
+Une carte peut porter un état **inné**, posé dès sa révélation : `"statuses": ["tough"]` (Barlito).
 
 ## Conditions (`condition`)
 
@@ -47,6 +60,8 @@ Sur un **lieu**, seul `side: "all"` a du sens (un lieu n'appartient à personne)
 | `addPowerPerCard` | `amount`, `count` (filtre) | `amount` × nombre de cartes qui passent le filtre |
 | `draw` | `count` (1 à 3, défaut 1) | le propriétaire pioche ; sur un lieu, les deux joueurs |
 | `destroy` | — | détruit les cibles |
+| `addStatus` | `status`, `stacks` (1 à 5, défaut 1) | pose un état sur les cibles |
+| `removeStatus` | `status` (absent = tous) | retire un état des cibles |
 
 ## Exemples
 
@@ -75,6 +90,11 @@ Lieu « Seireitei » : « Les cartes Bleach ici ont +2 » (des deux camps).
 { "trigger": "ongoing", "target": { "type": "cards", "side": "all", "tag": "universe:b" }, "effect": { "type": "addPower", "amount": 2 } }
 ```
 
+« À la révélation : +3 à une autre carte alliée ici au hasard et la rend défoncée » (Jben Alchemist).
+```json
+{ "trigger": "onReveal", "target": { "type": "cards", "pick": "random" }, "effect": [{ "type": "addPower", "amount": 3 }, { "type": "addStatus", "status": "high" }] }
+```
+
 ## Ce qui n'existe pas encore
 
-Coût modifié, déplacement de cartes, défausse, cartes ajoutées en main, sacrifice, condition de pose, déclencheur « quand une carte est détruite » ou « quand une carte est jouée ici », effets de lieu qui changent les règles (capacité, interdiction de jouer). Chaque nouvelle brique = une classe, son schéma et ses tests (voir `packages/engine/CLAUDE.md`).
+Transformation (Bankai : une version renforcée quand la version de base est en jeu), coût modifié, déplacement de cartes, défausse, cartes ajoutées en main, sacrifice, condition de pose, déclencheur « quand une carte est détruite » ou « quand une carte est jouée ici », effets de lieu qui changent les règles (capacité, interdiction de jouer). Chaque nouvelle brique = une classe, son schéma et ses tests (voir `packages/engine/CLAUDE.md`).

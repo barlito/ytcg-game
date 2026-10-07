@@ -1,5 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { CatalogError, DECK_SIZE, LOCATION_COUNT, loadCatalog } from '../src/index.ts';
+import { renderCardsDoc } from '../src/sim/cards-doc.ts';
 import { loadDataDir } from '../src/sim/data.ts';
 import { type CardInput, type LocationInput, card, catalogWith } from './support.ts';
 
@@ -69,5 +72,12 @@ describe('catalog validation', () => {
         ],
       }),
     ).toThrow(/duplicate location id l/);
+  });
+});
+
+describe('docs/cards.md', () => {
+  it('is up to date with data/ (run `make cards-doc`)', () => {
+    const path = fileURLToPath(new URL('../../../docs/cards.md', import.meta.url));
+    expect(readFileSync(path, 'utf8')).toBe(renderCardsDoc(loadDataDir()));
   });
 });

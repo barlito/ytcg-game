@@ -8,6 +8,7 @@ import {
   cardFilterSchema,
 } from './board.ts';
 import { PLAYERS } from '../state.ts';
+import { statusSchema } from './statuses.ts';
 
 const addPowerSchema = z.object({
   type: z.literal('addPower'),
@@ -101,11 +102,54 @@ export class DestroyEffect implements Effect {
   }
 }
 
+const addStatusSchema = z.object({
+  type: z.literal('addStatus'),
+  status: statusSchema,
+  stacks: z.number().int().min(1).max(5).default(1),
+});
+
+export class AddStatusEffect implements Effect {
+  static readonly schema = addStatusSchema;
+  private readonly params: z.output<typeof addStatusSchema>;
+
+  constructor(params: z.output<typeof addStatusSchema>) {
+    this.params = params;
+  }
+
+  apply(board: Board, _source: AbilitySource, targets: readonly string[]): void {
+    for (const target of targets) {
+      board.addStatus(target, this.params.status, this.params.stacks);
+    }
+  }
+}
+
+const removeStatusSchema = z.object({
+  type: z.literal('removeStatus'),
+  status: statusSchema.optional(),
+});
+
+export class RemoveStatusEffect implements Effect {
+  static readonly schema = removeStatusSchema;
+  private readonly params: z.output<typeof removeStatusSchema>;
+
+  constructor(params: z.output<typeof removeStatusSchema>) {
+    this.params = params;
+  }
+
+  apply(board: Board, _source: AbilitySource, targets: readonly string[]): void {
+    for (const target of targets) {
+      board.removeStatus(target, this.params.status ?? null);
+    }
+  }
+}
+
 export const effectSchema = z.discriminatedUnion('type', [
   AddPowerEffect.schema,
   AddPowerPerCardEffect.schema,
   DrawEffect.schema,
   DestroyEffect.schema,
+  AddStatusEffect.schema,
+  RemoveStatusEffect.schema,
 ]);
 
 export type EffectParams = z.output<typeof effectSchema>;
@@ -125,5 +169,9 @@ export function createEffect(params: EffectParams): Effect {
       return new DrawEffect(params);
     case 'destroy':
       return new DestroyEffect();
+    case 'addStatus':
+      return new AddStatusEffect(params);
+    case 'removeStatus':
+      return new RemoveStatusEffect(params);
   }
 }

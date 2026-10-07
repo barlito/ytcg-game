@@ -9,7 +9,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "sim": "node src/sim/cli.ts"
+    "sim": "node src/sim/cli.ts",
+    "cards-doc": "node src/sim/cards-doc-cli.ts"
   },
   "devDependencies": {
     "@types/node": "^24.19.1",

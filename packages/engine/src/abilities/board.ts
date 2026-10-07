@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { Rng } from '../rng.ts';
 import type { PlayerIndex } from '../state.ts';
+import { type StatusId, statusSchema } from './statuses.ts';
 
 export const tagSchema = z.string().regex(/^[a-z]+:[a-z0-9-]+$/, 'expected a "family:value" tag');
 
@@ -11,6 +12,7 @@ export const cardFilterShape = {
   side: sideSchema.default('ally'),
   scope: scopeSchema.default('here'),
   tag: tagSchema.optional(),
+  status: statusSchema.optional(),
   includeSelf: z.boolean().default(false),
 };
 
@@ -38,6 +40,9 @@ export interface Board extends BoardView {
   addPower(card: string, delta: number): void;
   draw(player: PlayerIndex, count: number): void;
   destroy(card: string): void;
+  addStatus(card: string, status: StatusId, stacks: number): void;
+  // null removes every status.
+  removeStatus(card: string, status: StatusId | null): void;
 }
 
 export interface Condition {

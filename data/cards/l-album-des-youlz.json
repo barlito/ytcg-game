@@ -10,9 +10,21 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
+      "power": 4,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "scope": "everywhere",
+              "tag": "universe:l-album-des-youlz"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "019fdde6-bd75-7754-b69d-ce9d1c8e43c0",
@@ -20,9 +32,16 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "draw"
+          }
+        }
+      ]
     },
     {
       "id": "019fdde6-bd69-7d2c-8fbd-152af515683b",
@@ -30,9 +49,21 @@
       "rarity": "rare",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "enemy"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": -2
+          }
+        }
+      ]
     },
     {
       "id": "019fdde6-bd5f-70fd-9de5-cac847edaabc",
@@ -40,9 +71,22 @@
       "rarity": "legendary",
       "unique": false,
       "cost": 6,
-      "power": 12,
+      "power": 7,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "scope": "everywhere",
+            "tag": "universe:l-album-des-youlz"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
     },
     {
       "id": "019fdde6-bd59-74dc-9179-0dd6e2894a1f",
@@ -50,9 +94,21 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count",
+            "max": 0
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 3
+          }
+        }
+      ]
     },
     {
       "id": "019fdde6-bd52-718c-a391-16152b56b8e4",
@@ -70,8 +126,11 @@
       "rarity": "legendary",
       "unique": false,
       "cost": 6,
-      "power": 12,
+      "power": 10,
       "tags": [],
+      "statuses": [
+        "tough"
+      ],
       "abilities": []
     },
     {
@@ -80,9 +139,20 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
     },
     {
       "id": "019fdde6-bd43-72f1-9492-35022b9e8eb5",
@@ -90,9 +160,21 @@
       "rarity": "common",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "pick": "random"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "019fdde6-bd48-7312-be0f-d21feb482747",
@@ -100,9 +182,22 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 3,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": [
+            {
+              "type": "draw",
+              "count": 2
+            },
+            {
+              "type": "destroy"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "019fdde6-bd3f-7051-8c2b-35edad7cae06",
@@ -110,9 +205,28 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 3,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "enemy",
+            "pick": "strongest"
+          },
+          "effect": [
+            {
+              "type": "addPower",
+              "amount": -2
+            },
+            {
+              "type": "addStatus",
+              "status": "mad"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "019fde06-5e5e-7795-aead-f98de49c5b30",
@@ -120,9 +234,18 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
-      "tags": [],
-      "abilities": []
+      "power": 5,
+      "tags": [
+        "trait:machine"
+      ],
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "draw"
+          }
+        }
+      ]
     },
     {
       "id": "019fdde6-bd39-7876-b98c-d7a34f3f6db4",
@@ -130,9 +253,23 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": [
+            {
+              "type": "addPower",
+              "amount": 3
+            },
+            {
+              "type": "addStatus",
+              "status": "high"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "019fdde6-bd36-7e89-8e85-aa0bfa2707cd",
@@ -141,7 +278,9 @@
       "unique": false,
       "cost": 1,
       "power": 2,
-      "tags": [],
+      "tags": [
+        "trait:machine"
+      ],
       "abilities": []
     },
     {
@@ -150,9 +289,21 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "tag": "universe:l-album-des-youlz"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "019fdde6-bd2f-7d89-9ada-0bcecd1044b9",
@@ -160,9 +311,21 @@
       "rarity": "rare",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 2,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "scope": "everywhere",
+              "tag": "universe:l-album-des-youlz"
+            }
+          }
+        }
+      ]
     }
   ]
 }

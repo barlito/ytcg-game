@@ -38,8 +38,12 @@ export class AbilityRunner {
       if (source.card !== null && cardAt(this.board.state, source.card).zone !== 'board') {
         return;
       }
-      if (ability.condition?.isMet(this.board, source) ?? true) {
-        ability.effect.apply(this.board, source, ability.target.select(this.board, source));
+      if (!(ability.condition?.isMet(this.board, source) ?? true)) {
+        continue;
+      }
+      const targets = ability.target.select(this.board, source);
+      for (const effect of ability.effects) {
+        effect.apply(this.board, source, targets);
       }
     }
   }

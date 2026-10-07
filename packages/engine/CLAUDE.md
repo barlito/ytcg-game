@@ -23,7 +23,18 @@ Pure game rules. Imported by the server (authoritative) and the client (types, p
 
 1. A class in `src/abilities/{conditions,targets,effects}.ts` with its zod `schema` (literal `type`) and its behaviour, added to the discriminated union and to the `create*` switch (exhaustive: TypeScript flags a missing case).
 2. If it may be ongoing → `ONGOING_EFFECTS` + `ongoingBonus()`; if it ignores the target → `UNTARGETED_EFFECTS`.
-3. Tests in `tests/abilities.test.ts` (fixture cards in the test file, never the real data), validation tests in `tests/catalog.test.ts`, a line in `docs/effects.md`.
+3. Its French text in `src/describe.ts` (`describeEffect` + `describeFollowingEffect`).
+4. Tests in `tests/abilities.test.ts` (fixture cards in the test file, never the real data), validation tests in `tests/catalog.test.ts`, text tests in `tests/describe.test.ts`, a line in `docs/effects.md`.
+
+## Statuses
+
+- Registry `src/abilities/statuses.ts`: one entry per status (French `name` + `adjective` for the text, optional `rule`, `preventsDestroy`, `preventsPowerLoss`, `endOfTurn` hook). Adding one = an entry there + tests; the zod enum and the text follow. Stacks live on the card instance (`statuses`), cleared by `removeStatus`.
+- `tough` also ignores negative ONGOING bonuses (`Runtime.power`), not only `addPower`.
+
+## Effect text
+
+- `src/describe.ts` turns ability params into French (`describeCard`, `describeLocation`); the client will reuse it. Follow-up effects of an ability use a pronoun (« et la rend défoncée »).
+- `docs/cards.md` is generated (`make cards-doc`) and a test fails when it is stale: regenerate after every data change.
 
 ## Tests and tools
 

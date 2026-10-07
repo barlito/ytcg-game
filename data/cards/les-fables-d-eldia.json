@@ -10,11 +10,24 @@
       "rarity": "legendary",
       "unique": false,
       "cost": 6,
-      "power": 12,
+      "power": 8,
       "tags": [
         "character:julian"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "scope": "everywhere",
+            "tag": "universe:les-fables-d-eldia"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-40c4-7078-8867-335fdaed10cf",
@@ -22,9 +35,21 @@
       "rarity": "legendary",
       "unique": false,
       "cost": 6,
-      "power": 12,
+      "power": 8,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "enemy"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": -2
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-4303-73b7-98b6-0f71d15cacc7",
@@ -32,12 +57,24 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
+      "power": 5,
       "tags": [
         "character:babou-linette",
         "family:linette"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "pick": "random"
+          },
+          "effect": {
+            "type": "destroy"
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-44f0-7d23-ba83-831af05376e2",
@@ -45,11 +82,26 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
+      "power": 4,
       "tags": [
         "character:barlito"
       ],
-      "abilities": []
+      "statuses": [
+        "tough"
+      ],
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "enemy"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": -2
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-46f9-714e-b4b2-2dff644a6415",
@@ -57,9 +109,24 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
-      "tags": [],
-      "abilities": []
+      "power": 4,
+      "tags": [
+        "trait:epee"
+      ],
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count",
+            "scope": "everywhere",
+            "tag": "trait:epee"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 3
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-48f0-719c-8b75-f04fd4cb4930",
@@ -67,9 +134,24 @@
       "rarity": "rare",
       "unique": false,
       "cost": 4,
-      "power": 6,
-      "tags": [],
-      "abilities": []
+      "power": 4,
+      "tags": [
+        "trait:epee"
+      ],
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count",
+            "scope": "everywhere",
+            "tag": "trait:epee"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 3
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-4aef-786f-a15e-ceba051da430",
@@ -77,11 +159,22 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [
         "character:benj"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-4cf1-7b16-9b47-d1ec2759ef25",
@@ -89,9 +182,25 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards"
+          },
+          "effect": [
+            {
+              "type": "removeStatus"
+            },
+            {
+              "type": "addPower",
+              "amount": 1
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "01a101ad-5035-72ab-a21d-bfd8efd6ee87",
@@ -99,12 +208,23 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 2,
       "tags": [
         "character:bibou-linette",
         "family:linette"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-524d-7bcb-9003-91e2a3b3ef9d",
@@ -112,9 +232,20 @@
       "rarity": "uncommon",
       "unique": false,
       "cost": 3,
-      "power": 4,
+      "power": 2,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "side": "enemy"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-5443-7e3f-8411-d912e1b657af",
@@ -122,9 +253,18 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {}
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-565e-7ad7-8b0b-2cd51d93d6ab",
@@ -132,9 +272,17 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 3,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "effect": {
+            "type": "addStatus",
+            "status": "mad"
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-5870-7516-a126-ebef3e8ef0a1",
@@ -146,7 +294,20 @@
       "tags": [
         "character:farf"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "enemy",
+            "pick": "random"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": -1
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-5a60-7e7a-be96-e79740315bb6",
@@ -154,9 +315,21 @@
       "rarity": "common",
       "unique": false,
       "cost": 2,
-      "power": 3,
+      "power": 2,
       "tags": [],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "enemy"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": -1
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-5c6d-7f31-a413-3d2495b213c0",
@@ -164,12 +337,25 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [
         "character:bebou-linette",
         "family:linette"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "onReveal",
+          "target": {
+            "type": "cards",
+            "side": "enemy",
+            "pick": "strongest"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": -2
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-5e61-7cf0-8904-c405b2c331ce",
@@ -177,11 +363,23 @@
       "rarity": "common",
       "unique": false,
       "cost": 1,
-      "power": 2,
+      "power": 1,
       "tags": [
         "character:veli"
       ],
-      "abilities": []
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "count",
+            "max": 0
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 3
+          }
+        }
+      ]
     },
     {
       "id": "01a101ad-61fc-71eb-849d-79918d56e004",
