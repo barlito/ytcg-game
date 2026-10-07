@@ -2,13 +2,22 @@ COMPOSE = docker compose
 RUN = $(COMPOSE) run --rm -T node
 ASSETS ?= $(HOME)/YoulzAssets
 
-.PHONY: install sh typecheck lint fix test check sim import-assets cards-doc
+.PHONY: install sh up down logs typecheck lint fix test check sim import-assets cards-doc
 
 install: ## Install every workspace dependency (inside Docker, no Node on the host)
 	$(RUN) npm install
 
 sh: ## Shell in a throwaway Node container
 	$(COMPOSE) run --rm node sh
+
+up: ## Start the dev game server (:2567) and client (http://localhost:5173)
+	$(COMPOSE) --profile dev up -d server client
+
+down: ## Stop the dev server and client
+	$(COMPOSE) --profile dev down
+
+logs: ## Follow the dev server and client logs
+	$(COMPOSE) --profile dev logs -f server client
 
 typecheck: ## Type-check tools and every workspace
 	$(RUN) npm run typecheck

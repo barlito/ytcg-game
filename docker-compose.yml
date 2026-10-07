@@ -1,10 +1,31 @@
+x-node: &node
+  image: node:24-alpine
+  volumes:
+    - .:/app
+  user: '${UID:-1000}:${GID:-1000}'
+  environment:
+    NPM_CONFIG_UPDATE_NOTIFIER: 'false'
+
 services:
+  # Throwaway tooling container: `make install`, `make check`, `make sh`…
   node:
-    image: node:24-alpine
+    <<: *node
     working_dir: /app
-    volumes:
-      - .:/app
-    user: '${UID:-1000}:${GID:-1000}'
-    environment:
-      NPM_CONFIG_UPDATE_NOTIFIER: 'false'
     command: ['sleep', 'infinity']
+
+  # Development game server (DevAuthenticator: players pick a name, no ytcg session).
+  server:
+    <<: *node
+    working_dir: /app/packages/server
+    command: ['node', '--watch-path=src', '--watch-path=../engine/src', '--watch-path=../../data', 'src/dev.ts']
+    ports:
+      - '2567:2567'
+    profiles: ['dev']
+
+  client:
+    <<: *node
+    working_dir: /app/packages/client
+    command: ['npx', 'vite', '--host', '0.0.0.0']
+    ports:
+      - '5173:5173'
+    profiles: ['dev']
