@@ -31,7 +31,7 @@ Duel 1 contre 1 inspiré de Marvel Snap, avec les cartes de [Youl TCG](https://g
 
 ### Données de départ
 
-`make import-assets` génère `data/cards/<univers>.json` à partir des manifestes de YoulzAssets (cartes déjà en prod, univers refusés exclus). L'`id` d'une carte est son uuid ytcg. Statistiques de base **sans capacité** : coût selon la rareté (common 1-2, uncommon 2-3, rare 3-4, legendary 5-6, 1/1 = 6), puissance sur la courbe 1→2, 2→3, 3→4, 4→6, 5→9, 6→12. Relancer l'import ne touche jamais aux valeurs de jeu d'une carte déjà connue (coût, puissance, tags, capacités) : seuls le nom, la rareté et le drapeau 1/1 suivent le manifeste.
+`make import-assets` génère `data/cards/<univers>.json` à partir des manifestes de YoulzAssets (cartes déjà en prod, univers refusés exclus) : 200 cartes sur 12 univers au 2026-10-07. L'`id` d'une carte est son uuid ytcg. Statistiques de base **sans capacité** : coût selon la rareté (common 1-2, uncommon 2-3, rare 3-4, legendary 5-6, 1/1 = 6), puissance sur la courbe 1→2, 2→3, 3→4, 4→6, 5→9, 6→12. Relancer l'import ne touche jamais aux valeurs de jeu d'une carte déjà connue (coût, puissance, tags, capacités) : seuls le nom, la rareté et le drapeau 1/1 suivent le manifeste.
 
 Les lieux (`data/locations/locations.json`) sont provisoires : un par univers (« les cartes de cet univers ici ont +2 », des deux camps) plus un lieu neutre.
 
@@ -108,5 +108,6 @@ Les lieux suivent le même modèle (`data/locations/`), avec leur univers et leu
 - Comment évoluent les lieux : tirés au hasard parmi tous les univers, ou liés aux univers des decks ?
 - Un nouveau joueur a-t-il assez de cartes distinctes pour composer 12 cartes dès ses premiers jours ?
 - Que devient une carte vendue ou échangée alors qu'elle est dans un deck : le deck devient invalide, ou on bloque la vente ?
-- **Univers publiés sans manifeste** (Cyberpunk, Magic, Psychedelic, L'album des Youlz) : absents des données de jeu tant que leur manifeste n'est pas écrit dans YoulzAssets (l'utilisateur s'en charge), puis `make import-assets`.
+- Tags personnage des cartes sans correspondance évidente : Jben (Benj ?), Weebou (Warny ?), CyberMiaou, Ancient Foreign King, et les cartes de L'album des Youlz.
+- Le slug de Bleach est temporairement `benj-reviens` en prod ; les données de jeu gardent `b` (manifeste) jusqu'à la synchronisation avec ytcg.
 - Mécaniques propres aux univers et aux personnages : à définir ensemble (prochaine étape).

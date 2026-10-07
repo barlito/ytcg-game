@@ -1,0 +1,198 @@
+{
+  "extension": {
+    "slug": "magic",
+    "name": "Magic"
+  },
+  "cards": [
+    {
+      "id": "019fe735-178d-7a44-96c9-8ca5a7216502",
+      "name": "Ancient Foreign King",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fe735-1796-70f8-9210-f2a4790d460f",
+      "name": "Babou Linette",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:babou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe735-1790-78bf-a671-36ea82260f5a",
+      "name": "Babou Linette Scout",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [
+        "character:babou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe735-179e-74f0-8762-ee0d46a4d40b",
+      "name": "Bébou Linette Empress",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:bebou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe735-1781-75e8-84c6-8462aaf132f8",
+      "name": "Bernard The Enchanter",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 5,
+      "power": 9,
+      "tags": [
+        "character:bernard"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe735-17a1-75c8-ab1b-85a3e63d245e",
+      "name": "Bibou Linette Cartographer",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:bibou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe735-1775-7401-bfa1-6a478cf98653",
+      "name": "Demon King Julian",
+      "rarity": "legendary",
+      "unique": true,
+      "cost": 6,
+      "power": 12,
+      "tags": [
+        "character:julian"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe735-178a-72b9-88d6-55100e2b3336",
+      "name": "Elder Farph",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:farf"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe735-1784-7505-956b-9508abd55571",
+      "name": "Hunter Julian",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:julian"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe735-17a4-7074-ba3a-f2ae8118e28d",
+      "name": "Jben Alchemist",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fe735-17a7-726a-9e22-224aac64fce0",
+      "name": "Jben The Wise",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fe735-1778-7837-9bbc-1975bf6ee0ad",
+      "name": "King Julian The Brave",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:julian"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe735-177b-7884-a72f-1197fbbe7567",
+      "name": "Old King Julian The Fool",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [
+        "character:julian"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe735-17a9-7aa7-b72c-2364e1d300ff",
+      "name": "Veli Foreigner",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:veli"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe735-177e-7750-bb5d-66d1607526af",
+      "name": "Warny Novice",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:warny"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "019fe735-1787-71be-9ca6-56a5f310d79c",
+      "name": "Warny The Fortune Teller",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:warny"
+      ],
+      "abilities": []
+    }
+  ]
+}

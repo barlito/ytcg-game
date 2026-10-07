@@ -1,0 +1,168 @@
+{
+  "extension": {
+    "slug": "l-album-des-youlz",
+    "name": "L'album des Youlz"
+  },
+  "cards": [
+    {
+      "id": "019fdde6-bd7a-7be6-9c30-6c4a0936bd97",
+      "name": "Bouboubou",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fdde6-bd75-7754-b69d-ce9d1c8e43c0",
+      "name": "Developper",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fdde6-bd69-7d2c-8fbd-152af515683b",
+      "name": "French Monster",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fdde6-bd5f-70fd-9de5-cac847edaabc",
+      "name": "ITT",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 6,
+      "power": 12,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fdde6-bd59-74dc-9179-0dd6e2894a1f",
+      "name": "L'arabe Du Futur",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fdde6-bd52-718c-a391-16152b56b8e4",
+      "name": "Mes Garages",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fdde6-bd89-7819-88fe-23543a34491e",
+      "name": "Moktar",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 6,
+      "power": 12,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fdde6-bd82-7524-908b-637558bb8df5",
+      "name": "Pablo And Mila",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fdde6-bd43-72f1-9492-35022b9e8eb5",
+      "name": "Pipipou",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fdde6-bd48-7312-be0f-d21feb482747",
+      "name": "Ragequit",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fdde6-bd3f-7051-8c2b-35edad7cae06",
+      "name": "Sale Pute",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fde06-5e5e-7795-aead-f98de49c5b30",
+      "name": "Taxi Gandalf",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fdde6-bd39-7876-b98c-d7a34f3f6db4",
+      "name": "Toz",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fdde6-bd36-7e89-8e85-aa0bfa2707cd",
+      "name": "Ventilo",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fdde7-aaf7-7c03-ac54-89ed9d2bec87",
+      "name": "Youlz - Album Cover",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "019fdde6-bd2f-7d89-9ada-0bcecd1044b9",
+      "name": "Youlz - Artist Cover",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [],
+      "abilities": []
+    }
+  ]
+}
