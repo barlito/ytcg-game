@@ -1,0 +1,242 @@
+{
+  "extension": {
+    "slug": "space-nomad",
+    "name": "Space Nomad"
+  },
+  "cards": [
+    {
+      "id": "01a101ad-0c2d-7199-bfbb-3c600704dcd7",
+      "name": "Vaisseau-Monde",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 5,
+      "power": 9,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-0e23-70a5-a3cb-1eb30436bcb2",
+      "name": "Veli, capitaine corsaire",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 6,
+      "power": 12,
+      "tags": [
+        "character:veli"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-101e-73a0-a5d6-898d1f13e5b8",
+      "name": "Barlito le nomade",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:barlito"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-121f-7181-893b-c06ee518ac5d",
+      "name": "Benj l'aristocrate",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [
+        "character:benj"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-140f-7e93-a546-a53c241b66b1",
+      "name": "Brex, maître contrebandier",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-1608-7d27-9798-f2495871a6bd",
+      "name": "Cité d'or du niveau 776",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-1829-7b8f-86c1-e786f43b4a67",
+      "name": "Julian, chef du marché noir",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:julian"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-1a67-7b9e-99b7-c4048ab83c67",
+      "name": "Vaisseau corsaire",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-1c34-76f3-bd75-05012a56eae9",
+      "name": "Farf, chef d'escadron",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:farf"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-1e73-7be4-8b39-f5122127ed59",
+      "name": "Hipo le vice-capitaine",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-2076-7d82-9fc4-c60e0ff8da17",
+      "name": "Planète Treon CH77",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-228a-7e2e-9561-5c25f62b6bf3",
+      "name": "Transport luxueux",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-250f-798d-bbdb-59a2b3936906",
+      "name": "Warny le marchand",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:warny"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-2712-7a07-b468-4d6bdf3a4d97",
+      "name": "Benj, soldat de l'Union",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:benj"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-2924-7b31-a242-b42692fb87ba",
+      "name": "Excavateur d'hélium",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-2b84-797d-90dd-bb44ce146dff",
+      "name": "Marché noir du niveau 24",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-2e2c-7289-800e-82b1aeb87e5a",
+      "name": "Niveau 24",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-302e-7986-90f7-4d158b6884ba",
+      "name": "Niveau 330",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-3211-7ece-a516-0cb01f87c1d8",
+      "name": "Pilote de l'Union",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-33f3-7d67-a325-6edd970eec68",
+      "name": "Spatio-gare",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-3602-76cd-9280-93aa45d56b73",
+      "name": "Surface de Treon CH77",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-3802-7575-9ef5-d4c393b279a8",
+      "name": "Vaisseau de fret",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    }
+  ]
+}

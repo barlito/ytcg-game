@@ -1,0 +1,200 @@
+{
+  "extension": {
+    "slug": "40k",
+    "name": "40K"
+  },
+  "cards": [
+    {
+      "id": "01a101ac-e587-745b-8daa-ffb989a05a2c",
+      "name": "Empereur de l'Humanité",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 5,
+      "power": 9,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-e797-7604-9f19-1d35e535f6a5",
+      "name": "Prince démon du Chaos",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 5,
+      "power": 9,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-e9cc-7f85-8403-c4f3d0a332bb",
+      "name": "Benj, champion du Chaos",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [
+        "character:benj"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-ebb5-7700-8b31-1b3f2c4c6593",
+      "name": "Nuée de Tyranides",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-edd8-7325-bf52-5568bb6dd82f",
+      "name": "Princeps du Mechanicus",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-efbc-7d20-809f-fc88e2903873",
+      "name": "Tempête du Warp",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-f1a2-7a87-a052-4486d7ea0bb9",
+      "name": "Barlito de la 4e Légion",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:barlito"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-f3a0-715c-ad03-9ac4e9007a1d",
+      "name": "Farf de la 8e Légion",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:farf"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-f57b-71b7-8946-55312c0f9f09",
+      "name": "Julian de la 7e Légion",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:julian"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-f747-7cda-943f-0a9e33c76a42",
+      "name": "Veli de la 3e Légion",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:veli"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-f94e-73cc-af73-557b8cbc7d90",
+      "name": "Warny de la 13e Légion",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:warny"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-fb5c-7f53-9446-dee90a623b60",
+      "name": "Combattant eldar",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-fd4a-7039-8fbf-8f53a8ffefa4",
+      "name": "Démon du Chaos",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-ff7a-7f81-8b19-4219f20117a5",
+      "name": "Guerrier nécron",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-016a-7764-a0ca-fc96a5e7d562",
+      "name": "Monde-Ruche",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-0352-710b-98f7-fa35d76a6aae",
+      "name": "Ork de la WAAAGH!",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-0532-7e8a-9d3d-b6957f34db28",
+      "name": "Soldat du peuple T'au",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-071b-7d9a-a84a-aa243984a098",
+      "name": "Space Marine du Chaos",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    }
+  ]
+}

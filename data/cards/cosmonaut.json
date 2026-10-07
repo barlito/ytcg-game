@@ -1,0 +1,100 @@
+{
+  "extension": {
+    "slug": "cosmonaut",
+    "name": "Cosmonaut"
+  },
+  "cards": [
+    {
+      "id": "01a101ac-bb05-7f48-ba5b-df03c0630458",
+      "name": "Veli, chef du parti",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 6,
+      "power": 12,
+      "tags": [
+        "character:veli"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-bce6-784e-bde6-53466f6e5f59",
+      "name": "Julian, héros de la nation",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:julian"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-5f46-7197-85ba-ad731bedf46c",
+      "name": "Kosmonaut Warny",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:warny"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-6154-711f-8f92-11496957b359",
+      "name": "Colonie martienne",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-6338-7d12-9389-a09fbc53788c",
+      "name": "Komrade Farf",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:farf"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-bebf-7d4b-899a-8baeef067608",
+      "name": "Bernard, membre du parti",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:bernard"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-6604-7a2f-aa33-43b4e23861c6",
+      "name": "Centre des opérations",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ac-67e4-7436-8689-68bcee2ea5ed",
+      "name": "Ingénieur Barlito",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:barlito"
+      ],
+      "abilities": []
+    }
+  ]
+}

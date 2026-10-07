@@ -1,0 +1,170 @@
+{
+  "locations": [
+    {
+      "id": "loc-40k",
+      "name": "Monde-Ruche",
+      "extension": "40k",
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "tag": "universe:40k"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "loc-b",
+      "name": "Seireitei",
+      "extension": "b",
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "tag": "universe:b"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "loc-cosmonaut",
+      "name": "Colonie martienne",
+      "extension": "cosmonaut",
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "tag": "universe:cosmonaut"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "loc-divinity",
+      "name": "Ruines du culte",
+      "extension": "divinity",
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "tag": "universe:divinity"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "loc-kda",
+      "name": "La grande scène",
+      "extension": "kda",
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "tag": "universe:kda"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "loc-les-fables-d-eldia",
+      "name": "L'arbre d'Eldia",
+      "extension": "les-fables-d-eldia",
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "tag": "universe:les-fables-d-eldia"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "loc-replicant",
+      "name": "Les rues de New LA",
+      "extension": "replicant",
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "tag": "universe:replicant"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "loc-space-nomad",
+      "name": "Niveau 24",
+      "extension": "space-nomad",
+      "abilities": [
+        {
+          "trigger": "ongoing",
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "scope": "here",
+            "tag": "universe:space-nomad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "loc-terrain-vague",
+      "name": "Terrain vague",
+      "extension": null,
+      "abilities": []
+    }
+  ]
+}

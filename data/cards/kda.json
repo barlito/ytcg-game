@@ -1,0 +1,234 @@
+{
+  "extension": {
+    "slug": "kda",
+    "name": "KDA"
+  },
+  "cards": [
+    {
+      "id": "01a101ad-6b7a-7c01-83ba-b1ddaef6f9eb",
+      "name": "Ahri \"MORE\"",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 5,
+      "power": 9,
+      "tags": [
+        "character:ahri"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-6d3d-7282-af6f-0801ae890671",
+      "name": "Benj \"Big Boss\"",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 6,
+      "power": 12,
+      "tags": [
+        "character:benj"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-6f3f-7d20-966e-2244f18ca1fc",
+      "name": "Benj le manager",
+      "rarity": "legendary",
+      "unique": true,
+      "cost": 6,
+      "power": 12,
+      "tags": [
+        "character:benj"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-7108-7e09-9826-9a96e5912517",
+      "name": "Jean \"Neon\" Raoul",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 5,
+      "power": 9,
+      "tags": [
+        "character:jean-raoul"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-72b2-76f9-8c44-e834f394cc41",
+      "name": "Julian, fan n°1",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 6,
+      "power": 12,
+      "tags": [
+        "character:julian"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-7481-7987-98ea-dc66260944aa",
+      "name": "Akali \"THE BADDEST\"",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:akali"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-7657-72df-84f6-da6a7281ac67",
+      "name": "DJ Barlito",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [
+        "character:barlito"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-784e-7a2b-8bfa-c0e1648a382d",
+      "name": "Evelynn \"VILLAIN\"",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:evelynn"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-7a30-7999-901e-87a7ad7e5117",
+      "name": "Kai'Sa \"DRUM GO DUM\"",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:kaisa"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-7c70-7a5c-ad93-fb82f7b85291",
+      "name": "Warny le producteur",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:warny"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-7e87-7bcb-8462-edae61d7b403",
+      "name": "Ahri",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:ahri"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-8072-7e3d-8723-25a2734aad82",
+      "name": "Farf pianiste",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:farf"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-8262-7594-8d6f-26bb01452c6a",
+      "name": "Jinx",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-8458-7cd9-94d1-d2d078c4cc11",
+      "name": "Veli le garde du corps",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:veli"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-863c-789b-9709-8c4be2085933",
+      "name": "Akali",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:akali"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-8806-75e1-9aa0-5c2a2d8eacfc",
+      "name": "Evelynn",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:evelynn"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-89dd-7cb9-9532-739b77467b5c",
+      "name": "Jean Raoul",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:jean-raoul"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-8bbb-7268-ace9-b53896acba07",
+      "name": "Julian",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:julian"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-8d88-7ae7-aebc-f0b3bfd6602c",
+      "name": "Kai'Sa",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:kaisa"
+      ],
+      "abilities": []
+    }
+  ]
+}

@@ -1,0 +1,224 @@
+{
+  "extension": {
+    "slug": "replicant",
+    "name": "Replicant"
+  },
+  "cards": [
+    {
+      "id": "01a101ad-92cc-7245-9e3f-845ae7210aa1",
+      "name": "Babou Linette la chromée",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 5,
+      "power": 9,
+      "tags": [
+        "character:babou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-94b2-7942-b248-1c4464b3b366",
+      "name": "Veli le corpo",
+      "rarity": "legendary",
+      "unique": false,
+      "cost": 6,
+      "power": 12,
+      "tags": [
+        "character:veli"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-968d-7a53-8f3b-355e24441e6b",
+      "name": "Barlito, maire de New LA",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:barlito"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-9893-76c0-aafa-54b52c8c93a5",
+      "name": "Gala de charité",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-9a9f-70f3-b3d0-2c3a05defe76",
+      "name": "Inspecteur Farf",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [
+        "character:farf"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-9cab-7449-8000-ce175f01d282",
+      "name": "Mercenaire Bone",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 4,
+      "power": 6,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-9e7b-7904-9b33-6a1b710a5a07",
+      "name": "New Los Angeles",
+      "rarity": "rare",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-a0a0-7c2e-88e3-213ca194e075",
+      "name": "Bernard le robot",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:bernard"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-a2b0-78db-a3f8-8e49fdf545c7",
+      "name": "Bibou Linette",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:bibou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-a491-7173-a682-a62a16327620",
+      "name": "Bébou Linette la disparue",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:bebou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-a6af-75e2-b731-e3a6d61e9818",
+      "name": "Julian le baroudeur",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 3,
+      "power": 4,
+      "tags": [
+        "character:julian"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-a883-7c94-ae7e-4b1ba515875d",
+      "name": "Officier Benj",
+      "rarity": "uncommon",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:benj"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-aa67-742c-b1bf-4372bfd5c5d1",
+      "name": "ACP 2038 .22 LR",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-ac42-73c5-9d43-ce1beb559959",
+      "name": "Appartement de Bébou Linette",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [
+        "character:bebou-linette",
+        "family:linette"
+      ],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-ae5c-7f48-8180-d55139f7984f",
+      "name": "Bureau de l'inspecteur",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-b051-71cd-9d37-ff43b92f8485",
+      "name": "La pègre de New LA",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-ce11-7d75-a6f9-9bb4a81a79d4",
+      "name": "Les rues de New LA",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-d00c-7c9d-8a9a-144042d26f4b",
+      "name": "Recrue Judith",
+      "rarity": "common",
+      "unique": false,
+      "cost": 1,
+      "power": 2,
+      "tags": [],
+      "abilities": []
+    },
+    {
+      "id": "01a101ad-d23e-75bd-9c3d-f6f760b65dd2",
+      "name": "Warny le street kid",
+      "rarity": "common",
+      "unique": false,
+      "cost": 2,
+      "power": 3,
+      "tags": [
+        "character:warny"
+      ],
+      "abilities": []
+    }
+  ]
+}
