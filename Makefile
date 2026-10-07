@@ -1,6 +1,8 @@
 COMPOSE = docker compose
 RUN = $(COMPOSE) run --rm -T node
 ASSETS ?= $(HOME)/YoulzAssets
+# Optional ytcg production dump ({slug: {cards: [{id, imageName}]}}) to fill the card artwork.
+PROD_CARDS ?=
 
 .PHONY: install sh up down logs typecheck lint fix test check sim import-assets cards-doc
 
@@ -36,8 +38,9 @@ check: typecheck lint test ## Everything CI runs
 sim: ## Bot simulation report (ARGS="--games 2000 --mode universe")
 	$(RUN) npm run sim -w @ytcg-game/engine -- $(ARGS)
 
-import-assets: ## Seed data/cards from the YoulzAssets manifests (ASSETS=path, default ~/YoulzAssets)
-	$(COMPOSE) run --rm -T -v $(ASSETS):/assets:ro node node tools/import-youlz-assets.ts /assets data/cards
+import-assets: ## Seed data/cards from the YoulzAssets manifests (ASSETS=path, PROD_CARDS=ytcg dump for the artwork)
+	$(COMPOSE) run --rm -T -v $(ASSETS):/assets:ro $(if $(PROD_CARDS),-v $(PROD_CARDS):/prod-cards.json:ro) node \
+		node tools/import-youlz-assets.ts /assets data/cards $(if $(PROD_CARDS),/prod-cards.json)
 
 cards-doc: ## Regenerate docs/cards.md (every card and location with its effect text)
 	$(RUN) npm run cards-doc -w @ytcg-game/engine
