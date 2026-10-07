@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { type AbilitySource, type Board, type Condition, cardFilterShape } from './board.ts';
+import { type AbilitySource, type BoardView, type Condition, cardFilterShape } from './board.ts';
 import { MAX_TURNS } from '../rules.ts';
 
 const countSchema = z.object({
@@ -17,7 +17,7 @@ export class CountCondition implements Condition {
     this.params = params;
   }
 
-  isMet(board: Board, source: AbilitySource): boolean {
+  isMet(board: BoardView, source: AbilitySource): boolean {
     const count = board.cardsMatching(source, this.params).length;
     return count >= this.params.min && (this.params.max === undefined || count <= this.params.max);
   }
@@ -37,7 +37,7 @@ export class TurnCondition implements Condition {
     this.params = params;
   }
 
-  isMet(board: Board): boolean {
+  isMet(board: BoardView): boolean {
     const { min, max } = this.params;
     return (min === undefined || board.turn >= min) && (max === undefined || board.turn <= max);
   }

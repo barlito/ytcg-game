@@ -25,7 +25,9 @@ const BLANK_LOCATIONS: LocationInput[] = ['loc-a', 'loc-b', 'loc-c'].map((id) =>
 
 export function catalogWith(cards: CardInput[] = [], locations: LocationInput[] = []): Catalog {
   return loadCatalog({
-    cardFiles: [{ name: 'test.json', content: { extension: { slug: 'test', name: 'Test' }, cards: [...cards, ...FILLERS] } }],
+    cardFiles: [
+      { name: 'test.json', content: { extension: { slug: 'test', name: 'Test' }, cards: [...cards, ...FILLERS] } },
+    ],
     locationFiles: [{ name: 'locations.json', content: { locations: [...BLANK_LOCATIONS, ...locations] } }],
   });
 }
@@ -83,7 +85,11 @@ export function moveToHand(state: GameState, player: PlayerIndex, defId: string)
   return uid;
 }
 
-export function act(catalog: Catalog, state: GameState, ...actions: GameAction[]): { state: GameState; events: GameEvent[] } {
+export function act(
+  catalog: Catalog,
+  state: GameState,
+  ...actions: GameAction[]
+): { state: GameState; events: GameEvent[] } {
   let current = state;
   const events: GameEvent[] = [];
   for (const action of actions) {
@@ -103,7 +109,10 @@ export function playTurn(
   plays: { p0?: Plays; p1?: Plays } = {},
 ): { state: GameState; events: GameEvent[] } {
   const actions: GameAction[] = [];
-  for (const [player, list] of [[0, plays.p0 ?? []], [1, plays.p1 ?? []]] as const) {
+  for (const [player, list] of [
+    [0, plays.p0 ?? []],
+    [1, plays.p1 ?? []],
+  ] as const) {
     for (const [defId, location] of list) {
       actions.push({ type: 'play', player, card: uidOf(state, player, defId), location });
     }
@@ -125,7 +134,7 @@ export function skipToTurn(catalog: Catalog, state: GameState, turn: number, ene
 
 export function powerAt(catalog: Catalog, state: GameState, player: PlayerIndex, defId: string): number {
   const instance = state.cards[uidOf(state, player, defId)];
-  if (instance === undefined || instance.zone !== 'board') {
+  if (instance?.zone !== 'board') {
     throw new Error(`${defId} of player ${player} is not on the board`);
   }
   return powerOf(catalog, state, instance.uid);

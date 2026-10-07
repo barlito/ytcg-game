@@ -88,61 +88,68 @@ export interface CatalogSource {
   locationFiles: readonly { name: string; content: unknown }[];
 }
 
-// Every card gets the "universe:<slug>" tag of its file, so the data never repeats it.
+type DataFile = CatalogSource['cardFiles'][number];
+
+// Collects every issue of every file, so one run lists everything to fix.
 export function loadCatalog(source: CatalogSource): Catalog {
   const issues: string[] = [];
   const cards = new Map<string, CardDefinition>();
   const locations = new Map<string, LocationDefinition>();
-
   for (const file of source.cardFiles) {
-    const parsed = cardFileSchema.safeParse(file.content);
-    if (!parsed.success) {
-      issues.push(`${file.name}: ${z.prettifyError(parsed.error)}`);
-      continue;
-    }
-    const { extension } = parsed.data;
-    for (const card of parsed.data.cards) {
-      if (cards.has(card.id)) {
-        issues.push(`${file.name}: duplicate card id ${card.id}`);
-        continue;
-      }
-      cards.set(card.id, {
-        id: card.id,
-        name: card.name,
-        extension: extension.slug,
-        rarity: card.rarity,
-        unique: card.unique,
-        cost: card.cost,
-        power: card.power,
-        tags: [...new Set([`universe:${extension.slug}`, ...card.tags])],
-        abilities: card.abilities.map(compileAbility),
-      });
-    }
+    loadCardFile(file, cards, issues);
   }
-
   for (const file of source.locationFiles) {
-    const parsed = locationFileSchema.safeParse(file.content);
-    if (!parsed.success) {
-      issues.push(`${file.name}: ${z.prettifyError(parsed.error)}`);
-      continue;
-    }
-    for (const location of parsed.data.locations) {
-      if (locations.has(location.id)) {
-        issues.push(`${file.name}: duplicate location id ${location.id}`);
-        continue;
-      }
-      const abilityIssues = location.abilities.flatMap(locationAbilityIssues);
-      if (abilityIssues.length > 0) {
-        issues.push(...abilityIssues.map((issue) => `${file.name}: location ${location.id}: ${issue}`));
-        continue;
-      }
-      locations.set(location.id, { ...location, abilities: location.abilities.map(compileAbility) });
-    }
+    loadLocationFile(file, locations, issues);
   }
-
   if (issues.length > 0) {
     throw new CatalogError(issues);
   }
-
   return new Catalog(cards, locations);
+}
+
+// Every card gets the "universe:<slug>" tag of its file, so the data never repeats it.
+function loadCardFile(file: DataFile, cards: Map<string, CardDefinition>, issues: string[]): void {
+  const parsed = cardFileSchema.safeParse(file.content);
+  if (!parsed.success) {
+    issues.push(`${file.name}: ${z.prettifyError(parsed.error)}`);
+    return;
+  }
+  const { extension } = parsed.data;
+  for (const card of parsed.data.cards) {
+    if (cards.has(card.id)) {
+      issues.push(`${file.name}: duplicate card id ${card.id}`);
+      continue;
+    }
+    cards.set(card.id, {
+      id: card.id,
+      name: card.name,
+      extension: extension.slug,
+      rarity: card.rarity,
+      unique: card.unique,
+      cost: card.cost,
+      power: card.power,
+      tags: [...new Set([`universe:${extension.slug}`, ...card.tags])],
+      abilities: card.abilities.map(compileAbility),
+    });
+  }
+}
+
+function loadLocationFile(file: DataFile, locations: Map<string, LocationDefinition>, issues: string[]): void {
+  const parsed = locationFileSchema.safeParse(file.content);
+  if (!parsed.success) {
+    issues.push(`${file.name}: ${z.prettifyError(parsed.error)}`);
+    return;
+  }
+  for (const location of parsed.data.locations) {
+    if (locations.has(location.id)) {
+      issues.push(`${file.name}: duplicate location id ${location.id}`);
+      continue;
+    }
+    const abilityIssues = location.abilities.flatMap(locationAbilityIssues);
+    if (abilityIssues.length > 0) {
+      issues.push(...abilityIssues.map((issue) => `${file.name}: location ${location.id}: ${issue}`));
+      continue;
+    }
+    locations.set(location.id, { ...location, abilities: location.abilities.map(compileAbility) });
+  }
 }

@@ -31,7 +31,9 @@ describe('catalog validation', () => {
   });
 
   it('refuses unknown effects and malformed tags', () => {
-    expect(issuesOf([card('x', { abilities: [{ trigger: 'onReveal', effect: { type: 'teleport' } as never }] })])).toHaveLength(1);
+    expect(
+      issuesOf([card('x', { abilities: [{ trigger: 'onReveal', effect: { type: 'teleport' } as never }] })]),
+    ).toHaveLength(1);
     expect(issuesOf([card('x', { tags: ['Benj'] })])).toHaveLength(1);
   });
 
@@ -39,7 +41,11 @@ describe('catalog validation', () => {
     const [drawIssue] = issuesOf([card('x', { abilities: [{ trigger: 'ongoing', effect: { type: 'draw' } }] })]);
     expect(drawIssue).toContain('cannot be ongoing');
     const [pickIssue] = issuesOf([
-      card('x', { abilities: [{ trigger: 'ongoing', target: { type: 'cards', pick: 'weakest' }, effect: { type: 'addPower', amount: 1 } }] }),
+      card('x', {
+        abilities: [
+          { trigger: 'ongoing', target: { type: 'cards', pick: 'weakest' }, effect: { type: 'addPower', amount: 1 } },
+        ],
+      }),
     ]);
     expect(pickIssue).toContain('must pick "all"');
   });
@@ -47,7 +53,9 @@ describe('catalog validation', () => {
   it('refuses location abilities that refer to an owner', () => {
     const buff = { trigger: 'ongoing', effect: { type: 'addPower', amount: 1 } } as const;
     expect(issuesOf([], [{ id: 'l1', name: 'l1', abilities: [buff] }])[0]).toContain('cannot target "self"');
-    expect(issuesOf([], [{ id: 'l2', name: 'l2', abilities: [{ ...buff, target: { type: 'cards' } }] }])[0]).toContain('side "all"');
+    expect(issuesOf([], [{ id: 'l2', name: 'l2', abilities: [{ ...buff, target: { type: 'cards' } }] }])[0]).toContain(
+      'side "all"',
+    );
   });
 
   it('refuses duplicate ids', () => {

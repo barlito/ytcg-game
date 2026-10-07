@@ -1,13 +1,23 @@
 import { z } from 'zod';
-import { type AbilitySource, type Board, type Effect, cardFilterSchema } from './board.ts';
+import {
+  type AbilitySource,
+  type Board,
+  type BoardView,
+  type Effect,
+  type OngoingEffect,
+  cardFilterSchema,
+} from './board.ts';
 import { PLAYERS } from '../state.ts';
 
 const addPowerSchema = z.object({
   type: z.literal('addPower'),
-  amount: z.number().int().refine((amount) => amount !== 0, 'amount must not be 0'),
+  amount: z
+    .number()
+    .int()
+    .refine((amount) => amount !== 0, 'amount must not be 0'),
 });
 
-export class AddPowerEffect implements Effect {
+export class AddPowerEffect implements OngoingEffect {
   static readonly schema = addPowerSchema;
   private readonly params: z.output<typeof addPowerSchema>;
 
@@ -28,11 +38,14 @@ export class AddPowerEffect implements Effect {
 
 const addPowerPerCardSchema = z.object({
   type: z.literal('addPowerPerCard'),
-  amount: z.number().int().refine((amount) => amount !== 0, 'amount must not be 0'),
+  amount: z
+    .number()
+    .int()
+    .refine((amount) => amount !== 0, 'amount must not be 0'),
   count: cardFilterSchema,
 });
 
-export class AddPowerPerCardEffect implements Effect {
+export class AddPowerPerCardEffect implements OngoingEffect {
   static readonly schema = addPowerPerCardSchema;
   private readonly params: z.output<typeof addPowerPerCardSchema>;
 
@@ -50,7 +63,7 @@ export class AddPowerPerCardEffect implements Effect {
     }
   }
 
-  ongoingBonus(board: Board, source: AbilitySource): number {
+  ongoingBonus(board: BoardView, source: AbilitySource): number {
     return this.params.amount * board.cardsMatching(source, this.params.count).length;
   }
 }

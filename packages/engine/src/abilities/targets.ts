@@ -36,25 +36,23 @@ export class CardsTarget implements TargetSelector {
       case 'random':
         return [board.rng.pick(cards)];
       case 'weakest':
-        return [extreme(board, cards, (a, b) => a < b)];
+        return extreme(board, cards, (a, b) => a < b);
       case 'strongest':
-        return [extreme(board, cards, (a, b) => a > b)];
+        return extreme(board, cards, (a, b) => a > b);
     }
   }
 }
 
 // Ties keep the first card in board order, so the pick stays deterministic.
-function extreme(board: Board, cards: readonly string[], better: (a: number, b: number) => boolean): string {
-  let best = cards[0] as string;
-  let bestPower = board.power(best);
-  for (const card of cards.slice(1)) {
+function extreme(board: Board, cards: readonly string[], better: (a: number, b: number) => boolean): string[] {
+  let best: { card: string; power: number } | null = null;
+  for (const card of cards) {
     const power = board.power(card);
-    if (better(power, bestPower)) {
-      best = card;
-      bestPower = power;
+    if (best === null || better(power, best.power)) {
+      best = { card, power };
     }
   }
-  return best;
+  return best === null ? [] : [best.card];
 }
 
 export const targetSchema = z.discriminatedUnion('type', [SelfTarget.schema, CardsTarget.schema]);

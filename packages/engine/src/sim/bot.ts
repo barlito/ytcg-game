@@ -12,7 +12,12 @@ export function playRandomTurn(catalog: Catalog, state: GameState, player: Playe
     if (cards.length === 0 || locations.length === 0 || rng.next() < 0.1) {
       break;
     }
-    current = applyAction(catalog, current, { type: 'play', player, card: rng.pick(cards), location: rng.pick(locations) }).state;
+    current = applyAction(catalog, current, {
+      type: 'play',
+      player,
+      card: rng.pick(cards),
+      location: rng.pick(locations),
+    }).state;
   }
   return applyAction(catalog, current, { type: 'endTurn', player }).state;
 }

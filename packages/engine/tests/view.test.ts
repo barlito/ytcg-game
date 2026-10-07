@@ -2,12 +2,24 @@ import { describe, expect, it } from 'vitest';
 import { projectForPlayer } from '../src/index.ts';
 import { act, card, catalogWith, newGame, playTurn, uidOf } from './support.ts';
 
-const catalog = catalogWith([card('mine'), card('secret-a'), card('secret-b', { power: 4 })], [{ id: 'loc-hidden', name: 'Caché' }]);
+const catalog = catalogWith(
+  [card('mine'), card('secret-a'), card('secret-b', { power: 4 })],
+  [{ id: 'loc-hidden', name: 'Caché' }],
+);
 
 describe('player view', () => {
   it('shows only counts of the opponent hand, deck and face-down cards', () => {
-    const state = newGame(catalog, { p0: ['mine'], p1: ['secret-a', 'secret-b'], locations: ['loc-a', 'loc-b', 'loc-hidden'] });
-    const played = act(catalog, state, { type: 'play', player: 1, card: uidOf(state, 1, 'secret-a'), location: 0 }).state;
+    const state = newGame(catalog, {
+      p0: ['mine'],
+      p1: ['secret-a', 'secret-b'],
+      locations: ['loc-a', 'loc-b', 'loc-hidden'],
+    });
+    const played = act(catalog, state, {
+      type: 'play',
+      player: 1,
+      card: uidOf(state, 1, 'secret-a'),
+      location: 0,
+    }).state;
 
     const view = projectForPlayer(catalog, played, 0);
     expect(view.hand.map((card) => card.uid)).toEqual(played.players[0].hand);
@@ -17,7 +29,12 @@ describe('player view', () => {
     expect(view.locations[2]?.defId).toBeNull();
 
     const serialized = JSON.stringify(view);
-    const hidden = [...played.players[1].hand, ...played.players[1].deck, ...played.players[1].pending, ...played.players[0].deck];
+    const hidden = [
+      ...played.players[1].hand,
+      ...played.players[1].deck,
+      ...played.players[1].pending,
+      ...played.players[0].deck,
+    ];
     for (const uid of hidden) {
       expect(serialized).not.toContain(`"${uid}"`);
     }

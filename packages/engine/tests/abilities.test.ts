@@ -37,7 +37,9 @@ const catalog = catalogWith(
     card('scholar', { abilities: [{ trigger: 'onReveal', effect: { type: 'draw', count: 2 } }] }),
     card('grower', { abilities: [{ trigger: 'endOfTurn', effect: { type: 'addPower', amount: 1 } }] }),
     card('late-bloomer', {
-      abilities: [{ trigger: 'onReveal', condition: { type: 'turn', min: 4 }, effect: { type: 'addPower', amount: 4 } }],
+      abilities: [
+        { trigger: 'onReveal', condition: { type: 'turn', min: 4 }, effect: { type: 'addPower', amount: 4 } },
+      ],
     }),
     card('kamikaze', {
       abilities: [
@@ -64,10 +66,20 @@ const catalog = catalogWith(
 
 describe('on reveal', () => {
   it('applies when its condition holds at reveal time, so play order matters', () => {
-    const ordered = playTurn(catalog, newGame(catalog, { p0: ['benj', 'benj-fan'] }), { p0: [['benj', 0], ['benj-fan', 0]] }).state;
+    const ordered = playTurn(catalog, newGame(catalog, { p0: ['benj', 'benj-fan'] }), {
+      p0: [
+        ['benj', 0],
+        ['benj-fan', 0],
+      ],
+    }).state;
     expect(powerAt(catalog, ordered, 0, 'benj-fan')).toBe(4);
 
-    const reversed = playTurn(catalog, newGame(catalog, { p0: ['benj', 'benj-fan'] }), { p0: [['benj-fan', 0], ['benj', 0]] }).state;
+    const reversed = playTurn(catalog, newGame(catalog, { p0: ['benj', 'benj-fan'] }), {
+      p0: [
+        ['benj-fan', 0],
+        ['benj', 0],
+      ],
+    }).state;
     expect(powerAt(catalog, reversed, 0, 'benj-fan')).toBe(1);
   });
 
@@ -79,7 +91,12 @@ describe('on reveal', () => {
 
   it('destroys the weakest enemy here', () => {
     const state = newGame(catalog, { p0: ['v1', 'captain'], p1: ['assassin'] });
-    const turn2 = playTurn(catalog, state, { p0: [['v1', 0], ['captain', 0]] }).state;
+    const turn2 = playTurn(catalog, state, {
+      p0: [
+        ['v1', 0],
+        ['captain', 0],
+      ],
+    }).state;
     expect(powerAt(catalog, turn2, 0, 'v1')).toBe(2);
     turn2.players[1].energy = 10;
 
@@ -105,10 +122,14 @@ describe('on reveal', () => {
   });
 
   it('checks the turn condition', () => {
-    const early = playTurn(catalog, skipToTurn(catalog, newGame(catalog, { p0: ['late-bloomer'] }), 3), { p0: [['late-bloomer', 0]] }).state;
+    const early = playTurn(catalog, skipToTurn(catalog, newGame(catalog, { p0: ['late-bloomer'] }), 3), {
+      p0: [['late-bloomer', 0]],
+    }).state;
     expect(powerAt(catalog, early, 0, 'late-bloomer')).toBe(1);
 
-    const late = playTurn(catalog, skipToTurn(catalog, newGame(catalog, { p0: ['late-bloomer'] }), 4), { p0: [['late-bloomer', 0]] }).state;
+    const late = playTurn(catalog, skipToTurn(catalog, newGame(catalog, { p0: ['late-bloomer'] }), 4), {
+      p0: [['late-bloomer', 0]],
+    }).state;
     expect(powerAt(catalog, late, 0, 'late-bloomer')).toBe(5);
   });
 
@@ -125,7 +146,14 @@ describe('on reveal', () => {
 describe('ongoing', () => {
   it('buffs the other allies here while the source stays on the board', () => {
     const state = newGame(catalog, { p0: ['captain', 'v1', 'v2'], p1: ['benj'] });
-    const next = playTurn(catalog, state, { p0: [['captain', 0], ['v1', 0], ['v2', 1]], p1: [['benj', 0]] }).state;
+    const next = playTurn(catalog, state, {
+      p0: [
+        ['captain', 0],
+        ['v1', 0],
+        ['v2', 1],
+      ],
+      p1: [['benj', 0]],
+    }).state;
 
     expect(powerAt(catalog, next, 0, 'v1')).toBe(2);
     expect(powerAt(catalog, next, 0, 'captain')).toBe(1);
@@ -135,7 +163,13 @@ describe('ongoing', () => {
 
   it('counts tagged cards everywhere, live', () => {
     const state = newGame(catalog, { p0: ['linette-fan', 'babou', 'bibou'], p1: ['assassin'] });
-    const turn2 = playTurn(catalog, state, { p0: [['linette-fan', 0], ['babou', 1], ['bibou', 2]] }).state;
+    const turn2 = playTurn(catalog, state, {
+      p0: [
+        ['linette-fan', 0],
+        ['babou', 1],
+        ['bibou', 2],
+      ],
+    }).state;
     expect(powerAt(catalog, turn2, 0, 'linette-fan')).toBe(5);
 
     turn2.players[1].energy = 10;
@@ -157,7 +191,13 @@ describe('end of turn', () => {
 describe('locations', () => {
   it('buffs matching cards of both sides once revealed', () => {
     const state = newGame(catalog, { p0: ['benj', 'v1'], p1: ['benj'], locations: ['loc-a', 'loc-b', 'loc-benj'] });
-    const turn2 = playTurn(catalog, state, { p0: [['benj', 2], ['v1', 2]], p1: [['benj', 2]] }).state;
+    const turn2 = playTurn(catalog, state, {
+      p0: [
+        ['benj', 2],
+        ['v1', 2],
+      ],
+      p1: [['benj', 2]],
+    }).state;
     expect(powerAt(catalog, turn2, 0, 'benj')).toBe(1);
 
     const turn3 = skipToTurn(catalog, turn2, 3);
@@ -172,7 +212,9 @@ describe('locations', () => {
     const hands = state.players.map((player) => player.hand.length);
     const { state: turn2, events } = playTurn(catalog, state);
     expect(events).toContainEqual({ type: 'locationRevealed', location: 1 });
-    expect(turn2.players.map((player) => player.hand.length)).toEqual(hands.map((size) => Math.min(size + 2, MAX_HAND)));
+    expect(turn2.players.map((player) => player.hand.length)).toEqual(
+      hands.map((size) => Math.min(size + 2, MAX_HAND)),
+    );
   });
 });
 

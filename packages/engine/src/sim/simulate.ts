@@ -2,7 +2,7 @@ import type { Catalog } from '../catalog.ts';
 import { createGame } from '../game.ts';
 import { DECK_SIZE } from '../rules.ts';
 import { Rng, seedFromString } from '../rng.ts';
-import { PLAYERS } from '../state.ts';
+import { type GameState, PLAYERS } from '../state.ts';
 import { playRandomTurn } from './bot.ts';
 
 export type DeckMode = 'random' | 'universe';
@@ -34,7 +34,7 @@ function tally(map: Map<string, Tally>, key: string, won: boolean): void {
   map.set(key, entry);
 }
 
-function buildDeck(catalog: Catalog, rng: Rng, mode: DeckMode): { deck: string[]; universe: string | null } {
+function buildDeck(catalog: Catalog, rng: Rng, mode: DeckMode): SimulatedDeck {
   const cards = [...catalog.cards.values()];
   if (mode === 'random') {
     return { deck: rng.shuffle(cards.map((card) => card.id)).slice(0, DECK_SIZE), universe: null };
@@ -47,6 +47,11 @@ function buildDeck(catalog: Catalog, rng: Rng, mode: DeckMode): { deck: string[]
   return { deck: rng.shuffle(pool).slice(0, DECK_SIZE), universe };
 }
 
+interface SimulatedDeck {
+  deck: string[];
+  universe: string | null;
+}
+
 export function simulate(catalog: Catalog, options: SimulationOptions): SimulationReport {
   const report: SimulationReport = {
     games: options.games,
@@ -57,51 +62,55 @@ export function simulate(catalog: Catalog, options: SimulationOptions): Simulati
     universes: new Map(),
   };
   let cardsPlayed = 0;
-
   for (let game = 0; game < options.games; game++) {
     const rng = new Rng({ s: seedFromString(`${options.seed}:${game}:bots`) });
-    const decks = PLAYERS.map(() => buildDeck(catalog, rng, options.mode));
-    let { state } = createGame(catalog, {
-      seed: `${options.seed}:${game}`,
-      players: [
-        { id: 'bot-0', deck: decks[0]?.deck ?? [] },
-        { id: 'bot-1', deck: decks[1]?.deck ?? [] },
-      ],
-    });
-    while (state.status === 'playing') {
-      for (const player of PLAYERS) {
-        state = playRandomTurn(catalog, state, player, rng);
-      }
-    }
-
-    const winner = state.result?.winner ?? null;
-    if (winner === null) {
-      report.draws++;
-    } else {
-      report.seatWins[winner]++;
-    }
-    for (const player of PLAYERS) {
-      const won = winner === player;
-      for (const card of Object.values(state.cards)) {
-        if (card.owner === player) {
-          tally(report.cards, card.defId, won);
-        }
-        if (card.owner === player && (card.zone === 'board' || card.zone === 'destroyed')) {
-          cardsPlayed++;
-        }
-      }
-      const universe = decks[player]?.universe;
-      if (universe !== null && universe !== undefined) {
-        tally(report.universes, universe, won);
-      }
-    }
+    const decks: [SimulatedDeck, SimulatedDeck] = [
+      buildDeck(catalog, rng, options.mode),
+      buildDeck(catalog, rng, options.mode),
+    ];
+    const state = playGame(catalog, `${options.seed}:${game}`, decks, rng);
+    cardsPlayed += recordGame(report, state, decks);
   }
-
   report.averageCardsPlayed = cardsPlayed / (options.games * 2);
   return report;
+}
+
+function playGame(catalog: Catalog, seed: string, decks: [SimulatedDeck, SimulatedDeck], rng: Rng): GameState {
+  let { state } = createGame(catalog, {
+    seed,
+    players: [
+      { id: 'bot-0', deck: decks[0].deck },
+      { id: 'bot-1', deck: decks[1].deck },
+    ],
+  });
+  while (state.status === 'playing') {
+    for (const player of PLAYERS) {
+      state = playRandomTurn(catalog, state, player, rng);
+    }
+  }
+  return state;
+}
+
+// Adds one finished game to the report and returns how many cards were played in it.
+function recordGame(report: SimulationReport, state: GameState, decks: [SimulatedDeck, SimulatedDeck]): number {
+  const winner = state.result?.winner ?? null;
+  if (winner === null) {
+    report.draws++;
+  } else {
+    report.seatWins[winner]++;
+  }
+  for (const card of Object.values(state.cards)) {
+    tally(report.cards, card.defId, winner === card.owner);
+  }
+  for (const player of PLAYERS) {
+    const { universe } = decks[player];
+    if (universe !== null) {
+      tally(report.universes, universe, winner === player);
+    }
+  }
+  return Object.values(state.cards).filter((card) => card.zone === 'board' || card.zone === 'destroyed').length;
 }
 
 export function winRate(entry: Tally): number {
   return entry.games === 0 ? 0 : entry.wins / entry.games;
 }
-

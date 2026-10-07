@@ -25,19 +25,23 @@ export interface AbilitySource {
   readonly card: string | null;
 }
 
-// What abilities may read and do. Only revealed cards on the board are visible to them.
-export interface Board {
+// Read-only view of the board. Only revealed cards on the board exist for abilities.
+export interface BoardView {
   readonly turn: number;
-  readonly rng: Rng;
   cardsMatching(source: AbilitySource, filter: CardFilter): string[];
   power(card: string): number;
+}
+
+// What effects may do on top of reading.
+export interface Board extends BoardView {
+  readonly rng: Rng;
   addPower(card: string, delta: number): void;
   draw(player: PlayerIndex, count: number): void;
   destroy(card: string): void;
 }
 
 export interface Condition {
-  isMet(board: Board, source: AbilitySource): boolean;
+  isMet(board: BoardView, source: AbilitySource): boolean;
 }
 
 export interface TargetSelector {
@@ -46,6 +50,13 @@ export interface TargetSelector {
 
 export interface Effect {
   apply(board: Board, source: AbilitySource, targets: readonly string[]): void;
-  // Only effects allowed on an ongoing ability implement it.
-  ongoingBonus?(board: Board, source: AbilitySource): number;
+}
+
+// An effect allowed on an ongoing ability: its bonus is recomputed on every power read.
+export interface OngoingEffect extends Effect {
+  ongoingBonus(board: BoardView, source: AbilitySource): number;
+}
+
+export function isOngoingEffect(effect: Effect): effect is OngoingEffect {
+  return 'ongoingBonus' in effect;
 }

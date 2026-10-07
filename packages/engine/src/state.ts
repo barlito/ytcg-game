@@ -55,11 +55,6 @@ export interface GameState {
   result: GameResult | null;
 }
 
-export type GameAction =
-  | { type: 'play'; player: PlayerIndex; card: string; location: number }
-  | { type: 'cancel'; player: PlayerIndex; card: string }
-  | { type: 'endTurn'; player: PlayerIndex };
-
 export type GameEvent =
   | { type: 'turnStarted'; turn: number }
   | { type: 'locationRevealed'; location: number }

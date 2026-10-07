@@ -7,6 +7,7 @@ import {
   applyAction,
   createGame,
   locationPowers,
+  type GameState,
   validateDeck,
 } from '../src/index.ts';
 import { act, card, catalogWith, deckOf, newGame, playTurn, powerAt, skipToTurn, uidOf } from './support.ts';
@@ -22,7 +23,10 @@ const catalog = catalogWith(
     card('a4'),
     card('a5'),
   ],
-  [{ id: 'loc-d', name: 'loc-d' }, { id: 'loc-e', name: 'loc-e' }],
+  [
+    { id: 'loc-d', name: 'loc-d' },
+    { id: 'loc-e', name: 'loc-e' },
+  ],
 );
 
 function expectIllegal(run: () => unknown, code: IllegalActionError['code']): void {
@@ -72,7 +76,9 @@ describe('setup', () => {
 
   it('refuses illegal decks and players', () => {
     expect(validateDeck(catalog, deckOf().slice(0, 11))).toEqual(['a deck holds exactly 12 cards, got 11']);
-    expect(validateDeck(catalog, [...deckOf().slice(0, 11), 'filler-1'])).toContain('a deck holds at most one copy of each card');
+    expect(validateDeck(catalog, [...deckOf().slice(0, 11), 'filler-1'])).toContain(
+      'a deck holds at most one copy of each card',
+    );
     expect(validateDeck(catalog, [...deckOf().slice(0, 11), 'ghost'])).toContain('unknown card ghost');
 
     expect(() =>
@@ -100,7 +106,10 @@ describe('setup', () => {
 describe('planning', () => {
   it('refuses a card the player cannot afford', () => {
     const state = newGame(catalog, { p0: ['two'], energy: 1 });
-    expectIllegal(() => applyAction(catalog, state, { type: 'play', player: 0, card: uidOf(state, 0, 'two'), location: 0 }), 'notEnoughEnergy');
+    expectIllegal(
+      () => applyAction(catalog, state, { type: 'play', player: 0, card: uidOf(state, 0, 'two'), location: 0 }),
+      'notEnoughEnergy',
+    );
   });
 
   it(`caps a location at ${LOCATION_CAPACITY} cards per player, pending plays included`, () => {
@@ -108,21 +117,40 @@ describe('planning', () => {
     const filled = act(
       catalog,
       state,
-      ...['a1', 'a2', 'a3', 'a4'].map((id) => ({ type: 'play' as const, player: 0 as const, card: uidOf(state, 0, id), location: 0 })),
+      ...['a1', 'a2', 'a3', 'a4'].map((id) => ({
+        type: 'play' as const,
+        player: 0 as const,
+        card: uidOf(state, 0, id),
+        location: 0,
+      })),
     ).state;
-    expectIllegal(() => applyAction(catalog, filled, { type: 'play', player: 0, card: uidOf(state, 0, 'a5'), location: 0 }), 'locationFull');
-    expect(() => applyAction(catalog, filled, { type: 'play', player: 0, card: uidOf(state, 0, 'a5'), location: 1 })).not.toThrow();
+    expectIllegal(
+      () => applyAction(catalog, filled, { type: 'play', player: 0, card: uidOf(state, 0, 'a5'), location: 0 }),
+      'locationFull',
+    );
+    expect(() =>
+      applyAction(catalog, filled, { type: 'play', player: 0, card: uidOf(state, 0, 'a5'), location: 1 }),
+    ).not.toThrow();
   });
 
   it('refuses unknown locations, cards outside the hand and plays after ending the turn', () => {
     const state = newGame(catalog, { p0: ['one'] });
     const uid = uidOf(state, 0, 'one');
     for (const location of [-1, 3, 1.5]) {
-      expectIllegal(() => applyAction(catalog, state, { type: 'play', player: 0, card: uid, location }), 'unknownLocation');
+      expectIllegal(
+        () => applyAction(catalog, state, { type: 'play', player: 0, card: uid, location }),
+        'unknownLocation',
+      );
     }
-    expectIllegal(() => applyAction(catalog, state, { type: 'play', player: 1, card: uid, location: 0 }), 'cardNotInHand');
+    expectIllegal(
+      () => applyAction(catalog, state, { type: 'play', player: 1, card: uid, location: 0 }),
+      'cardNotInHand',
+    );
     const ended = applyAction(catalog, state, { type: 'endTurn', player: 0 }).state;
-    expectIllegal(() => applyAction(catalog, ended, { type: 'play', player: 0, card: uid, location: 0 }), 'playerReady');
+    expectIllegal(
+      () => applyAction(catalog, ended, { type: 'play', player: 0, card: uid, location: 0 }),
+      'playerReady',
+    );
     expectIllegal(() => applyAction(catalog, ended, { type: 'endTurn', player: 0 }), 'playerReady');
   });
 
@@ -192,12 +220,22 @@ describe('end of the game', () => {
   it('gives the win to the player controlling more locations, whatever the total power', () => {
     const state = newGame(catalog, { p0: ['one', 'two'], p1: ['big'] });
     const lastTurn = skipToTurn(catalog, state, MAX_TURNS);
-    const { state: ended } = playTurn(catalog, lastTurn, { p0: [['one', 0], ['two', 1]], p1: [['big', 2]] });
+    const { state: ended } = playTurn(catalog, lastTurn, {
+      p0: [
+        ['one', 0],
+        ['two', 1],
+      ],
+      p1: [['big', 2]],
+    });
 
     expect(ended.result).toEqual({
       winner: 0,
       locationWinners: [0, 0, 1],
-      locationPowers: [[1, 0], [3, 0], [0, 5]],
+      locationPowers: [
+        [1, 0],
+        [3, 0],
+        [0, 5],
+      ],
       totalPower: [4, 5],
     });
   });
@@ -214,7 +252,7 @@ describe('end of the game', () => {
 
 describe('determinism', () => {
   it('replays the same game from the same seed and actions', () => {
-    const run = () => {
+    const run = (): GameState => {
       let state = newGame(catalog, { p0: ['one', 'big'], p1: ['two'], seed: 'replay' });
       state = playTurn(catalog, state, { p0: [['one', 0]], p1: [['two', 0]] }).state;
       return playTurn(catalog, state, { p0: [['big', 1]] }).state;

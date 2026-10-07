@@ -11,11 +11,15 @@ const { values } = parseArgs({
   },
 });
 
-const mode = values.mode as DeckMode;
-if (mode !== 'random' && mode !== 'universe') {
-  console.error('--mode must be "random" or "universe"');
-  process.exit(1);
+function deckMode(value: string): DeckMode {
+  if (value !== 'random' && value !== 'universe') {
+    console.error('--mode must be "random" or "universe"');
+    process.exit(1);
+  }
+  return value;
 }
+
+const mode = deckMode(values.mode);
 
 const catalog = loadDataDir();
 const games = Number(values.games);
@@ -26,7 +30,9 @@ const elapsed = Math.round(performance.now() - started);
 const percent = (value: number): string => `${(value * 100).toFixed(1)} %`;
 
 console.log(`${games} parties (decks ${mode}, graine "${values.seed}") en ${elapsed} ms`);
-console.log(`Victoires siège 0 : ${percent(report.seatWins[0] / games)} · siège 1 : ${percent(report.seatWins[1] / games)} · nuls : ${percent(report.draws / games)}`);
+console.log(
+  `Victoires siège 0 : ${percent(report.seatWins[0] / games)} · siège 1 : ${percent(report.seatWins[1] / games)} · nuls : ${percent(report.draws / games)}`,
+);
 console.log(`Cartes posées par joueur et par partie : ${report.averageCardsPlayed.toFixed(1)}`);
 
 if (report.universes.size > 0) {
@@ -45,6 +51,13 @@ const line = ([id, entry]: [string, { games: number; wins: number }]): string =>
   return `  ${percent(winRate(entry)).padStart(8)}  ${card.cost}/${String(card.power).padEnd(3)} ${card.rarity.padEnd(10)} ${card.name} (${card.extension}, ${entry.games} decks)`;
 };
 console.log(`\nMeilleures cartes (≥ ${minGames} decks) :`);
-ranked.slice(0, top).forEach((entry) => console.log(line(entry)));
+ranked.slice(0, top).forEach((entry) => {
+  console.log(line(entry));
+});
 console.log('\nPires cartes :');
-ranked.slice(-top).reverse().forEach((entry) => console.log(line(entry)));
+ranked
+  .slice(-top)
+  .reverse()
+  .forEach((entry) => {
+    console.log(line(entry));
+  });

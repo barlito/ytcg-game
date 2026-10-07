@@ -1,3 +1,4 @@
+export * from './action.ts';
 export * from './abilities/ability.ts';
 export * from './abilities/board.ts';
 export * from './abilities/conditions.ts';
@@ -6,6 +7,7 @@ export * from './abilities/targets.ts';
 export * from './catalog.ts';
 export * from './errors.ts';
 export * from './game.ts';
+export * from './invariants.ts';
 export * from './rng.ts';
 export * from './rules.ts';
 export * from './state.ts';

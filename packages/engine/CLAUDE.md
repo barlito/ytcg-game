@@ -2,6 +2,12 @@
 
 Pure game rules. Imported by the server (authoritative) and the client (types, previews). Player-facing reference of the building blocks: `docs/effects.md` — keep it in sync.
 
+## Layout
+
+- `game.ts`: the public API only (`createGame`, `applyAction`, queries). `action.ts`: zod schema of player actions — parse network input with it. `invariants.ts`: `checkInvariants(state)`.
+- `runtime/`: `Runtime` (composition root, one state + one event list) wires `GameBoard` (board queries, power, elementary mutations — implements `Board`), `AbilityRunner` (fires abilities per trigger), `TurnFlow` (turn start, resolution, end of game), `ActionHandler` (play / cancel / end turn rules) and `setup.ts` (`startGame`, `validateDeck`).
+- `abilities/`: `board.ts` holds the contracts — `BoardView` (read) for conditions and ongoing bonuses, `Board` (read + write) for targets and effects, `OngoingEffect` for effects allowed on ongoing abilities.
+
 ## Rules of the code
 
 - No I/O, no network, no Colyseus, no timers, no `Math.random()`: every random draw goes through the `Rng` held in the game state (`state.rng`), so a seed + the action list replays a match exactly. `src/sim/` is the only Node-dependent part (data loader, bots, CLI).
