@@ -23,7 +23,7 @@ Duel 1 contre 1 inspiré de Marvel Snap, avec les cartes de [Youl TCG](https://g
 
 ## Cartes et decks
 
-- **Deck : 12 cartes, 1 exemplaire par carte**, composé uniquement de cartes **possédées** dans ytcg (`quantity > 0`). Pas de deck prêté.
+- **Deck : 12 cartes, 1 exemplaire par carte**, composé uniquement de cartes **possédées** dans ytcg (`quantity > 0`). Pas de deck prêté. Un deck **mélange librement les univers** : un univers trop petit pour un deck à lui seul (Cosmonaut, 8 cartes) n'est pas un problème.
 - Le holo reste **cosmétique**. Il n'a aucun effet en jeu.
 - Environ 200 cartes uniques au catalogue.
 - **Rareté ≠ puissance brute**. Une rare ou une légendaire n'est pas « la même carte en plus fort », sinon le jeu devient pay-to-win (boosters achetables en Youl Coin). Une carte rare peut être plus puissante, mais elle le paie : **coût plus élevé, sacrifice, condition de pose**. Le budget de puissance se règle par le coût, pas par la rareté.
@@ -108,7 +108,5 @@ Les lieux suivent le même modèle (`data/locations/`), avec leur univers et leu
 - Comment évoluent les lieux : tirés au hasard parmi tous les univers, ou liés aux univers des decks ?
 - Un nouveau joueur a-t-il assez de cartes distinctes pour composer 12 cartes dès ses premiers jours ?
 - Que devient une carte vendue ou échangée alors qu'elle est dans un deck : le deck devient invalide, ou on bloque la vente ?
-- **Univers publiés sans manifeste** (Cyberpunk, Magic, Psychedelic, L'album des Youlz) : absents des données de jeu, alors que ce sont les cartes que les joueurs possèdent le plus. À récupérer depuis ytcg (API admin) avec leur rareté.
-- « Julien, roi d'Eldia » est-il Julian ? Il n'a pas de tag personnage pour l'instant.
-- Cosmonaut n'a que 8 cartes : impossible d'en faire un deck mono-univers.
+- **Univers publiés sans manifeste** (Cyberpunk, Magic, Psychedelic, L'album des Youlz) : absents des données de jeu tant que leur manifeste n'est pas écrit dans YoulzAssets (l'utilisateur s'en charge), puis `make import-assets`.
 - Mécaniques propres aux univers et aux personnages : à définir ensemble (prochaine étape).

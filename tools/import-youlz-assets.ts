@@ -41,7 +41,7 @@ const CHARACTERS: [RegExp, string][] = [
   [/\bbenj\b/, 'benj'],
   [/\bfarf\b/, 'farf'],
   [/\bveli\b/, 'veli'],
-  [/\bjulian\b/, 'julian'],
+  [/\bjuli[ae]n\b/, 'julian'],
   [/\bwarny\b/, 'warny'],
   [/\bbernard\b/, 'bernard'],
   [/\bnairy\b/, 'nairy'],

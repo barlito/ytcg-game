@@ -11,7 +11,9 @@
       "unique": false,
       "cost": 6,
       "power": 12,
-      "tags": [],
+      "tags": [
+        "character:julian"
+      ],
       "abilities": []
     },
     {
