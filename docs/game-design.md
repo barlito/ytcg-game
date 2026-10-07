@@ -65,7 +65,7 @@ Chaque condition, cible et effet est **une classe dans un registre** (les décle
 }
 ```
 
-**Les tags sont gérés sur le site ytcg**, où ils servent aussi de filtres aux joueurs (décision du 2026-10-07). En attendant la phase 2, l'import devine les tags `character:` et `family:linette` depuis le nom des cartes ; ils seront remplacés par ceux de ytcg.
+**Les tags sont gérés sur le site ytcg**, où ils servent aussi de filtres aux joueurs (décision du 2026-10-07). En attendant l'intégration ytcg, l'import devine les tags `character:` et `family:linette` depuis le nom des cartes ; ils seront remplacés par ceux de ytcg. Variantes de noms : Pharph/Farph = Farf, Jben/Benjamen = Benj, Julieng/Julien = Julian, Warnyx/Weebou = Warny, Velo = Veli ; Ancient Foreign King = Julian ; CyberMiaou est un nouveau personnage ; les cartes de L'album des Youlz ne sont pas des personnages.
 
 Les lieux suivent le même modèle (`data/locations/`), avec leur univers et leurs capacités.
 
@@ -108,6 +108,5 @@ Les lieux suivent le même modèle (`data/locations/`), avec leur univers et leu
 - Comment évoluent les lieux : tirés au hasard parmi tous les univers, ou liés aux univers des decks ?
 - Un nouveau joueur a-t-il assez de cartes distinctes pour composer 12 cartes dès ses premiers jours ?
 - Que devient une carte vendue ou échangée alors qu'elle est dans un deck : le deck devient invalide, ou on bloque la vente ?
-- Tags personnage des cartes sans correspondance évidente : Jben (Benj ?), Weebou (Warny ?), CyberMiaou, Ancient Foreign King, et les cartes de L'album des Youlz.
 - Le slug de Bleach est temporairement `benj-reviens` en prod ; les données de jeu gardent `b` (manifeste) jusqu'à la synchronisation avec ytcg.
 - Mécaniques propres aux univers et aux personnages : à définir ensemble (prochaine étape).

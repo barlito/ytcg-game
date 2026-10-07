@@ -38,11 +38,11 @@ const VANILLA_POWER = [1, 2, 3, 4, 6, 9, 12];
 
 const CHARACTERS: [RegExp, string][] = [
   [/\bbarlito\b/, 'barlito'],
-  [/\b(benj|benjamen)\b/, 'benj'],
+  [/\b(benj|benjamen|jben)\b/, 'benj'],
   [/\b(farf|farph|pharph)\b/, 'farf'],
   [/\b(veli|velo)\b/, 'veli'],
   [/\b(julian|julien|julieng)\b/, 'julian'],
-  [/\bwarnyx?\b/, 'warny'],
+  [/\b(warnyx?|weebou)\b/, 'warny'],
   [/\bbernard\b/, 'bernard'],
   [/\bnairy\b/, 'nairy'],
   [/\bjean\b.*\braoulz?\b/, 'jean-raoul'],

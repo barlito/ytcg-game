@@ -195,7 +195,9 @@
       "unique": false,
       "cost": 1,
       "power": 2,
-      "tags": [],
+      "tags": [
+        "character:warny"
+      ],
       "abilities": []
     }
   ]
