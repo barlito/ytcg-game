@@ -31,7 +31,7 @@ Duel 1 contre 1 inspiré de Marvel Snap, avec les cartes de [Youl TCG](https://g
 
 ### Règles de deck (phase 2b)
 
-- **Terrain** : chaque joueur apporte une carte de terrain en plus de ses 12 cartes. Les deux terrains choisis et un terrain aléatoire sont répartis **au hasard** sur les 3 positions, donc révélés aux tours 1, 2 et 3 dans un ordre imprévisible. Une fois révélé, un terrain indique s'il est le tien ou celui de l'adversaire.
+- **Terrain** (optionnel) : chaque joueur peut apporter une carte de terrain en plus de ses 12 cartes. **C'est une carte qu'il possède dans ytcg** (pas de carte, pas de terrain — vérifié en phase 3) ; sans terrain, un terrain aléatoire prend sa place. Les terrains choisis et les terrains aléatoires sont répartis **au hasard** sur les 3 positions, donc révélés aux tours 1, 2 et 3 dans un ordre imprévisible. Une fois révélé, un terrain indique s'il est le tien ou celui de l'adversaire.
 - **Quota de coûts** (`rules.ts`, réglable) : au moins 2 cartes à 1, 2 à 2 et 2 à 3 ; au plus 3 cartes à 5 ou plus.
 - **Main de départ garantie** : parmi les 4 cartes vues avant de jouer au tour 1 (3 en main + la pioche du tour), au moins une coûte 1.
 - **Repioche** : une fois, au tour 1, avant de poser quoi que ce soit ; la main repart dans le deck, mélangée, avec la même garantie. L'adversaire voit seulement qu'une main a été repiochée.
@@ -105,6 +105,7 @@ Les lieux suivent le même modèle (`data/locations/`), avec leur univers et leu
 - **Déconnexion** : 30 s pour revenir (`RECONNECT_SECONDS`), un rafraîchissement de page ramène dans la partie. Passé ce délai, ou en quittant, le joueur **perd par forfait**.
 - **Decks** : en attendant ytcg (phase 3), le client envoie un deck de 12 cartes du catalogue (aléatoire dans le client minimal), vérifié par le serveur contre le catalogue seulement, sans contrôle de possession.
 - Le client n'envoie jamais son numéro de joueur : le serveur le déduit de l'identité authentifiée.
+- **Synchronisation** : chaque joueur reçoit un message avec SA vue (`projectForPlayer`), pas l'état Colyseus synchronisé avec des filtres (`StateView`). Choix du 2026-10-07 : une seule fonction pure et testée décide de ce qui est visible (les filtres demanderaient d'ajouter/retirer chaque carte de chaque vue à chaque mouvement, un oubli = une fuite), pas de second modèle Schema à maintenir, et le gain des deltas est négligeable en tour par tour. À revoir si animations fines ou spectateurs.
 
 ## Périmètre initial
 
@@ -148,4 +149,3 @@ Traits ajoutés : `trait:machine` (vaisseaux, robots, armes), `trait:epee` (les 
 - Que devient une carte vendue ou échangée alors qu'elle est dans un deck : le deck devient invalide, ou on bloque la vente ?
 - Le slug de Bleach est temporairement `benj-reviens` en prod ; les données de jeu gardent `b` (manifeste) jusqu'à la synchronisation avec ytcg.
 - Valeurs des capacités : première version à relire dans `cards.md`, à rejouer en vrai.
-- **Terrains et ytcg** : faut-il que les terrains deviennent des cartes possédées dans ytcg (à tirer en booster), ou restent-ils libres comme aujourd'hui ? À trancher en phase 3.

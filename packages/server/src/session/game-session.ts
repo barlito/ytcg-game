@@ -4,6 +4,7 @@ import {
   type GameState,
   PLAYERS,
   type PlayerIndex,
+  type PlayerSetup,
   applyAction,
   createGame,
   gameActionSchema,
@@ -30,6 +31,14 @@ interface Seat {
   identity: PlayerIdentity;
   deck: DeckChoice;
   connected: boolean;
+}
+
+// The engine takes no location key at all when the player brought none.
+function playerSetup(seat: Seat): PlayerSetup {
+  const { cards, location } = seat.deck;
+  return location === undefined
+    ? { id: seat.identity.id, deck: cards }
+    : { id: seat.identity.id, deck: cards, location };
 }
 
 // One match between two seated players, wrapping the engine. No network, no clock: the room drives it.
@@ -92,10 +101,7 @@ export class GameSession {
     }
     const { state, events } = createGame(this.catalog, {
       seed: this.seed,
-      players: [
-        { id: first.identity.id, deck: first.deck.cards, location: first.deck.location },
-        { id: second.identity.id, deck: second.deck.cards, location: second.deck.location },
-      ],
+      players: [playerSetup(first), playerSetup(second)],
     });
     this.state = state;
     return events;

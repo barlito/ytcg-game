@@ -71,6 +71,7 @@ describe('catalog decks', () => {
       DeckError,
     );
     await expect(decks.deckFor(ALICE, { deck: { ...deck, location: 'nowhere' } })).rejects.toThrow(DeckError);
+    await expect(decks.deckFor(ALICE, { deck: { cards: deck.cards } })).resolves.toEqual({ cards: deck.cards });
     await expect(decks.deckFor(ALICE, {})).rejects.toThrow(DeckError);
   });
 });

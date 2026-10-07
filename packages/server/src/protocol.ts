@@ -16,10 +16,10 @@ export const actionInputSchema = z.discriminatedUnion('type', [
 export type ActionInput = z.output<typeof actionInputSchema>;
 
 // Options sent when creating or joining a room. Authentication itself comes from the ytcg cookie in production.
-// 12 cards plus the location card the player brings.
+// 12 cards plus, optionally, a location card the player owns (none: a random location takes its place).
 export const deckChoiceSchema = z.object({
   cards: z.array(z.string().min(1)).max(50),
-  location: z.string().min(1),
+  location: z.string().min(1).optional(),
 });
 
 export type DeckChoice = z.output<typeof deckChoiceSchema>;

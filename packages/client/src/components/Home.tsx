@@ -1,7 +1,7 @@
 import type { JoinOptions } from '@ytcg-game/server/protocol';
 import { useState } from 'react';
 import { describeLocation } from '@ytcg-game/engine';
-import { catalog, randomDeck, randomLocation } from '../catalog.ts';
+import { catalog, randomDeck } from '../catalog.ts';
 
 interface Props {
   error: string | null;
@@ -59,6 +59,9 @@ function JoinForm({ onJoin }: { onJoin: (code: string) => void }): React.JSX.Ele
   );
 }
 
+const NO_LOCATION = '';
+
+// The location is optional: without one, a random location takes its place.
 function LocationPicker({
   location,
   onChange,
@@ -66,23 +69,28 @@ function LocationPicker({
   location: string;
   onChange: (id: string) => void;
 }): React.JSX.Element {
-  const chosen = catalog.location(location);
+  const chosen = location === NO_LOCATION ? null : catalog.location(location);
   return (
     <section className="deck">
-      <h2 className="eyebrow">Ton terrain (placé sur un des trois lieux)</h2>
+      <h2 className="eyebrow">Ton terrain (optionnel, placé sur un des trois lieux)</h2>
       <select
         value={location}
         onChange={(event) => {
           onChange(event.target.value);
         }}
       >
+        <option value={NO_LOCATION}>Aucun terrain (aléatoire)</option>
         {[...catalog.locations.values()].map((option) => (
           <option key={option.id} value={option.id}>
             {option.name}
           </option>
         ))}
       </select>
-      <p className="location-help">{describeLocation(catalog, chosen).join(' ') || 'Aucun effet.'}</p>
+      <p className="location-help">
+        {chosen === null
+          ? 'Un terrain aléatoire prendra sa place.'
+          : describeLocation(catalog, chosen).join(' ') || 'Aucun effet.'}
+      </p>
     </section>
   );
 }
@@ -105,11 +113,11 @@ function NameField({ name, onChange }: { name: string; onChange: (name: string) 
 export function Home({ error, onCreate, onJoin }: Props): React.JSX.Element {
   const [name, setName] = useState(() => localStorage.getItem(NAME_KEY) ?? '');
   const [cards, setCards] = useState(randomDeck);
-  const [location, setLocation] = useState(randomLocation);
+  const [location, setLocation] = useState(NO_LOCATION);
   const options = (): JoinOptions => {
     localStorage.setItem(NAME_KEY, name);
     const trimmed = name.trim();
-    const deck = { cards, location };
+    const deck = location === NO_LOCATION ? { cards } : { cards, location };
     return trimmed === '' ? { deck } : { name: trimmed, deck };
   };
 

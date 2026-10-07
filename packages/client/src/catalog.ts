@@ -18,8 +18,3 @@ export function randomDeck(): string[] {
   }
   return deck;
 }
-
-export function randomLocation(): string {
-  const ids = [...catalog.locations.keys()];
-  return ids[Math.floor(Math.random() * ids.length)] ?? '';
-}

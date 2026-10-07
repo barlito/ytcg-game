@@ -157,6 +157,30 @@ describe('location cards', () => {
     expect(projectForPlayer(catalog, state, 1).locations[2]?.chosenBy).toBeNull();
   });
 
+  it('fills the missing location cards with random ones', () => {
+    for (let i = 0; i < 10; i++) {
+      const one = createGame(catalog, {
+        seed: `one:${i}`,
+        players: [
+          { id: 'alice', deck: deckOf(), location: 'loc-d' },
+          { id: 'bob', deck: deckOf() },
+        ],
+      }).state.locations;
+      expect(one.map((l) => l.defId)).toContain('loc-d');
+      expect(one.filter((l) => l.chosenBy === null)).toHaveLength(2);
+      expect(new Set(one.map((l) => l.defId)).size).toBe(3);
+
+      const none = createGame(catalog, {
+        seed: `none:${i}`,
+        players: [
+          { id: 'alice', deck: deckOf() },
+          { id: 'bob', deck: deckOf() },
+        ],
+      }).state.locations;
+      expect(none.every((l) => l.chosenBy === null)).toBe(true);
+    }
+  });
+
   it('refuses an unknown location card', () => {
     expect(() =>
       createGame(catalog, {

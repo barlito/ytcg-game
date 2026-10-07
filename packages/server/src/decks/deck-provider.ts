@@ -32,7 +32,7 @@ export class CatalogDeckProvider implements DeckProvider {
     }
     const { cards, location } = parsed.data.deck;
     const issues = validateDeck(this.catalog, cards);
-    if (!this.catalog.locations.has(location)) {
+    if (location !== undefined && !this.catalog.locations.has(location)) {
       issues.push(`unknown location ${location}`);
     }
     if (issues.length > 0) {
