@@ -1,6 +1,6 @@
 # packages/server
 
-Authoritative Colyseus server (phase 1). Not started yet.
+Authoritative Colyseus server (phase 2). Not started yet.
 
 - Thin wrapper around `packages/engine`: messages from clients become engine actions, the engine decides. Never re-implement a rule here.
 - No database. Players, ownership and decks come from ytcg; game data comes from `data/`.
