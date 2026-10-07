@@ -1,4 +1,4 @@
-import { type Catalog, DECK_SIZE, loadCatalog } from '@ytcg-game/engine';
+import { type Catalog, Rng, buildRandomDeck, loadCatalog } from '@ytcg-game/engine';
 
 // Same data files as the server: bundled at build time.
 const cardFiles = import.meta.glob<unknown>('../../../data/cards/*.json', { eager: true, import: 'default' });
@@ -10,12 +10,11 @@ function toSource(files: Record<string, unknown>): { name: string; content: unkn
 
 export const catalog: Catalog = loadCatalog({ cardFiles: toSource(cardFiles), locationFiles: toSource(locationFiles) });
 
-// Until decks come from ytcg: 12 distinct cards picked at random.
+// Until decks come from ytcg: a random deck respecting the curve.
 export function randomDeck(): string[] {
-  const ids = [...catalog.cards.keys()];
-  for (let i = ids.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [ids[i], ids[j]] = [ids[j] ?? '', ids[i] ?? ''];
+  const deck = buildRandomDeck(catalog, new Rng({ s: Math.floor(Math.random() * 2 ** 32) }));
+  if (deck === null) {
+    throw new Error('the catalog cannot build a legal deck');
   }
-  return ids.slice(0, DECK_SIZE);
+  return deck;
 }

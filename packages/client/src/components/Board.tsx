@@ -55,6 +55,9 @@ export function Board({ game, send, onLeave }: Props): React.JSX.Element {
         onEndTurn={() => {
           send({ type: 'endTurn' });
         }}
+        onMulligan={() => {
+          send({ type: 'mulligan' });
+        }}
       />
       <div className="locations">
         {view.locations.map((location) => (

@@ -31,6 +31,10 @@ export class GameBoard implements Board {
     return this.state.turn;
   }
 
+  recordEvent(event: GameEvent): void {
+    this.events.push(event);
+  }
+
   definitionOf(uid: string): CardDefinition {
     return this.catalog.card(cardAt(this.state, uid).defId);
   }

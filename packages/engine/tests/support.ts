@@ -1,6 +1,7 @@
 import {
   type CardFile,
   type Catalog,
+  DECK_MINIMUM_BY_COST,
   DECK_SIZE,
   type GameAction,
   type GameEvent,
@@ -20,7 +21,13 @@ export function card(id: string, overrides: Partial<CardInput> = {}): CardInput 
   return { id, name: id, rarity: 'common', cost: 1, power: 1, ...overrides };
 }
 
-const FILLERS = Array.from({ length: DECK_SIZE }, (_, i) => card(`filler-${i + 1}`, { cost: 6, power: 0 }));
+// Power-0 fillers: the six cheap ones cover the deck curve, the cost-4 ones only pad.
+const CURVE_FILLERS = DECK_MINIMUM_BY_COST.flatMap(({ cost, count }) =>
+  Array.from({ length: count }, (_, i) => card(`filler-${cost}-${i + 1}`, { cost, power: 0 })),
+);
+const PADDING_FILLERS = Array.from({ length: DECK_SIZE }, (_, i) => card(`filler-4-${i + 1}`, { cost: 4, power: 0 }));
+const FILLERS = [...CURVE_FILLERS, ...PADDING_FILLERS];
+
 const BLANK_LOCATIONS: LocationInput[] = ['loc-a', 'loc-b', 'loc-c'].map((id) => ({ id, name: id }));
 
 export function catalogWith(cards: CardInput[] = [], locations: LocationInput[] = []): Catalog {
@@ -32,9 +39,16 @@ export function catalogWith(cards: CardInput[] = [], locations: LocationInput[] 
   });
 }
 
-// Pads the given card ids with fillers up to a legal deck.
-export function deckOf(ids: readonly string[] = []): string[] {
-  return [...ids, ...FILLERS.map((filler) => filler.id).filter((id) => !ids.includes(id))].slice(0, DECK_SIZE);
+// Pads the given card ids with fillers up to a legal deck (curve included).
+export function deckOf(ids: readonly string[] = [], catalog?: Catalog): string[] {
+  const costs = ids.map((id) => catalog?.cards.get(id)?.cost);
+  const curve = DECK_MINIMUM_BY_COST.flatMap(({ cost, count }) => {
+    const missing = Math.max(0, count - costs.filter((c) => c === cost).length);
+    return CURVE_FILLERS.filter((filler) => filler.cost === cost)
+      .slice(0, missing)
+      .map((filler) => filler.id);
+  });
+  return [...ids, ...curve, ...PADDING_FILLERS.map((filler) => filler.id)].slice(0, DECK_SIZE);
 }
 
 export interface TestGameOptions {
@@ -51,8 +65,8 @@ export function newGame(catalog: Catalog, options: TestGameOptions = {}): GameSt
   const { state } = createGame(catalog, {
     seed,
     players: [
-      { id: 'alice', deck: deckOf(p0) },
-      { id: 'bob', deck: deckOf(p1) },
+      { id: 'alice', deck: deckOf(p0, catalog) },
+      { id: 'bob', deck: deckOf(p1, catalog) },
     ],
     locations,
   });

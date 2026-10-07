@@ -76,7 +76,7 @@ describe('setup', () => {
 
   it('refuses illegal decks and players', () => {
     expect(validateDeck(catalog, deckOf().slice(0, 11))).toEqual(['a deck holds exactly 12 cards, got 11']);
-    expect(validateDeck(catalog, [...deckOf().slice(0, 11), 'filler-1'])).toContain(
+    expect(validateDeck(catalog, [...deckOf().slice(0, 11), 'filler-1-1'])).toContain(
       'a deck holds at most one copy of each card',
     );
     expect(validateDeck(catalog, [...deckOf().slice(0, 11), 'ghost'])).toContain('unknown card ghost');

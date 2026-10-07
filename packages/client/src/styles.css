@@ -412,3 +412,34 @@ button.card:not(:disabled) {
     grid-template-columns: 1fr;
   }
 }
+
+select {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  color: var(--text);
+  padding: 0.6rem 0.8rem;
+  font: inherit;
+  min-width: 260px;
+}
+.location-help {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 0.5rem 0 0;
+}
+.location-owner {
+  display: inline-block;
+  margin-bottom: 0.2rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.05rem 0.4rem;
+}
+.owner-you {
+  background: var(--primary);
+  color: #fff;
+}
+.owner-opponent {
+  background: var(--magenta);
+  color: #000;
+}

@@ -4,6 +4,7 @@ import {
   type GameState,
   PLAYERS,
   type PlayerIndex,
+  type PlayerSetup,
   applyAction,
   createGame,
   gameActionSchema,
@@ -12,7 +13,7 @@ import {
   projectForPlayer,
 } from '@ytcg-game/engine';
 import type { PlayerIdentity } from '../identity.ts';
-import type { ActionInput, GameMessage, LobbyMessage, Outcome, SeatInfo } from '../protocol.ts';
+import type { ActionInput, DeckChoice, GameMessage, LobbyMessage, Outcome, SeatInfo } from '../protocol.ts';
 
 export type SessionErrorCode = 'roomFull' | 'alreadySeated' | 'notStarted' | 'gameOver';
 
@@ -28,8 +29,16 @@ export class SessionError extends Error {
 
 interface Seat {
   identity: PlayerIdentity;
-  deck: readonly string[];
+  deck: DeckChoice;
   connected: boolean;
+}
+
+// The engine takes no location key at all when the player brought none.
+function playerSetup(seat: Seat): PlayerSetup {
+  const { cards, location } = seat.deck;
+  return location === undefined
+    ? { id: seat.identity.id, deck: cards }
+    : { id: seat.identity.id, deck: cards, location };
 }
 
 // One match between two seated players, wrapping the engine. No network, no clock: the room drives it.
@@ -67,12 +76,12 @@ export class GameSession {
   }
 
   // The first two distinct players get seats 0 and 1.
-  seat(identity: PlayerIdentity, deck: readonly string[]): PlayerIndex {
+  seat(identity: PlayerIdentity, deck: DeckChoice): PlayerIndex {
     if (this.seatOf(identity.id) !== null) {
-      throw new SessionError('alreadySeated', `${identity.name} is already in this game`);
+      throw new SessionError('alreadySeated', `${identity.name} est déjà dans cette partie.`);
     }
     if (this.isFull) {
-      throw new SessionError('roomFull', 'this game already has two players');
+      throw new SessionError('roomFull', 'Cette partie a déjà deux joueurs.');
     }
     this.seats.push({ identity, deck, connected: true });
     return this.seats.length === 1 ? 0 : 1;
@@ -88,14 +97,11 @@ export class GameSession {
   start(): GameEvent[] {
     const [first, second] = this.seats;
     if (first === undefined || second === undefined) {
-      throw new SessionError('notStarted', 'two players are needed to start');
+      throw new SessionError('notStarted', 'Il faut deux joueurs pour commencer.');
     }
     const { state, events } = createGame(this.catalog, {
       seed: this.seed,
-      players: [
-        { id: first.identity.id, deck: first.deck },
-        { id: second.identity.id, deck: second.deck },
-      ],
+      players: [playerSetup(first), playerSetup(second)],
     });
     this.state = state;
     return events;
@@ -156,7 +162,7 @@ export class GameSession {
 
   private startedState(): GameState {
     if (this.state === null) {
-      throw new SessionError('notStarted', 'the game has not started');
+      throw new SessionError('notStarted', "La partie n'a pas commencé.");
     }
     return this.state;
   }
@@ -164,7 +170,7 @@ export class GameSession {
   // The state actions may still change: started and not forfeited.
   private runningState(): GameState {
     if (this.forfeited !== null) {
-      throw new SessionError('gameOver', 'the game is over');
+      throw new SessionError('gameOver', 'La partie est terminée.');
     }
     return this.startedState();
   }

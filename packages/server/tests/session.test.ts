@@ -25,8 +25,17 @@ describe('game session', () => {
   it('plays for the seat of the sender, whatever the input says', () => {
     const session = startedSession();
     const view = session.messageFor(1, [], null).view;
+    expect(view.locations.filter((location) => location.chosenBy !== null).length).toBeLessThanOrEqual(1);
     const card = view.hand[0]?.uid ?? '';
     expect(() => session.apply(0, { type: 'play', card, location: 0 })).toThrow(IllegalActionError);
+  });
+
+  it('lets a player redraw their hand on turn 1', () => {
+    const session = startedSession();
+    const events = session.apply(0, { type: 'mulligan' });
+    expect(events).toContainEqual({ type: 'handRedrawn', player: 0 });
+    expect(session.messageFor(0, [], null).view.canMulligan).toBe(false);
+    expect(session.messageFor(1, [], null).view.canMulligan).toBe(true);
   });
 
   it('ends the turn of every player still planning when the timer elapses', () => {

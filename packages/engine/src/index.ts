@@ -6,6 +6,7 @@ export * from './abilities/effects.ts';
 export * from './abilities/statuses.ts';
 export * from './abilities/targets.ts';
 export * from './catalog.ts';
+export * from './deck.ts';
 export * from './describe.ts';
 export * from './errors.ts';
 export * from './game.ts';

@@ -74,7 +74,9 @@ describe('duel room', () => {
   });
 
   it('refuses a join without a legal deck and a third player', async () => {
-    await expect(colyseus.sdk.create(ROOM_NAME, { name: 'Alice', deck: ['nope'] })).rejects.toThrow();
+    await expect(
+      colyseus.sdk.create(ROOM_NAME, { name: 'Alice', deck: { cards: ['nope'], location: 'loc-40k' } }),
+    ).rejects.toThrow();
     const { alice } = await startDuel();
     await expect(colyseus.sdk.joinById(alice.roomId, { name: 'Carol', deck: randomDeck(3) })).rejects.toThrow();
   });

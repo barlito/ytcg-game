@@ -17,6 +17,8 @@ Pure game rules. Imported by the server (authoritative) and the client (types, p
 - Only REVEALED board cards exist for abilities (`Board.cardsMatching`); pending cards are invisible until the reveal.
 - Ongoing power is recomputed on every read (`Runtime.power`): an ongoing ability may only add power, with `self` or `pick: "all"` targets, and no condition may read power — otherwise power would depend on itself.
 - Combos rely on card **tags** (`universe:`, `character:`, `family:`…), never on hard-coded card ids. `universe:<slug>` is added by the catalog from the data file.
+- Deck rules live in `deck.ts` (`deckCurveIssues`, `buildRandomDeck`, `guaranteeOpening`) with their constants in `rules.ts`; `validateDeck` applies the curve. Every random deck (client, sim, tests) goes through `buildRandomDeck`. Test fixtures pad with power-0 fillers covering the curve (`deckOf(ids, catalog)`).
+- The opponent never learns where a face-down card was played: the view only exposes `opponent.pendingCount`.
 - Rarity gives no free power: strong cards pay with cost, sacrifice or a play condition (see `docs/game-design.md`).
 
 ## Adding a building block

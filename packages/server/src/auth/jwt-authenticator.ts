@@ -28,14 +28,14 @@ export class JwtAuthenticator implements Authenticator {
   async authenticate(context: AuthContext): Promise<PlayerIdentity> {
     const token = context.token ?? readCookie(context.headers.get('cookie'), COOKIE_NAME);
     if (token === null) {
-      throw new AuthenticationError('missing ytcg session');
+      throw new AuthenticationError('Connecte-toi sur Youl TCG pour jouer.');
     }
     try {
       const { payload } = await jwtVerify(token, this.key, { algorithms: [this.algorithm] });
       const claims = claimsSchema.parse(payload);
       return { id: claims.discordId, name: claims.username };
     } catch {
-      throw new AuthenticationError('invalid ytcg session');
+      throw new AuthenticationError('Ta session Youl TCG a expiré : reconnecte-toi.');
     }
   }
 }

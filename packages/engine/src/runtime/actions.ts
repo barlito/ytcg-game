@@ -1,5 +1,6 @@
 import type { GameAction } from '../action.ts';
 import { IllegalActionError } from '../errors.ts';
+import { guaranteeOpening } from '../deck.ts';
 import { LOCATION_CAPACITY } from '../rules.ts';
 import type { PlayerIndex, PlayerState } from '../state.ts';
 import type { GameBoard } from './board.ts';
@@ -29,6 +30,9 @@ export class ActionHandler {
         return;
       case 'endTurn':
         this.endTurn(action.player);
+        return;
+      case 'mulligan':
+        this.mulligan(action.player);
         return;
     }
   }
@@ -78,6 +82,25 @@ export class ActionHandler {
     if (this.board.state.players.every((p) => p.ready)) {
       this.turns.resolve();
     }
+  }
+
+  // Once, on turn 1, before playing anything: the hand goes back into the deck and is drawn again.
+  private mulligan(player: PlayerIndex): void {
+    const { state, rng } = this.board;
+    const playerState = this.planningPlayer(player);
+    if (state.turn !== 1 || playerState.mulliganUsed || playerState.pending.length > 0) {
+      throw new IllegalActionError('mulliganUnavailable', 'the hand can only be redrawn once, at the start of turn 1');
+    }
+    const count = playerState.hand.length;
+    for (const uid of playerState.hand) {
+      cardAt(state, uid).zone = 'deck';
+    }
+    playerState.deck = rng.shuffle([...playerState.deck, ...playerState.hand]);
+    playerState.hand = [];
+    guaranteeOpening(playerState.deck, (uid) => this.board.definitionOf(uid).cost, count, rng);
+    playerState.mulliganUsed = true;
+    this.board.draw(player, count);
+    this.board.recordEvent({ type: 'handRedrawn', player });
   }
 
   // The player still planning this turn, or an error.

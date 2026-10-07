@@ -23,11 +23,19 @@ Duel 1 contre 1 inspiré de Marvel Snap, avec les cartes de [Youl TCG](https://g
 
 ## Cartes et decks
 
-- **Deck : 12 cartes, 1 exemplaire par carte**, composé uniquement de cartes **possédées** dans ytcg (`quantity > 0`). Pas de deck prêté. Un deck **mélange librement les univers** : un univers trop petit pour un deck à lui seul (Cosmonaut, 8 cartes) n'est pas un problème.
+- **Deck : 12 cartes + 1 terrain**, 1 exemplaire par carte, composé uniquement de cartes **possédées** dans ytcg (`quantity > 0`). Pas de deck prêté. Un deck **mélange librement les univers** : un univers trop petit pour un deck à lui seul (Cosmonaut, 8 cartes) n'est pas un problème.
 - Le holo reste **cosmétique**. Il n'a aucun effet en jeu.
 - Environ 200 cartes uniques au catalogue.
 - **Rareté ≠ puissance brute**. Une rare ou une légendaire n'est pas « la même carte en plus fort », sinon le jeu devient pay-to-win (boosters achetables en Youl Coin). Une carte rare peut être plus puissante, mais elle le paie : **coût plus élevé, sacrifice, condition de pose**. Le budget de puissance se règle par le coût, pas par la rareté.
 - **Les 1/1 sont jouables** : ce sont des cartes très puissantes, avec une contrepartie forte. Leur équilibrage est à valider en jeu.
+
+### Règles de deck (phase 2b)
+
+- **Terrain** (optionnel) : chaque joueur peut apporter une carte de terrain en plus de ses 12 cartes. **C'est une carte qu'il possède dans ytcg** : les **cartes « lieu » des univers** (Monde-Ruche, Niveau 24, Les rues de New LA, Colonie martienne, Ruins of the Cult…) servent de terrains (décision du 2026-10-07) (pas de carte, pas de terrain — vérifié en phase 3) ; sans terrain, un terrain aléatoire prend sa place. Les terrains choisis et les terrains aléatoires sont répartis **au hasard** sur les 3 positions, donc révélés aux tours 1, 2 et 3 dans un ordre imprévisible. Une fois révélé, un terrain indique s'il est le tien ou celui de l'adversaire.
+- **Quota de coûts** (`rules.ts`, réglable) : au moins 2 cartes à 1, 2 à 2 et 2 à 3 ; au plus 3 cartes à 5 ou plus.
+- **Main de départ garantie** : parmi les 4 cartes vues avant de jouer au tour 1 (3 en main + la pioche du tour), au moins une coûte 1.
+- **Repioche** : une fois, au tour 1, avant de poser quoi que ce soit ; la main repart dans le deck, mélangée, avec la même garantie. L'adversaire voit seulement qu'une main a été repiochée.
+- **Pose cachée** : pendant le tour, l'adversaire voit combien de cartes tu as posées, jamais sur quel lieu.
 
 ### Données de départ
 
@@ -97,6 +105,7 @@ Les lieux suivent le même modèle (`data/locations/`), avec leur univers et leu
 - **Déconnexion** : 30 s pour revenir (`RECONNECT_SECONDS`), un rafraîchissement de page ramène dans la partie. Passé ce délai, ou en quittant, le joueur **perd par forfait**.
 - **Decks** : en attendant ytcg (phase 3), le client envoie un deck de 12 cartes du catalogue (aléatoire dans le client minimal), vérifié par le serveur contre le catalogue seulement, sans contrôle de possession.
 - Le client n'envoie jamais son numéro de joueur : le serveur le déduit de l'identité authentifiée.
+- **Synchronisation** : chaque joueur reçoit un message avec SA vue (`projectForPlayer`), pas l'état Colyseus synchronisé avec des filtres (`StateView`). Choix du 2026-10-07 : une seule fonction pure et testée décide de ce qui est visible (les filtres demanderaient d'ajouter/retirer chaque carte de chaque vue à chaque mouvement, un oubli = une fuite), pas de second modèle Schema à maintenir, et le gain des deltas est négligeable en tour par tour. À revoir si animations fines ou spectateurs.
 
 ## Périmètre initial
 
@@ -123,17 +132,30 @@ Traits ajoutés : `trait:machine` (vaisseaux, robots, armes), `trait:epee` (les 
 
 Équilibrage indicatif (bots aléatoires, 6000 parties en decks mono-univers) : tous les univers entre 48 et 53 % de victoires. Les bots ne jouent pas les synergies (Veli seul, combos Benj) : ces chiffres repèrent les cartes cassées, ils ne remplacent pas des parties réelles.
 
+## Backlog du polish (phase 4)
+
+Noté le 2026-10-07, à faire après l'intégration ytcg :
+
+- **Drag & drop** des cartes de la main vers les lieux (dnd-kit + effet de vent repris de `../ytcg-game-hex-prototype`).
+- **Une animation pour chaque événement** : pioche, pose sur un lieu, révélation, gain/perte de puissance, destruction, état posé/retiré, révélation d'un lieu, repioche, fin de partie. Le flux d'événements par joueur (`projectEventsForPlayer`) est déjà ordonné pour être rejoué en séquence.
+- **Pause de lecture à la révélation** : après la résolution d'un tour, laisser ~5 s pour lire les cartes posées et leurs effets avant que le chrono du tour suivant ne démarre (côté serveur : l'échéance du tour suivant tient compte de cette pause).
+- **Infobulles** sur les effets des cartes et sur les états (règle de Folie, Défonce, Coriace…).
+- **Bonus et malus visibles sur les cartes** : puissance de base vs actuelle, détail des modificateurs (permanents et continus), états avec leur nombre de cumuls.
+- Illustrations des cartes et rendu façon ytcg (cadre, tilt, holo), bundle client découpé.
+- Colyseus **monitor** et **playground** au déploiement.
+
 ## Phases
 
 1. **Phase 0 — moteur** : `packages/engine`, règles complètes, registre d'effets, cartes importées de YoulzAssets, tests, simulation par bots.
 2. **Phase 1 — mécaniques** : états (Folie, Défonce, Coriace), effets multiples, capacités des cartes par personnage et par univers, texte français généré (`cards.md`).
-3. **Phase 2 — multijoueur** : serveur Colyseus (session de jeu pure + room privée à deux), auth par le cookie JWT ytcg (pseudo libre en dev), vue et événements filtrés par joueur, chrono de tour, reconnexion, forfait, client React minimal jouable.
+3. **Phase 2 — multijoueur** (+ **2b, règles de deck** : terrain, quota de coûts, main garantie, repioche, pose cachée) : serveur Colyseus (session de jeu pure + room privée à deux), auth par le cookie JWT ytcg (pseudo libre en dev), vue et événements filtrés par joueur, chrono de tour, reconnexion, forfait, client React minimal jouable.
 4. **Phase 3 — intégration ytcg** (PR côté youl-tcg) : tags sur les cartes (gérés sur le site, filtres joueurs), entités de deck, API de deck validé, lien vers le jeu.
 5. **Phase 4+** : invitations entre amis, rendu soigné, déploiement derrière Traefik, Bankai.
 6. **Phase finale — bots d'équilibrage** : un bot glouton rapide (simule ses poses avant de jouer), puis un bot plus malin (Monte Carlo) ; decks d'archétype et constructeur de decks évolutif ; rapport des combos (gain par paire de cartes, popularité dans les decks gagnants).
 
 ## Questions ouvertes
 
+- **Cartes lieu** : une carte lieu sert de terrain ; reste-t-elle aussi jouable comme carte normale (Monde-Ruche est aujourd'hui une 1/1 dans les données), ou devient-elle uniquement un terrain ? Et les univers sans carte lieu (Bleach, KDA, Eldia, l'album…) : on leur en crée une ?
 - Le nom et les visuels d'une carte viennent de ytcg : on les récupère à l'exécution (API) ou on les fige dans un export au moment du build ?
 - Comment évoluent les lieux : tirés au hasard parmi tous les univers, ou liés aux univers des decks ?
 - Un nouveau joueur a-t-il assez de cartes distinctes pour composer 12 cartes dès ses premiers jours ?

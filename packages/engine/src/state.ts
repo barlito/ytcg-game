@@ -31,10 +31,13 @@ export interface PlayerState {
   energy: number;
   spent: number;
   ready: boolean;
+  mulliganUsed: boolean;
 }
 
 export interface LocationState {
   defId: string;
+  // The player whose location card it is, null for the random one.
+  chosenBy: PlayerIndex | null;
   revealed: boolean;
   cards: [string[], string[]];
 }
@@ -62,6 +65,7 @@ export type GameEvent =
   | { type: 'turnStarted'; turn: number }
   | { type: 'locationRevealed'; location: number }
   | { type: 'cardDrawn'; player: PlayerIndex; card: string }
+  | { type: 'handRedrawn'; player: PlayerIndex }
   | { type: 'revealPriority'; player: PlayerIndex }
   | { type: 'cardRevealed'; card: string; player: PlayerIndex; location: number }
   | { type: 'powerChanged'; card: string; delta: number }

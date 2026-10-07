@@ -5,6 +5,7 @@ import {
   PLAYERS,
   Rng,
   applyAction,
+  buildRandomDeck,
   checkInvariants,
   createGame,
   gameActionSchema,
@@ -14,6 +15,10 @@ import {
 import { loadDataDir } from '../src/sim/data.ts';
 
 const catalog = loadDataDir();
+
+function legalDeck(rng: Rng): string[] {
+  return buildRandomDeck(catalog, rng) ?? [];
+}
 
 // Both players play their first playable card (sometimes taken back), checking the invariants after each action.
 function playCheckedTurn(start: GameState, rng: Rng): GameState {
@@ -39,14 +44,13 @@ function playCheckedTurn(start: GameState, rng: Rng): GameState {
 
 describe('state invariants', () => {
   it('keeps every card in exactly one place after every action of random games', () => {
-    const ids = [...catalog.cards.keys()];
     for (let game = 0; game < 200; game++) {
       const rng = new Rng({ s: game + 1 });
       let { state } = createGame(catalog, {
         seed: `invariants:${game}`,
         players: [
-          { id: 'a', deck: rng.shuffle([...ids]).slice(0, 12) },
-          { id: 'b', deck: rng.shuffle([...ids]).slice(0, 12) },
+          { id: 'a', deck: legalDeck(rng) },
+          { id: 'b', deck: legalDeck(rng) },
         ],
       });
       expect(checkInvariants(state)).toEqual([]);
@@ -60,8 +64,8 @@ describe('state invariants', () => {
     const { state } = createGame(catalog, {
       seed: 'broken',
       players: [
-        { id: 'a', deck: [...catalog.cards.keys()].slice(0, 12) },
-        { id: 'b', deck: [...catalog.cards.keys()].slice(0, 12) },
+        { id: 'a', deck: legalDeck(new Rng({ s: 1 })) },
+        { id: 'b', deck: legalDeck(new Rng({ s: 2 })) },
       ],
     });
     const uid = state.players[0].hand[0] ?? '';
