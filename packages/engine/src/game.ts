@@ -2,7 +2,7 @@ import type { GameAction } from './action.ts';
 import type { Catalog } from './catalog.ts';
 import { Runtime } from './runtime/runtime.ts';
 import { type GameSetup, startGame } from './runtime/setup.ts';
-import { cardAt, occupancy } from './runtime/state-access.ts';
+import { cardAt, locationAt, occupancy } from './runtime/state-access.ts';
 import { LOCATION_CAPACITY } from './rules.ts';
 import type { GameEvent, GameState, PlayerIndex } from './state.ts';
 
@@ -28,6 +28,31 @@ export function applyAction(catalog: Catalog, state: GameState, action: GameActi
 // Queries read the state as is: they never draw randomness nor mutate anything.
 export function powerOf(catalog: Catalog, state: GameState, card: string): number {
   return new Runtime(catalog, state).board.power(card);
+}
+
+export interface PowerBreakdown {
+  // Printed power of the card.
+  printed: number;
+  // Permanent modifiers (addPower effects, status rules) since it was played.
+  modifier: number;
+  // Ongoing bonuses, one per source card or location.
+  ongoing: { from: 'card' | 'location'; defId: string; amount: number }[];
+}
+
+export function powerBreakdown(catalog: Catalog, state: GameState, card: string): PowerBreakdown {
+  const board = new Runtime(catalog, state).board;
+  const instance = cardAt(state, card);
+  return {
+    printed: catalog.card(instance.defId).power,
+    modifier: instance.powerModifier,
+    ongoing: board
+      .ongoingBonuses(card)
+      .map(({ source, amount }) =>
+        source.card === null
+          ? { from: 'location', defId: locationAt(state, source.location).defId, amount }
+          : { from: 'card', defId: cardAt(state, source.card).defId, amount },
+      ),
+  };
 }
 
 export function locationPowers(catalog: Catalog, state: GameState): [number, number][] {
