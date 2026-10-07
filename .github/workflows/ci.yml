@@ -18,5 +18,7 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
+      - name: Client production build
+        run: npm run build -w @ytcg-game/client
       - name: Bot simulation smoke run
         run: npm run sim -w @ytcg-game/engine -- --games 200 --mode universe --top 3
