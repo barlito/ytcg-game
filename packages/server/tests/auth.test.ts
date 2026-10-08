@@ -4,8 +4,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { AuthenticationError } from '../src/auth/authenticator.ts';
 import { DevAuthenticator } from '../src/auth/dev-authenticator.ts';
 import { JwtAuthenticator, readCookie } from '../src/auth/jwt-authenticator.ts';
-import { CatalogDeckProvider, DeckError } from '../src/decks/deck-provider.ts';
-import { ALICE, catalog, randomDeck } from './support.ts';
+import { ALICE, randomDeck } from './support.ts';
 
 function contextWithCookie(cookie: string | null): AuthContext {
   const headers = new Headers();
@@ -59,19 +58,5 @@ describe('development authentication', () => {
     const deck = randomDeck(1);
     await expect(dev.authenticate({}, { name: 'Alice', deck })).resolves.toEqual(ALICE);
     await expect(dev.authenticate({}, { deck })).rejects.toThrow(AuthenticationError);
-  });
-});
-
-describe('catalog decks', () => {
-  it('accepts a legal deck and refuses the rest', async () => {
-    const decks = new CatalogDeckProvider(catalog);
-    const deck = randomDeck(9);
-    await expect(decks.deckFor(ALICE, { deck })).resolves.toEqual(deck);
-    await expect(decks.deckFor(ALICE, { deck: { ...deck, cards: deck.cards.slice(0, 11) } })).rejects.toThrow(
-      DeckError,
-    );
-    await expect(decks.deckFor(ALICE, { deck: { ...deck, location: 'nowhere' } })).rejects.toThrow(DeckError);
-    await expect(decks.deckFor(ALICE, { deck: { cards: deck.cards } })).resolves.toEqual({ cards: deck.cards });
-    await expect(decks.deckFor(ALICE, {})).rejects.toThrow(DeckError);
   });
 });

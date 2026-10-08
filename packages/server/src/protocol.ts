@@ -22,12 +22,22 @@ export const deckChoiceSchema = z.object({
 
 export type DeckChoice = z.output<typeof deckChoiceSchema>;
 
-export const joinOptionsSchema = z.object({
+// Production: a reference to one of the player's ytcg decks, nothing else (strict: an inline deck is refused).
+export const deckRefOptionsSchema = z.strictObject({
+  deckId: z.string().regex(/^[\w-]{1,64}$/),
+});
+
+export type DeckRefOptions = z.output<typeof deckRefOptionsSchema>;
+
+// Development only (src/dev.ts): a free pseudo and an inline deck checked against the catalog.
+export const devJoinOptionsSchema = z.object({
   deck: deckChoiceSchema,
   name: z.string().trim().min(1).max(30).optional(),
 });
 
-export type JoinOptions = z.output<typeof joinOptionsSchema>;
+export type DevJoinOptions = z.output<typeof devJoinOptionsSchema>;
+
+export type JoinOptions = DeckRefOptions | DevJoinOptions;
 
 // Server → client.
 export interface SeatInfo {

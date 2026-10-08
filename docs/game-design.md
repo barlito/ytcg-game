@@ -132,7 +132,7 @@ Les lieux suivent le même modèle (`data/locations/`), avec leur univers et leu
 - **Parties privées par code** : un joueur crée la partie, reçoit un code (l'id de la room) et l'envoie à un ami, qui rejoint avec. La partie démarre dès que le second joueur arrive.
 - **Chrono de tour : 60 s** (`TURN_SECONDS`). À l'échéance, le serveur termine le tour des joueurs qui ne l'ont pas fait, avec les cartes déjà posées.
 - **Déconnexion** : 30 s pour revenir (`RECONNECT_SECONDS`), un rafraîchissement de page ramène dans la partie. Passé ce délai, ou en quittant, le joueur **perd par forfait**.
-- **Decks** : en attendant ytcg (phase 3), le client envoie un deck de 12 cartes du catalogue (aléatoire dans le client minimal), vérifié par le serveur contre le catalogue seulement, sans contrôle de possession.
+- **Decks** : jusqu'à la phase 3b, le client envoyait un deck de 12 cartes du catalogue (aléatoire), vérifié contre le catalogue seulement. Depuis la phase 3b, voir [Decks ytcg](#decks-ytcg-phase-3b) ; le flux aléatoire ne reste qu'en développement.
 - Le client n'envoie jamais son numéro de joueur : le serveur le déduit de l'identité authentifiée.
 - **Synchronisation** : chaque joueur reçoit un message avec SA vue (`projectForPlayer`), pas l'état Colyseus synchronisé avec des filtres (`StateView`). Choix du 2026-10-07 : une seule fonction pure et testée décide de ce qui est visible (les filtres demanderaient d'ajouter/retirer chaque carte de chaque vue à chaque mouvement, un oubli = une fuite), pas de second modèle Schema à maintenir, et le gain des deltas est négligeable en tour par tour. À revoir si animations fines ou spectateurs.
 
@@ -161,6 +161,22 @@ Traits ajoutés : `trait:machine` (vaisseaux, robots, armes), `trait:epee` (les 
 
 Équilibrage indicatif (bots aléatoires, 6000 parties en decks mono-univers, phase 3a) : tous les univers entre 47 et 53 % de victoires (KDA 52,9 %, Eldia 47,2 %). Depuis que les cartes lieu sont devenues des terrains, **Divinity, Replicant et Space Nomad ne peuvent plus former un deck mono-univers** (une seule carte à 1 de coût, le quota en demande 2 ; Cosmonaut, 6 cartes, ne le pouvait déjà pas) : la simulation par univers les ignore, ils restent jouables en deck mixte. Les bots ne jouent pas les synergies (Veli seul, combos Benj) : ces chiffres repèrent les cartes cassées, ils ne remplacent pas des parties réelles.
 
+## Decks ytcg (phase 3b)
+
+Décisions du 2026-10-08 :
+
+- **ytcg possède les decks** (création, possession, contrat `../youl-tcg/docs/duel-api.md`) ; le jeu possède **ses règles** (coûts, courbe, cartes et terrains connus du jeu). ytcg ne vérifie que la possession, le serveur de jeu revalide ses règles à chaque partie.
+- **Rejoindre une partie** : le client envoie seulement `{ deckId }`. Le serveur de production (`YtcgDeckProvider`) demande à ytcg le deck **tel qu'il doit être joué maintenant** (`GET /api/duel/server/decks/{id}?player=<discordId>`, jeton serveur `DUEL_SERVER_TOKEN`, 3 s max), puis applique les règles du jeu. Refus en clair : deck incomplet (« N cartes manquent »), deck introuvable, carte ou terrain pas encore jouable dans le duel, courbe de coûts à revoir ; ytcg injoignable = « Youl TCG est indisponible, réessaie. ». Le serveur de production **n'accepte jamais de deck envoyé par le client** (schéma strict) ; le deck en ligne et le pseudo libre n'existent que dans le serveur de développement (`src/dev.ts`).
+- **Constructeur de decks** dans le client : la page d'accueil liste les decks du joueur (jouable / cartes manquantes / règles du duel), les crée, modifie et supprime via l'API joueur de ytcg (cookie `jwt`). L'éditeur ne propose que les cartes possédées **connues du jeu**, avec filtres univers / coût / tag, 12 cartes + un terrain possédé optionnel, la courbe en direct (règles du moteur) et les erreurs de ytcg rattachées au champ (nom, carte, terrain). Un deck peut être enregistré même si sa courbe est à revoir (ytcg l'accepte), il est alors marqué « Règles du duel » et ne peut pas être choisi pour jouer.
+- **Session expirée** : lien « Se connecter sur Youl TCG » vers l'URL fournie par ytcg. **ytcg injoignable** : en développement, le flux aléatoire d'origine (`make up` marche sans ytcg) ; en production, un message « indisponible » avec « Réessayer ».
+- Une carte vendue, échangée ou recyclée rend le deck incomplet (calculé par ytcg à chaque lecture) : rien n'est bloqué côté économie, le joueur corrige son deck.
+
+### Reste à faire pour la mise en ligne
+
+- **Déploiement** sur le domaine ytcg derrière Traefik (client et serveur sous un préfixe, voir [Architecture](#architecture)) : le cookie `jwt` doit atteindre l'API joueur (même origine, `VITE_YTCG_URL` vide) et le handshake websocket.
+- **Côté ytcg** : définir le secret partagé `DUEL_SERVER_TOKEN` (même valeur des deux côtés), importer les tags et terrains du jeu (`bin/console app:duel:import-game-data <ytcg-game/data>`, d'abord avec `--dry-run`), puis activer le feature flag `duel` (admin « Fonctionnalités »).
+- **Côté serveur de jeu** : `YTCG_API_URL` (ytcg vu depuis le serveur, réseau Traefik partagé), `DUEL_SERVER_TOKEN`, `YTCG_JWT_PUBLIC_KEY_PATH` (le serveur refuse de démarrer sans eux).
+
 ## Polish du jeu (phase 4)
 
 Décisions du 2026-10-08 :
@@ -184,9 +200,10 @@ Décisions du 2026-10-08 :
 3. **Phase 2 — multijoueur** (+ **2b, règles de deck** : terrain, quota de coûts, main garantie, repioche, pose cachée) : serveur Colyseus (session de jeu pure + room privée à deux), auth par le cookie JWT ytcg (pseudo libre en dev), vue et événements filtrés par joueur, chrono de tour, reconnexion, forfait, client React minimal jouable.
 4. **Phase 3a — terrains et illustrations** : les cartes lieu deviennent des terrains (non jouables), lieux inventés supprimés, nom de fichier des illustrations ytcg dans les données, affichage dans le client.
 5. **Phase 3 — intégration ytcg** (PR côté youl-tcg) : tags sur les cartes (gérés sur le site, filtres joueurs), entités de deck, API de deck validé, lien vers le jeu.
-6. **Phase 4 — polish** : drag & drop, rendu façon ytcg, animation de chaque événement, pause de lecture, infobulles, bonus/malus visibles, bundle découpé.
-7. **Phase 5+** : invitations entre amis, déploiement derrière Traefik, Bankai.
-8. **Phase finale — bots d'équilibrage** : un bot glouton rapide (simule ses poses avant de jouer), puis un bot plus malin (Monte Carlo) ; decks d'archétype et constructeur de decks évolutif ; rapport des combos (gain par paire de cartes, popularité dans les decks gagnants).
+6. **Phase 3b — decks ytcg dans le jeu** : `YtcgDeckProvider` (deck validé par ytcg au moment de rejoindre, puis règles du jeu), constructeur de decks dans le client (liste, édition, courbe en direct, erreurs ytcg par champ, connexion expirée). Reste : déploiement sur le domaine ytcg et mise en place côté ytcg (voir [Decks ytcg](#decks-ytcg-phase-3b)).
+7. **Phase 4 — polish** : drag & drop, rendu façon ytcg, animation de chaque événement, pause de lecture, infobulles, bonus/malus visibles, bundle découpé.
+8. **Phase 5+** : invitations entre amis, déploiement derrière Traefik, Bankai.
+9. **Phase finale — bots d'équilibrage** : un bot glouton rapide (simule ses poses avant de jouer), puis un bot plus malin (Monte Carlo) ; decks d'archétype et constructeur de decks évolutif ; rapport des combos (gain par paire de cartes, popularité dans les decks gagnants).
 
 ## Questions ouvertes
 
@@ -194,6 +211,5 @@ Décisions du 2026-10-08 :
 - Divinity, Replicant et Space Nomad n'ont plus qu'une carte à 1 de coût, donc plus de deck mono-univers : passer une carte à 1 dans chacun (coûts) si l'on veut ces decks ?
 - Comment évoluent les lieux : tirés au hasard parmi tous les univers, ou liés aux univers des decks ?
 - Un nouveau joueur a-t-il assez de cartes distinctes pour composer 12 cartes dès ses premiers jours ?
-- Que devient une carte vendue ou échangée alors qu'elle est dans un deck : le deck devient invalide, ou on bloque la vente ?
 - Le slug de Bleach est temporairement `benj-reviens` en prod ; les données de jeu gardent `b` (manifeste) jusqu'à la synchronisation avec ytcg.
 - Valeurs des capacités : première version à relire dans `cards.md`, à rejouer en vrai.

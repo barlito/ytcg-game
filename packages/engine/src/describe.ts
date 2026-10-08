@@ -5,6 +5,7 @@ import type { EffectParams } from './abilities/effects.ts';
 import { type StatusId, statusRule } from './abilities/statuses.ts';
 import type { TargetParams } from './abilities/targets.ts';
 import type { CardDefinition, Catalog, LocationDefinition } from './catalog.ts';
+import type { CurveRule } from './deck.ts';
 
 const TRAIT_LABEL: Record<string, string> = { epee: 'épée' };
 
@@ -42,6 +43,13 @@ export function describeAbility(catalog: Catalog, ability: AbilityParams, onLoca
     })
     .join(' et ');
   return `${TRIGGER_TEXT[ability.trigger]} : ${condition}${effects}.`;
+}
+
+// « Au moins 2 cartes à 1 » / « Au plus 3 cartes à 5 ou plus »
+export function describeCurveRule(rule: CurveRule): string {
+  return rule.kind === 'minimum'
+    ? `Au moins ${plural(rule.count, 'carte')} à ${rule.cost}`
+    : `Au plus ${plural(rule.count, 'carte')} à ${rule.fromCost} ou plus`;
 }
 
 export function tagLabel(catalog: Catalog, tag: string): string {

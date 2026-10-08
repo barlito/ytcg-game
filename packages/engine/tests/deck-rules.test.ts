@@ -9,7 +9,9 @@ import {
   applyAction,
   buildRandomDeck,
   createGame,
+  deckCurveChecks,
   deckCurveIssues,
+  describeCurveRule,
   guaranteeOpening,
   projectEventsForPlayer,
   projectForPlayer,
@@ -34,6 +36,17 @@ describe('deck curve', () => {
     expect(deckCurveIssues(catalog, noTwos)).toEqual(['a deck needs at least 2 cards costing 2']);
     const expensive = ['big-a', 'big-b', ...deckOf()].slice(0, DECK_SIZE);
     expect(deckCurveIssues(catalog, expensive)).toEqual([]);
+  });
+
+  it('counts each rule for a live display, in French', () => {
+    const noTwos = deckOf().filter((id) => !id.startsWith('filler-2-'));
+    const checks = deckCurveChecks(catalog, ['big-a', 'big-b', ...noTwos]);
+    expect(checks.map((check) => [describeCurveRule(check.rule), check.actual, check.ok])).toEqual([
+      ['Au moins 2 cartes à 1', 2, true],
+      ['Au moins 2 cartes à 2', 0, false],
+      ['Au moins 2 cartes à 3', 2, true],
+      ['Au plus 3 cartes à 5 ou plus', 2, true],
+    ]);
   });
 
   it('is part of the deck validation', () => {

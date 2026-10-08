@@ -3,7 +3,7 @@ import type { Room } from '@colyseus/sdk';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { createGameServer } from '../src/app.ts';
 import { DevAuthenticator } from '../src/auth/dev-authenticator.ts';
-import { CatalogDeckProvider } from '../src/decks/deck-provider.ts';
+import { CatalogDeckProvider } from '../src/decks/catalog-deck-provider.ts';
 import {
   type GameMessage,
   type LobbyMessage,

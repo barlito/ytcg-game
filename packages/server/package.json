@@ -25,6 +25,7 @@
   },
   "exports": {
     "./protocol": "./src/protocol.ts",
-    "./messages": "./src/messages.ts"
+    "./messages": "./src/messages.ts",
+    "./deck-rules": "./src/decks/game-rules.ts"
   }
 }
