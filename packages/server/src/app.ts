@@ -4,15 +4,20 @@ import { WebSocketTransport } from '@colyseus/ws-transport';
 import type { Catalog } from '@ytcg-game/engine';
 import type { Authenticator } from './auth/authenticator.ts';
 import type { ServerConfig } from './config.ts';
-import { CatalogDeckProvider } from './decks/deck-provider.ts';
+import type { DeckProvider } from './decks/deck-provider.ts';
 import { ROOM_NAME } from './protocol.ts';
 import { type RoomServices, defineDuelRoom } from './room/duel-room.ts';
 
-export function roomServices(catalog: Catalog, authenticator: Authenticator, config: ServerConfig): RoomServices {
+// The implementations are chosen by the entry points only (src/main.ts, src/dev.ts).
+export interface Implementations {
+  catalog: Catalog;
+  authenticator: Authenticator;
+  decks: DeckProvider;
+}
+
+export function roomServices(implementations: Implementations, config: ServerConfig): RoomServices {
   return {
-    catalog,
-    authenticator,
-    decks: new CatalogDeckProvider(catalog),
+    ...implementations,
     turnSeconds: config.TURN_SECONDS,
     revealPauseSeconds: config.REVEAL_PAUSE_SECONDS,
     reconnectSeconds: config.RECONNECT_SECONDS,
