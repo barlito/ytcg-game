@@ -1,6 +1,6 @@
 /* Reveal spotlight: the card or terrain enlarged in the center, then flying to its spot (duration = SPOTLIGHT_MS). */
 .spotlight {
-  --spot-ms: 2200ms;
+  --spot-ms: 3800ms;
   position: fixed;
   inset: 0;
   z-index: 45;
