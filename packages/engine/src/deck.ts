@@ -2,15 +2,39 @@ import type { Catalog } from './catalog.ts';
 import type { Rng } from './rng.ts';
 import { DECK_MINIMUM_BY_COST, DECK_SIZE, EXPENSIVE_FROM_COST, EXPENSIVE_MAXIMUM, OPENING_COST } from './rules.ts';
 
-export function deckCurveIssues(catalog: Catalog, deck: readonly string[]): string[] {
+export type CurveRule =
+  { kind: 'minimum'; cost: number; count: number } | { kind: 'maximum'; fromCost: number; count: number };
+
+// One line per curve rule, with how many cards of the deck it counts: what a deck builder displays live.
+export interface CurveCheck {
+  rule: CurveRule;
+  actual: number;
+  ok: boolean;
+}
+
+export function deckCurveChecks(catalog: Catalog, deck: readonly string[]): CurveCheck[] {
   const costs = deck.map((id) => catalog.card(id).cost);
-  const issues = DECK_MINIMUM_BY_COST.filter(({ cost, count }) => costs.filter((c) => c === cost).length < count).map(
-    ({ cost, count }) => `a deck needs at least ${count} cards costing ${cost}`,
-  );
-  if (costs.filter((cost) => cost >= EXPENSIVE_FROM_COST).length > EXPENSIVE_MAXIMUM) {
-    issues.push(`a deck holds at most ${EXPENSIVE_MAXIMUM} cards costing ${EXPENSIVE_FROM_COST} or more`);
-  }
-  return issues;
+  const minimums = DECK_MINIMUM_BY_COST.map(({ cost, count }): CurveCheck => {
+    const actual = costs.filter((c) => c === cost).length;
+    return { rule: { kind: 'minimum', cost, count }, actual, ok: actual >= count };
+  });
+  const expensive = costs.filter((cost) => cost >= EXPENSIVE_FROM_COST).length;
+  const maximum: CurveCheck = {
+    rule: { kind: 'maximum', fromCost: EXPENSIVE_FROM_COST, count: EXPENSIVE_MAXIMUM },
+    actual: expensive,
+    ok: expensive <= EXPENSIVE_MAXIMUM,
+  };
+  return [...minimums, maximum];
+}
+
+export function deckCurveIssues(catalog: Catalog, deck: readonly string[]): string[] {
+  return deckCurveChecks(catalog, deck)
+    .filter((check) => !check.ok)
+    .map(({ rule }) =>
+      rule.kind === 'minimum'
+        ? `a deck needs at least ${rule.count} cards costing ${rule.cost}`
+        : `a deck holds at most ${rule.count} cards costing ${rule.fromCost} or more`,
+    );
 }
 
 // A random deck that respects the curve, drawn from the pool (default: every card), or null when impossible.
