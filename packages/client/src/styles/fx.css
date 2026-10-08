@@ -2,10 +2,11 @@
 .fx-reveal .tcard__body {
   animation: fx-reveal 0.5s ease-out;
 }
+/* The spotlight already flipped the card open: on the board it only lands. */
 @keyframes fx-reveal {
   from {
-    transform: rotateY(90deg) scale(1.15);
-    filter: brightness(2);
+    transform: scale(1.25);
+    filter: brightness(1.8);
   }
 }
 .fx-destroy .tcard__body {
@@ -81,8 +82,8 @@
 }
 @keyframes fx-flip {
   from {
-    transform: rotateX(90deg);
-    filter: brightness(2.2);
+    transform: scale(1.12);
+    filter: brightness(1.8);
   }
 }
 .fx-bump {

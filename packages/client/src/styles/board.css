@@ -283,17 +283,38 @@
 
 .result {
   position: fixed;
-  inset: 0;
+  top: 5rem;
+  left: 50%;
   z-index: 50;
+  transform: translateX(-50%);
   display: grid;
-  place-content: center;
-  gap: 1rem;
+  justify-items: center;
+  gap: 0.6rem;
+  min-width: min(420px, calc(100vw - 2rem));
+  padding: 1.2rem 1.6rem;
   text-align: center;
-  background: #0b0712dd;
+  background: var(--surface);
+  border: 1px solid var(--primary);
+  box-shadow:
+    0 12px 40px #000c,
+    0 0 24px #a435f055;
+  clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+}
+.result p {
+  margin: 0;
+  color: var(--text-muted);
+}
+.result-score {
+  font-family: 'JetBrains Mono', monospace;
+}
+.status-ended {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  color: var(--text-muted);
 }
 .result h2 {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 3rem;
+  font-size: 2.4rem;
   margin: 0;
 }
 .result h2.is-win {

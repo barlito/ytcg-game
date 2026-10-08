@@ -88,7 +88,7 @@ export default function Board({ game, send, onLeave }: Props): React.JSX.Element
           <Spotlight view={view} seats={game.seats} />
           <ReplayBanner you={view.you} seats={game.seats} onSkip={skip} />
           {game.outcome !== null && !scene.outcomeHeld && (
-            <ResultBanner outcome={game.outcome} you={view.you} onLeave={onLeave} />
+            <ResultBanner outcome={game.outcome} you={view.you} view={view} onLeave={onLeave} />
           )}
         </main>
       </DuelDnd>

@@ -82,9 +82,13 @@ export function StatusBar(props: Props): React.JSX.Element {
           Repiocher ma main
         </button>
       )}
-      <button type="button" className="btn-arcade" disabled={view.ready || view.status === 'ended'} onClick={onEndTurn}>
-        {view.ready ? 'En attente…' : 'Fin du tour'}
-      </button>
+      {view.status === 'ended' ? (
+        <span className="status-ended">Partie terminée</span>
+      ) : (
+        <button type="button" className="btn-arcade" disabled={view.ready} onClick={onEndTurn}>
+          {view.ready ? 'En attente de l’adversaire…' : 'Fin du tour'}
+        </button>
+      )}
     </div>
   );
 }
