@@ -2,7 +2,7 @@ import { DECK_SIZE } from '@ytcg-game/engine';
 import { catalog } from '../../catalog.ts';
 import { curveBars, curveLines } from '../../decks/curve.ts';
 
-const BAR_MAX_PX = 80;
+const BAR_MAX_REM = 5;
 
 // Cost histogram and the engine's curve rules, live.
 export function CurvePanel({ cards }: { cards: string[] }): React.JSX.Element {
@@ -15,7 +15,7 @@ export function CurvePanel({ cards }: { cards: string[] }): React.JSX.Element {
         {bars.map((bar) => (
           <li key={bar.label} aria-label={`Coût ${bar.label} : ${bar.count}`}>
             <span className="curve__count">{bar.count}</span>
-            <span className="curve__bar" style={{ height: `${(bar.count / DECK_SIZE) * BAR_MAX_PX}px` }} />
+            <span className="curve__bar" style={{ height: `${(bar.count / DECK_SIZE) * BAR_MAX_REM}rem` }} />
             <span className="curve__cost">{bar.label}</span>
           </li>
         ))}

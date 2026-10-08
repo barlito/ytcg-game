@@ -20,6 +20,10 @@
   color-scheme: dark;
 }
 
+/* Everything sized in rem grows on large screens: 16px up to ~1780×1000, 1.6vh at 1080p, ×2 at 4K. */
+html {
+  font-size: clamp(16px, min(0.9vw, 1.6vh), 36px);
+}
 * {
   box-sizing: border-box;
 }
@@ -74,11 +78,15 @@ input {
 /* Home & lobby */
 .home,
 .lobby {
-  max-width: 720px;
+  max-width: 45rem;
   margin: 0 auto;
   padding: 3rem 1rem;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
+}
+.home {
+  max-width: 64rem;
 }
 .title {
   font-family: 'Space Grotesk', sans-serif;
@@ -132,7 +140,8 @@ select {
   color: var(--text);
   padding: 0.6rem 0.8rem;
   font: inherit;
-  min-width: 260px;
+  min-width: min(16rem, 100%);
+  max-width: 100%;
 }
 .location-help {
   color: var(--text-muted);

@@ -1,11 +1,12 @@
 /* Board layout: fits 1280×800 without scrolling, three columns of locations down to phone width. */
 /* Hand card width, also read by the drag overlay (rendered outside .board). */
+/* Last term: the height left once the locations (whose cards scale with the board width) are laid out. */
 :root {
-  --hand-card: clamp(132px, 11.6vw, 204px);
+  --hand-card: clamp(132px, min(13.5vw, 26vh, 71.8vh - 0.156 * min(100vw, 120rem) - 11.25rem), 600px);
 }
 .board {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(220px, 15vw, 280px);
+  grid-template-columns: minmax(0, 1fr) clamp(13.75rem, 15vw, 17.5rem);
   grid-template-areas: 'status status' 'locations log' 'hand log';
   grid-template-rows: auto auto auto;
   align-items: start;
@@ -13,7 +14,7 @@
   gap: 0.8rem;
   padding: 0.8rem;
   min-height: 100vh;
-  max-width: 1760px;
+  max-width: 120rem;
   margin: 0 auto;
 }
 .status-bar {
@@ -142,7 +143,7 @@
 .location-art {
   display: block;
   width: calc(100% + 1rem);
-  height: 48px;
+  height: 3rem;
   margin: -0.4rem -0.5rem 0.3rem;
   object-fit: cover;
 }
@@ -269,7 +270,7 @@
   border: 1px solid var(--hairline);
   padding: 0.7rem;
   overflow-y: auto;
-  max-height: calc(100vh - 5rem);
+  max-height: calc(100vh - 7rem);
 }
 .event-log ol {
   list-style: none;
@@ -290,7 +291,7 @@
   display: grid;
   justify-items: center;
   gap: 0.6rem;
-  min-width: min(420px, calc(100vw - 2rem));
+  min-width: min(26rem, calc(100vw - 2rem));
   padding: 1.2rem 1.6rem;
   text-align: center;
   background: var(--surface);
@@ -343,7 +344,7 @@
     min-height: calc((100cqi - 0.6rem - 0.3rem) / 2 / 0.718);
   }
   .location-art {
-    height: 32px;
+    height: 2rem;
   }
   .location-text {
     -webkit-line-clamp: 3;

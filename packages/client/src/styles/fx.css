@@ -191,7 +191,7 @@
   left: 0;
   top: 0;
   visibility: hidden;
-  max-width: min(280px, calc(100vw - 16px));
+  max-width: min(20rem, calc(100vw - 16px));
   padding: 0.6rem 0.7rem;
   background: #120b1df5;
   border: 1px solid var(--primary);

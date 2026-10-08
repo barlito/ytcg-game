@@ -25,13 +25,13 @@
 }
 .spotlight__panel {
   display: grid;
-  grid-template-columns: auto minmax(0, 22rem);
+  grid-template-columns: auto minmax(0, 24rem);
   align-items: center;
   gap: 1.6rem;
   max-width: 100%;
 }
 .spotlight__figure {
-  width: clamp(170px, min(24vw, 42vh * 0.718), 290px);
+  width: clamp(170px, min(26vw, 36vh), 820px);
   animation: spot-fly var(--spot-ms) cubic-bezier(0.3, 0.7, 0.3, 1) forwards;
 }
 .spotlight__figure .tcard__body {
@@ -131,7 +131,7 @@
 }
 .spotlight__terrain {
   position: relative;
-  width: clamp(240px, 32vw, 420px);
+  width: clamp(240px, min(34vw, 50vh), 1100px);
   aspect-ratio: 16 / 10;
   overflow: hidden;
   background: var(--surface-2);
