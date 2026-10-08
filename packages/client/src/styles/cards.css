@@ -1,0 +1,308 @@
+/* Lightweight port of the ytcg card (assets/styles/cards/): artwork under a dark mat, neon line, rarity glow, tilt. */
+.card-slot {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+}
+.card-slot:focus-visible {
+  outline: 2px solid var(--magenta);
+  outline-offset: 2px;
+}
+.card-slot.is-draggable {
+  cursor: grab;
+}
+.card-slot.is-dragging {
+  opacity: 0.25;
+}
+.card-slot.in-hand.is-selected .tcard {
+  transform: translateY(-10px);
+}
+.card-slot.in-hand.is-selected .tcard__body {
+  box-shadow:
+    0 0 0 2px var(--magenta),
+    0 0 22px var(--magenta);
+}
+.card-slot.is-disabled .tcard {
+  filter: saturate(0.4) brightness(0.65);
+}
+.card-slot.is-pending .tcard__body {
+  outline: 2px dashed #ffffffaa;
+  outline-offset: -3px;
+  filter: brightness(0.75);
+}
+.card-slot.is-pending {
+  cursor: pointer;
+}
+
+.tcard {
+  --rx: 0deg;
+  --ry: 0deg;
+  --px: 50%;
+  --py: 50%;
+  --card-glow: var(--rarity-common);
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 0.718;
+  perspective: 600px;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s;
+}
+.tcard[data-rarity='uncommon'] {
+  --card-glow: var(--rarity-uncommon);
+}
+.tcard[data-rarity='rare'] {
+  --card-glow: var(--rarity-rare);
+}
+.tcard[data-rarity='legendary'] {
+  --card-glow: var(--rarity-legendary);
+}
+.tcard__body {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 4.55% / 3.5%;
+  background: linear-gradient(160deg, #2c1b48, #120b1d);
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--card-glow) 75%, transparent),
+    0 0 9px -2px var(--card-glow),
+    0 6px 14px -6px #000;
+}
+.tcard.is-tilting {
+  z-index: 2;
+}
+.tcard.is-tilting .tcard__body {
+  transition: transform 0.08s linear;
+  box-shadow:
+    0 0 3px -1px #fff,
+    0 0 0 1px var(--card-glow),
+    0 0 14px 2px var(--card-glow),
+    0 10px 20px -5px #000;
+}
+.tcard__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+/* Glare following the pointer (base.css .card__glare), only while tilting. */
+.tcard__glare {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  mix-blend-mode: overlay;
+  background: radial-gradient(
+    farthest-corner circle at var(--px) var(--py),
+    #ffffff8c 10%,
+    #ffffff66 20%,
+    #00000080 90%
+  );
+  transition: opacity 0.3s;
+}
+.tcard.is-tilting .tcard__glare {
+  opacity: 0.7;
+}
+/* Dark mat and neon inner line (frame.css .card__frame--youl). */
+.tcard__mat {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 3.4cqi #08050ff2,
+    inset 0 -30cqi 22cqi -14cqi #08050fee;
+}
+.tcard__mat::after {
+  content: '';
+  position: absolute;
+  inset: 2.6cqi;
+  border-radius: 2.6% / 2%;
+  padding: 0.8cqi;
+  background: linear-gradient(200deg, #46e6e6d9, #7850dcb3 45%, #ff3ea5e6);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+.tcard__cost,
+.tcard__power {
+  position: absolute;
+  top: 4cqi;
+  display: grid;
+  place-items: center;
+  min-width: 24cqi;
+  height: 24cqi;
+  padding: 0 2cqi;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 15cqi;
+  line-height: 1;
+  box-shadow: 0 1cqi 3cqi #000c;
+}
+.tcard__cost {
+  left: 4cqi;
+  border-radius: 50%;
+  background: #54a8ff;
+  color: #04121f;
+}
+.tcard__power {
+  right: 4cqi;
+  clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);
+  background: #f0e8f7;
+  color: #120b1d;
+  transition:
+    background 0.3s,
+    color 0.3s;
+}
+.tcard__power.trend-up {
+  background: var(--live);
+  color: #03210e;
+}
+.tcard__power.trend-down {
+  background: var(--danger);
+  color: #2a0710;
+}
+.tcard__name {
+  position: absolute;
+  left: 6cqi;
+  right: 6cqi;
+  bottom: 6cqi;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 10cqi;
+  line-height: 1.05;
+  color: #fff;
+  text-shadow:
+    0 0 1.2cqi #000,
+    0 0.4cqi 1.8cqi #000;
+}
+.tcard.has-text .tcard__mat {
+  box-shadow:
+    inset 0 0 0 3.4cqi #08050ff2,
+    inset 0 -80cqi 30cqi -26cqi #08050ff5;
+}
+.tcard.has-text .tcard__name {
+  bottom: auto;
+  top: 60cqi;
+  right: 12cqi;
+}
+.tcard__text {
+  position: absolute;
+  left: 6cqi;
+  right: 6cqi;
+  top: 83cqi;
+  bottom: 5cqi;
+  overflow: hidden;
+  font-size: 7.4cqi;
+  line-height: 1.25;
+  color: var(--text-muted);
+}
+.tcard__rarity {
+  position: absolute;
+  right: 6cqi;
+  bottom: 6cqi;
+  width: 5cqi;
+  height: 5cqi;
+  background: var(--card-glow);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+.tcard.has-text .tcard__rarity {
+  bottom: auto;
+  top: 62cqi;
+}
+.tcard__statuses {
+  position: absolute;
+  left: 4cqi;
+  right: 4cqi;
+  top: 31cqi;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5cqi;
+}
+.pip {
+  padding: 0.5cqi 2.5cqi;
+  font-size: 8cqi;
+  font-weight: 600;
+  background: #120b1de6;
+  border: 1px solid currentColor;
+}
+.status-mad {
+  color: var(--magenta);
+}
+.status-high {
+  color: var(--live);
+}
+.status-tough {
+  color: var(--rarity-rare);
+}
+/* Board cards are small: artwork and numbers only, the tooltip tells the rest. */
+@container (max-width: 95px) {
+  .tcard:not(.has-text) .tcard__name,
+  .tcard__rarity,
+  .tcard__text {
+    display: none;
+  }
+  .tcard.has-text .tcard__name {
+    top: auto;
+    bottom: 6cqi;
+    font-size: 12cqi;
+  }
+  .tcard__cost,
+  .tcard__power {
+    min-width: 30cqi;
+    height: 30cqi;
+    font-size: 19cqi;
+  }
+  .tcard__statuses {
+    top: auto;
+    bottom: 5cqi;
+  }
+  .pip {
+    font-size: 11cqi;
+    padding: 0 2cqi;
+  }
+}
+
+.tcard.is-back .tcard__body {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 50% 40%, #a435f055, transparent 60%),
+    repeating-linear-gradient(45deg, #2a1245 0 6cqi, #1a0d2b 6cqi 12cqi);
+  box-shadow:
+    0 0 0 1px var(--primary),
+    0 6px 14px -6px #000;
+}
+.tcard__logo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 16cqi;
+  letter-spacing: 0.1em;
+  color: #ffffff55;
+}
+
+.drag-overlay {
+  width: 118px;
+  transform-style: preserve-3d;
+  transition: transform 75ms ease-out;
+  filter: drop-shadow(0 14px 18px #000a);
+  cursor: grabbing;
+}

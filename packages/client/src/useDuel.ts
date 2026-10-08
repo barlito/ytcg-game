@@ -1,6 +1,6 @@
 import { Client, type Room } from '@colyseus/sdk';
 import type { ActionInput, ErrorMessage, GameMessage, JoinOptions, LobbyMessage } from '@ytcg-game/server/protocol';
-import { MESSAGE_ACTION, MESSAGE_ERROR, MESSAGE_GAME, MESSAGE_LOBBY, ROOM_NAME } from '@ytcg-game/server/protocol';
+import { MESSAGE_ACTION, MESSAGE_ERROR, MESSAGE_GAME, MESSAGE_LOBBY, ROOM_NAME } from '@ytcg-game/server/messages';
 import { actionErrorText } from './errors.ts';
 import { type Dispatch, type SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 

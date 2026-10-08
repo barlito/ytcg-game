@@ -1,63 +1,86 @@
-import { type LocationView, describeLocation } from '@ytcg-game/engine';
-import { catalog } from '../catalog.ts';
-import { Artwork } from './Artwork.tsx';
-import { CardTile } from './CardTile.tsx';
+import { useDroppable } from '@dnd-kit/core';
+import type { CardView, LocationView, PlayerView } from '@ytcg-game/engine';
+import { type Side, ghostsAt } from '../animation/placements.ts';
+import { usePlacements, useScene } from '../animation/useReplay.ts';
+import { type DropTarget, canDrop, dropId } from '../dnd.ts';
+import { BoardCard, PendingCard } from './card/BoardCards.tsx';
+import { useDragged } from './dnd/DragContext.ts';
+import { LocationHeader } from './LocationHeader.tsx';
 
 interface Props {
   location: LocationView;
-  canPlay: boolean;
-  onPlay: () => void;
+  view: PlayerView;
+  selected: string | null;
+  onPlay: (index: number) => void;
   onCancel: (uid: string) => void;
 }
 
-const OWNER_LABEL = { you: 'Ton terrain', opponent: 'Terrain adverse' } as const;
+interface SideProps {
+  location: number;
+  side: Side;
+  cards: CardView[];
+}
 
-function LocationHeader({ defId, chosenBy }: Pick<LocationView, 'defId' | 'chosenBy'>): React.JSX.Element {
-  if (defId === null) {
-    return (
-      <header className="location-header is-hidden">
-        <span className="location-name">Lieu inconnu</span>
-        <span className="location-text">Se révèle bientôt.</span>
-      </header>
-    );
-  }
-  const location = catalog.location(defId);
+function SideCards({ location, side, cards }: SideProps): React.JSX.Element {
+  const scene = useScene();
+  const ghosts = ghostsAt(usePlacements(), scene.dying, { location, side, present: cards });
   return (
-    <header className="location-header">
-      <Artwork key={location.id} image={location.image} className="location-art" />
-      {chosenBy !== null && <span className={`location-owner owner-${chosenBy}`}>{OWNER_LABEL[chosenBy]}</span>}
-      <span className="location-name">{location.name}</span>
-      <span className="location-text">{describeLocation(catalog, location).join(' ') || 'Aucun effet.'}</span>
-    </header>
+    <>
+      {cards.map((card) => (
+        <BoardCard key={card.uid} card={card} own={side === 'you'} />
+      ))}
+      {ghosts.map((card) => (
+        <BoardCard key={card.uid} card={card} own={side === 'you'} ghost />
+      ))}
+    </>
   );
 }
 
-export function LocationColumn({ location, canPlay, onPlay, onCancel }: Props): React.JSX.Element {
-  const { power } = location;
+// Highlight while a card is dragged: valid, hovered or refused.
+function dropClass(dragging: boolean, valid: boolean, isOver: boolean): string {
+  if (!dragging) {
+    return '';
+  }
+  if (!valid) {
+    return ' drop-invalid';
+  }
+  return isOver ? ' drop-valid drop-over' : ' drop-valid';
+}
+
+export function LocationColumn({ location, view, selected, onPlay, onCancel }: Props): React.JSX.Element {
+  const { power, index } = location;
+  const target: DropTarget = { kind: 'location', index };
+  const dragged = useDragged();
+  const valid = dragged !== null && canDrop(view, dragged, target);
+  const { setNodeRef, isOver } = useDroppable({ id: dropId(target), disabled: !valid });
+  const canPlay = selected !== null && canDrop(view, { uid: selected, origin: 'hand' }, target);
   const lead = power.you === power.opponent ? 'tie' : power.you > power.opponent ? 'you' : 'opponent';
+  const play = (event: React.MouseEvent): void => {
+    event.stopPropagation();
+    onPlay(index);
+  };
   return (
-    <section className={`location lead-${lead}${canPlay ? ' can-play' : ''}`} onClick={canPlay ? onPlay : undefined}>
+    <section
+      ref={setNodeRef}
+      className={`location lead-${lead}${canPlay ? ' can-play' : ''}${dropClass(dragged !== null, valid, isOver)}`}
+      aria-label={`Lieu ${index + 1}`}
+      onClick={canPlay ? play : undefined}
+    >
+      {canPlay && (
+        <button type="button" className="play-here btn-arcade" onClick={play}>
+          Poser ici
+        </button>
+      )}
       <div className="location-side opponent">
-        {location.cards.opponent.map((card) => (
-          <CardTile key={card.uid} card={card} />
-        ))}
+        <SideCards location={index} side="opponent" cards={location.cards.opponent} />
       </div>
       <div className="location-power opponent">{power.opponent}</div>
-      <LocationHeader defId={location.defId} chosenBy={location.chosenBy} />
+      <LocationHeader location={location} />
       <div className="location-power you">{power.you}</div>
       <div className="location-side you">
-        {location.cards.you.map((card) => (
-          <CardTile key={card.uid} card={card} />
-        ))}
+        <SideCards location={index} side="you" cards={location.cards.you} />
         {location.yourPending.map((card) => (
-          <CardTile
-            key={card.uid}
-            card={card}
-            pending
-            onClick={() => {
-              onCancel(card.uid);
-            }}
-          />
+          <PendingCard key={card.uid} card={card} locked={view.ready} onCancel={onCancel} />
         ))}
       </div>
     </section>

@@ -29,7 +29,8 @@ type Formatter<E extends PlayerEvent> = (event: E, known: KnownCards, seats: rea
 const FORMATTERS: { [K in PlayerEvent['type']]: Formatter<Extract<PlayerEvent, { type: K }>> } = {
   turnStarted: (event) => `— Tour ${event.turn} —`,
   locationRevealed: () => 'Un nouveau lieu se révèle.',
-  cardRevealed: (event, known, seats) => `${seatName(seats, event.player)} révèle ${cardName(known, event.card)}.`,
+  cardRevealed: (event, _known, seats) =>
+    `${seatName(seats, event.player)} révèle ${catalog.cards.get(event.defId)?.name ?? 'une carte'}.`,
   handRedrawn: (event, _known, seats) => `${seatName(seats, event.player)} repioche sa main.`,
   revealPriority: (event, _known, seats) => `${seatName(seats, event.player)} révèle en premier.`,
   powerChanged: (event, known) => `${cardName(known, event.card)} : ${signedPower(event.delta)}.`,

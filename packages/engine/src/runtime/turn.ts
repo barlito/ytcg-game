@@ -70,7 +70,13 @@ export class TurnFlow {
     }
     card.zone = 'board';
     locationAt(this.board.state, card.location).cards[card.owner].push(uid);
-    this.events.push({ type: 'cardRevealed', card: uid, player: card.owner, location: card.location });
+    this.events.push({
+      type: 'cardRevealed',
+      card: uid,
+      defId: card.defId,
+      player: card.owner,
+      location: card.location,
+    });
     for (const status of this.board.definitionOf(uid).statuses) {
       this.board.addStatus(uid, status, 1);
     }

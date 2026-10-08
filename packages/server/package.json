@@ -24,6 +24,7 @@
     "zod": "^4.6.5"
   },
   "exports": {
-    "./protocol": "./src/protocol.ts"
+    "./protocol": "./src/protocol.ts",
+    "./messages": "./src/messages.ts"
   }
 }

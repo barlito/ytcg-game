@@ -8,6 +8,11 @@ import { type GameEvent, type GameState, PLAYERS, type PlayerIndex, opponentOf }
 import { cardAt, locationAt } from './state-access.ts';
 import { hasRule, stacksOf } from './statuses.ts';
 
+export interface OngoingBonus {
+  source: AbilitySource;
+  amount: number;
+}
+
 interface AbilityHolder {
   abilities: readonly CompiledAbility[];
   source: AbilitySource;
@@ -51,19 +56,33 @@ export class GameBoard implements Board {
   }
 
   power(uid: string): number {
+    return this.basePower(uid) + this.ongoingBonuses(uid).reduce((sum, bonus) => sum + bonus.amount, 0);
+  }
+
+  // Printed power plus the permanent modifiers (addPower), without the ongoing bonuses.
+  basePower(uid: string): number {
     const card = cardAt(this.state, uid);
-    const base = this.catalog.card(card.defId).power + card.powerModifier;
+    return this.catalog.card(card.defId).power + card.powerModifier;
+  }
+
+  // Non-zero ongoing bonuses received by a board card, one entry per source.
+  ongoingBonuses(uid: string): OngoingBonus[] {
+    const card = cardAt(this.state, uid);
     if (card.zone !== 'board') {
-      return base;
+      return [];
     }
     const keepsLosses = !hasRule(card, 'preventsPowerLoss');
-    let bonus = 0;
+    const bonuses: OngoingBonus[] = [];
     for (const { abilities, source } of this.ongoingHolders()) {
-      for (const ability of abilities) {
-        bonus += this.ongoingBonusFor(uid, ability, source, keepsLosses);
+      const amount = abilities.reduce(
+        (sum, ability) => sum + this.ongoingBonusFor(uid, ability, source, keepsLosses),
+        0,
+      );
+      if (amount !== 0) {
+        bonuses.push({ source, amount });
       }
     }
-    return base + bonus;
+    return bonuses;
   }
 
   locationPowers(): [number, number][] {

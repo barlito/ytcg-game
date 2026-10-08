@@ -1,0 +1,281 @@
+/* Replay animations, floating numbers, banners and tooltips. */
+.fx-reveal .tcard__body {
+  animation: fx-reveal 0.5s ease-out;
+}
+@keyframes fx-reveal {
+  from {
+    transform: rotateY(90deg) scale(1.15);
+    filter: brightness(2);
+  }
+}
+.fx-destroy .tcard__body {
+  animation: fx-destroy 0.65s ease-in forwards;
+}
+@keyframes fx-destroy {
+  20% {
+    transform: translateX(-4%) rotate(-3deg);
+  }
+  40% {
+    transform: translateX(4%) rotate(3deg);
+    filter: brightness(1.6);
+  }
+  to {
+    transform: scale(0.6) rotate(8deg);
+    filter: grayscale(1) brightness(0.4);
+    opacity: 0;
+  }
+}
+.card-slot.is-ghost {
+  pointer-events: none;
+}
+.fx-power-up .tcard__body {
+  animation: fx-glow-up 0.5s ease-out;
+}
+@keyframes fx-glow-up {
+  40% {
+    transform: scale(1.08);
+    box-shadow: 0 0 24px 4px var(--live);
+  }
+}
+.fx-power-down .tcard__body {
+  animation: fx-hit 0.5s ease-out;
+}
+@keyframes fx-hit {
+  25% {
+    transform: translateX(-5%);
+    box-shadow: 0 0 24px 4px var(--danger);
+  }
+  60% {
+    transform: translateX(4%);
+  }
+}
+.fx-status .tcard__body {
+  animation: fx-pulse 0.5s ease-out;
+}
+@keyframes fx-pulse {
+  40% {
+    transform: scale(1.06);
+    filter: hue-rotate(40deg) brightness(1.3);
+  }
+}
+.fx-draw {
+  animation: fx-draw 0.3s ease-out;
+}
+@keyframes fx-draw {
+  from {
+    transform: translate(40px, 30px) rotate(8deg);
+    opacity: 0;
+  }
+}
+.hand.fx-shuffle > .card-slot {
+  animation: fx-shuffle 0.7s ease-in-out;
+}
+@keyframes fx-shuffle {
+  50% {
+    transform: translateY(30px) scale(0.9);
+    opacity: 0.3;
+  }
+}
+.location-header.fx-flip {
+  animation: fx-flip 0.8s ease-out;
+}
+@keyframes fx-flip {
+  from {
+    transform: rotateX(90deg);
+    filter: brightness(2.2);
+  }
+}
+.fx-bump {
+  animation: fx-bump 0.3s ease-out;
+}
+@keyframes fx-bump {
+  50% {
+    transform: scale(1.25);
+    color: #fff;
+  }
+}
+
+.fx-float {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 35%;
+  transform: translateX(-50%);
+  padding: 0.05rem 0.4rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 1.05rem;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: 0 0 6px #000;
+  animation: fx-float 0.6s ease-out forwards;
+}
+.fx-float.tone-up {
+  color: var(--live);
+}
+.fx-float.tone-down {
+  color: var(--danger);
+}
+.fx-float.tone-status-mad {
+  color: var(--magenta);
+}
+.fx-float.tone-status-high {
+  color: var(--live);
+}
+.fx-float.tone-status-tough {
+  color: var(--rarity-rare);
+}
+.fx-float[class*='tone-status'] {
+  font-size: 0.8rem;
+  background: #120b1dd9;
+}
+@keyframes fx-float {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.8);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1.15);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -26px);
+  }
+}
+
+.replay-banner {
+  position: fixed;
+  z-index: 40;
+  left: 50%;
+  top: 38%;
+  margin: 0;
+  padding: 0.6rem 1.6rem;
+  transform: translate(-50%, -50%);
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: #fff;
+  background: linear-gradient(90deg, #a435f0e6, #ff3db0e6);
+  clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+  pointer-events: none;
+  animation: fx-banner 0.9s ease-out forwards;
+}
+@keyframes fx-banner {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scaleX(0.4);
+  }
+  20%,
+  75% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scaleX(1);
+  }
+  to {
+    opacity: 0;
+  }
+}
+.replay-skip {
+  position: fixed;
+  z-index: 40;
+  right: 1rem;
+  bottom: 1rem;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8rem;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 60;
+  left: 0;
+  top: 0;
+  visibility: hidden;
+  max-width: min(280px, calc(100vw - 16px));
+  padding: 0.6rem 0.7rem;
+  background: #120b1df5;
+  border: 1px solid var(--primary);
+  box-shadow: 0 8px 24px #000c;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  pointer-events: none;
+}
+.tip-card p {
+  margin: 0 0 0.35rem;
+}
+.tip-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.tip-title span {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.tip-card[data-rarity='uncommon'] .tip-title {
+  color: var(--rarity-uncommon);
+}
+.tip-card[data-rarity='rare'] .tip-title {
+  color: var(--rarity-rare);
+}
+.tip-card[data-rarity='legendary'] .tip-title {
+  color: var(--rarity-legendary);
+}
+.tip-text.is-empty,
+.tip-note {
+  color: var(--text-muted);
+  font-style: italic;
+}
+.tip-breakdown {
+  margin: 0.4rem 0;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--hairline);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+}
+.tip-breakdown div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.tip-breakdown dt,
+.tip-breakdown dd {
+  margin: 0;
+}
+.tip-breakdown .is-up dd {
+  color: var(--live);
+}
+.tip-breakdown .is-down dd {
+  color: var(--danger);
+}
+.tip-breakdown .is-total {
+  margin-top: 0.15rem;
+  font-weight: 700;
+  color: #fff;
+}
+.tip-statuses {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0.35rem 0 0;
+  border-top: 1px solid var(--hairline);
+  display: grid;
+  gap: 0.2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tcard__body,
+  .tcard,
+  .replay-banner,
+  .fx-float,
+  .fx-bump,
+  .location-header,
+  .hand > .card-slot {
+    animation: none !important;
+    transition: none !important;
+  }
+}

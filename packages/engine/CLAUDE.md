@@ -19,6 +19,7 @@ Pure game rules. Imported by the server (authoritative) and the client (types, p
 - Combos rely on card **tags** (`universe:`, `character:`, `family:`…), never on hard-coded card ids. `universe:<slug>` is added by the catalog from the data file.
 - Deck rules live in `deck.ts` (`deckCurveIssues`, `buildRandomDeck`, `guaranteeOpening`) with their constants in `rules.ts`; `validateDeck` applies the curve. Every random deck (client, sim, tests) goes through `buildRandomDeck`. Test fixtures pad with power-0 fillers covering the curve (`deckOf(ids, catalog)`).
 - The opponent never learns where a face-down card was played: the view only exposes `opponent.pendingCount`.
+- The view also carries what the client needs without recomputing rules: `playableCards` / `openLocations` (empty once the turn is ended) and `CardView.breakdown` (`powerBreakdown()`: printed + permanent modifier + one ongoing entry per source card or location; `GameBoard.ongoingBonuses()` is what `power()` sums). `cardRevealed` events carry the `defId` (a revealed card is public).
 - Rarity gives no free power: strong cards pay with cost, sacrifice or a play condition (see `docs/game-design.md`).
 
 ## Adding a building block

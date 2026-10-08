@@ -53,7 +53,10 @@ describe('game session', () => {
       session.timeout();
     }
     expect(session.outcome()?.reason).toBe('score');
-    expect(session.messageFor(0, [], 123).turnDeadline).toBeNull();
+    expect(session.messageFor(0, [], { deadline: 123, revealUntil: 100 })).toMatchObject({
+      turnDeadline: null,
+      revealUntil: null,
+    });
   });
 
   it('gives the win to the other player on forfeit and refuses further actions', () => {

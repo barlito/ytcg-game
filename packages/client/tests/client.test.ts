@@ -38,7 +38,7 @@ describe('game log', () => {
   const known = new Map([['p1c3', defId]]);
 
   it('names revealed cards and players', () => {
-    expect(describeEvent({ type: 'cardRevealed', card: 'p1c3', player: 1, location: 0 }, known, seats)).toBe(
+    expect(describeEvent({ type: 'cardRevealed', card: 'p1c3', defId, player: 1, location: 0 }, known, seats)).toBe(
       `Bob révèle ${name}.`,
     );
     expect(describeEvent({ type: 'powerChanged', card: 'p1c3', delta: -2 }, known, seats)).toBe(

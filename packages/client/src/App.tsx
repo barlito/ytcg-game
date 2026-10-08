@@ -1,9 +1,20 @@
-import { Board } from './components/Board.tsx';
-import { Home } from './components/Home.tsx';
+import { Suspense, lazy } from 'react';
 import { Lobby } from './components/Lobby.tsx';
 import { useDuel } from './useDuel.ts';
 
-export function App(): React.JSX.Element {
+// The catalog, the engine and the board load on demand: the first paint only needs React and the SDK.
+const Home = lazy(() => import('./components/Home.tsx'));
+const Board = lazy(() => import('./components/Board.tsx'));
+
+function Loading(): React.JSX.Element {
+  return (
+    <main className="lobby">
+      <p>Chargement…</p>
+    </main>
+  );
+}
+
+function Screen(): React.JSX.Element {
   const duel = useDuel();
   const { phase } = duel;
   switch (phase.kind) {
@@ -25,4 +36,12 @@ export function App(): React.JSX.Element {
         </>
       );
   }
+}
+
+export function App(): React.JSX.Element {
+  return (
+    <Suspense fallback={<Loading />}>
+      <Screen />
+    </Suspense>
+  );
 }

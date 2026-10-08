@@ -14,6 +14,7 @@ export function roomServices(catalog: Catalog, authenticator: Authenticator, con
     authenticator,
     decks: new CatalogDeckProvider(catalog),
     turnSeconds: config.TURN_SECONDS,
+    revealPauseSeconds: config.REVEAL_PAUSE_SECONDS,
     reconnectSeconds: config.RECONNECT_SECONDS,
     newSeed: () => randomUUID(),
     now: () => Date.now(),

@@ -82,6 +82,77 @@ describe('player events', () => {
         expect(event.card === null).toBe(event.player === 1);
       }
     }
-    expect(projected.filter((event) => event.type === 'cardRevealed')).toHaveLength(2);
+    const reveals = projected.filter((event) => event.type === 'cardRevealed');
+    expect(reveals).toHaveLength(2);
+    // A revealed card is public: the event names it, so a card destroyed right away is still known.
+    expect(reveals.map((event) => event.defId).sort()).toEqual(['mine', 'secret-b']);
+  });
+});
+
+describe('power breakdown', () => {
+  const buffs = catalogWith(
+    [
+      card('lord', {
+        power: 2,
+        abilities: [{ trigger: 'ongoing', target: { type: 'cards' }, effect: { type: 'addPower', amount: 1 } }],
+      }),
+      card('grower', { power: 3, abilities: [{ trigger: 'onReveal', effect: { type: 'addPower', amount: 2 } }] }),
+      card('hater', {
+        abilities: [
+          { trigger: 'ongoing', target: { type: 'cards', side: 'enemy' }, effect: { type: 'addPower', amount: -2 } },
+        ],
+      }),
+    ],
+    [
+      {
+        id: 'loc-boost',
+        name: 'Boost',
+        abilities: [
+          { trigger: 'ongoing', target: { type: 'cards', side: 'all' }, effect: { type: 'addPower', amount: 1 } },
+        ],
+      },
+    ],
+  );
+
+  it('splits the power into printed, permanent modifier and one entry per ongoing source', () => {
+    const state = newGame(buffs, { p0: ['lord', 'grower'], p1: ['hater'], locations: ['loc-boost', 'loc-b', 'loc-c'] });
+    const played = playTurn(buffs, state, {
+      p0: [
+        ['lord', 0],
+        ['grower', 0],
+      ],
+      p1: [['hater', 0]],
+    }).state;
+    const grower = projectForPlayer(buffs, played, 0).locations[0]?.cards.you.find((c) => c.defId === 'grower');
+    expect(grower?.breakdown).toEqual({
+      printed: 3,
+      modifier: 2,
+      ongoing: [
+        { from: 'location', defId: 'loc-boost', amount: 1 },
+        { from: 'card', defId: 'lord', amount: 1 },
+        { from: 'card', defId: 'hater', amount: -2 },
+      ],
+    });
+    expect(grower?.power).toBe(5);
+  });
+
+  it('gives hand cards their printed power only', () => {
+    const state = newGame(buffs, { p0: ['grower'] });
+    const grower = projectForPlayer(buffs, state, 0).hand.find((c) => c.defId === 'grower');
+    expect(grower?.breakdown).toEqual({ printed: 3, modifier: 0, ongoing: [] });
+  });
+});
+
+describe('playability', () => {
+  it('lists the affordable hand cards and the locations with room, nothing once the turn is ended', () => {
+    const state = newGame(catalog, { p0: ['mine', 'secret-b'], energy: 1 });
+    const view = projectForPlayer(catalog, state, 0);
+    const mine = uidOf(state, 0, 'mine');
+    expect(view.playableCards).toContain(mine);
+    expect(view.playableCards).not.toContain(view.hand.find((c) => c.cost > 1)?.uid ?? 'none');
+    expect(view.openLocations).toEqual([0, 1, 2]);
+
+    const ended = act(catalog, state, { type: 'endTurn', player: 0 }).state;
+    expect(projectForPlayer(catalog, ended, 0)).toMatchObject({ playableCards: [], openLocations: [] });
   });
 });

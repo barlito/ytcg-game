@@ -16,12 +16,14 @@ import {
   actionInputSchema,
 } from '../protocol.ts';
 import { GameSession, SessionError } from '../session/game-session.ts';
+import { type TurnSchedule, scheduleTurn } from '../session/turn-clock.ts';
 
 export interface RoomServices {
   catalog: Catalog;
   authenticator: Authenticator;
   decks: DeckProvider;
   turnSeconds: number;
+  revealPauseSeconds: number;
   reconnectSeconds: number;
   newSeed(): string;
   now(): number;
@@ -51,7 +53,7 @@ export abstract class DuelRoom extends Room<{ client: DuelClient }> {
   protected abstract readonly services: RoomServices;
   private session!: GameSession;
   private turnTimer: Timer | null = null;
-  private turnDeadline: number | null = null;
+  private schedule: TurnSchedule | null = null;
 
   override onCreate(): void {
     this.session = new GameSession(this.services.catalog, this.services.newSeed());
@@ -78,7 +80,7 @@ export abstract class DuelRoom extends Room<{ client: DuelClient }> {
     }
     void this.lock();
     const events = this.session.start();
-    this.restartTurnTimer();
+    this.restartTurnTimer(false);
     this.sendGame(events);
   }
 
@@ -132,30 +134,32 @@ export abstract class DuelRoom extends Room<{ client: DuelClient }> {
     if (this.session.isOver) {
       this.stopTurnTimer();
     } else if (this.session.turn !== turnBefore) {
-      this.restartTurnTimer();
+      this.restartTurnTimer(true);
     }
     this.sendGame(events);
   }
 
   private sendGame(events: readonly GameEvent[]): void {
     for (const client of this.clients) {
-      client.send(MESSAGE_GAME, this.session.messageFor(this.seatOf(client), events, this.turnDeadline));
+      client.send(MESSAGE_GAME, this.session.messageFor(this.seatOf(client), events, this.schedule));
     }
   }
 
-  private restartTurnTimer(): void {
+  // The timer covers the reading pause too: it never fires before the announced deadline.
+  private restartTurnTimer(afterResolution: boolean): void {
     this.stopTurnTimer();
-    const milliseconds = this.services.turnSeconds * 1000;
-    this.turnDeadline = this.services.now() + milliseconds;
+    const now = this.services.now();
+    const schedule = scheduleTurn(now, this.services, afterResolution);
+    this.schedule = schedule;
     this.turnTimer = this.clock.setTimeout(() => {
       this.onTurnTimeout();
-    }, milliseconds);
+    }, schedule.deadline - now);
   }
 
   private stopTurnTimer(): void {
     this.turnTimer?.clear();
     this.turnTimer = null;
-    this.turnDeadline = null;
+    this.schedule = null;
   }
 
   private authOf(client: DuelClient): SeatAuth {

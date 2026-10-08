@@ -1,16 +1,19 @@
 import type { PlayerView } from '@ytcg-game/engine';
 import type { SeatInfo } from '@ytcg-game/server/protocol';
 import { useEffect, useState } from 'react';
+import { useScene } from '../animation/useReplay.ts';
+import { turnClock } from '../clock.ts';
 
 interface Props {
   view: PlayerView;
   seats: SeatInfo[];
   turnDeadline: number | null;
+  revealUntil: number | null;
   onEndTurn: () => void;
   onMulligan: () => void;
 }
 
-function useSecondsLeft(deadline: number | null): number | null {
+function useNow(): number {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const timer = setInterval(() => {
@@ -20,24 +23,42 @@ function useSecondsLeft(deadline: number | null): number | null {
       clearInterval(timer);
     };
   }, []);
-  return deadline === null ? null : Math.max(0, Math.ceil((deadline - now) / 1000));
+  return now;
 }
 
-function TurnInfo({ view, turnDeadline }: { view: PlayerView; turnDeadline: number | null }): React.JSX.Element {
-  const secondsLeft = useSecondsLeft(turnDeadline);
+function TurnInfo({
+  view,
+  turnDeadline,
+  revealUntil,
+}: Pick<Props, 'view' | 'turnDeadline' | 'revealUntil'>): React.JSX.Element {
+  const clock = turnClock(useNow(), turnDeadline, revealUntil);
   return (
     <div className="status-turn">
       Tour <strong>{view.turn}</strong>/{view.maxTurns}
-      {secondsLeft !== null && <span className={secondsLeft <= 10 ? 'timer is-urgent' : 'timer'}>{secondsLeft} s</span>}
+      {clock?.phase === 'reading' && (
+        <span className="timer is-reading" title="Le chrono du tour démarre après la lecture des révélations">
+          Révélations · {clock.seconds} s
+        </span>
+      )}
+      {clock?.phase === 'turn' && (
+        <span className={clock.seconds <= 10 ? 'timer is-urgent' : 'timer'}>{clock.seconds} s</span>
+      )}
     </div>
   );
+}
+
+// Bumps when the replay shows the opponent drawing.
+function OpponentHand({ view }: { view: PlayerView }): React.JSX.Element {
+  const { current } = useScene();
+  const drawing = current?.type === 'cardDrawn' && current.player !== view.you;
+  return <span className={drawing ? 'hand-count fx-bump' : 'hand-count'}>{view.opponent.handCount} en main</span>;
 }
 
 function OpponentInfo({ view, seats }: { view: PlayerView; seats: SeatInfo[] }): React.JSX.Element {
   const opponent = seats[view.you === 0 ? 1 : 0];
   return (
     <div className="status-opponent">
-      {opponent?.name ?? 'Adversaire'} · {view.opponent.handCount} en main
+      {opponent?.name ?? 'Adversaire'} · <OpponentHand view={view} />
       {view.opponent.pendingCount > 0 && (
         <span className="badge-pending">{view.opponent.pendingCount} posée(s) face cachée</span>
       )}
@@ -47,14 +68,15 @@ function OpponentInfo({ view, seats }: { view: PlayerView; seats: SeatInfo[] }):
   );
 }
 
-export function StatusBar({ view, seats, turnDeadline, onEndTurn, onMulligan }: Props): React.JSX.Element {
+export function StatusBar(props: Props): React.JSX.Element {
+  const { view, onEndTurn, onMulligan } = props;
   return (
     <div className="status-bar">
-      <TurnInfo view={view} turnDeadline={turnDeadline} />
+      <TurnInfo view={view} turnDeadline={props.turnDeadline} revealUntil={props.revealUntil} />
       <div className="status-energy">
         Énergie <strong>{view.energy - view.spent}</strong>/{view.energy}
       </div>
-      <OpponentInfo view={view} seats={seats} />
+      <OpponentInfo view={view} seats={props.seats} />
       {view.canMulligan && (
         <button type="button" className="btn-ghost" onClick={onMulligan}>
           Repiocher ma main

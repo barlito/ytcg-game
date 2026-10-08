@@ -67,7 +67,7 @@ export type GameEvent =
   | { type: 'cardDrawn'; player: PlayerIndex; card: string }
   | { type: 'handRedrawn'; player: PlayerIndex }
   | { type: 'revealPriority'; player: PlayerIndex }
-  | { type: 'cardRevealed'; card: string; player: PlayerIndex; location: number }
+  | { type: 'cardRevealed'; card: string; defId: string; player: PlayerIndex; location: number }
   | { type: 'powerChanged'; card: string; delta: number }
   | { type: 'cardDestroyed'; card: string }
   | { type: 'statusChanged'; card: string; status: StatusId; stacks: number }

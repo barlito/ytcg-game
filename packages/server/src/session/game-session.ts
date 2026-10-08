@@ -13,6 +13,7 @@ import {
   projectForPlayer,
 } from '@ytcg-game/engine';
 import type { PlayerIdentity } from '../identity.ts';
+import type { TurnSchedule } from './turn-clock.ts';
 import type { ActionInput, DeckChoice, GameMessage, LobbyMessage, Outcome, SeatInfo } from '../protocol.ts';
 
 export type SessionErrorCode = 'roomFull' | 'alreadySeated' | 'notStarted' | 'gameOver';
@@ -146,12 +147,14 @@ export class GameSession {
     return { seats: this.seatInfos() };
   }
 
-  messageFor(player: PlayerIndex, events: readonly GameEvent[], turnDeadline: number | null): GameMessage {
+  messageFor(player: PlayerIndex, events: readonly GameEvent[], schedule: TurnSchedule | null): GameMessage {
+    const running = this.isOver ? null : schedule;
     return {
       seats: this.seatInfos(),
       view: projectForPlayer(this.catalog, this.startedState(), player),
       events: projectEventsForPlayer(events, player),
-      turnDeadline: this.isOver ? null : turnDeadline,
+      turnDeadline: running?.deadline ?? null,
+      revealUntil: running?.revealUntil ?? null,
       outcome: this.outcome(),
     };
   }
