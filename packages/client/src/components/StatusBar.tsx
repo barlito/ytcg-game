@@ -63,7 +63,7 @@ function OpponentInfo({ view, seats }: { view: PlayerView; seats: SeatInfo[] }):
         <span className="badge-pending">{view.opponent.pendingCount} posée(s) face cachée</span>
       )}
       {opponent?.connected === false && <span className="badge-warning">déconnecté</span>}
-      {view.opponent.ready && <span className="badge-ready">a fini son tour</span>}
+      {view.opponent.ready && view.status !== 'ended' && <span className="badge-ready">a fini son tour</span>}
     </div>
   );
 }
