@@ -211,9 +211,9 @@
   top: 83cqi;
   bottom: 5cqi;
   overflow: hidden;
-  font-size: 7.4cqi;
+  font-size: max(7.4cqi, 9px);
   line-height: 1.25;
-  color: var(--text-muted);
+  color: #d9cce8;
 }
 .tcard__rarity {
   position: absolute;
@@ -300,7 +300,7 @@
 }
 
 .drag-overlay {
-  width: 118px;
+  width: var(--hand-card);
   transform-style: preserve-3d;
   transition: transform 75ms ease-out;
   filter: drop-shadow(0 14px 18px #000a);

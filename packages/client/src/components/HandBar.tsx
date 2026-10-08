@@ -25,7 +25,7 @@ export function HandBar({ view, selected, onSelect }: Props): React.JSX.Element 
     redrawing ? 'fx-shuffle' : '',
   ];
   return (
-    <div ref={setNodeRef} className={classes.join(' ')} aria-label="Ta main">
+    <div ref={setNodeRef} className={classes.join(' ')} aria-label="Ta main" data-count={view.hand.length}>
       {takesBack && <p className="hand-hint">Lâche ici pour reprendre la carte</p>}
       {view.hand
         .filter((card) => !scene.undrawn.has(card.uid))

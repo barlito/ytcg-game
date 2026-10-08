@@ -7,9 +7,9 @@ import { Tooltip } from './Tooltip.tsx';
 
 const OWNER_LABEL = { you: 'Ton terrain', opponent: 'Terrain adverse' } as const;
 
-function HiddenHeader(): React.JSX.Element {
+function HiddenHeader({ index }: { index: number }): React.JSX.Element {
   return (
-    <header className="location-header is-hidden">
+    <header className="location-header is-hidden" data-location-header={index}>
       <span className="location-name">Lieu inconnu</span>
       <span className="location-text">Se révèle bientôt.</span>
     </header>
@@ -30,6 +30,7 @@ function RevealedHeader({
     <header
       ref={setAnchor}
       className={`location-header${flipping ? ' fx-flip' : ''}`}
+      data-location-header={index}
       tabIndex={0}
       aria-describedby={open ? id : undefined}
       {...handlers}
@@ -57,7 +58,7 @@ function RevealedHeader({
 export function LocationHeader({ location }: { location: LocationView }): React.JSX.Element {
   const scene = useScene();
   if (location.defId === null || scene.hiddenLocations.has(location.index)) {
-    return <HiddenHeader />;
+    return <HiddenHeader index={location.index} />;
   }
   return <RevealedHeader defId={location.defId} chosenBy={location.chosenBy} index={location.index} />;
 }
