@@ -56,6 +56,8 @@ export interface GameMessage {
   view: PlayerView;
   events: PlayerEvent[];
   // Epoch milliseconds at which the current turn is ended automatically, null once the game is over.
+  // Server clock (epoch ms) when the message was sent: clients convert the deadlines to their own clock.
+  serverTime: number;
   turnDeadline: number | null;
   // Epoch milliseconds at which the reading pause after a reveal ends (the turn timer runs after it), else null.
   revealUntil: number | null;

@@ -139,7 +139,8 @@ export abstract class DuelRoom extends Room<{ client: DuelClient }> {
 
   private sendGame(events: readonly GameEvent[]): void {
     for (const client of this.clients) {
-      client.send(MESSAGE_GAME, this.session.messageFor(this.seatOf(client), events, this.schedule));
+      const message = this.session.messageFor(this.seatOf(client), events, this.schedule);
+      client.send(MESSAGE_GAME, { ...message, serverTime: this.services.now() });
     }
   }
 

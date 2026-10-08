@@ -10,3 +10,16 @@ export function turnClock(now: number, deadline: number | null, revealUntil: num
   }
   return { phase: 'turn', seconds: Math.max(0, Math.ceil((deadline - now) / 1000)) };
 }
+
+// Server timestamps converted to this browser's clock, so a client clock off by minutes still shows the right timer.
+export function toLocalClock<T extends { serverTime: number; turnDeadline: number | null; revealUntil: number | null }>(
+  message: T,
+  receivedAt: number,
+): T {
+  const offset = message.serverTime - receivedAt;
+  return {
+    ...message,
+    turnDeadline: message.turnDeadline === null ? null : message.turnDeadline - offset,
+    revealUntil: message.revealUntil === null ? null : message.revealUntil - offset,
+  };
+}
