@@ -96,29 +96,6 @@ input {
   gap: 0.4rem;
   color: var(--text-muted);
 }
-.deck ul {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 1rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 0.3rem;
-}
-.deck li {
-  padding: 0.35rem 0.6rem;
-  background: var(--surface);
-  border-left: 3px solid var(--rarity-common);
-  font-size: 0.85rem;
-}
-.deck li[data-rarity='uncommon'] {
-  border-color: var(--rarity-uncommon);
-}
-.deck li[data-rarity='rare'] {
-  border-color: var(--rarity-rare);
-}
-.deck li[data-rarity='legendary'] {
-  border-color: var(--rarity-legendary);
-}
 .home-actions,
 .join {
   display: flex;

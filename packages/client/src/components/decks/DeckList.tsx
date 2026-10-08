@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { catalog } from '../../catalog.ts';
 import { deckState } from '../../decks/deck-state.ts';
 import { deleteDeck } from '../../ytcg/api.ts';
+import { DeckCards } from './DeckCards.tsx';
 import type { Deck } from '../../ytcg/schemas.ts';
 
 interface Props {
@@ -94,6 +95,12 @@ function DeckRow({
         {remove.confirm ? 'Confirmer la suppression' : 'Supprimer'}
       </button>
       {remove.error !== null && <p className="error">{remove.error}</p>}
+      <DeckCards
+        cards={deck.cards}
+        terrain={deck.terrain}
+        missing={deck.missingCards}
+        size={selected ? 'large' : 'small'}
+      />
     </li>
   );
 }
