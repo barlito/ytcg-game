@@ -20,6 +20,8 @@ export function roomServices(implementations: Implementations, config: ServerCon
     ...implementations,
     turnSeconds: config.TURN_SECONDS,
     revealPauseSeconds: config.REVEAL_PAUSE_SECONDS,
+    revealSecondsPerCard: config.REVEAL_SECONDS_PER_CARD,
+    revealPauseMaxSeconds: config.REVEAL_PAUSE_MAX_SECONDS,
     reconnectSeconds: config.RECONNECT_SECONDS,
     newSeed: () => randomUUID(),
     now: () => Date.now(),
