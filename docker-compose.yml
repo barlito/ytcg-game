@@ -7,7 +7,7 @@ x-node: &node
     NPM_CONFIG_UPDATE_NOTIFIER: 'false'
 
 services:
-  # Throwaway tooling container: `make install`, `make check`, `make sh`…
+  # Throwaway tooling container: `make npm.install`, `make quality`, `make bash`…
   node:
     <<: *node
     working_dir: /app
