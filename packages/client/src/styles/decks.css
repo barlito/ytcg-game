@@ -95,7 +95,7 @@ a.btn-arcade {
 
 /* Editor */
 .editor {
-  max-width: 1280px;
+  max-width: 90rem;
   margin: 0 auto;
   padding: 2rem 1rem;
   display: grid;
@@ -113,7 +113,7 @@ a.btn-arcade {
 }
 .editor__layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: minmax(0, 1fr) 20rem;
   gap: 1.5rem;
   align-items: start;
 }
@@ -146,7 +146,7 @@ a.btn-arcade {
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
   gap: 0.9rem;
 }
 .pool-tile .card-slot {
@@ -209,7 +209,7 @@ a.btn-arcade {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 0.4rem;
-  height: 120px;
+  height: 7.5rem;
 }
 .curve__bars li {
   display: flex;
@@ -254,4 +254,86 @@ a.btn-arcade {
   .pool-grid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
+}
+
+/* A deck shown with its card visuals (home page). */
+.deck-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(var(--deck-thumb), 1fr));
+  margin-bottom: 1rem;
+}
+.deck-cards.is-large {
+  --deck-thumb: 8.5rem;
+}
+.deck-cards.is-small {
+  --deck-thumb: 4.5rem;
+  gap: 0.35rem;
+}
+.deck-cards__unknown {
+  align-self: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+.deck-cards__terrain {
+  position: relative;
+  display: grid;
+  align-content: end;
+  min-height: 100%;
+  aspect-ratio: 5 / 7;
+  padding: 0.4rem;
+  overflow: hidden;
+  background: var(--surface-2);
+  border: 1px solid var(--primary);
+}
+.deck-cards__terrain-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.55;
+}
+.deck-cards__terrain-label,
+.deck-cards__terrain-name,
+.deck-cards__terrain-text {
+  position: relative;
+}
+.deck-cards__terrain-label {
+  justify-self: start;
+  padding: 0 0.3rem;
+  background: var(--primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+}
+.deck-cards__terrain-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-shadow: 0 1px 3px #000;
+}
+.deck-cards__terrain-text {
+  font-size: 0.65rem;
+  color: var(--text);
+  text-shadow: 0 1px 3px #000;
+}
+.deck-cards.is-small .deck-cards__terrain-text {
+  display: none;
+}
+.deck-row .deck-cards {
+  flex: 1 1 100%;
+}
+.deck-cards__card.is-missing .tcard {
+  opacity: 0.35;
+}
+/* Flat thumbnails: a dozen 3D card layers on one page make the compositor drop some artwork. */
+.deck-cards .tcard {
+  perspective: none;
+}
+.deck-cards .tcard__body {
+  transform: none;
 }

@@ -1,9 +1,13 @@
 import { type PlayerEvent, statusRule } from '@ytcg-game/engine';
-import { type Queue, currentStep, upcomingEvents } from './queue.ts';
+import { type Queue, type SpotlightEvent, currentStep, isSpotlit, unplayedEvents, upcomingEvents } from './queue.ts';
 
 // What the replay changes on top of the final view.
 export interface Scene {
+  // The event playing on the board; null while a reveal is spotlighted (it lands at the next step).
   current: PlayerEvent | null;
+  spotlight: SpotlightEvent | null;
+  // Events still to land, in order (the journal does not print them yet).
+  unplayed: readonly PlayerEvent[];
   // Cards revealed later in the sequence: still face down.
   faceDown: ReadonlySet<string>;
   // Own draws still to come: not in hand yet.
@@ -17,6 +21,8 @@ export interface Scene {
 
 export const STILL: Scene = {
   current: null,
+  spotlight: null,
+  unplayed: [],
   faceDown: new Set(),
   undrawn: new Set(),
   hiddenLocations: new Set(),
@@ -28,15 +34,22 @@ function collect<T>(events: readonly PlayerEvent[], pick: (event: PlayerEvent) =
   return new Set(events.flatMap((event) => pick(event) ?? []));
 }
 
+export function isReplaying(scene: Scene): boolean {
+  return scene.current !== null || scene.spotlight !== null;
+}
+
 export function sceneOf(queue: Queue): Scene {
-  const current = currentStep(queue)?.event ?? null;
-  if (current === null) {
+  const step = currentStep(queue);
+  if (step === null) {
     return STILL;
   }
   const upcoming = upcomingEvents(queue);
-  const withCurrent = [current, ...upcoming];
+  const withCurrent = [step.event, ...upcoming];
+  const spotlight = step.spotlight === true && isSpotlit(step.event) ? step.event : null;
   return {
-    current,
+    current: spotlight === null ? step.event : null,
+    spotlight,
+    unplayed: unplayedEvents(queue),
     faceDown: collect(upcoming, (e) => (e.type === 'cardRevealed' ? e.card : null)),
     undrawn: collect(upcoming, (e) => (e.type === 'cardDrawn' ? e.card : null)),
     hiddenLocations: collect(upcoming, (e) => (e.type === 'locationRevealed' ? e.location : null)),

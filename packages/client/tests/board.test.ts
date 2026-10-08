@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { catalog } from '../src/catalog.ts';
-import { turnClock } from '../src/clock.ts';
+import { toLocalClock, turnClock } from '../src/clock.ts';
 import { bannerText } from '../src/components/ReplayBanner.tsx';
 import { placeTooltip } from '../src/components/Tooltip.tsx';
 import { canDrop, dropActions, parseDropId } from '../src/dnd.ts';
@@ -125,5 +125,22 @@ describe('tooltip placement', () => {
     });
     expect(placeTooltip({ top: 20, bottom: 120, left: 0, width: 40 }, tip, viewport)).toEqual({ left: 8, top: 128 });
     expect(placeTooltip({ top: 300, bottom: 400, left: 380, width: 20 }, tip, viewport).left).toBe(192);
+  });
+});
+
+describe('clock skew', () => {
+  it('converts server deadlines to the browser clock', () => {
+    // The browser is 30 min behind the server: the timer must still read 60 s.
+    const serverNow = 2_000_000_000_000;
+    const browserNow = serverNow - 30 * 60 * 1000;
+    const local = toLocalClock(
+      { serverTime: serverNow, turnDeadline: serverNow + 60_000, revealUntil: serverNow + 5_000 },
+      browserNow,
+    );
+    expect(turnClock(browserNow, local.turnDeadline, local.revealUntil)).toEqual({ phase: 'reading', seconds: 5 });
+    expect(turnClock(browserNow + 6_000, local.turnDeadline, null)).toEqual({ phase: 'turn', seconds: 54 });
+    expect(
+      toLocalClock({ serverTime: serverNow, turnDeadline: null, revealUntil: null }, browserNow).turnDeadline,
+    ).toBeNull();
   });
 });

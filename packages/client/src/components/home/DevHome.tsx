@@ -2,6 +2,7 @@ import type { JoinOptions } from '@ytcg-game/server/protocol';
 import { useState } from 'react';
 import { describeLocation } from '@ytcg-game/engine';
 import { catalog, randomDeck } from '../../catalog.ts';
+import { DeckCards } from '../decks/DeckCards.tsx';
 import { type PlayHandlers, PlayActions } from './PlayActions.tsx';
 
 const NAME_KEY = 'ytcg-game:name';
@@ -11,18 +12,7 @@ function DeckPreview({ deck, onReroll }: { deck: string[]; onReroll: () => void 
   return (
     <section className="deck">
       <h2 className="eyebrow">Ton deck (aléatoire sans Youl TCG, courbe de coûts respectée)</h2>
-      <ul>
-        {[...deck]
-          .sort((a, b) => catalog.card(a).cost - catalog.card(b).cost)
-          .map((id) => {
-            const card = catalog.card(id);
-            return (
-              <li key={id} data-rarity={card.rarity}>
-                {card.cost} · {card.name} · {card.power}
-              </li>
-            );
-          })}
-      </ul>
+      <DeckCards cards={deck} terrain={null} size="large" />
       <button type="button" className="btn-ghost" onClick={onReroll}>
         Nouveau deck
       </button>

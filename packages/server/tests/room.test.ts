@@ -24,6 +24,8 @@ beforeAll(async () => {
     decks: new CatalogDeckProvider(catalog),
     turnSeconds: 1,
     revealPauseSeconds: 0.5,
+    revealSecondsPerCard: 0.25,
+    revealPauseMaxSeconds: 1,
     reconnectSeconds: 0,
     newSeed: () => 'room-test',
     now: () => clock,
@@ -104,11 +106,13 @@ describe('duel room', () => {
     bob.send(MESSAGE_ACTION, { type: 'endTurn' });
     const message = await resolved;
     const resolvedAt = performance.now();
-    expect(message.revealUntil).toBe(clock + 500);
-    expect(message.turnDeadline).toBe(clock + 1500);
+    const reveals = message.events.filter((e) => e.type === 'cardRevealed' || e.type === 'locationRevealed').length;
+    const pause = Math.min(500 + 250 * reveals, 1000);
+    expect(message.revealUntil).toBe(clock + pause);
+    expect(message.turnDeadline).toBe(clock + pause + 1000);
 
     await nextMessage<GameMessage>(bob, MESSAGE_GAME, (update) => update.view.turn === 3);
-    expect(performance.now() - resolvedAt).toBeGreaterThanOrEqual(1400);
+    expect(performance.now() - resolvedAt).toBeGreaterThanOrEqual(pause + 900);
   });
 
   it('answers an illegal action with an error, to the sender only', async () => {

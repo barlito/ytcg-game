@@ -4,12 +4,19 @@ export interface Step {
   event: PlayerEvent;
   // Milliseconds before the next step starts.
   duration: number;
+  // The enlarged card or terrain shown before it lands on the board (followed by the landing step of the same event).
+  spotlight?: boolean;
 }
+
+export type SpotlightEvent = Extract<PlayerEvent, { type: 'cardRevealed' | 'locationRevealed' }>;
+
+// Enlarged reading time of each reveal (≈1.5 s held, then the flight); the server pause gives 3 s per reveal.
+export const SPOTLIGHT_MS = 3800;
 
 // Short on purpose: a full resolution must stay readable within the reading pause.
 const DURATIONS: Record<PlayerEvent['type'], number> = {
   turnStarted: 700,
-  locationRevealed: 900,
+  locationRevealed: 600,
   cardDrawn: 300,
   handRedrawn: 700,
   revealPriority: 900,
@@ -29,9 +36,18 @@ export function durationOf(event: PlayerEvent, you: PlayerIndex): number {
   return DURATIONS[event.type];
 }
 
-// Reduced motion: nothing is replayed, the final view shows at once.
+export function isSpotlit(event: PlayerEvent): event is SpotlightEvent {
+  return event.type === 'cardRevealed' || event.type === 'locationRevealed';
+}
+
+function stepsOf(event: PlayerEvent, you: PlayerIndex): Step[] {
+  const landing = { event, duration: durationOf(event, you) };
+  return isSpotlit(event) ? [{ event, duration: SPOTLIGHT_MS, spotlight: true }, landing] : [landing];
+}
+
+// Reduced motion: nothing is replayed, the final view shows at once (no spotlight either).
 export function stepsFor(events: readonly PlayerEvent[], you: PlayerIndex, reducedMotion: boolean): Step[] {
-  return reducedMotion ? [] : events.map((event) => ({ event, duration: durationOf(event, you) }));
+  return reducedMotion ? [] : events.flatMap((event) => stepsOf(event, you));
 }
 
 // steps[index] is playing; index === steps.length means idle.
@@ -62,4 +78,12 @@ export function currentStep(queue: Queue): Step | null {
 // Steps still to come after the current one.
 export function upcomingEvents(queue: Queue): PlayerEvent[] {
   return queue.steps.slice(queue.index + 1).map((step) => step.event);
+}
+
+// Events not landed yet (a spotlighted reveal lands at its next step): the log holds them back.
+export function unplayedEvents(queue: Queue): PlayerEvent[] {
+  return queue.steps
+    .slice(queue.index + 1)
+    .filter((step) => step.spotlight !== true)
+    .map((step) => step.event);
 }

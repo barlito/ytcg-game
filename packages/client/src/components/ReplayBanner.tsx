@@ -1,5 +1,6 @@
 import type { PlayerEvent, PlayerIndex } from '@ytcg-game/engine';
 import type { SeatInfo } from '@ytcg-game/server/protocol';
+import { isReplaying } from '../animation/scene.ts';
 import { useScene } from '../animation/useReplay.ts';
 
 interface Props {
@@ -14,7 +15,7 @@ function who(player: PlayerIndex, you: PlayerIndex, seats: readonly SeatInfo[]):
 
 type Announce = (event: PlayerEvent, you: PlayerIndex, seats: readonly SeatInfo[]) => string;
 
-// Big centered announcements of the replay; card-level events animate on the cards themselves.
+// Big centered announcements of the replay; reveals are spotlighted, other card events animate on the cards.
 const ANNOUNCES: Partial<Record<PlayerEvent['type'], Announce>> = {
   turnStarted: (event) => (event.type === 'turnStarted' ? `Tour ${event.turn}` : ''),
   revealPriority: (event, you, seats) =>
@@ -25,7 +26,6 @@ const ANNOUNCES: Partial<Record<PlayerEvent['type'], Announce>> = {
     'player' in event && event.player !== you
       ? `${who(event.player, you, seats)} repioche sa main`
       : 'Tu repioches ta main',
-  locationRevealed: () => 'Un lieu se révèle',
   gameEnded: () => 'Fin de la partie',
 };
 
@@ -34,11 +34,12 @@ export function bannerText(event: PlayerEvent, you: PlayerIndex, seats: readonly
 }
 
 export function ReplayBanner({ you, seats, onSkip }: Props): React.JSX.Element | null {
-  const { current } = useScene();
-  if (current === null) {
+  const scene = useScene();
+  const { current } = scene;
+  if (!isReplaying(scene)) {
     return null;
   }
-  const text = bannerText(current, you, seats);
+  const text = current === null ? null : bannerText(current, you, seats);
   return (
     <>
       {text !== null && (

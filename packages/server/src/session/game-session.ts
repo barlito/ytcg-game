@@ -147,7 +147,11 @@ export class GameSession {
     return { seats: this.seatInfos() };
   }
 
-  messageFor(player: PlayerIndex, events: readonly GameEvent[], schedule: TurnSchedule | null): GameMessage {
+  messageFor(
+    player: PlayerIndex,
+    events: readonly GameEvent[],
+    schedule: TurnSchedule | null,
+  ): Omit<GameMessage, 'serverTime'> {
     const running = this.isOver ? null : schedule;
     return {
       seats: this.seatInfos(),

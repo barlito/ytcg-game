@@ -14,11 +14,14 @@ Game design et décisions : [`docs/game-design.md`](docs/game-design.md). Brique
 Node tourne dans Docker, rien à installer sur l'hôte :
 
 ```bash
-make install         # npm install sur tous les workspaces
-make up              # serveur de jeu (:2567) + client (http://localhost:5173), pseudo libre en dev
-make down            # arrête le serveur et le client
-make check           # typecheck + tests (ce que lance la CI)
+make deploy          # serveur de jeu (:2567) + client (http://localhost:5173), pseudo libre en local
+make undeploy        # arrête le serveur et le client
+make logs            # suit les logs du serveur et du client
+make quality         # typecheck + lint + tests (ce que lance la CI)
+make fix_style       # Prettier + ESLint en correction automatique
 make sim ARGS="--games 2000 --mode universe"   # parties entre bots aléatoires
+make cards-doc       # régénère docs/cards.md
 make import-assets   # (re)génère data/cards depuis ~/YoulzAssets (ASSETS=… pour un autre chemin)
-make sh              # shell dans un conteneur Node
+make bash            # shell dans un conteneur Node
+make help            # toutes les cibles
 ```

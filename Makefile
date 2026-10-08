@@ -4,36 +4,40 @@ ASSETS ?= $(HOME)/YoulzAssets
 # Optional ytcg production dump ({slug: {cards: [{id, imageName}]}}) to fill the card artwork.
 PROD_CARDS ?=
 
-.PHONY: install sh up down logs typecheck lint fix test check sim import-assets cards-doc
+# Target names follow the other Youls projects (barlito/php-make-rules): deploy/undeploy, bash, check_style/fix_style, quality.
+.PHONY: help npm.install bash deploy undeploy logs typecheck check_style fix_style test quality sim import-assets cards-doc
 
-install: ## Install every workspace dependency (inside Docker, no Node on the host)
+help: ## List the targets
+	@grep -E '^[a-zA-Z_.-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
+
+npm.install: ## Install every workspace dependency (inside Docker, no Node on the host)
 	$(RUN) npm install
 
-sh: ## Shell in a throwaway Node container
+bash: ## Shell in a throwaway Node container
 	$(COMPOSE) run --rm node sh
 
-up: ## Start the dev game server (:2567) and client (http://localhost:5173)
+deploy: npm.install ## Start the local game server (:2567) and client (http://localhost:5173)
 	$(COMPOSE) --profile dev up -d server client
 
-down: ## Stop the dev server and client
+undeploy: ## Stop the local game server and client
 	$(COMPOSE) --profile dev down
 
-logs: ## Follow the dev server and client logs
+logs: ## Follow the local server and client logs
 	$(COMPOSE) --profile dev logs -f server client
 
 typecheck: ## Type-check tools and every workspace
 	$(RUN) npm run typecheck
 
-lint: ## ESLint (type-aware, strict) + Prettier check
+check_style: ## ESLint (type-aware, strict) + Prettier check
 	$(RUN) npm run lint
 
-fix: ## Prettier + ESLint autofix
+fix_style: ## Prettier + ESLint autofix
 	$(RUN) npm run fix
 
 test: ## Run every workspace test suite
 	$(RUN) npm test
 
-check: typecheck lint test ## Everything CI runs
+quality: typecheck check_style test ## Everything CI runs
 
 sim: ## Bot simulation report (ARGS="--games 2000 --mode universe")
 	$(RUN) npm run sim -w @ytcg-game/engine -- $(ARGS)

@@ -35,6 +35,7 @@ export function CardButton(props: CardButtonProps): React.JSX.Element {
         ref={setRef}
         type="button"
         className={`card-slot ${className}`}
+        data-uid={card.uid}
         aria-label={label}
         aria-describedby={showTip ? id : undefined}
         aria-disabled={disabled}

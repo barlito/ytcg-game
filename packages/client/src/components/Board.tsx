@@ -1,5 +1,6 @@
 import type { ActionInput, GameMessage } from '@ytcg-game/server/protocol';
 import { useState } from 'react';
+import { isReplaying } from '../animation/scene.ts';
 import { ReplayContext, useReplay } from '../animation/useReplay.ts';
 import { DuelDnd } from './dnd/DuelDnd.tsx';
 import { EventLog } from './EventLog.tsx';
@@ -7,11 +8,13 @@ import { HandBar } from './HandBar.tsx';
 import { LocationColumn } from './LocationColumn.tsx';
 import { ReplayBanner } from './ReplayBanner.tsx';
 import { ResultBanner } from './ResultBanner.tsx';
+import { Spotlight } from './Spotlight.tsx';
 import { StatusBar } from './StatusBar.tsx';
 import { useGameLog } from './useGameLog.ts';
 import '../styles/board.css';
 import '../styles/cards.css';
 import '../styles/fx.css';
+import '../styles/spotlight.css';
 
 interface Props {
   game: GameMessage;
@@ -59,7 +62,7 @@ export default function Board({ game, send, onLeave }: Props): React.JSX.Element
   return (
     <ReplayContext value={{ scene, placements }}>
       <DuelDnd view={view} send={send}>
-        <main className={`board${scene.current === null ? '' : ' is-replaying'}`}>
+        <main className={`board${isReplaying(scene) ? ' is-replaying' : ''}`}>
           <StatusBar
             view={view}
             seats={game.seats}
@@ -81,10 +84,11 @@ export default function Board({ game, send, onLeave }: Props): React.JSX.Element
             }}
           />
           <HandBar view={view} selected={selectable} onSelect={setSelected} />
-          <EventLog lines={lines} />
+          <EventLog lines={lines} seats={game.seats} />
+          <Spotlight view={view} seats={game.seats} />
           <ReplayBanner you={view.you} seats={game.seats} onSkip={skip} />
           {game.outcome !== null && !scene.outcomeHeld && (
-            <ResultBanner outcome={game.outcome} you={view.you} onLeave={onLeave} />
+            <ResultBanner outcome={game.outcome} you={view.you} view={view} onLeave={onLeave} />
           )}
         </main>
       </DuelDnd>

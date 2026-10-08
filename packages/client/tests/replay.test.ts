@@ -1,9 +1,10 @@
 import type { PlayerEvent } from '@ytcg-game/engine';
 import { describe, expect, it } from 'vitest';
 import { ghostsAt, printedCard, trackPlacements } from '../src/animation/placements.ts';
-import { IDLE, advance, currentStep, enqueue, stepsFor } from '../src/animation/queue.ts';
-import { STILL, cardFx, sceneOf } from '../src/animation/scene.ts';
+import { IDLE, SPOTLIGHT_MS, advance, currentStep, durationOf, enqueue, stepsFor } from '../src/animation/queue.ts';
+import { STILL, cardFx, isReplaying, sceneOf } from '../src/animation/scene.ts';
 import { catalog } from '../src/catalog.ts';
+import { loggedCount } from '../src/events.ts';
 import { viewWith } from './support.ts';
 
 const [defId = ''] = catalog.cards.keys();
@@ -19,11 +20,13 @@ const resolution: PlayerEvent[] = [
   { type: 'cardDrawn', player: 1, card: null },
 ];
 
-function playUntil(type: PlayerEvent['type'], nth = 1): ReturnType<typeof sceneOf> {
+// The nth step playing that event type on the board (spotlight = the enlarged step before it lands).
+function playUntil(type: PlayerEvent['type'], nth = 1, spotlight = false): ReturnType<typeof sceneOf> {
   let queue = enqueue(IDLE, stepsFor(resolution, 0, false));
   let seen = 0;
   while (currentStep(queue) !== null) {
-    if (currentStep(queue)?.event.type === type && ++seen === nth) {
+    const step = currentStep(queue);
+    if (step?.event.type === type && (step.spotlight ?? false) === spotlight && ++seen === nth) {
       return sceneOf(queue);
     }
     queue = advance(queue);
@@ -33,7 +36,7 @@ function playUntil(type: PlayerEvent['type'], nth = 1): ReturnType<typeof sceneO
 
 describe('event queue', () => {
   it('plays every event in order, opponent draws faster, then goes idle', () => {
-    const steps = stepsFor(resolution, 0, false);
+    const steps = stepsFor(resolution, 0, false).filter((step) => step.spotlight !== true);
     expect(steps.map((step) => step.event)).toEqual(resolution);
     expect(steps[6]?.duration).toBeGreaterThan(steps[7]?.duration ?? Infinity);
     let queue = enqueue(IDLE, steps);
@@ -44,16 +47,28 @@ describe('event queue', () => {
     expect(queue).toEqual(IDLE);
   });
 
+  it('spotlights each revealed card or terrain before it lands, in reveal order', () => {
+    const location: PlayerEvent = { type: 'locationRevealed', location: 2 };
+    const steps = stepsFor([...resolution, location], 0, false);
+    const spotlit = steps.filter((step) => step.spotlight === true);
+    expect(spotlit.map((step) => step.event)).toEqual([resolution[1], resolution[2], location]);
+    expect(spotlit.every((step) => step.duration === SPOTLIGHT_MS)).toBe(true);
+    const first = steps.findIndex((step) => step.spotlight === true);
+    expect(steps[first + 1]).toEqual({ event: resolution[1], duration: durationOf(resolution[1] ?? location, 0) });
+  });
+
   it('appends a new message after the remaining steps, dropping the played ones', () => {
     const first = advance(enqueue(IDLE, stepsFor(resolution.slice(0, 2), 0, false)));
     const next = enqueue(first, stepsFor([{ type: 'turnStarted', turn: 4 }], 0, false));
-    expect(next.steps.map((step) => step.event.type)).toEqual(['cardRevealed', 'turnStarted']);
+    expect(next.steps.map((step) => step.event.type)).toEqual(['cardRevealed', 'cardRevealed', 'turnStarted']);
+    expect(next.steps[0]?.spotlight).toBe(true);
     expect(next.index).toBe(0);
   });
 
   it('replays nothing under reduced motion', () => {
     expect(stepsFor(resolution, 0, true)).toEqual([]);
     expect(sceneOf(IDLE)).toBe(STILL);
+    expect(isReplaying(STILL)).toBe(false);
   });
 });
 
@@ -65,6 +80,25 @@ describe('scene', () => {
     const reveal = playUntil('cardRevealed', 2);
     expect(cardFx(reveal, 'p1c1').faceDown).toBe(false);
     expect(cardFx(reveal, 'p0c1')).toEqual({ faceDown: false, effect: 'reveal', float: null });
+  });
+
+  it('keeps a spotlighted card face down on the board until it lands, its effects after', () => {
+    const spotlight = playUntil('cardRevealed', 2, true);
+    expect(spotlight.spotlight).toEqual(resolution[2]);
+    expect(spotlight.current).toBeNull();
+    expect(isReplaying(spotlight)).toBe(true);
+    expect(cardFx(spotlight, 'p0c1')).toEqual({ faceDown: true, effect: null, float: null });
+    expect(cardFx(spotlight, 'p1c1').faceDown).toBe(false);
+    expect(playUntil('cardRevealed', 2).spotlight).toBeNull();
+    expect(playUntil('powerChanged').spotlight).toBeNull();
+  });
+
+  it('holds back the journal lines of events not landed yet, the spotlighted one included', () => {
+    const spotlight = playUntil('cardRevealed', 1, true);
+    expect(spotlight.unplayed[0]).toEqual(resolution[1]);
+    expect(loggedCount(spotlight.unplayed, [])).toBe(5);
+    expect(loggedCount(playUntil('cardRevealed').unplayed, [])).toBe(4);
+    expect(playUntil('cardDrawn', 2).unplayed).toEqual([]);
   });
 
   it('floats power changes and keeps a destroyed card as a ghost until its destruction played', () => {

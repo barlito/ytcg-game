@@ -1,0 +1,189 @@
+/* Reveal spotlight: the card or terrain enlarged in the center, then flying to its spot (duration = SPOTLIGHT_MS). */
+.spotlight {
+  --spot-ms: 3800ms;
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, #0b0712cc 30%, #0b071299 70%);
+  animation: spot-backdrop var(--spot-ms) ease-out forwards;
+}
+@keyframes spot-backdrop {
+  from {
+    opacity: 0;
+  }
+  10%,
+  78% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.spotlight__panel {
+  display: grid;
+  grid-template-columns: auto minmax(0, 24rem);
+  align-items: center;
+  gap: 1.6rem;
+  max-width: 100%;
+}
+.spotlight__figure {
+  width: clamp(170px, min(26vw, 36vh), 820px);
+  animation: spot-fly var(--spot-ms) cubic-bezier(0.3, 0.7, 0.3, 1) forwards;
+}
+.spotlight__figure .tcard__body {
+  box-shadow:
+    0 0 0 2px var(--card-glow),
+    0 0 40px 6px var(--card-glow),
+    0 20px 40px -10px #000;
+}
+@keyframes spot-fly {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.55) rotateY(70deg);
+  }
+  12% {
+    opacity: 1;
+    transform: none;
+  }
+  80% {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0.85;
+    transform: translate(var(--fly-x, 0), var(--fly-y, 30vh)) scale(var(--fly-scale, 0.3));
+  }
+}
+.spotlight__caption {
+  padding: 0.9rem 1.1rem;
+  background: #120b1df2;
+  border: 1px solid var(--primary);
+  box-shadow: 0 10px 30px #000c;
+  animation: spot-caption var(--spot-ms) ease-out forwards;
+}
+.spotlight__panel.side-opponent .spotlight__caption {
+  border-color: var(--magenta);
+}
+@keyframes spot-caption {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  14%,
+  76% {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.spotlight__caption p {
+  margin: 0 0 0.4rem;
+}
+.spotlight__owner {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.spotlight__chip {
+  display: inline-block;
+  margin-right: 0.3rem;
+  padding: 0.1rem 0.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--surface-2);
+  color: #fff;
+}
+.spotlight__chip.side-you {
+  background: var(--primary);
+}
+.spotlight__chip.side-opponent {
+  background: var(--magenta);
+  color: #000;
+}
+.spotlight__name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  line-height: 1.1;
+  color: #fff;
+}
+.spotlight__stats {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.spotlight__text {
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--text);
+}
+.spotlight__text.is-empty {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.85rem;
+}
+.spotlight__terrain {
+  position: relative;
+  width: clamp(240px, min(34vw, 50vh), 1100px);
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--surface-2);
+  clip-path: polygon(16px 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
+}
+.spotlight__terrain-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.spotlight__terrain-name {
+  position: absolute;
+  left: 1.2rem;
+  right: 1.2rem;
+  bottom: 0.7rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: #fff;
+  text-shadow: 0 0 8px #000;
+}
+
+/* Phones and short windows: the card above its caption. */
+@media (max-width: 700px), (max-height: 520px) {
+  .spotlight__panel {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 0.8rem;
+  }
+  .spotlight__figure {
+    width: clamp(130px, min(46vw, 36vh * 0.718), 230px);
+  }
+  .spotlight__terrain {
+    width: min(86vw, 360px);
+  }
+  .spotlight__caption {
+    padding: 0.6rem 0.8rem;
+  }
+  .spotlight__name {
+    font-size: 1.25rem;
+  }
+  .spotlight__text {
+    font-size: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight,
+  .spotlight__figure,
+  .spotlight__caption {
+    animation: none !important;
+  }
+}

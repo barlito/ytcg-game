@@ -1,6 +1,7 @@
 import { Client, type Room } from '@colyseus/sdk';
 import type { ActionInput, ErrorMessage, GameMessage, JoinOptions, LobbyMessage } from '@ytcg-game/server/protocol';
 import { MESSAGE_ACTION, MESSAGE_ERROR, MESSAGE_GAME, MESSAGE_LOBBY, ROOM_NAME } from '@ytcg-game/server/messages';
+import { toLocalClock } from './clock.ts';
 import { actionErrorText } from './errors.ts';
 import { type Dispatch, type SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 
@@ -26,7 +27,7 @@ function listen(joined: Room, setPhase: SetPhase, setError: (error: string | nul
     setPhase({ kind: 'lobby', code: joined.roomId, lobby });
   });
   joined.onMessage(MESSAGE_GAME, (game: GameMessage) => {
-    setPhase({ kind: 'game', code: joined.roomId, game });
+    setPhase({ kind: 'game', code: joined.roomId, game: toLocalClock(game, Date.now()) });
     setError(null);
   });
   joined.onMessage(MESSAGE_ERROR, (message: ErrorMessage) => {

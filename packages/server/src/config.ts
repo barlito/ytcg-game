@@ -3,7 +3,10 @@ import { z } from 'zod';
 const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(2567),
   TURN_SECONDS: z.coerce.number().int().min(5).default(60),
-  REVEAL_PAUSE_SECONDS: z.coerce.number().min(0).max(30).default(5),
+  // Reading pause after a resolution: base + per revealed card or terrain, capped (client spotlight + landing ≈ 2.75 s per card).
+  REVEAL_PAUSE_SECONDS: z.coerce.number().min(0).max(30).default(3),
+  REVEAL_SECONDS_PER_CARD: z.coerce.number().min(0).max(10).default(5),
+  REVEAL_PAUSE_MAX_SECONDS: z.coerce.number().min(0).max(60).default(40),
   RECONNECT_SECONDS: z.coerce.number().int().min(0).default(30),
   YTCG_JWT_PUBLIC_KEY_PATH: z.string().min(1).optional(),
   YTCG_JWT_ALGORITHM: z.string().min(1).default('RS256'),

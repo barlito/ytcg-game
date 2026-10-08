@@ -5,6 +5,7 @@ import { tiltOnLeave, tiltOnMove } from '../../lib/hoverTilt.ts';
 import { useTooltipAnchor } from '../../lib/useTooltipAnchor.ts';
 import { Artwork } from '../Artwork.tsx';
 import { Tooltip } from '../Tooltip.tsx';
+import { DefinitionTip } from './DefinitionTip.tsx';
 
 interface Props {
   card: PoolCard;
@@ -39,23 +40,13 @@ export function DefinitionFace({ definition }: { definition: CardDefinition }): 
 
 function TileTip({ card }: { card: PoolCard }): React.JSX.Element {
   const { definition } = card;
-  const text = describeCard(catalog, definition);
   return (
-    <div className="tip-card" data-rarity={definition.rarity}>
-      <p className="tip-title">
-        {definition.name}
-        <span>
-          Coût {definition.cost} · Puissance {definition.power}
-        </span>
-      </p>
-      <p className={`tip-text${text.length === 0 ? ' is-empty' : ''}`}>
-        {text.length === 0 ? 'Aucun effet.' : text.join(' ')}
-      </p>
+    <DefinitionTip definition={definition}>
       <p className="tip-text is-empty">
         {catalog.extensions.get(definition.extension) ?? definition.extension} · ×{card.quantity}
         {card.holo > 0 ? ` (dont ${card.holo} holo)` : ''}
       </p>
-    </div>
+    </DefinitionTip>
   );
 }
 

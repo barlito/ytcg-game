@@ -16,14 +16,12 @@ import {
   actionInputSchema,
 } from '../protocol.ts';
 import { GameSession, SessionError } from '../session/game-session.ts';
-import { type TurnSchedule, scheduleTurn } from '../session/turn-clock.ts';
+import { type TurnSchedule, type TurnTiming, revealCount, scheduleTurn } from '../session/turn-clock.ts';
 
-export interface RoomServices {
+export interface RoomServices extends TurnTiming {
   catalog: Catalog;
   authenticator: Authenticator;
   decks: DeckProvider;
-  turnSeconds: number;
-  revealPauseSeconds: number;
   reconnectSeconds: number;
   newSeed(): string;
   now(): number;
@@ -80,7 +78,7 @@ export abstract class DuelRoom extends Room<{ client: DuelClient }> {
     }
     void this.lock();
     const events = this.session.start();
-    this.restartTurnTimer(false);
+    this.restartTurnTimer(null);
     this.sendGame(events);
   }
 
@@ -134,22 +132,24 @@ export abstract class DuelRoom extends Room<{ client: DuelClient }> {
     if (this.session.isOver) {
       this.stopTurnTimer();
     } else if (this.session.turn !== turnBefore) {
-      this.restartTurnTimer(true);
+      this.restartTurnTimer(revealCount(events));
     }
     this.sendGame(events);
   }
 
   private sendGame(events: readonly GameEvent[]): void {
     for (const client of this.clients) {
-      client.send(MESSAGE_GAME, this.session.messageFor(this.seatOf(client), events, this.schedule));
+      const message = this.session.messageFor(this.seatOf(client), events, this.schedule);
+      client.send(MESSAGE_GAME, { ...message, serverTime: this.services.now() });
     }
   }
 
   // The timer covers the reading pause too: it never fires before the announced deadline.
-  private restartTurnTimer(afterResolution: boolean): void {
+  // reveals: cards and terrains revealed by the resolution that led to this turn (null for the first turn).
+  private restartTurnTimer(reveals: number | null): void {
     this.stopTurnTimer();
     const now = this.services.now();
-    const schedule = scheduleTurn(now, this.services, afterResolution);
+    const schedule = scheduleTurn(now, this.services, reveals);
     this.schedule = schedule;
     this.turnTimer = this.clock.setTimeout(() => {
       this.onTurnTimeout();

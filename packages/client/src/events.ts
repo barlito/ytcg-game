@@ -46,3 +46,8 @@ export function describeEvent(event: PlayerEvent, known: KnownCards, seats: read
   const format = FORMATTERS[event.type] as Formatter<PlayerEvent>;
   return format(event, known, seats);
 }
+
+// Journal lines these events will print (an unknown card still prints a line).
+export function loggedCount(events: readonly PlayerEvent[], seats: readonly SeatInfo[]): number {
+  return events.filter((event) => describeEvent(event, new Map(), seats) !== null).length;
+}
