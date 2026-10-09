@@ -1,0 +1,250 @@
+/* UI primitives of the « Violet Arcade » design: buttons, notched panel, chip, slanted progress, toast, logo. */
+
+/* Buttons: .btn-arcade = primary parallelogram, .btn-ghost = secondary rectangle (also on <a>). */
+.btn-arcade,
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 0;
+  padding: 0.8rem 1.6rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.25s,
+    color 0.25s,
+    border-color 0.25s,
+    box-shadow 0.25s;
+}
+.btn-arcade {
+  --cut: 0.875rem;
+  background: var(--primary);
+  color: #fff;
+  clip-path: polygon(var(--cut) 0, 100% 0, calc(100% - var(--cut)) 100%, 0 100%);
+  /* clip-path hides box-shadow, so the glow is a drop-shadow on the parent when needed (.btn-glow). */
+}
+.btn-arcade:hover:not(:disabled, [aria-disabled='true']),
+.btn-arcade:focus-visible {
+  background: var(--magenta);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 30%);
+}
+.btn-ghost:hover:not(:disabled, [aria-disabled='true']),
+.btn-ghost:focus-visible {
+  color: var(--magenta);
+  box-shadow: inset 0 0 0 1px var(--magenta);
+}
+.btn-arcade:disabled,
+.btn-ghost:disabled,
+[aria-disabled='true'].btn-arcade,
+[aria-disabled='true'].btn-ghost {
+  opacity: 0.4;
+  cursor: default;
+}
+/* Wrapper that gives a primary button its violet glow (drop-shadow survives the clip-path). */
+.btn-glow {
+  display: inline-block;
+  filter: drop-shadow(0 0 1.1rem rgb(163 53 238 / 50%));
+}
+.btn-lg {
+  padding: 1.25rem 2.75rem;
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+}
+
+/* Notched panel: top-left and bottom-right corners cut (--notch), 1px border as an inset shadow. */
+.notched {
+  --notch: 0.875rem;
+  --notch-border: var(--hairline-strong);
+  position: relative;
+  background: var(--surface-glass);
+  box-shadow: inset 0 0 0 1px var(--notch-border);
+  clip-path: polygon(
+    var(--notch) 0,
+    100% 0,
+    100% calc(100% - var(--notch)),
+    calc(100% - var(--notch)) 100%,
+    0 100%,
+    0 var(--notch)
+  );
+}
+.notched.is-lg {
+  --notch: 1rem;
+}
+.notched.tone-you {
+  --notch-border: var(--cyan);
+}
+.notched.tone-opponent {
+  --notch-border: var(--magenta);
+}
+.notched.tone-active {
+  --notch-border: var(--primary);
+}
+
+/* Mono chip / pill. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--text-muted);
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--hairline-strong);
+}
+button.chip {
+  cursor: pointer;
+}
+.chip.is-active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: none;
+}
+.chip.tone-live {
+  color: var(--live);
+  box-shadow: inset 0 0 0 1px currentcolor;
+}
+.chip.tone-warn {
+  color: var(--soon);
+  box-shadow: inset 0 0 0 1px currentcolor;
+}
+.chip.tone-magenta {
+  color: var(--magenta);
+  box-shadow: inset 0 0 0 1px currentcolor;
+}
+.chip.tone-cyan {
+  color: var(--cyan);
+  box-shadow: inset 0 0 0 1px currentcolor;
+}
+.chip.is-solid.tone-cyan {
+  background: var(--cyan);
+  color: #08050f;
+}
+
+/* Slanted progress bar: --value is 0..1, --accent the end of the fill gradient. */
+.progress {
+  --accent: var(--magenta);
+  height: 0.6rem;
+  background: rgb(120 80 220 / 20%);
+  transform: skewX(-20deg);
+  overflow: hidden;
+}
+.progress__fill {
+  width: calc(var(--value) * 100%);
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  transition: width 0.25s;
+}
+.progress.tone-you {
+  --accent: var(--cyan);
+}
+.progress.tone-live {
+  --accent: var(--live);
+}
+.progress.tone-warn {
+  --accent: var(--soon);
+}
+
+/* Toast: violet left border, mono magenta title. The only element with a drop shadow. */
+.toast {
+  padding: 0.7rem 1rem;
+  background: var(--surface);
+  border-left: 3px solid var(--primary);
+  box-shadow: 0 0.6rem 1.8rem rgb(0 0 0 / 60%);
+  color: var(--text);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+.toast__title {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--magenta);
+}
+.toast.tone-danger {
+  border-left-color: var(--danger);
+}
+.toast.is-floating {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(92vw, 32rem);
+  z-index: 70;
+}
+
+/* Logo 7c « Arcade chromatique »: official YOUL wordmark, then DUEL skewed with a chromatic aberration. */
+.logo {
+  --duel-size: 8rem;
+  --shift: 0.3125rem;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+  text-decoration: none;
+  color: var(--text);
+}
+/* The wordmark file is a card watermark: the window shows the YOUL word, the file itself is untouched. */
+.logo__youl {
+  position: relative;
+  display: block;
+  width: calc(var(--duel-size) * 0.5);
+  aspect-ratio: 360 / 160;
+  margin-left: 0.5rem;
+  overflow: hidden;
+}
+.logo__youl img {
+  position: absolute;
+  width: calc(718 / 360 * 100%);
+  left: calc(-170 / 360 * 100%);
+  top: calc(-680 / 160 * 100%);
+  max-width: none;
+  pointer-events: none;
+}
+.logo__duel {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--duel-size);
+  line-height: 0.82;
+  letter-spacing: -0.04em;
+  transform: skewX(-10deg);
+  text-shadow:
+    var(--shift) 0 0 var(--magenta),
+    calc(var(--shift) * -1) 0 0 var(--cyan),
+    0 0 2.5rem rgb(160 53 238 / 60%);
+}
+.logo.is-nav {
+  --duel-size: 1.875rem;
+  --shift: 0.125rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+.logo.is-nav .logo__youl {
+  width: 2.2rem;
+  margin: 0;
+}
+.logo.is-nav .logo__duel {
+  text-shadow:
+    var(--shift) 0 0 var(--magenta),
+    calc(var(--shift) * -1) 0 0 var(--cyan);
+}

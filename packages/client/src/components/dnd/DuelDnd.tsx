@@ -61,7 +61,7 @@ function WindyCard({ card, wind }: { card: CardView; wind: Wind }): React.JSX.El
       className="drag-overlay"
       style={{ transform: `rotateX(${wind.rx}deg) rotateY(${wind.ry}deg) scale(${scale})` }}
     >
-      <CardFace card={card} withText />
+      <CardFace card={card} />
     </div>
   );
 }

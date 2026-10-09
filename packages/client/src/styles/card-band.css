@@ -1,0 +1,279 @@
+/* « Biseau verre » band (handoff Carte.dc.html): slanted glass, neon edge, effect text, mana / rarity / power row.
+   The ytcg frame stays as is (cards.css). Sizes are set by data-size on .tcard through variables on the body:
+   full (hand, previews, spotlight), compact (board, grids; falls back to mini under 76px), mini (power only). */
+.tcard[data-size='full'] .tcard__body {
+  --band-h: 52cqi;
+  --o1: 0.5;
+  --o2: 0.7;
+  --edge-angle: -4.76deg;
+  --text-display: block;
+  --badge-w: 16cqi;
+  --badge-h: 18cqi;
+  --badge-num: 9cqi;
+  --badge-bottom: 3.5cqi;
+  --glyph-size: 5cqi;
+  --status-top: 20cqi;
+  --status-pad: 1.2cqi 3cqi;
+  --status-size: 4.2cqi;
+  --name-size: 10cqi;
+}
+.tcard[data-size='compact'] .tcard__body {
+  --band-h: 34cqi;
+  --o1: 0.62;
+  --o2: 0.82;
+  --edge-angle: -3.11deg;
+  --text-display: none;
+  --badge-w: 28cqi;
+  --badge-h: 31.5cqi;
+  --badge-num: 16cqi;
+  --badge-bottom: 4cqi;
+  --glyph-size: 8cqi;
+  --status-top: 22cqi;
+  --status-pad: 2cqi 4cqi;
+  --status-size: 8.5cqi;
+  --name-size: 10cqi;
+}
+.tcard[data-size='mini'] .tcard__body {
+  --band-display: none;
+  --text-display: none;
+  --mana-display: none;
+  --badges-justify: flex-end;
+  --glyph-display: none;
+  --name-display: none;
+  --status-display: none;
+  --badge-w: 40cqi;
+  --badge-h: 45cqi;
+  --badge-num: 23cqi;
+  --badge-bottom: 4cqi;
+}
+@container (max-width: 76px) {
+  .tcard[data-size='compact'] .tcard__body {
+    --band-display: none;
+    --mana-display: none;
+    --glyph-display: none;
+    --name-display: none;
+    --status-display: none;
+    --badge-w: 40cqi;
+    --badge-h: 45cqi;
+    --badge-num: 23cqi;
+    --badge-bottom: 4cqi;
+  }
+}
+
+.tband,
+.tband__edge,
+.tband__text,
+.tband__badges,
+.tcard__name,
+.tcard__statuses {
+  position: absolute;
+}
+.tband {
+  display: var(--band-display, block);
+  inset: auto 0 0;
+  height: var(--band-h);
+  clip-path: polygon(0 16%, 100% 0, 100% 100%, 0 100%);
+  background: linear-gradient(180deg, rgb(59 20 102 / calc(var(--o1) * 100%)), rgb(22 10 41 / calc(var(--o2) * 100%)));
+  backdrop-filter: var(--band-blur, blur(5px) saturate(1.25));
+}
+.tband__edge {
+  display: var(--band-display, block);
+  left: -3cqi;
+  width: 106cqi;
+  height: 0.8cqi;
+  bottom: calc(var(--band-h) * 0.92 - 0.4cqi);
+  transform: rotate(var(--edge-angle));
+  background: var(--band-line);
+  box-shadow: 0 0 2cqi rgb(70 230 230 / 60%);
+}
+.tband__text {
+  display: var(--text-display, none);
+  left: 7cqi;
+  right: 7cqi;
+  bottom: 20cqi;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: max(5.1cqi, 8px);
+  line-height: 1.24;
+  color: var(--text);
+  text-wrap: pretty;
+  text-shadow:
+    0 0.3cqi 0.6cqi rgb(0 0 0 / 95%),
+    0 0 2cqi rgb(8 5 15 / 85%);
+}
+.tband__keyword {
+  color: var(--magenta-soft);
+}
+.tband__badges {
+  inset: auto 4cqi var(--badge-bottom);
+  display: flex;
+  align-items: flex-end;
+  justify-content: var(--badges-justify, space-between);
+}
+.tbadge {
+  --shade: #1b1f86;
+  display: block;
+  filter: drop-shadow(0 0 1.6cqi var(--glow-color, rgb(84 168 255 / 75%)));
+}
+.tbadge--mana {
+  display: var(--mana-display, block);
+}
+.tbadge__shape {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--badge-w);
+  height: var(--badge-h);
+  background: linear-gradient(160deg, var(--mana-top) 0%, var(--mana) 38%, var(--mana-bottom) 100%);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+.tbadge--mana .tbadge__shape::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 50%;
+  background: rgb(255 255 255 / 28%);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.tbadge__num {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--badge-num);
+  line-height: 1;
+  color: #fff;
+  text-shadow:
+    0 0.5cqi 0 var(--shade),
+    0 0 1cqi var(--shade);
+}
+.tbadge--power {
+  --glow-color: rgb(255 62 165 / 70%);
+  --shade: #6a0b4b;
+}
+.tbadge--power .tbadge__shape {
+  background: linear-gradient(160deg, #ff9ad6 0%, #ff3ea5 40%, #9e1270 100%);
+  clip-path: polygon(50% 0, 100% 13%, 100% 62%, 50% 100%, 0 62%, 0 13%);
+  transition: filter 0.3s;
+}
+.tbadge--power .tbadge__shape::before {
+  content: '';
+  position: absolute;
+  inset: 0 50% 0 0;
+  background: rgb(255 255 255 / 16%);
+}
+.tbadge--power .tbadge__num {
+  margin-top: -6%;
+}
+.tbadge--power.trend-up {
+  --glow-color: rgb(91 229 132 / 80%);
+  --shade: #0d5530;
+}
+.tbadge--power.trend-up .tbadge__shape {
+  background: linear-gradient(160deg, #b6ffd0 0%, #5be584 40%, #17834a 100%);
+}
+.tbadge--power.trend-down {
+  --glow-color: rgb(240 71 94 / 70%);
+  --shade: #5c0c1f;
+}
+.tbadge--power.trend-down .tbadge__shape {
+  background: linear-gradient(160deg, #ffb0b0 0%, #f0475e 40%, #8a1530 100%);
+}
+.tband__rarity {
+  display: var(--glyph-display, block);
+  padding-bottom: 2cqi;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--glyph-size);
+  line-height: 1;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: var(--card-glow);
+  text-shadow:
+    0 0 2cqi var(--card-glow),
+    0 0.3cqi 0.6cqi #000;
+}
+
+/* Name above the band, left aligned. */
+.tcard__name {
+  display: var(--name-display, block);
+  left: 6cqi;
+  right: 6cqi;
+  bottom: calc(var(--band-h) + 3cqi);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--name-size);
+  line-height: 1.05;
+  color: #fff;
+  text-shadow:
+    0 0 1.2cqi #000,
+    0 0.4cqi 1.8cqi #000;
+}
+
+/* Status pill glued to the left edge. */
+.tcard__statuses {
+  display: var(--status-display, flex);
+  left: 0;
+  top: var(--status-top);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1cqi;
+}
+.pip {
+  padding: var(--status-pad);
+  background: var(--magenta);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: var(--status-size);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 0 0 3cqi rgb(255 62 165 / 70%);
+}
+
+/* States. */
+.tcard.is-fresh .tcard__body {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+.tcard.is-dim {
+  opacity: 0.38;
+  filter: grayscale(0.8);
+}
+
+/* Holo sweep on legendary and unique cards, one pass per 5 s. */
+.tcard__sheen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.tcard__sheen::after {
+  content: '';
+  position: absolute;
+  top: -10%;
+  bottom: -10%;
+  width: 40%;
+  mix-blend-mode: screen;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgb(255 255 255 / 20%) 40%,
+    rgb(70 230 230 / 16%) 55%,
+    rgb(255 62 165 / 16%) 70%,
+    transparent
+  );
+  animation: tcard-sheen 5s ease-in-out infinite;
+}
+@keyframes tcard-sheen {
+  0% {
+    transform: translateX(-130%);
+  }
+  55%,
+  100% {
+    transform: translateX(330%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tcard__sheen {
+    display: none;
+  }
+}

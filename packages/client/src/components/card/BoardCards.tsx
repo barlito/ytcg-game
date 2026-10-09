@@ -28,7 +28,7 @@ export function BoardCard({ card, own, ghost = false }: BoardProps): React.JSX.E
       className={classes.join(' ')}
       label={hidden ? 'Carte face cachée' : labelOf(card)}
     >
-      {hidden ? <CardBack /> : <CardFace card={card} effect={fx.effect} />}
+      {hidden ? <CardBack /> : <CardFace card={card} size="compact" effect={fx.effect} />}
     </CardButton>
   );
 }
@@ -59,7 +59,7 @@ export function PendingCard({ card, locked, onCancel }: PendingProps): React.JSX
             }
       }
     >
-      <CardFace card={card} effect={fx.effect} />
+      <CardFace card={card} size="compact" effect={fx.effect} />
     </DraggableCard>
   );
 }
@@ -92,7 +92,7 @@ export function HandCard({ card, playable, selected, onSelect }: HandProps): Rea
           : undefined
       }
     >
-      <CardFace card={card} withText effect={fx.effect} />
+      <CardFace card={card} effect={fx.effect} />
     </DraggableCard>
   );
 }

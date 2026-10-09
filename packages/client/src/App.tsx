@@ -1,4 +1,5 @@
 import { Suspense, lazy } from 'react';
+import { Toast } from './components/ui/Toast.tsx';
 import { Lobby } from './components/Lobby.tsx';
 import { useDuel } from './useDuel.ts';
 
@@ -32,7 +33,11 @@ function Screen(): React.JSX.Element {
       return (
         <>
           <Board game={phase.game} send={duel.send} onLeave={duel.leave} />
-          {duel.error !== null && <p className="toast">{duel.error}</p>}
+          {duel.error !== null && (
+            <Toast tone="danger" title="Erreur" floating>
+              {duel.error}
+            </Toast>
+          )}
         </>
       );
   }

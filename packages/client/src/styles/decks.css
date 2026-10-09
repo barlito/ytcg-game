@@ -327,13 +327,15 @@ a.btn-arcade {
 .deck-row .deck-cards {
   flex: 1 1 100%;
 }
-.deck-cards__card.is-missing .tcard {
-  opacity: 0.35;
-}
 /* Flat thumbnails: a dozen 3D card layers on one page make the compositor drop some artwork. */
 .deck-cards .tcard {
   perspective: none;
 }
 .deck-cards .tcard__body {
   transform: none;
+}
+/* Dozens of backdrop blurs on one page make the compositor drop layers: flat band in the grids. */
+.pool-tile .tcard__body,
+.deck-cards .tcard__body {
+  --band-blur: none;
 }

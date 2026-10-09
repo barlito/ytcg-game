@@ -48,6 +48,8 @@
   --px: 50%;
   --py: 50%;
   --card-glow: var(--rarity-common);
+  /* Rarity glow radius: 14px by default, 8px on the board. */
+  --glow: 14px;
   container-type: inline-size;
   position: relative;
   width: 100%;
@@ -66,6 +68,9 @@
 .tcard[data-rarity='legendary'] {
   --card-glow: var(--rarity-legendary);
 }
+.tcard[data-rarity='unique'] {
+  --card-glow: var(--rarity-unique);
+}
 .tcard__body {
   position: absolute;
   inset: 0;
@@ -77,9 +82,12 @@
     transform 0.35s ease,
     box-shadow 0.35s ease;
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--card-glow) 75%, transparent),
-    0 0 9px -2px var(--card-glow),
-    0 6px 14px -6px #000;
+    0 0 0 1px color-mix(in srgb, var(--card-glow) 60%, transparent),
+    0 0 var(--glow) color-mix(in srgb, var(--card-glow) 69%, transparent),
+    0 0 calc(var(--glow) * 2.6) color-mix(in srgb, var(--card-glow) 33%, transparent);
+}
+.on-board .tcard {
+  --glow: 8px;
 }
 .tcard.is-tilting {
   z-index: 2;
@@ -142,163 +150,6 @@
     linear-gradient(#000 0 0);
   mask-composite: exclude;
 }
-.tcard__cost,
-.tcard__power {
-  position: absolute;
-  top: 4cqi;
-  display: grid;
-  place-items: center;
-  min-width: 24cqi;
-  height: 24cqi;
-  padding: 0 2cqi;
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  font-size: 15cqi;
-  line-height: 1;
-  box-shadow: 0 1cqi 3cqi #000c;
-}
-.tcard__cost {
-  left: 4cqi;
-  border-radius: 50%;
-  background: #54a8ff;
-  color: #04121f;
-}
-.tcard__power {
-  right: 4cqi;
-  clip-path: polygon(15% 0, 100% 0, 85% 100%, 0 100%);
-  background: #f0e8f7;
-  color: #120b1d;
-  transition:
-    background 0.3s,
-    color 0.3s;
-}
-.tcard__power.trend-up {
-  background: var(--live);
-  color: #03210e;
-}
-.tcard__power.trend-down {
-  background: var(--danger);
-  color: #2a0710;
-}
-.tcard__name {
-  position: absolute;
-  left: 6cqi;
-  right: 6cqi;
-  bottom: 6cqi;
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 10cqi;
-  line-height: 1.05;
-  color: #fff;
-  text-shadow:
-    0 0 1.2cqi #000,
-    0 0.4cqi 1.8cqi #000;
-}
-.tcard.has-text .tcard__mat {
-  box-shadow:
-    inset 0 0 0 3.4cqi #08050ff2,
-    inset 0 -80cqi 30cqi -26cqi #08050ff5;
-}
-.tcard.has-text .tcard__name {
-  bottom: auto;
-  top: 60cqi;
-  right: 12cqi;
-}
-.tcard__text {
-  position: absolute;
-  left: 6cqi;
-  right: 6cqi;
-  top: 83cqi;
-  bottom: 5cqi;
-  overflow: hidden;
-  font-size: max(7.4cqi, 9px);
-  line-height: 1.25;
-  color: #d9cce8;
-}
-.tcard__rarity {
-  position: absolute;
-  right: 6cqi;
-  bottom: 6cqi;
-  width: 5cqi;
-  height: 5cqi;
-  background: var(--card-glow);
-  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
-}
-.tcard.has-text .tcard__rarity {
-  bottom: auto;
-  top: 62cqi;
-}
-.tcard__statuses {
-  position: absolute;
-  left: 4cqi;
-  right: 4cqi;
-  top: 31cqi;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5cqi;
-}
-.pip {
-  padding: 0.5cqi 2.5cqi;
-  font-size: 9.5cqi;
-  font-weight: 600;
-  background: #120b1de6;
-  border: 1px solid currentColor;
-}
-.status-mad {
-  color: var(--magenta);
-}
-.status-high {
-  color: var(--live);
-}
-.status-tough {
-  color: var(--rarity-rare);
-}
-/* Board cards are small: artwork and numbers only, the tooltip tells the rest. */
-@container (max-width: 95px) {
-  .tcard:not(.has-text) .tcard__name,
-  .tcard__rarity,
-  .tcard__text {
-    display: none;
-  }
-  .tcard.has-text .tcard__name {
-    top: auto;
-    bottom: 6cqi;
-    font-size: 12cqi;
-  }
-  .tcard__cost,
-  .tcard__power {
-    min-width: 30cqi;
-    height: 30cqi;
-    font-size: 19cqi;
-  }
-  .tcard__statuses {
-    top: auto;
-    bottom: 5cqi;
-  }
-  .pip {
-    font-size: 15cqi;
-    padding: 0.5cqi 2.5cqi;
-  }
-}
-
-.tcard.is-back .tcard__body {
-  display: grid;
-  place-items: center;
-  background:
-    radial-gradient(circle at 50% 40%, #a435f055, transparent 60%),
-    repeating-linear-gradient(45deg, #2a1245 0 6cqi, #1a0d2b 6cqi 12cqi);
-  box-shadow:
-    0 0 0 1px var(--primary),
-    0 6px 14px -6px #000;
-}
-.tcard__logo {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 16cqi;
-  letter-spacing: 0.1em;
-  color: #ffffff55;
-}
-
 .drag-overlay {
   width: var(--hand-card);
   transform-style: preserve-3d;

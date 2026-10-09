@@ -15,7 +15,15 @@ interface Props {
   size?: 'large' | 'small';
 }
 
-function CardThumb({ definition, missing }: { definition: CardDefinition; missing: boolean }): React.JSX.Element {
+function CardThumb({
+  definition,
+  missing,
+  size,
+}: {
+  definition: CardDefinition;
+  missing: boolean;
+  size: 'large' | 'small';
+}): React.JSX.Element {
   const { anchor, setAnchor, id, open, handlers } = useTooltipAnchor(false);
   return (
     <li className={`deck-cards__card${missing ? ' is-missing' : ''}`}>
@@ -27,7 +35,7 @@ function CardThumb({ definition, missing }: { definition: CardDefinition; missin
         aria-describedby={open ? id : undefined}
         {...handlers}
       >
-        <DefinitionFace definition={definition} />
+        <DefinitionFace definition={definition} size={size === 'large' ? 'full' : 'compact'} dim={missing} />
       </button>
       {open && (
         <Tooltip anchor={anchor} id={id}>
@@ -62,7 +70,7 @@ export function DeckCards({ cards, terrain, missing = [], size = 'small' }: Prop
   return (
     <ul className={`deck-cards is-${size}`}>
       {known.map((definition) => (
-        <CardThumb key={definition.id} definition={definition} missing={missing.includes(definition.id)} />
+        <CardThumb key={definition.id} definition={definition} missing={missing.includes(definition.id)} size={size} />
       ))}
       {unknown > 0 && <li className="deck-cards__unknown">+{unknown} carte(s) inconnue(s) du jeu</li>}
       {location !== undefined && <TerrainThumb terrain={location} />}
