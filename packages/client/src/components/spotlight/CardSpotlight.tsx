@@ -2,6 +2,7 @@ import { SPOTLIGHT_MS } from '../../animation/queue.ts';
 import type { CardContent } from '../../animation/spotlight.ts';
 import { useCountSteps } from '../../animation/useCountSteps.ts';
 import { catalog } from '../../catalog.ts';
+import { TagList } from '../card/TagList.tsx';
 import { CardBack, CardFace } from '../card/CardFace.tsx';
 import { RARITY_LABEL, rarityGlyph } from '../card/rarity.ts';
 import { EffectBlock, InfoPanel, PowerLine } from './EffectPanel.tsx';
@@ -32,6 +33,9 @@ export function CardSpotlight({ content, target }: { content: CardContent; targe
         </div>
       </div>
       <InfoPanel eyebrow={eyebrowOf(content)} name={catalog.card(card.defId).name} meta={meta.join(' · ')}>
+        <div className="spotlight__tags">
+          <TagList definition={catalog.card(card.defId)} />
+        </div>
         <EffectBlock text={content.text} />
         <PowerLine base={card.power} final={content.finalPower} power={power} />
       </InfoPanel>

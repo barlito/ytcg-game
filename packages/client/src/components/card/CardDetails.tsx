@@ -1,5 +1,6 @@
 import { type CardView, describeCard } from '@ytcg-game/engine';
 import { catalog } from '../../catalog.ts';
+import { TagList } from './TagList.tsx';
 import { powerLines, signedAmount, statusLines } from '../../power.ts';
 
 function Breakdown({ card }: { card: CardView }): React.JSX.Element {
@@ -60,6 +61,7 @@ export function CardDetails({ card }: { card: CardView }): React.JSX.Element {
           </p>
         ))
       )}
+      <TagList definition={definition} />
       {(card.breakdown.modifier !== 0 || card.breakdown.ongoing.length > 0) && <Breakdown card={card} />}
       <Statuses card={card} />
     </div>
