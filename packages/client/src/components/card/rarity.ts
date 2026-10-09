@@ -19,6 +19,14 @@ export function rarityGlyph(key: RarityKey): string {
   return GLYPHS[key];
 }
 
+export const RARITY_LABEL: Record<RarityKey, string> = {
+  common: 'Commune',
+  uncommon: 'Peu commune',
+  rare: 'Rare',
+  legendary: 'Légendaire',
+  unique: 'Unique',
+};
+
 // Only the top two tiers get the holo sweep.
 export function hasSheen(key: RarityKey): boolean {
   return key === 'legendary' || key === 'unique';

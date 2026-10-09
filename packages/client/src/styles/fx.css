@@ -77,13 +77,22 @@
     opacity: 0.3;
   }
 }
-.location-header.fx-flip {
+.location-tile.fx-flip {
   animation: fx-flip 0.8s ease-out;
 }
 @keyframes fx-flip {
   from {
     transform: scale(1.12);
     filter: brightness(1.8);
+  }
+}
+/* A reveal landing on this location: the tile flashes. */
+.location-tile.fx-flash {
+  animation: fx-flash 0.4s ease-out;
+}
+@keyframes fx-flash {
+  40% {
+    filter: brightness(1.7) saturate(1.5);
   }
 }
 .fx-bump {
@@ -178,11 +187,29 @@
 }
 .replay-skip {
   position: fixed;
-  z-index: 40;
-  right: 1rem;
-  bottom: 1rem;
-  padding: 0.4rem 0.9rem;
+  z-index: 46;
+  left: 50%;
+  bottom: 2.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  transform: translateX(-50%);
+}
+.replay-skip span {
   font-size: 0.8rem;
+  color: var(--text-dim);
+}
+.replay-skip .btn-ghost {
+  padding: 0.65rem 1.1rem;
+  font-size: 0.75rem;
+}
+@media (max-width: 700px) {
+  .replay-skip {
+    bottom: 1rem;
+  }
+  .replay-skip span {
+    display: none;
+  }
 }
 
 .tooltip {
@@ -274,7 +301,7 @@
   .replay-banner,
   .fx-float,
   .fx-bump,
-  .location-header,
+  .location-tile,
   .hand > .card-slot {
     animation: none !important;
     transition: none !important;

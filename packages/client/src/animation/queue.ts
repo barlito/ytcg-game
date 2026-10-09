@@ -10,8 +10,9 @@ export interface Step {
 
 export type SpotlightEvent = Extract<PlayerEvent, { type: 'cardRevealed' | 'locationRevealed' }>;
 
-// Enlarged reading time of each reveal (≈1.5 s held, then the flight); the server pause gives 3 s per reveal.
-export const SPOTLIGHT_MS = 3800;
+// Enlarged sequence of each reveal (rise, flip, effect panel, power counter, flight to the board); with the landing
+// step it stays under the 5 s the server pause gives per reveal.
+export const SPOTLIGHT_MS = 4400;
 
 // Short on purpose: a full resolution must stay readable within the reading pause.
 const DURATIONS: Record<PlayerEvent['type'], number> = {

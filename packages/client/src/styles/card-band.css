@@ -15,7 +15,8 @@
   --status-top: 20cqi;
   --status-pad: 1.2cqi 3cqi;
   --status-size: 4.2cqi;
-  --name-size: 10cqi;
+  --name-size: 7.6cqi;
+  --ext-display: block;
 }
 .tcard[data-size='compact'] .tcard__body {
   --band-h: 34cqi;
@@ -31,7 +32,8 @@
   --status-top: 22cqi;
   --status-pad: 2cqi 4cqi;
   --status-size: 8.5cqi;
-  --name-size: 10cqi;
+  --name-size: 9.6cqi;
+  --name-max: 100%;
 }
 .tcard[data-size='mini'] .tcard__body {
   --band-display: none;
@@ -192,20 +194,39 @@
     0 0.3cqi 0.6cqi #000;
 }
 
-/* Name above the band, left aligned. */
+/* Name and universe at the top, like the ytcg frame (Pirata One, universe name as the text fallback of the logo). */
 .tcard__name {
   display: var(--name-display, block);
-  left: 6cqi;
-  right: 6cqi;
-  bottom: calc(var(--band-h) + 3cqi);
-  font-family: var(--font-display);
-  font-weight: 700;
+  top: 5cqi;
+  left: 6.5cqi;
+  max-width: var(--name-max, 62%);
+  font-family: var(--font-card);
+  font-weight: 400;
   font-size: var(--name-size);
   line-height: 1.05;
   color: #fff;
   text-shadow:
     0 0 1.2cqi #000,
-    0 0.4cqi 1.8cqi #000;
+    0 0.4cqi 1.8cqi #000,
+    0 0 3.5cqi rgb(0 0 0 / 70%);
+}
+.tcard__ext {
+  display: var(--ext-display, none);
+  position: absolute;
+  top: 5.4cqi;
+  right: 6.5cqi;
+  max-width: 30%;
+  font-family: var(--font-display);
+  font-size: 3.1cqi;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  text-align: right;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow:
+    0 0 1cqi #000,
+    0 0.3cqi 1.5cqi rgb(0 0 0 / 90%);
 }
 
 /* Status pill glued to the left edge. */
