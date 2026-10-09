@@ -78,7 +78,11 @@ describe('deck tile badge', () => {
     expect(deckBadge(catalog, deck(cards))).toEqual({ label: 'Jouable', ok: true, detail: null });
     const missing = deckBadge(catalog, deck(cards, { valid: false, missingCards: cards.slice(0, 2) }));
     expect(missing).toMatchObject({ label: '2 cartes manquent', ok: false });
-    expect(deckBadge(catalog, deck(cards.slice(0, 3)))).toMatchObject({ label: 'Règles du duel', ok: false });
+    expect(deckBadge(catalog, deck(cards.slice(0, 3)))).toMatchObject({ label: '12 cartes exactement', ok: false });
+    const priciest = [...catalog.cards.values()].sort((a, b) => b.cost - a.cost).slice(0, 12);
+    const curve = deckBadge(catalog, deck(priciest.map((card) => card.id)));
+    expect(curve).toMatchObject({ label: 'Courbe de coûts', ok: false });
+    expect(curve.detail).toContain('Courbe de coûts à revoir');
   });
 });
 
