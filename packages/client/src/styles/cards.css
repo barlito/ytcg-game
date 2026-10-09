@@ -30,13 +30,8 @@
     0 0 0 2px var(--magenta),
     0 0 22px var(--magenta);
 }
-.card-slot.is-disabled .tcard {
-  filter: saturate(0.4) brightness(0.65);
-}
 .card-slot.is-pending .tcard__body {
-  outline: 2px dashed #ffffffaa;
-  outline-offset: -3px;
-  filter: brightness(0.75);
+  filter: brightness(0.85);
 }
 .card-slot.is-pending {
   cursor: pointer;

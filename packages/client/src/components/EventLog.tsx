@@ -1,21 +1,20 @@
-import type { SeatInfo } from '@ytcg-game/server/protocol';
-import { useScene } from '../animation/useReplay.ts';
-import { loggedCount } from '../events.ts';
-
 interface Props {
   lines: readonly string[];
-  seats: readonly SeatInfo[];
+  onClose: () => void;
 }
 
-// Lines of events the replay has not played yet stay hidden: the journal never spoils a reveal.
-export function EventLog({ lines, seats }: Props): React.JSX.Element {
-  const held = loggedCount(useScene().unplayed, seats);
-  const shown = held === 0 ? lines : lines.slice(0, Math.max(0, lines.length - held));
+// The journal panel opened from the top bar (the lines are already filtered by `useVisibleLog`).
+export function EventLog({ lines, onClose }: Props): React.JSX.Element {
   return (
-    <aside className="event-log">
-      <h3 className="eyebrow">Journal</h3>
+    <aside className="event-log" aria-label="Journal">
+      <header>
+        <h3 className="eyebrow">Journal</h3>
+        <button type="button" className="btn-ghost" onClick={onClose}>
+          Fermer
+        </button>
+      </header>
       <ol>
-        {shown.map((line, index) => (
+        {lines.map((line, index) => (
           <li key={index}>{line}</li>
         ))}
       </ol>

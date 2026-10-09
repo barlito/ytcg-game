@@ -1,0 +1,104 @@
+/* Hand: a fan of cards (±7°), the playable ones raised, lifted again on hover; too expensive ones at 60 %. */
+.hand {
+  --n: 1;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  container-type: inline-size;
+  min-height: calc(var(--hand-card) / 0.718 + 0.5rem);
+  padding: 0 0.5rem;
+  border: 1px solid transparent;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.hand[data-count='2'] {
+  --n: 2;
+}
+.hand[data-count='3'] {
+  --n: 3;
+}
+.hand[data-count='4'] {
+  --n: 4;
+}
+.hand[data-count='5'] {
+  --n: 5;
+}
+.hand[data-count='6'] {
+  --n: 6;
+}
+.hand[data-count='7'] {
+  --n: 7;
+}
+.hand > .card-slot {
+  flex: 0 0 var(--hand-card);
+  align-self: end;
+  transform: rotate(var(--fan, 0deg));
+  transform-origin: 50% 140%;
+  transition: transform 0.25s;
+}
+/* Gap that fits the n cards in the hand width (100cqi): an overlap, at most 0.5rem apart. */
+.hand > .card-slot + .card-slot {
+  margin-left: clamp(-9rem, (100cqi - var(--n) * var(--hand-card) - 1rem - 2px) / (var(--n) - 1), 0.5rem);
+}
+.hand > .card-slot.is-playable {
+  transform: rotate(var(--fan, 0deg)) translateY(-1.4rem);
+}
+.hand > .card-slot.is-playable:hover,
+.hand > .card-slot.is-playable:focus-visible,
+.hand > .card-slot.is-selected {
+  z-index: 2;
+  transform: translateY(-2.5rem) scale(1.04);
+}
+.hand > .card-slot.is-disabled {
+  opacity: 0.6;
+}
+.hand > .card-slot.is-disabled:hover,
+.hand > .card-slot:focus-visible {
+  z-index: 2;
+}
+.hand.drop-valid {
+  border-color: var(--cyan);
+  background: rgb(70 230 230 / 5%);
+}
+.hand.drop-over {
+  box-shadow: inset 0 0 24px rgb(70 230 230 / 35%);
+}
+.hand-hint,
+.hand-empty {
+  align-self: center;
+  margin: 0 auto;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.hand-hint {
+  position: absolute;
+  inset: auto 0 0.3rem;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* Phones: compact cards in a short fan, scrolling sideways when the hand is wider than the screen. */
+@media (max-width: 900px) {
+  .hand {
+    justify-content: safe center;
+    padding-top: 1.6rem;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scroll-snap-type: x proximity;
+  }
+  .hand > .card-slot {
+    scroll-snap-align: center;
+  }
+  .hand > .card-slot + .card-slot {
+    margin-left: 0.4rem;
+  }
+  .hand > .card-slot.is-playable {
+    transform: rotate(var(--fan, 0deg)) translateY(-0.9rem);
+  }
+  .hand > .card-slot.is-playable:hover,
+  .hand > .card-slot.is-playable:focus-visible,
+  .hand > .card-slot.is-selected {
+    transform: translateY(-1.4rem) scale(1.04);
+  }
+}

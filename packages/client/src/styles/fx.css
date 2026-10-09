@@ -77,13 +77,22 @@
     opacity: 0.3;
   }
 }
-.location-header.fx-flip {
+.location-tile.fx-flip {
   animation: fx-flip 0.8s ease-out;
 }
 @keyframes fx-flip {
   from {
     transform: scale(1.12);
     filter: brightness(1.8);
+  }
+}
+/* A reveal landing on this location: the tile flashes. */
+.location-tile.fx-flash {
+  animation: fx-flash 0.4s ease-out;
+}
+@keyframes fx-flash {
+  40% {
+    filter: brightness(1.7) saturate(1.5);
   }
 }
 .fx-bump {
@@ -274,7 +283,7 @@
   .replay-banner,
   .fx-float,
   .fx-bump,
-  .location-header,
+  .location-tile,
   .hand > .card-slot {
     animation: none !important;
     transition: none !important;
