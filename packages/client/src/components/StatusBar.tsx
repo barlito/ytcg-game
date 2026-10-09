@@ -95,7 +95,9 @@ function OpponentInfo({ view, seats }: { view: PlayerView; seats: SeatInfo[] }):
         <OpponentCounts view={view} />
         <span className="status-badges">
           {view.opponent.pendingCount > 0 && (
-            <span className="badge-pending">{view.opponent.pendingCount} posée(s) face cachée</span>
+            <span className="badge-pending">
+              {view.opponent.pendingCount} posée(s)<span className="badge-extra"> face cachée</span>
+            </span>
           )}
           {opponent?.connected === false && <span className="badge-warning">déconnecté</span>}
           {view.opponent.ready && view.status !== 'ended' && <span className="badge-ready">a fini son tour</span>}

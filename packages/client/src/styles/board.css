@@ -1,8 +1,13 @@
 /* Board layout: top bar, three locations, footer (player, hand fan, actions). Fits 1280×800 without scrolling. */
 /* Hand card width, also read by the drag overlay (rendered outside .board). */
 /* Last term: the height left once the top bar, the locations (cards scale with the board width) and the tiles are laid out. */
+/* Also capped so seven cards barely overlap in the hand column (board width minus the side columns), never under 150 px. */
 :root {
-  --hand-card: clamp(104px, min(12vw, 26vh, 71.8vh - 0.1666 * min(100vw, 120rem) - 13.75rem), 600px);
+  --hand-card: clamp(
+    104px,
+    min(12vw, 26vh, 71.8vh - 0.1666 * min(100vw, 120rem) - 13.75rem, max((min(100vw, 120rem) - 33rem) / 6.8, 150px)),
+    600px
+  );
 }
 .board {
   position: relative;
@@ -359,42 +364,51 @@
     padding: 0 0.5rem 0.5rem;
   }
   .topbar {
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: 'opponent right' 'turn turn';
     margin: 0 -0.5rem;
     padding: 0.4rem 1rem;
-    gap: 0.6rem;
-  }
-  .hand-backs,
-  .turn-tracker__segments {
-    display: none;
+    gap: 0.4rem 0.6rem;
   }
   .status-opponent {
+    grid-area: opponent;
     gap: 0.5rem;
+  }
+  .topbar__right {
+    grid-area: right;
+    gap: 0.4rem;
+  }
+  .turn-tracker {
+    grid-area: turn;
+    grid-auto-flow: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 0.35rem;
+    border-top: 1px solid var(--hairline);
+  }
+  .turn-tracker__label strong {
+    font-size: 1.1rem;
+  }
+  .segment {
+    width: 1.4rem;
+  }
+  .hand-backs {
+    display: none;
   }
   .status-counts {
     font-size: 0.6rem;
     letter-spacing: 0.04em;
   }
-  .topbar__right {
-    gap: 0.4rem;
+  .badge-extra {
+    display: none;
   }
   .timer__label {
     display: none;
   }
-  .badge-pending,
-  .badge-warning,
-  .badge-ready {
-    white-space: normal;
-  }
   .btn-journal {
     padding: 0.5rem 0.7rem;
     font-size: 0.7rem;
-  }
-  .turn-tracker__label span:first-child {
-    display: none;
-  }
-  .turn-tracker__label strong {
-    font-size: 1.25rem;
   }
   .board-foot {
     grid-template-columns: auto minmax(0, 1fr);
