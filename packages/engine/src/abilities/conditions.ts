@@ -43,7 +43,22 @@ export class TurnCondition implements Condition {
   }
 }
 
-export const conditionSchema = z.discriminatedUnion('type', [CountCondition.schema, TurnCondition.schema]);
+const madSchema = z.object({ type: z.literal('mad') });
+
+// This card is mad (never true for a location).
+export class MadCondition implements Condition {
+  static readonly schema = madSchema;
+
+  isMet(board: BoardView, source: AbilitySource): boolean {
+    return source.card !== null && board.hasStatus(source.card, 'mad');
+  }
+}
+
+export const conditionSchema = z.discriminatedUnion('type', [
+  CountCondition.schema,
+  TurnCondition.schema,
+  MadCondition.schema,
+]);
 
 export type ConditionParams = z.output<typeof conditionSchema>;
 
@@ -53,5 +68,7 @@ export function createCondition(params: ConditionParams): Condition {
       return new CountCondition(params);
     case 'turn':
       return new TurnCondition(params);
+    case 'mad':
+      return new MadCondition();
   }
 }

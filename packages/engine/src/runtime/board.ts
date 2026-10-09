@@ -11,9 +11,10 @@ import type { CardDefinition, Catalog } from '../catalog.ts';
 import { Rng } from '../rng.ts';
 import { MAX_HAND } from '../rules.ts';
 import { type GameEvent, type GameState, PLAYERS, type PlayerIndex } from '../state.ts';
+import { moveCard } from './move.ts';
+import { crisisBonus, runCrisis, startCrisis } from './crises.ts';
 import { inScope, onSide } from './filters.ts';
 import * as hand from './hand.ts';
-import { hasRoom } from './location-rules.ts';
 import { cardAt, locationAt } from './state-access.ts';
 import { absorbingStatus, hasRule, stacksOf } from './statuses.ts';
 
@@ -34,6 +35,8 @@ export class GameBoard implements Board {
   readonly rng: Rng;
   // Set by the Runtime: fires the "destroyed" abilities of a card once it left the board.
   onDestroyed: (uid: string) => void = () => undefined;
+  // Set by the Runtime: fires the onMad abilities of a card that just went mad.
+  onMad: (uid: string) => void = () => undefined;
   private readonly events: GameEvent[];
 
   constructor(catalog: Catalog, state: GameState, events: GameEvent[]) {
@@ -101,7 +104,32 @@ export class GameBoard implements Board {
         bonuses.push({ source, amount });
       }
     }
-    return bonuses;
+    const crisis = crisisBonus(this.state, uid, keepsLosses);
+    return crisis === 0 ? bonuses : [...bonuses, { source: this.sourceOf(uid), amount: crisis }];
+  }
+
+  // The card as the source of its own abilities (it must be on the board).
+  sourceOf(uid: string): AbilitySource {
+    const card = cardAt(this.state, uid);
+    if (card.location === null) {
+      throw new RangeError(`Card ${uid} is not at a location`);
+    }
+    return { owner: card.owner, location: card.location, card: uid };
+  }
+
+  hasStatus(uid: string, status: StatusId): boolean {
+    return stacksOf(cardAt(this.state, uid), status) > 0;
+  }
+
+  becomeMad(uid: string): void {
+    startCrisis(this, uid);
+    if (cardAt(this.state, uid).zone === 'board') {
+      this.onMad(uid);
+    }
+  }
+
+  runCrisis(uid: string): void {
+    runCrisis(this, uid);
   }
 
   locationPowers(): [number, number][] {
@@ -155,21 +183,7 @@ export class GameBoard implements Board {
   }
 
   move(uid: string, destination: MoveDestination): void {
-    const card = cardAt(this.state, uid);
-    if (card.zone !== 'board' || card.location === null) {
-      return;
-    }
-    const from = card.location;
-    const options = this.moveOptions(card.owner, from, destination);
-    const to = destination === 'random' && options.length > 0 ? this.rng.pick(options) : options[0];
-    if (to === undefined) {
-      return;
-    }
-    const slot = locationAt(this.state, from).cards[card.owner];
-    slot.splice(slot.indexOf(uid), 1);
-    locationAt(this.state, to).cards[card.owner].push(uid);
-    card.location = to;
-    this.events.push({ type: 'cardMoved', card: uid, from, to });
+    moveCard(this, uid, destination);
   }
 
   addHandCost(player: PlayerIndex, amount: number, tag: string | null): void {
@@ -182,15 +196,6 @@ export class GameBoard implements Board {
 
   addToHand(player: PlayerIndex, defId: string): void {
     hand.addToHand(this.handContext, player, defId);
-  }
-
-  // Locations of the same side where the card could go, in board order.
-  private moveOptions(owner: PlayerIndex, from: number, destination: MoveDestination): number[] {
-    const wanted = (index: number): boolean =>
-      index !== from &&
-      (destination === 'random' || index === from + (destination === 'left' ? -1 : 1)) &&
-      hasRoom(this.catalog, this.state, owner, index);
-    return this.state.locations.flatMap((_, index) => (wanted(index) ? [index] : []));
   }
 
   // A shield status pays one stack to cancel what was about to happen.
@@ -211,9 +216,13 @@ export class GameBoard implements Board {
     if (card.zone !== 'board' || stacks <= 0) {
       return;
     }
-    const total = stacksOf(card, status) + stacks;
+    const previous = stacksOf(card, status);
+    const total = previous + stacks;
     card.statuses[status] = total;
     this.events.push({ type: 'statusChanged', card: uid, status, stacks: total });
+    if (previous === 0) {
+      statusRule(status).onGained?.(this, uid);
+    }
     statusRule(status).onStacksChanged?.(this, uid, total);
   }
 
@@ -224,6 +233,9 @@ export class GameBoard implements Board {
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- statuses is a plain JSON record
         delete card.statuses[id];
         this.events.push({ type: 'statusChanged', card: uid, status: id, stacks: 0 });
+      }
+      if (id === 'mad') {
+        card.crisis = null;
       }
     }
   }

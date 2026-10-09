@@ -1,3 +1,4 @@
+import type { CrisisId } from './abilities/crises.ts';
 import type { StatusId } from './abilities/statuses.ts';
 import type { RngState } from './rng.ts';
 
@@ -32,6 +33,8 @@ export interface CardInstance {
   usedNextCosts: CostModifier[];
   // Status → stacks, only while on the board.
   statuses: Partial<Record<StatusId, number>>;
+  // Drawn when the card goes mad without a madness effect of its own, forgotten with the Folie.
+  crisis: CrisisId | null;
 }
 
 export interface PlayerState {
@@ -98,4 +101,5 @@ export type GameEvent =
   | { type: 'costChanged'; player: PlayerIndex; card: string | null; delta: number }
   | { type: 'cardAddedToHand'; player: PlayerIndex; card: string; defId: string }
   | { type: 'statusChanged'; card: string; status: StatusId; stacks: number }
+  | { type: 'crisisStarted'; card: string; crisis: CrisisId }
   | { type: 'gameEnded'; result: GameResult };

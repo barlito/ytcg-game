@@ -15,6 +15,7 @@ const TRIGGER_TEXT = {
   ongoing: 'En continu',
   endOfTurn: 'En fin de tour',
   onDestroyed: 'Quand cette carte est détruite',
+  onMad: 'Quand elle devient folle',
 } as const;
 
 export function describeCard(catalog: Catalog, card: CardDefinition): string[] {
@@ -49,7 +50,10 @@ function describeLocationRules(rules: LocationRules): string[] {
 
 export function describeAbility(catalog: Catalog, ability: AbilityParams, onLocation: boolean): string {
   const context: Context = { catalog, onLocation };
-  const condition = ability.condition === undefined ? '' : `${describeCondition(context, ability.condition)}, `;
+  const condition =
+    ability.condition === undefined || ability.condition.type === 'mad'
+      ? ''
+      : `${describeCondition(context, ability.condition)}, `;
   const target = describeTarget(context, ability.target);
   const effects = ability.effect
     .map((effect, index) => {
@@ -61,6 +65,14 @@ export function describeAbility(catalog: Catalog, ability: AbilityParams, onLoca
 }
 
 function describeTrigger(context: Context, ability: AbilityParams): string {
+  if (ability.condition?.type === 'mad') {
+    // « Folle : +1 puissance. » / « En fin de tour, si elle est folle : … »
+    return ability.trigger === 'ongoing' ? 'Folle' : `${triggerText(context, ability)}, si elle est folle`;
+  }
+  return triggerText(context, ability);
+}
+
+function triggerText(context: Context, ability: AbilityParams): string {
   if (ability.trigger !== 'onCardPlayedHere') {
     return TRIGGER_TEXT[ability.trigger];
   }
@@ -77,6 +89,9 @@ export function describeCurveRule(rule: CurveRule): string {
 }
 
 function describeCondition(context: Context, condition: ConditionParams): string {
+  if (condition.type === 'mad') {
+    return 'si elle est folle';
+  }
   if (condition.type === 'turn') {
     const { min, max } = condition;
     if (min !== undefined && max !== undefined) {
@@ -84,6 +99,10 @@ function describeCondition(context: Context, condition: ConditionParams): string
     }
     return min !== undefined ? `à partir du tour ${min}` : `jusqu'au tour ${max ?? ''}`;
   }
+  return describeCount(context, condition);
+}
+
+function describeCount(context: Context, condition: Extract<ConditionParams, { type: 'count' }>): string {
   const { min, max } = condition;
   if (max === 0) {
     return `s'il n'y a aucune ${cards(context, condition, false)} ${scope(condition)}`;

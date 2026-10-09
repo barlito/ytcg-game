@@ -15,6 +15,8 @@ export interface StatusRule {
   readonly absorbsDestroy?: boolean;
   readonly absorbsPowerLoss?: boolean;
   endOfTurn?(board: Board, card: string, stacks: number): void;
+  // Right after the card got this status while it had none.
+  onGained?(board: Board, card: string): void;
   // Right after the stacks of this status increased.
   onStacksChanged?(board: Board, card: string, stacks: number): void;
 }
@@ -22,9 +24,16 @@ export interface StatusRule {
 // Stacks at which a card in overheat is destroyed.
 export const OVERHEAT_LIMIT = 3;
 
-// Folie (`mad`) has no rule yet: it is read by other cards only. When its own rule is decided, it is an entry here.
+// Folie (`mad`) is a state with no rule of its own: what it does comes from the card (`mad` condition, `onMad`
+// trigger) or from a crisis drawn when the card has nothing defined (`crises.ts`).
 export const STATUSES = {
-  mad: { name: 'Folie', adjective: 'folle' },
+  mad: {
+    name: 'Folie',
+    adjective: 'folle',
+    onGained(board: Board, card: string): void {
+      board.becomeMad(card);
+    },
+  },
   high: {
     name: 'Défonce',
     adjective: 'défoncée',

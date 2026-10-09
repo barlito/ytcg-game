@@ -47,6 +47,7 @@ export interface BoardView {
   readonly turn: number;
   cardsMatching(source: AbilitySource, filter: CardFilter): string[];
   power(card: string): number;
+  hasStatus(card: string, status: StatusId): boolean;
 }
 
 // What effects may do on top of reading.
@@ -65,6 +66,8 @@ export interface Board extends BoardView {
   addNextCost(player: PlayerIndex, amount: number, tag: string | null): void;
   // Adds a new copy of a catalog card to the hand (nothing when the hand is full).
   addToHand(player: PlayerIndex, defId: string): void;
+  // A card just went mad: fires its onMad abilities, or draws its crisis when it has no madness effect of its own.
+  becomeMad(card: string): void;
   // Id of the definition of a board card.
   defIdOf(card: string): string;
 }

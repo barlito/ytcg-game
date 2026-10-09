@@ -109,6 +109,7 @@ export class TurnFlow {
         statusRule(status).endOfTurn?.(this.board, uid, stacksOf(card, status));
       }
     }
+    this.board.runCrisis(uid);
   }
 
   // The player winning more locations reveals first, then the one with more total power, then a coin flip.

@@ -18,6 +18,9 @@ export class Runtime {
     this.board.onDestroyed = (uid) => {
       abilities.fireDestroyed(uid);
     };
+    this.board.onMad = (uid) => {
+      abilities.fireCard(uid, 'onMad');
+    };
     this.turns = new TurnFlow(this.board, abilities, this.events);
     this.actions = new ActionHandler(this.board, this.turns);
   }

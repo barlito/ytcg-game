@@ -2,6 +2,7 @@ export * from './action.ts';
 export * from './abilities/ability.ts';
 export * from './abilities/board.ts';
 export * from './abilities/conditions.ts';
+export * from './abilities/crises.ts';
 export * from './abilities/effects.ts';
 export * from './abilities/effects-cards.ts';
 export * from './abilities/statuses.ts';

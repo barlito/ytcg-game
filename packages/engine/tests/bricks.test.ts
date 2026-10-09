@@ -567,8 +567,8 @@ describe('statuses: Surchauffe', () => {
 });
 
 describe('status registry', () => {
-  it('leaves Folie without a rule of its own, so one can be added as a plain entry later', () => {
-    expect(Object.keys(STATUSES.mad)).toEqual(['name', 'adjective']);
+  it('gives Folie no rule of its own: its effects come from the card or from a crisis', () => {
+    expect(Object.keys(STATUSES.mad)).toEqual(['name', 'adjective', 'onGained']);
   });
 });
 

@@ -1,3 +1,4 @@
+import type { CrisisId } from './abilities/crises.ts';
 import type { StatusId } from './abilities/statuses.ts';
 import type { Catalog } from './catalog.ts';
 import {
@@ -21,6 +22,8 @@ export interface CardView {
   // Where the power comes from: power = printed + modifier + the ongoing amounts.
   breakdown: PowerBreakdown;
   statuses: Partial<Record<StatusId, number>>;
+  // The crisis of a mad card without a madness effect of its own (public: the card is revealed).
+  crisis: CrisisId | null;
 }
 
 export interface LocationView {
@@ -73,6 +76,7 @@ function cardView(catalog: Catalog, state: GameState, uid: string): CardView {
     power: powerOf(catalog, state, uid),
     breakdown: powerBreakdown(catalog, state, uid),
     statuses: { ...card.statuses },
+    crisis: card.crisis,
   };
 }
 

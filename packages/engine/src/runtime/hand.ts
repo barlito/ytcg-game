@@ -23,6 +23,7 @@ export function newInstance(uid: string, defId: string, owner: PlayerIndex): Car
     usedNextCosts: [],
     playOrder: null,
     statuses: {},
+    crisis: null,
   };
 }
 

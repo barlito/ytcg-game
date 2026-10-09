@@ -84,6 +84,21 @@ describe('catalog validation', () => {
       issuesOf([], [{ id: 'l', name: 'l', abilities: [{ trigger: 'onDestroyed', effect: { type: 'draw' } }] }])[0],
     ).toContain('no onDestroyed trigger');
     expect(
+      issuesOf([], [{ id: 'l', name: 'l', abilities: [{ trigger: 'onMad', effect: { type: 'draw' } }] }])[0],
+    ).toContain('a location is never mad');
+    expect(
+      issuesOf(
+        [],
+        [
+          {
+            id: 'l',
+            name: 'l',
+            abilities: [{ trigger: 'onReveal', condition: { type: 'mad' }, effect: { type: 'draw' } }],
+          },
+        ],
+      )[0],
+    ).toContain('a location is never mad');
+    expect(
       issuesOf(
         [],
         [

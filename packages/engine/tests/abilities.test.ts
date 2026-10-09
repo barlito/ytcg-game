@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_HAND } from '../src/index.ts';
+import { MAX_HAND, powerBreakdown } from '../src/index.ts';
 import { card, catalogWith, moveToHand, newGame, playTurn, powerAt, skipToTurn, uidOf } from './support.ts';
 
 const catalog = catalogWith(
@@ -310,8 +310,9 @@ describe('statuses', () => {
     expect(next.cards[uidOf(next, 0, 'v1')]?.statuses).toEqual({ mad: 1 });
     expect(next.cards[uidOf(next, 1, 'v2')]?.statuses).toEqual({ mad: 1 });
     expect(events).toContainEqual({ type: 'statusChanged', card: uidOf(next, 1, 'v2'), status: 'mad', stacks: 1 });
-    expect(powerAt(statusCatalog, next, 1, 'v2')).toBe(2);
-    expect(powerAt(statusCatalog, next, 0, 'benj-mad')).toBe(5);
+    // The crises of the mad cards (default madness) are tested in madness.test.ts: only the ongoing ability is read here.
+    const own = powerBreakdown(statusCatalog, next, uidOf(next, 0, 'benj-mad')).ongoing;
+    expect(own.find(({ defId }) => defId === 'benj-mad')?.amount).toBeGreaterThanOrEqual(2);
   });
 
   it('makes a high card lose power at every end of turn, until a cure', () => {
@@ -346,7 +347,9 @@ describe('statuses', () => {
     }).state;
     expect(next.cards[uidOf(next, 0, 'v1')]?.zone).toBe('destroyed');
     expect(next.cards[uidOf(next, 0, 'barlito')]?.zone).toBe('board');
-    expect(powerAt(statusCatalog, next, 0, 'barlito')).toBe(2);
+    // The shrinker's negative ongoing bonus is ignored (a crisis may still add power).
+    const ongoing = powerBreakdown(statusCatalog, next, uidOf(next, 0, 'barlito')).ongoing;
+    expect(ongoing.every(({ amount }) => amount >= 0)).toBe(true);
     expect(next.cards[uidOf(next, 0, 'barlito')]?.statuses).toEqual({ tough: 1, mad: 1 });
   });
 });

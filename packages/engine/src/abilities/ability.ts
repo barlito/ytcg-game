@@ -5,7 +5,8 @@ import { ONGOING_EFFECTS, UNTARGETED_EFFECTS, createEffect, effectSchema } from 
 import { createTarget, targetSchema } from './targets.ts';
 
 // onCardPlayedHere: another card is revealed on this location after this one. onDestroyed: this card was destroyed.
-export const TRIGGERS = ['onReveal', 'ongoing', 'endOfTurn', 'onCardPlayedHere', 'onDestroyed'] as const;
+// onMad: this card just became mad.
+export const TRIGGERS = ['onReveal', 'ongoing', 'endOfTurn', 'onCardPlayedHere', 'onDestroyed', 'onMad'] as const;
 
 export type Trigger = (typeof TRIGGERS)[number];
 
@@ -78,6 +79,11 @@ export function compileAbility(params: AbilityParams): CompiledAbility {
   };
 }
 
+// An ability that only exists while the card is mad: the card then has its own madness, no crisis is drawn.
+export function isMadnessAbility(ability: AbilityParams): boolean {
+  return ability.trigger === 'onMad' || ability.condition?.type === 'mad';
+}
+
 export function isUntargeted(ability: AbilityParams): boolean {
   return ability.effect.every((effect) => UNTARGETED_EFFECTS.has(effect.type));
 }
@@ -110,6 +116,9 @@ function locationEffectIssues(ability: AbilityParams): string[] {
   }
   if (ability.trigger === 'onDestroyed') {
     issues.push('a location is never destroyed: no onDestroyed trigger');
+  }
+  if (isMadnessAbility(ability)) {
+    issues.push('a location is never mad: no onMad trigger nor "mad" condition');
   }
   if (ability.effect.some((effect) => effect.type === 'addToHand' && effect.card === undefined)) {
     issues.push('a location "addToHand" needs a "card" (there is no card to copy)');
