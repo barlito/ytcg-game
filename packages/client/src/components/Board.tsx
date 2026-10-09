@@ -1,4 +1,5 @@
 import type { ActionInput, GameMessage, SeatInfo } from '@ytcg-game/server/protocol';
+import type { PlayerView } from '@ytcg-game/engine';
 import { useState } from 'react';
 import { isReplaying } from '../animation/scene.ts';
 import { ReplayContext, useReplay } from '../animation/useReplay.ts';
@@ -10,6 +11,7 @@ import { PlayerPanel } from './PlayerPanel.tsx';
 import { ReplayBanner } from './ReplayBanner.tsx';
 import { ResultBanner } from './ResultBanner.tsx';
 import { Spotlight } from './Spotlight.tsx';
+import { SpreadArc } from './SpreadArc.tsx';
 import { StatusBar } from './StatusBar.tsx';
 import { TurnActions } from './TurnActions.tsx';
 import { useGameLog } from './useGameLog.ts';
@@ -20,6 +22,7 @@ import '../styles/locations.css';
 import '../styles/result.css';
 import '../styles/cards.css';
 import '../styles/fx.css';
+import '../styles/fx-effects.css';
 import '../styles/spotlight.css';
 
 interface Props {
@@ -107,6 +110,25 @@ function Backdrop(): React.JSX.Element {
   );
 }
 
+// Everything the replay draws above the board: the spotlight, the Contagion arc, the announcements and the skip button.
+function ReplayOverlays({
+  view,
+  seats,
+  onSkip,
+}: {
+  view: PlayerView;
+  seats: SeatInfo[];
+  onSkip: () => void;
+}): React.JSX.Element {
+  return (
+    <>
+      <Spotlight view={view} seats={seats} />
+      <SpreadArc />
+      <ReplayBanner you={view.you} seats={seats} onSkip={onSkip} />
+    </>
+  );
+}
+
 // Lazy-loaded with drag & drop and the replay: the home screen does not pay for them.
 export default function Board({ game, send, onLeave }: Props): React.JSX.Element {
   const { view } = game;
@@ -148,8 +170,7 @@ export default function Board({ game, send, onLeave }: Props): React.JSX.Element
               }}
             />
           )}
-          <Spotlight view={view} seats={game.seats} />
-          <ReplayBanner you={view.you} seats={game.seats} onSkip={skip} />
+          <ReplayOverlays view={view} seats={game.seats} onSkip={skip} />
           {game.outcome !== null && !scene.outcomeHeld && (
             <ResultBanner outcome={game.outcome} you={view.you} view={view} seats={game.seats} onLeave={onLeave} />
           )}

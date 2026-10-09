@@ -1,4 +1,4 @@
-import { type PlayerEvent, statusRule } from '@ytcg-game/engine';
+import type { PlayerEvent } from '@ytcg-game/engine';
 import { type Queue, type SpotlightEvent, currentStep, isSpotlit, unplayedEvents, upcomingEvents } from './queue.ts';
 
 // What the replay changes on top of the final view.
@@ -10,11 +10,21 @@ export interface Scene {
   unplayed: readonly PlayerEvent[];
   // Cards revealed later in the sequence: still face down.
   faceDown: ReadonlySet<string>;
-  // Own draws still to come: not in hand yet.
+  // Own cards drawn or added to hand later in the sequence: not in hand yet.
   undrawn: ReadonlySet<string>;
+  // Opponent cards added to their hand later in the sequence: their mini backs are not there yet.
+  opponentAdds: number;
   hiddenLocations: ReadonlySet<number>;
   // Destroyed now or later: drawn as ghosts until their destruction played.
   dying: ReadonlySet<string>;
+  // Cards moved later in the sequence: still drawn at the location they leave (uid → that location).
+  unmoved: ReadonlyMap<string, number>;
+  // Cost changes still to come per hand card: the badge keeps the older cost until they play.
+  costPending: ReadonlyMap<string, number>;
+  // Cards whose crisis is announced later: the Folie pill does not name it yet.
+  crisisPending: ReadonlySet<string>;
+  // Cards whose Protection breaks now or later: the shield is drawn until then.
+  shielded: ReadonlySet<string>;
   // The game end is still to be played: the result waits.
   outcomeHeld: boolean;
 }
@@ -25,8 +35,13 @@ export const STILL: Scene = {
   unplayed: [],
   faceDown: new Set(),
   undrawn: new Set(),
+  opponentAdds: 0,
   hiddenLocations: new Set(),
   dying: new Set(),
+  unmoved: new Map(),
+  costPending: new Map(),
+  crisisPending: new Set(),
+  shielded: new Set(),
   outcomeHeld: false,
 };
 
@@ -36,6 +51,35 @@ function collect<T>(events: readonly PlayerEvent[], pick: (event: PlayerEvent) =
 
 export function isReplaying(scene: Scene): boolean {
   return scene.current !== null || scene.spotlight !== null;
+}
+
+// The first move of each card still to come: where the card still stands.
+function firstMoves(events: readonly PlayerEvent[]): Map<string, number> {
+  const moves = new Map<string, number>();
+  for (const event of events) {
+    if (event.type === 'cardMoved' && !moves.has(event.card)) {
+      moves.set(event.card, event.from);
+    }
+  }
+  return moves;
+}
+
+function pendingCosts(events: readonly PlayerEvent[]): Map<string, number> {
+  const costs = new Map<string, number>();
+  for (const event of events) {
+    if (event.type === 'costChanged' && event.card !== null) {
+      costs.set(event.card, (costs.get(event.card) ?? 0) + event.delta);
+    }
+  }
+  return costs;
+}
+
+function isShieldBreak(event: PlayerEvent): boolean {
+  return event.type === 'statusChanged' && event.status === 'protected' && event.stacks === 0 && event.spent === true;
+}
+
+function addedOwnCard(event: PlayerEvent): string | null {
+  return event.type === 'cardAddedToHand' ? event.card : null;
 }
 
 export function sceneOf(queue: Queue): Scene {
@@ -51,67 +95,14 @@ export function sceneOf(queue: Queue): Scene {
     spotlight,
     unplayed: unplayedEvents(queue),
     faceDown: collect(upcoming, (e) => (e.type === 'cardRevealed' ? e.card : null)),
-    undrawn: collect(upcoming, (e) => (e.type === 'cardDrawn' ? e.card : null)),
+    undrawn: collect(upcoming, (e) => (e.type === 'cardDrawn' ? e.card : addedOwnCard(e))),
+    opponentAdds: upcoming.filter((e) => e.type === 'cardAddedToHand' && e.card === null).length,
     hiddenLocations: collect(upcoming, (e) => (e.type === 'locationRevealed' ? e.location : null)),
     dying: collect(withCurrent, (e) => (e.type === 'cardDestroyed' ? e.card : null)),
+    unmoved: firstMoves(upcoming),
+    costPending: pendingCosts(upcoming),
+    crisisPending: collect(upcoming, (e) => (e.type === 'crisisStarted' ? e.card : null)),
+    shielded: collect(withCurrent.filter(isShieldBreak), (e) => (e.type === 'statusChanged' ? e.card : null)),
     outcomeHeld: withCurrent.some((e) => e.type === 'gameEnded'),
   };
-}
-
-export type CardEffect = 'reveal' | 'destroy' | 'power-up' | 'power-down' | 'status' | 'draw';
-
-export interface CardFx {
-  faceDown: boolean;
-  effect: CardEffect | null;
-  float: { text: string; tone: string } | null;
-}
-
-function signed(delta: number): string {
-  return `${delta > 0 ? '+' : '−'}${Math.abs(delta)}`;
-}
-
-function statusFloat(event: Extract<PlayerEvent, { type: 'statusChanged' }>): string {
-  const { name } = statusRule(event.status);
-  if (event.stacks === 0) {
-    return `− ${name}`;
-  }
-  return event.stacks > 1 ? `${name} ×${event.stacks}` : name;
-}
-
-type CardEffectEvent = Extract<
-  PlayerEvent,
-  { type: 'cardRevealed' | 'cardDestroyed' | 'powerChanged' | 'statusChanged' | 'cardDrawn' }
->;
-
-// Moves, cost changes and cards added to hand have no animation yet: the journal line is enough.
-function isCardEffectEvent(event: PlayerEvent): event is CardEffectEvent {
-  return ['cardRevealed', 'cardDestroyed', 'powerChanged', 'statusChanged', 'cardDrawn'].includes(event.type);
-}
-
-function effectOn(event: PlayerEvent, uid: string): Omit<CardFx, 'faceDown'> {
-  const none = { effect: null, float: null };
-  if (!isCardEffectEvent(event) || event.card !== uid) {
-    return none;
-  }
-  switch (event.type) {
-    case 'cardRevealed':
-      return { effect: 'reveal', float: null };
-    case 'cardDestroyed':
-      return { effect: 'destroy', float: { text: 'Détruite', tone: 'down' } };
-    case 'powerChanged':
-      return {
-        effect: event.delta > 0 ? 'power-up' : 'power-down',
-        float: { text: signed(event.delta), tone: event.delta > 0 ? 'up' : 'down' },
-      };
-    case 'statusChanged':
-      return { effect: 'status', float: { text: statusFloat(event), tone: `status-${event.status}` } };
-    case 'cardDrawn':
-      return { effect: 'draw', float: null };
-  }
-}
-
-// How one card looks at this point of the replay.
-export function cardFx(scene: Scene, uid: string): CardFx {
-  const playing = scene.current === null ? { effect: null, float: null } : effectOn(scene.current, uid);
-  return { faceDown: scene.faceDown.has(uid), ...playing };
 }

@@ -10,7 +10,9 @@ export function PlayerPanel({ view }: { view: PlayerView }): React.JSX.Element {
         <Avatar name="Toi" tone="you" />
         <div className="status-opponent__text">
           <span className="status-name">Toi</span>
-          <span className="status-counts">{view.deckCount} au deck</span>
+          <span className="status-counts" data-deck>
+            {view.deckCount} au deck
+          </span>
         </div>
       </div>
       <div className="player-panel__energy">

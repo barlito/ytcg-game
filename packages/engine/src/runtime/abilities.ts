@@ -66,10 +66,18 @@ export class AbilityRunner {
       if (!(ability.condition?.isMet(this.board, source) ?? true)) {
         continue;
       }
+      this.announce(ability.trigger, source);
       const targets = ability.target.select(this.board, source);
       for (const effect of ability.effects) {
         effect.apply(this.board, source, targets);
       }
+    }
+  }
+
+  // Reactions are announced before their effects so the animation can light up their source.
+  private announce(trigger: Trigger, source: AbilitySource): void {
+    if (trigger === 'onCardPlayedHere' || trigger === 'onDestroyed') {
+      this.board.recordEvent({ type: 'abilityTriggered', trigger, card: source.card, location: source.location });
     }
   }
 

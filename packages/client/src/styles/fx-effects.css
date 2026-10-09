@@ -1,0 +1,498 @@
+/* Phase 5b: animations of the effect bricks (move, Folie crises, hand, costs) and of the card states. */
+
+/* A card that moved: it flies in (WAAPI, lib/flight.ts), then a cyan ring settles. */
+.fx-moved .tcard__body {
+  animation: fx-moved 0.7s ease-out;
+}
+@keyframes fx-moved {
+  40% {
+    box-shadow:
+      0 0 0 2px var(--cyan),
+      0 0 1.1rem var(--cyan);
+  }
+}
+
+/* A reaction (onCardPlayedHere, onDestroyed, Contagion source) lights up before its effects. */
+.fx-trigger .tcard__body {
+  animation: fx-trigger 0.45s ease-out;
+}
+@keyframes fx-trigger {
+  35% {
+    filter: brightness(1.6) saturate(1.3);
+    box-shadow:
+      0 0 0 2px #fff,
+      0 0 1.4rem 0.2rem var(--magenta-soft);
+  }
+}
+.location-tile.fx-trigger {
+  animation: fx-trigger-tile 0.45s ease-out;
+}
+@keyframes fx-trigger-tile {
+  35% {
+    filter: brightness(1.6) saturate(1.3);
+    box-shadow: 0 0 1.6rem 0.2rem var(--magenta-soft);
+  }
+}
+
+/* Folie: the card glitches with the cyan / magenta split of the logo, its pill pops, the crisis name floats. */
+.fx-crisis .tcard__body,
+.fx-infect .tcard__body {
+  animation: fx-glitch 0.95s linear;
+}
+.fx-infect .tcard__body {
+  animation-delay: 0.3s;
+  animation-duration: 0.45s;
+  animation-fill-mode: backwards;
+}
+@keyframes fx-glitch {
+  0%,
+  100% {
+    transform: none;
+    filter: none;
+  }
+  8% {
+    transform: translate(-3%, 1%) skewX(5deg);
+    filter: drop-shadow(-0.3rem 0 0 var(--cyan)) drop-shadow(0.3rem 0 0 var(--magenta));
+  }
+  16% {
+    transform: translate(3%, -1%) skewX(-4deg);
+    filter: drop-shadow(0.3rem 0 0 var(--cyan)) drop-shadow(-0.3rem 0 0 var(--magenta)) hue-rotate(40deg);
+  }
+  24% {
+    transform: translate(-1%, 2%);
+    filter: drop-shadow(-0.2rem 0 0 var(--cyan)) drop-shadow(0.2rem 0 0 var(--magenta)) brightness(1.4);
+  }
+  40% {
+    transform: translate(2%, 0) skewX(3deg);
+    filter: drop-shadow(0.25rem 0 0 var(--cyan)) drop-shadow(-0.25rem 0 0 var(--magenta));
+  }
+  56% {
+    transform: translate(-2%, 1%) skewX(-3deg);
+    filter: drop-shadow(-0.15rem 0 0 var(--cyan)) drop-shadow(0.15rem 0 0 var(--magenta));
+  }
+  72% {
+    transform: translate(1%, -1%);
+    filter: drop-shadow(0.1rem 0 0 var(--cyan)) drop-shadow(-0.1rem 0 0 var(--magenta));
+  }
+}
+.fx-crisis .pip,
+.fx-crisis .sbadge {
+  animation: fx-pip-pop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+@keyframes fx-pip-pop {
+  from {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.3);
+  }
+}
+.fx-float.tone-crisis {
+  top: 6%;
+  padding: 0.2rem 0.6rem;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: linear-gradient(90deg, #a435f0e6, #ff3db0e6);
+  clip-path: polygon(0.4rem 0, 100% 0, calc(100% - 0.4rem) 100%, 0 100%);
+  text-shadow: none;
+  animation-name: fx-crisis-label;
+  animation-duration: 0.95s;
+}
+@keyframes fx-crisis-label {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px) scale(0.6);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1.1);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(-50%, -4px) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -14px);
+  }
+}
+
+/* Contagion: the magenta arc between the two cards. */
+.spread-arc {
+  position: fixed;
+  z-index: 45;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+.spread-arc path {
+  fill: none;
+  stroke: var(--magenta);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  filter: drop-shadow(0 0 6px var(--magenta)) drop-shadow(0 0 14px var(--cyan));
+  animation: fx-arc 0.75s ease-out forwards;
+}
+@keyframes fx-arc {
+  from {
+    stroke-dashoffset: 1;
+    opacity: 1;
+  }
+  55% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+/* Implosion and overheat blast: the card contracts, then bursts into sparks. */
+.fx-burst .tcard__body {
+  animation: fx-burst 0.8s ease-in forwards;
+}
+@keyframes fx-burst {
+  15% {
+    transform: scale(0.94) translateX(-2%);
+  }
+  30% {
+    transform: scale(0.88) translateX(2%);
+    filter: brightness(1.4);
+  }
+  50% {
+    transform: scale(0.78);
+    filter: brightness(2.2) saturate(1.5);
+    box-shadow: 0 0 1.8rem 0.4rem var(--magenta-soft);
+  }
+  70% {
+    transform: scale(1.35);
+    filter: brightness(3);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1.6);
+    filter: brightness(4) blur(4px);
+    opacity: 0;
+  }
+}
+.fx-particles {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.fx-particles span {
+  position: absolute;
+  left: -0.2rem;
+  top: -0.2rem;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--magenta-soft);
+  box-shadow: 0 0 0.5rem var(--magenta);
+  opacity: 0;
+  rotate: var(--a);
+  animation: fx-spark 0.5s 0.38s ease-out forwards;
+}
+.fx-particles span:nth-child(even) {
+  background: var(--cyan);
+  box-shadow: 0 0 0.5rem var(--cyan);
+  animation-delay: 0.42s;
+}
+@keyframes fx-spark {
+  from {
+    opacity: 1;
+    translate: 0 0;
+  }
+  to {
+    opacity: 0;
+    translate: 3.4rem 0;
+    scale: 0.3;
+  }
+}
+
+/* Cards added to hand: they turn over as they land; the opponent gets a new back in the fan. */
+.fx-added .tcard__body {
+  animation: fx-added-flip 0.65s ease-out;
+}
+@keyframes fx-added-flip {
+  from {
+    transform: rotateY(90deg);
+  }
+}
+.fx-added .tcard__body::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  background: url('../assets/card-back.svg') center / cover;
+  animation: fx-added-back 0.65s steps(1, end) forwards;
+}
+@keyframes fx-added-back {
+  50%,
+  to {
+    opacity: 0;
+  }
+}
+.fx-back-in {
+  animation: fx-back-in 0.45s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+@keyframes fx-back-in {
+  from {
+    scale: 0.2;
+    opacity: 0;
+  }
+}
+
+/* Costs: the badge outlines green when cheaper than printed, red when pricier, and pulses when it changes. */
+.tbadge--mana.is-cheaper {
+  --rim: var(--live);
+  --glow-color: rgb(91 229 132 / 85%);
+}
+.tbadge--mana.is-pricier {
+  --rim: var(--danger);
+  --glow-color: rgb(240 71 94 / 85%);
+}
+.tbadge--mana.is-cheaper,
+.tbadge--mana.is-pricier {
+  filter: drop-shadow(0.4cqi 0 0 var(--rim)) drop-shadow(-0.4cqi 0 0 var(--rim)) drop-shadow(0 0.4cqi 0 var(--rim))
+    drop-shadow(0 -0.4cqi 0 var(--rim)) drop-shadow(0 0 1.6cqi var(--glow-color));
+}
+.tbadge--mana {
+  position: relative;
+}
+.fx-cost-pulse {
+  animation: fx-cost-pulse 0.65s ease-out;
+}
+.fx-cost-pulse.is-cheaper .tbadge__shape {
+  background: linear-gradient(160deg, #b6ffd0 0%, #5be584 40%, #17834a 100%);
+}
+.fx-cost-pulse.is-pricier .tbadge__shape {
+  background: linear-gradient(160deg, #ffb0b0 0%, #f0475e 40%, #8a1530 100%);
+}
+@keyframes fx-cost-pulse {
+  30% {
+    scale: 1.45;
+  }
+  60% {
+    scale: 0.95;
+  }
+}
+.tbadge__flow {
+  position: absolute;
+  z-index: 7;
+  bottom: 100%;
+  left: 50%;
+  padding: 0.5cqi 2cqi;
+  translate: -50% 0;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 5.6cqi;
+  white-space: nowrap;
+  color: #fff;
+  background: #120b1de6;
+  animation: fx-cost-flow 0.65s ease-out forwards;
+}
+@keyframes fx-cost-flow {
+  from {
+    opacity: 0;
+    translate: -50% 40%;
+  }
+  25% {
+    opacity: 1;
+    translate: -50% 0;
+  }
+  to {
+    opacity: 0;
+    translate: -50% -50%;
+  }
+}
+
+/* Drunk: a slow sway while the card is on the board. */
+.is-drunk .tcard__body {
+  animation: fx-sway 2.4s ease-in-out infinite;
+}
+@keyframes fx-sway {
+  0%,
+  100% {
+    transform: rotate(-1.6deg) translateX(-1%);
+  }
+  50% {
+    transform: rotate(1.6deg) translateX(1%);
+  }
+}
+.fx-float.tone-status-drunk {
+  color: var(--soon);
+}
+
+/* Protection: a translucent cyan shield; it shatters when it absorbs. */
+.tcard__shield {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 30% 20%, rgb(255 255 255 / 28%), transparent 40%),
+    repeating-linear-gradient(60deg, rgb(70 230 230 / 14%) 0 4px, transparent 4px 9px),
+    linear-gradient(160deg, rgb(70 230 230 / 24%), rgb(70 230 230 / 6%));
+  box-shadow:
+    inset 0 0 0 0.5cqi rgb(70 230 230 / 85%),
+    inset 0 0 9cqi rgb(70 230 230 / 45%);
+  animation: fx-shield 3s ease-in-out infinite;
+}
+@keyframes fx-shield {
+  50% {
+    opacity: 0.7;
+  }
+}
+.fx-shield-break .tcard__shield {
+  animation: fx-shield-break 0.65s ease-in forwards;
+}
+.fx-shield-break .tcard__shield::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(115deg, transparent 46%, #fff 47% 48%, transparent 49%),
+    linear-gradient(35deg, transparent 52%, #fff 53% 54%, transparent 55%),
+    linear-gradient(80deg, transparent 30%, #fff 31% 32%, transparent 33%);
+}
+@keyframes fx-shield-break {
+  20% {
+    opacity: 1;
+    filter: brightness(2.2);
+    scale: 1.02;
+  }
+  to {
+    opacity: 0;
+    filter: brightness(2.5) blur(3px);
+    scale: 1.25;
+  }
+}
+.fx-float.tone-status-protected {
+  color: var(--cyan);
+}
+
+/* Overheat: the pill (the icon colours itself in card-band.css) turns red with each stack, heat haze at 2, then the blast. */
+.pip[data-status='overheat'] {
+  background: color-mix(in srgb, #ff5a1a calc(var(--stacks, 1) * 33%), var(--magenta));
+}
+.tcard[data-heat='1'] .tcard__body {
+  box-shadow:
+    0 0 0 1px #ff9a3a,
+    0 0 0.9rem rgb(255 122 26 / 60%);
+}
+.tcard[data-heat='2'] .tcard__body {
+  box-shadow:
+    0 0 0 1px #ff5a1a,
+    0 0 1.4rem 0.2rem rgb(255 90 26 / 80%);
+  animation: fx-heat 0.9s ease-in-out infinite;
+}
+.tcard[data-heat='2'] .tcard__body::before {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  inset: 20% 0 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 25% 100%, rgb(255 170 100 / 55%), transparent 55%),
+    radial-gradient(ellipse at 75% 100%, rgb(255 120 60 / 50%), transparent 55%);
+  animation: fx-steam 1.6s ease-out infinite;
+}
+@keyframes fx-heat {
+  50% {
+    transform: translate(0.4%, -0.4%);
+    filter: saturate(1.3) brightness(1.1);
+  }
+}
+@keyframes fx-steam {
+  from {
+    transform: translateY(15%);
+    opacity: 0.9;
+  }
+  to {
+    transform: translateY(-25%);
+    opacity: 0;
+  }
+}
+.fx-float.tone-status-overheat {
+  color: #ff9a3a;
+}
+
+/* Terrain rules: pills on the tile, barred or greyed slots. */
+.tile-rules {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem;
+}
+.tile-rule {
+  padding: 0.1rem 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--soon);
+  border: 1px solid color-mix(in srgb, var(--soon) 55%, transparent);
+  background: rgb(255 210 63 / 8%);
+}
+.slot.is-closed {
+  opacity: 0.45;
+  background: repeating-linear-gradient(135deg, rgb(120 80 220 / 14%) 0 0.3rem, transparent 0.3rem 0.6rem);
+}
+.slot.is-blocked {
+  opacity: 0.4;
+  border: 1px solid rgb(240 71 94 / 45%);
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 1px),
+    rgb(240 71 94 / 70%) 50%,
+    transparent calc(50% + 1px)
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-drunk .tcard__body,
+  .tcard__shield,
+  .tcard[data-heat='2'] .tcard__body,
+  .tcard[data-heat='2'] .tcard__body::before,
+  .fx-particles span,
+  .spread-arc path,
+  .tbadge__flow,
+  .fx-cost-pulse,
+  .fx-back-in {
+    animation: none !important;
+  }
+}
+
+/* Phones: the pills replace the tile text so the tile keeps its height. */
+@media (max-width: 700px) {
+  .tile-text:has(.tile-rules) .location-text {
+    display: none;
+  }
+  .tile-rules {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 1px;
+    min-width: 0;
+  }
+  .tile-rule {
+    padding: 0 0.2rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.02em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

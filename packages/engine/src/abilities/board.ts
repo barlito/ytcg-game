@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { Rng } from '../rng.ts';
-import type { PlayerIndex } from '../state.ts';
+import type { GameEvent, PlayerIndex } from '../state.ts';
 import { type StatusId, statusSchema } from './statuses.ts';
 
 export const tagSchema = z.string().regex(/^[a-z]+:[a-z0-9-]+$/, 'expected a "family:value" tag');
@@ -53,6 +53,8 @@ export interface BoardView {
 // What effects may do on top of reading.
 export interface Board extends BoardView {
   readonly rng: Rng;
+  // Adds an event that is not a state change by itself (announcements for the animation).
+  recordEvent(event: GameEvent): void;
   addPower(card: string, delta: number): void;
   draw(player: PlayerIndex, count: number): void;
   destroy(card: string): void;
@@ -65,7 +67,8 @@ export interface Board extends BoardView {
   addHandCost(player: PlayerIndex, amount: number, tag: string | null): void;
   addNextCost(player: PlayerIndex, amount: number, tag: string | null): void;
   // Adds a new copy of a catalog card to the hand (nothing when the hand is full).
-  addToHand(player: PlayerIndex, defId: string): void;
+  // `from`: the card carrying the ability, when there is one (the animation flies the new card from it).
+  addToHand(player: PlayerIndex, defId: string, from?: string): void;
   // A card just went mad: fires its onMad abilities, or draws its crisis when it has no madness effect of its own.
   becomeMad(card: string): void;
   // Id of the definition of a board card.

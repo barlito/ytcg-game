@@ -40,8 +40,10 @@ export const CRISES = {
     description: 'En fin de tour : rend folle une autre carte non folle ici au hasard.',
     endOfTurn(board: Board, source: AbilitySource): void {
       const { sane } = neighbours(board, source);
-      if (sane.length > 0) {
-        board.addStatus(board.rng.pick(sane), 'mad', 1);
+      if (sane.length > 0 && source.card !== null) {
+        const target = board.rng.pick(sane);
+        board.recordEvent({ type: 'contagionSpread', from: source.card, to: target });
+        board.addStatus(target, 'mad', 1);
       }
     },
   },

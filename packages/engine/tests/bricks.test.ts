@@ -427,10 +427,50 @@ describe('addToHand', () => {
     const state = newGame(catalog, { p0: ['gifter'] });
     const { state: next, events } = playTurn(catalog, state, { p0: [['gifter', 0]] });
     const added = projectEventsForPlayer(events, 1).find((event) => event.type === 'cardAddedToHand');
-    expect(added).toEqual({ type: 'cardAddedToHand', player: 0, card: null, defId: null });
+    expect(added).toMatchObject({ type: 'cardAddedToHand', player: 0, card: null, defId: null });
     const own = projectEventsForPlayer(events, 0).find((event) => event.type === 'cardAddedToHand');
     expect(own).toMatchObject({ player: 0, defId: 'giant' });
     expect(projectForPlayer(catalog, next, 1).opponent.handCount).toBe(next.players[0].hand.length);
+  });
+});
+
+describe('animation announcements', () => {
+  it('names the source card of a card added to hand', () => {
+    const state = newGame(catalog, { p0: ['gifter'] });
+    const { state: next, events } = playTurn(catalog, state, { p0: [['gifter', 0]] });
+    const added = events.find((event) => event.type === 'cardAddedToHand');
+    expect(added).toMatchObject({ from: uidOf(next, 0, 'gifter') });
+  });
+
+  it('announces a reaction before its effects, for a card and for a destroyed card', () => {
+    const state = newGame(catalog, { p0: ['sentinel'], p1: ['v1'] });
+    const turn1 = playTurn(catalog, state, { p0: [['sentinel', 0]] }).state;
+    const { state: turn2, events } = playTurn(catalog, turn1, { p1: [['v1', 0]] });
+    const sentinel = uidOf(turn2, 0, 'sentinel');
+    expect(events).toContainEqual({
+      type: 'abilityTriggered',
+      trigger: 'onCardPlayedHere',
+      card: sentinel,
+      location: 0,
+    });
+    const types = events.map((event) => event.type);
+    expect(types.indexOf('abilityTriggered')).toBeLessThan(types.indexOf('powerChanged'));
+    const doomed = newGame(catalog, { p0: ['martyr'], p1: ['giant', 'assassin'] });
+    const first = playTurn(catalog, doomed, { p0: [['martyr', 0]], p1: [['giant', 0]] }).state;
+    const second = playTurn(catalog, first, { p1: [['assassin', 0]] });
+    expect(second.events).toContainEqual({
+      type: 'abilityTriggered',
+      trigger: 'onDestroyed',
+      card: uidOf(second.state, 0, 'martyr'),
+      location: 0,
+    });
+  });
+
+  it('marks the stack a shield paid', () => {
+    const state = newGame(catalog, { p0: ['shield'], p1: ['assassin'] });
+    const turn1 = playTurn(catalog, state, { p0: [['shield', 0]] }).state;
+    const { events } = playTurn(catalog, turn1, { p1: [['assassin', 0]] });
+    expect(events.filter((event) => event.type === 'statusChanged' && event.spent === true)).toHaveLength(1);
   });
 });
 
@@ -509,6 +549,7 @@ describe('statuses: Protection', () => {
       card: uidOf(turn2, 0, 'shield'),
       status: 'protected',
       stacks: 0,
+      spent: true,
     });
   });
 
