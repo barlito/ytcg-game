@@ -54,7 +54,8 @@ function Timer({ turnDeadline, revealUntil }: Pick<Props, 'turnDeadline' | 'reve
   if (clock.phase === 'reading') {
     return (
       <span className="timer is-reading" title="Le chrono du tour démarre après la lecture des révélations">
-        Révélations · {clock.seconds} s
+        <span className="timer__label">Révélations · </span>
+        {clock.seconds} s
       </span>
     );
   }

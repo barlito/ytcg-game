@@ -2,7 +2,7 @@
 /* Hand card width, also read by the drag overlay (rendered outside .board). */
 /* Last term: the height left once the top bar, the locations (cards scale with the board width) and the tiles are laid out. */
 :root {
-  --hand-card: clamp(132px, min(12vw, 26vh, 71.8vh - 0.1666 * min(100vw, 120rem) - 12.5rem), 600px);
+  --hand-card: clamp(104px, min(12vw, 26vh, 71.8vh - 0.1666 * min(100vw, 120rem) - 13.75rem), 600px);
 }
 .board {
   position: relative;
@@ -44,6 +44,10 @@
 .board-foot {
   position: relative;
   z-index: 1;
+}
+/* Not a stacking context: the location offering a drop (z-index 3) must paint above the hand. */
+.locations {
+  z-index: auto;
 }
 
 /* Top bar: opponent, turn tracker, timer and journal. */
@@ -364,6 +368,23 @@
   .turn-tracker__segments {
     display: none;
   }
+  .status-opponent {
+    gap: 0.5rem;
+  }
+  .status-counts {
+    font-size: 0.6rem;
+    letter-spacing: 0.04em;
+  }
+  .topbar__right {
+    gap: 0.4rem;
+  }
+  .timer__label {
+    display: none;
+  }
+  .btn-journal {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.7rem;
+  }
   .turn-tracker__label span:first-child {
     display: none;
   }
@@ -402,5 +423,16 @@
   }
   .event-log {
     top: 4rem;
+  }
+}
+
+/* Short desktop windows: the footer actions take less height so the board still fits without scrolling. */
+@media (min-width: 901px) and (max-height: 800px) {
+  .board {
+    gap: 0.75rem;
+  }
+  .turn-actions {
+    gap: 0.5rem;
+    padding-bottom: 0;
   }
 }

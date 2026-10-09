@@ -14,7 +14,16 @@
   transition: opacity 0.2s;
 }
 .location.can-play {
+  z-index: 3;
   cursor: pointer;
+}
+/* Above the raised hand so « Poser ici » stays clickable; the rest of your row lets the hand cards through. */
+.location.can-play .location-side.you {
+  pointer-events: none;
+}
+.location.can-play .play-here,
+.location.can-play .slot.is-drop {
+  pointer-events: auto;
 }
 .location.drop-invalid {
   opacity: 0.45;
