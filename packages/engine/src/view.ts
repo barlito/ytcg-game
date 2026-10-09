@@ -127,7 +127,7 @@ export function projectForPlayer(catalog: Catalog, state: GameState, player: Pla
 export type PlayerEvent =
   | Exclude<GameEvent, { type: 'cardDrawn' | 'cardAddedToHand' }>
   | { type: 'cardDrawn'; player: PlayerIndex; card: string | null }
-  | { type: 'cardAddedToHand'; player: PlayerIndex; card: string | null; defId: string | null };
+  | { type: 'cardAddedToHand'; player: PlayerIndex; card: string | null; defId: string | null; from?: string };
 
 function projectEvent(event: GameEvent, player: PlayerIndex): PlayerEvent | null {
   if (event.type === 'cardDrawn' && event.player !== player) {
