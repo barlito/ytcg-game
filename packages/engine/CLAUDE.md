@@ -5,7 +5,7 @@ Pure game rules. Imported by the server (authoritative) and the client (types, p
 ## Layout
 
 - `game.ts`: the public API only (`createGame`, `applyAction`, queries). `action.ts`: zod schema of player actions — parse network input with it. `invariants.ts`: `checkInvariants(state)`.
-- `runtime/`: `Runtime` (composition root, one state + one event list) wires `GameBoard` (board queries, power, elementary mutations — implements `Board`), `AbilityRunner` (fires abilities per trigger), `TurnFlow` (turn start, resolution, end of game), `ActionHandler` (play / cancel / end turn rules) and `setup.ts` (`startGame`, `validateDeck`).
+- `runtime/`: `Runtime` (composition root, one state + one event list) wires `GameBoard` (board queries, power, elementary mutations — implements `Board`), `AbilityRunner` (fires abilities per trigger), `TurnFlow` (turn start, resolution, end of game), `ActionHandler` (play / cancel / end turn rules) and `setup.ts` (`startGame`, `validateDeck`). Helpers: `hand.ts` (effective costs, cost changes, cards added to hand), `location-rules.ts` (capacity, closing turns), `filters.ts` (scope / side / `played` matching).
 - `abilities/`: `board.ts` holds the contracts — `BoardView` (read) for conditions and ongoing bonuses, `Board` (read + write) for targets and effects, `OngoingEffect` for effects allowed on ongoing abilities.
 
 ## Rules of the code
@@ -20,18 +20,21 @@ Pure game rules. Imported by the server (authoritative) and the client (types, p
 - Deck rules live in `deck.ts` (`deckCurveChecks` — one line per curve rule with its count, what deck builders and the server's French refusals read through `describeCurveRule` —, `deckCurveIssues`, `buildRandomDeck`, `guaranteeOpening`) with their constants in `rules.ts`; `validateDeck` applies the curve. Every random deck (client, sim, tests) goes through `buildRandomDeck`. Test fixtures pad with power-0 fillers covering the curve (`deckOf(ids, catalog)`).
 - The opponent never learns where a face-down card was played: the view only exposes `opponent.pendingCount`.
 - The view also carries what the client needs without recomputing rules: `playableCards` / `openLocations` (empty once the turn is ended) and `CardView.breakdown` (`powerBreakdown()`: printed + permanent modifier + one ongoing entry per source card or location; `GameBoard.ongoingBonuses()` is what `power()` sums). `cardRevealed` events carry the `defId` (a revealed card is public).
+- Costs: a card's cost is always read through `effectiveCost` (`hand.ts`, exposed as `costOf`): printed + `costModifier` + matching `nextCosts` of the player, floor 0. Playing pays it (`paidCost`), cancelling refunds it and gives the "next card" discounts back. Never read `definition.cost` for a hand card outside deck rules.
+- Location rules (`rules` of a location definition) are read through `location-rules.ts` only; `openLocations(catalog, state, player)` is the single answer to "where can this player play".
+- Hidden information: events carry private facts only for their owner — `projectEventsForPlayer` drops `costChanged` and blanks `cardAddedToHand` / `cardDrawn` for the opponent. A new event about a hand must be handled there.
 - Rarity gives no free power: strong cards pay with cost, sacrifice or a play condition (see `docs/game-design.md`).
 
 ## Adding a building block
 
 1. A class in `src/abilities/{conditions,targets,effects}.ts` with its zod `schema` (literal `type`) and its behaviour, added to the discriminated union and to the `create*` switch (exhaustive: TypeScript flags a missing case).
-2. If it may be ongoing → `ONGOING_EFFECTS` + `ongoingBonus()`; if it ignores the target → `UNTARGETED_EFFECTS`.
-3. Its French text in `src/describe.ts` (`describeEffect` + `describeFollowingEffect`).
-4. Tests in `tests/abilities.test.ts` (fixture cards in the test file, never the real data), validation tests in `tests/catalog.test.ts`, text tests in `tests/describe.test.ts`, a line in `docs/effects.md`.
+2. A new trigger = an entry in `TRIGGERS` and a call site in `runtime/` (`AbilityRunner.fire*`); its validation rules go in `ability.ts` (`triggerIssues`, `locationAbilityIssues`). If it may be ongoing → `ONGOING_EFFECTS` + `ongoingBonus()`; if it ignores the target → `UNTARGETED_EFFECTS`.
+3. Its French text in `src/describe-effects.ts` (`describeEffect` + the `FOLLOWING` pronoun table; `describe.ts` for triggers, `describe-text.ts` for shared helpers).
+4. Tests in `tests/abilities.test.ts` / `tests/bricks.test.ts` (fixture cards in the test file, never the real data), validation tests in `tests/catalog.test.ts`, text tests in `tests/describe.test.ts`, a line in `docs/effects.md`.
 
 ## Statuses
 
-- Registry `src/abilities/statuses.ts`: one entry per status (French `name` + `adjective` for the text, optional `rule`, `preventsDestroy`, `preventsPowerLoss`, `endOfTurn` hook). Adding one = an entry there + tests; the zod enum and the text follow. Stacks live on the card instance (`statuses`), cleared by `removeStatus`.
+- Registry `src/abilities/statuses.ts`: one entry per status (French `name` + `adjective` for the text, optional `rule`, immunities `preventsDestroy` / `preventsPowerLoss`, one-shot shields `absorbsDestroy` / `absorbsPowerLoss` (one stack each, `GameBoard.spendStack`), hooks `endOfTurn` and `onStacksChanged`). Adding one = an entry there + tests; the zod enum and the text follow. Stacks live on the card instance (`statuses`), cleared by `removeStatus`.
 - `tough` also ignores negative ONGOING bonuses (`Runtime.power`), not only `addPower`.
 
 ## Effect text

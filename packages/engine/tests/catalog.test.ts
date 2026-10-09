@@ -72,6 +72,76 @@ describe('catalog validation', () => {
     );
   });
 
+  it('refuses invalid trigger combinations', () => {
+    const effect = { type: 'addPower', amount: 1 } as const;
+    expect(issuesOf([card('x', { abilities: [{ trigger: 'onReveal', played: {}, effect }] })])[0]).toContain(
+      'only goes with the onCardPlayedHere trigger',
+    );
+    expect(issuesOf([card('x', { abilities: [{ trigger: 'onDestroyed', effect }] })])[0]).toContain(
+      'a destroyed card cannot target itself',
+    );
+    expect(
+      issuesOf([], [{ id: 'l', name: 'l', abilities: [{ trigger: 'onDestroyed', effect: { type: 'draw' } }] }])[0],
+    ).toContain('no onDestroyed trigger');
+    expect(
+      issuesOf(
+        [],
+        [
+          {
+            id: 'l',
+            name: 'l',
+            abilities: [{ trigger: 'onCardPlayedHere', played: { side: 'ally' }, effect: { type: 'draw' } }],
+          },
+        ],
+      )[0],
+    ).toContain('side "all"');
+    expect(() =>
+      catalogWith(
+        [card('x', { abilities: [{ trigger: 'onDestroyed', effect: { type: 'draw' } }] })],
+        [{ id: 'l', name: 'l', abilities: [{ trigger: 'onCardPlayedHere', effect: { type: 'draw' } }] }],
+      ),
+    ).not.toThrow();
+  });
+
+  it('refuses malformed building blocks', () => {
+    const abilities = (effect: object): CardInput['abilities'] => [{ trigger: 'onReveal', effect: effect as never }];
+    expect(issuesOf([card('x', { abilities: abilities({ type: 'addCost', amount: 0 }) })])).toHaveLength(1);
+    expect(issuesOf([card('x', { abilities: abilities({ type: 'move', destination: 'up' }) })])).toHaveLength(1);
+    expect(issuesOf([card('x', { abilities: abilities({ type: 'addToHand', count: 9 }) })])).toHaveLength(1);
+  });
+
+  it('checks that addToHand names a card of the catalog, and a location names its card', () => {
+    expect(
+      issuesOf([card('x', { abilities: [{ trigger: 'onReveal', effect: { type: 'addToHand', card: 'nope' } }] })]),
+    ).toEqual(['card x: addToHand refers to unknown card "nope"']);
+    expect(
+      issuesOf([], [{ id: 'l', name: 'l', abilities: [{ trigger: 'onReveal', effect: { type: 'addToHand' } }] }])[0],
+    ).toContain('needs a "card"');
+    expect(() =>
+      catalogWith([
+        card('y'),
+        card('x', { abilities: [{ trigger: 'onReveal', effect: { type: 'addToHand', card: 'y' } }] }),
+      ]),
+    ).not.toThrow();
+  });
+
+  it('validates the rules of a location', () => {
+    expect(issuesOf([], [{ id: 'l', name: 'l', rules: { capacity: 5 } }])).toHaveLength(1);
+    expect(issuesOf([], [{ id: 'l', name: 'l', rules: { capacity: 0 } }])).toHaveLength(1);
+    expect(issuesOf([], [{ id: 'l', name: 'l', rules: { openFromTurn: 4, closedFromTurn: 3 } }])[0]).toContain(
+      'no card can ever be played here',
+    );
+    expect(
+      catalogWith([], [{ id: 'l', name: 'l', rules: { capacity: 3, openFromTurn: 2, closedFromTurn: 5 } }]).location(
+        'l',
+      ).rules,
+    ).toEqual({
+      capacity: 3,
+      openFromTurn: 2,
+      closedFromTurn: 5,
+    });
+  });
+
   it('reads the optional artwork of cards and locations', () => {
     const catalog = catalogWith(
       [card('x', { image: 'x-6a7634b988a9.png' }), card('y')],

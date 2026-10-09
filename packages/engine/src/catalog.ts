@@ -3,6 +3,8 @@ import { type CompiledAbility, abilitySchema, compileAbility, locationAbilityIss
 import { tagSchema } from './abilities/board.ts';
 import { type StatusId, statusSchema } from './abilities/statuses.ts';
 import { CatalogError } from './errors.ts';
+import { LOCATION_CAPACITY, MAX_TURNS } from './rules.ts';
+import type { LocationRules } from './state.ts';
 
 export const RARITIES = ['common', 'uncommon', 'rare', 'legendary'] as const;
 
@@ -46,11 +48,25 @@ export const cardFileSchema = z.object({
 
 export type CardFile = z.input<typeof cardFileSchema>;
 
+// Properties of the terrain read by the rules (see LocationRules). Capacity can only shrink: the board has 4 slots.
+const locationRulesSchema = z
+  .object({
+    capacity: z.number().int().min(1).max(LOCATION_CAPACITY).optional(),
+    closedFromTurn: z.number().int().min(1).max(MAX_TURNS).optional(),
+    openFromTurn: z.number().int().min(2).max(MAX_TURNS).optional(),
+  })
+  .refine(
+    ({ closedFromTurn, openFromTurn }) =>
+      closedFromTurn === undefined || openFromTurn === undefined || openFromTurn < closedFromTurn,
+    { message: 'openFromTurn must be before closedFromTurn, otherwise no card can ever be played here' },
+  );
+
 const locationSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   extension: slugSchema.nullable().default(null),
   image: imageSchema,
+  rules: locationRulesSchema.default({}),
   abilities: z.array(abilitySchema).default([]),
 });
 
@@ -79,6 +95,7 @@ export interface LocationDefinition {
   readonly name: string;
   readonly extension: string | null;
   readonly image: string | null;
+  readonly rules: LocationRules;
   readonly abilities: readonly CompiledAbility[];
 }
 
@@ -140,6 +157,7 @@ export function loadCatalog(source: CatalogSource): Catalog {
       issues.push(`${id} is both a card and a location`);
     }
   }
+  issues.push(...referenceIssues(cards, locations));
   if (issues.length > 0) {
     throw new CatalogError(issues);
   }
@@ -201,4 +219,24 @@ function loadLocationFile(file: DataFile, locations: Map<string, LocationDefinit
     }
     locations.set(location.id, { ...location, abilities: location.abilities.map(compileAbility) });
   }
+}
+
+// addToHand names a card of the catalog: a typo must fail at load time, and a terrain is never a card.
+function referenceIssues(
+  cards: ReadonlyMap<string, CardDefinition>,
+  locations: ReadonlyMap<string, LocationDefinition>,
+): string[] {
+  const holders = [
+    ...[...cards.values()].map((card) => ({ label: `card ${card.id}`, abilities: card.abilities })),
+    ...[...locations.values()].map((location) => ({ label: `location ${location.id}`, abilities: location.abilities })),
+  ];
+  return holders.flatMap(({ label, abilities }) =>
+    abilities.flatMap(({ params }) =>
+      params.effect.flatMap((effect) =>
+        effect.type === 'addToHand' && effect.card !== undefined && !cards.has(effect.card)
+          ? [`${label}: addToHand refers to unknown card "${effect.card}"`]
+          : [],
+      ),
+    ),
+  );
 }

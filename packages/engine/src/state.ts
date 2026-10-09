@@ -11,6 +11,12 @@ export function opponentOf(player: PlayerIndex): PlayerIndex {
 
 export type CardZone = 'deck' | 'hand' | 'pending' | 'board' | 'destroyed';
 
+// A cost change: `tag` null = any card.
+export interface CostModifier {
+  amount: number;
+  tag: string | null;
+}
+
 export interface CardInstance {
   uid: string;
   defId: string;
@@ -19,6 +25,11 @@ export interface CardInstance {
   location: number | null;
   powerModifier: number;
   playOrder: number | null;
+  // Cost change received while in hand (the effective cost never goes below 0).
+  costModifier: number;
+  // Set while the card is pending: what it cost, and the "next card" discounts it consumed (given back on cancel).
+  paidCost: number | null;
+  usedNextCosts: CostModifier[];
   // Status → stacks, only while on the board.
   statuses: Partial<Record<StatusId, number>>;
 }
@@ -28,10 +39,22 @@ export interface PlayerState {
   deck: string[];
   hand: string[];
   pending: string[];
+  // Cost changes waiting for the next card played (consumed by the first matching card).
+  nextCosts: CostModifier[];
   energy: number;
   spent: number;
   ready: boolean;
   mulliganUsed: boolean;
+}
+
+// Properties of a location read by the rules (not one-shot effects). Only active once the location is revealed.
+export interface LocationRules {
+  // Cards per player (default LOCATION_CAPACITY).
+  capacity?: number | undefined;
+  // No card can be played here from this turn on.
+  closedFromTurn?: number | undefined;
+  // No card can be played here before this turn.
+  openFromTurn?: number | undefined;
 }
 
 export interface LocationState {
@@ -70,5 +93,9 @@ export type GameEvent =
   | { type: 'cardRevealed'; card: string; defId: string; player: PlayerIndex; location: number }
   | { type: 'powerChanged'; card: string; delta: number }
   | { type: 'cardDestroyed'; card: string }
+  | { type: 'cardMoved'; card: string; from: number; to: number }
+  // Private to the owner: the opponent never receives it. `card` null = the next card played.
+  | { type: 'costChanged'; player: PlayerIndex; card: string | null; delta: number }
+  | { type: 'cardAddedToHand'; player: PlayerIndex; card: string; defId: string }
   | { type: 'statusChanged'; card: string; status: StatusId; stacks: number }
   | { type: 'gameEnded'; result: GameResult };

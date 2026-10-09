@@ -7,6 +7,9 @@
 - **Folie** (`mad`) : sans règle propre, lu par d'autres cartes
 - **Défonce** (`high`) : perd 1 puissance par cumul à chaque fin de tour
 - **Coriace** (`tough`) : ne peut être ni détruite ni affaiblie
+- **Ivresse** (`drunk`) : gagne ou perd 2 puissance au hasard par cumul à chaque fin de tour
+- **Protection** (`protected`) : annule la prochaine destruction ou le prochain malus de puissance, puis disparaît (un cumul par protection)
+- **Surchauffe** (`overheat`) : détruite dès 3 cumuls
 
 ## 40K (`40k`) — 17 cartes, 15 avec effet
 

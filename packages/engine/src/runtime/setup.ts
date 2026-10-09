@@ -4,6 +4,7 @@ import { GameSetupError } from '../errors.ts';
 import { type Rng, seedFromString } from '../rng.ts';
 import { DECK_SIZE, LOCATION_COUNT, OPENING_CARDS, STARTING_HAND } from '../rules.ts';
 import { type GameState, type LocationState, PLAYERS, type PlayerIndex, type PlayerState } from '../state.ts';
+import { newInstance } from './hand.ts';
 import { Runtime } from './runtime.ts';
 
 export interface PlayerSetup {
@@ -43,16 +44,7 @@ export function startGame(catalog: Catalog, setup: GameSetup): Runtime {
     // Instance ids are given after the shuffle so they say nothing about the deck list order.
     deck.forEach((defId, index) => {
       const uid = `p${player}c${index + 1}`;
-      state.cards[uid] = {
-        uid,
-        defId,
-        owner: player,
-        zone: 'deck',
-        location: null,
-        powerModifier: 0,
-        playOrder: null,
-        statuses: {},
-      };
+      state.cards[uid] = newInstance(uid, defId, player);
       state.players[player].deck.push(uid);
     });
   }
@@ -113,6 +105,7 @@ function emptyState(setup: GameSetup): GameState {
     deck: [],
     hand: [],
     pending: [],
+    nextCosts: [],
     energy: 0,
     spent: 0,
     ready: false,

@@ -1,12 +1,21 @@
 import type { StatusId } from './abilities/statuses.ts';
 import type { Catalog } from './catalog.ts';
-import { type PowerBreakdown, locationPowers, openLocations, playableCards, powerBreakdown, powerOf } from './game.ts';
+import {
+  type PowerBreakdown,
+  costOf,
+  locationPowers,
+  openLocations,
+  playableCards,
+  powerBreakdown,
+  powerOf,
+} from './game.ts';
 import { MAX_TURNS } from './rules.ts';
 import { type GameEvent, type GameResult, type GameState, type PlayerIndex, opponentOf } from './state.ts';
 
 export interface CardView {
   uid: string;
   defId: string;
+  // Effective cost: cost changes included (the printed one is in the catalog).
   cost: number;
   power: number;
   // Where the power comes from: power = printed + modifier + the ongoing amounts.
@@ -60,7 +69,7 @@ function cardView(catalog: Catalog, state: GameState, uid: string): CardView {
   return {
     uid,
     defId: card.defId,
-    cost: catalog.card(card.defId).cost,
+    cost: costOf(catalog, state, uid),
     power: powerOf(catalog, state, uid),
     breakdown: powerBreakdown(catalog, state, uid),
     statuses: { ...card.statuses },
@@ -89,7 +98,7 @@ export function projectForPlayer(catalog: Catalog, state: GameState, player: Pla
     canMulligan: state.turn === 1 && !me.mulliganUsed && !me.ready && me.pending.length === 0,
     hand: me.hand.map(view),
     playableCards: planning ? playableCards(catalog, state, player) : [],
-    openLocations: planning ? openLocations(state, player) : [],
+    openLocations: planning ? openLocations(catalog, state, player) : [],
     deckCount: me.deck.length,
     opponent: {
       id: them.id,
@@ -110,13 +119,27 @@ export function projectForPlayer(catalog: Catalog, state: GameState, player: Pla
   };
 }
 
-// The opponent's draws are announced without the card drawn.
+// The opponent's draws and cards added to hand are announced without the card.
 export type PlayerEvent =
-  Exclude<GameEvent, { type: 'cardDrawn' }> | { type: 'cardDrawn'; player: PlayerIndex; card: string | null };
+  | Exclude<GameEvent, { type: 'cardDrawn' | 'cardAddedToHand' }>
+  | { type: 'cardDrawn'; player: PlayerIndex; card: string | null }
+  | { type: 'cardAddedToHand'; player: PlayerIndex; card: string | null; defId: string | null };
+
+function projectEvent(event: GameEvent, player: PlayerIndex): PlayerEvent | null {
+  if (event.type === 'cardDrawn' && event.player !== player) {
+    return { ...event, card: null };
+  }
+  if (event.type === 'cardAddedToHand' && event.player !== player) {
+    return { ...event, card: null, defId: null };
+  }
+  // The opponent never learns what our hand costs.
+  if (event.type === 'costChanged' && event.player !== player) {
+    return null;
+  }
+  return event;
+}
 
 // Every other event is about public facts (revealed cards, locations, result).
 export function projectEventsForPlayer(events: readonly GameEvent[], player: PlayerIndex): PlayerEvent[] {
-  return events.map((event) =>
-    event.type === 'cardDrawn' && event.player !== player ? { ...event, card: null } : event,
-  );
+  return events.flatMap((event) => projectEvent(event, player) ?? []);
 }

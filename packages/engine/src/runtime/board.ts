@@ -1,12 +1,21 @@
 import type { CompiledAbility } from '../abilities/ability.ts';
-import { type AbilitySource, type Board, type CardFilter, isOngoingEffect } from '../abilities/board.ts';
-import { STATUS_IDS, type StatusId } from '../abilities/statuses.ts';
+import {
+  type AbilitySource,
+  type Board,
+  type CardFilter,
+  type MoveDestination,
+  isOngoingEffect,
+} from '../abilities/board.ts';
+import { STATUS_IDS, type StatusId, statusRule } from '../abilities/statuses.ts';
 import type { CardDefinition, Catalog } from '../catalog.ts';
 import { Rng } from '../rng.ts';
 import { MAX_HAND } from '../rules.ts';
-import { type GameEvent, type GameState, PLAYERS, type PlayerIndex, opponentOf } from '../state.ts';
+import { type GameEvent, type GameState, PLAYERS, type PlayerIndex } from '../state.ts';
+import { inScope, onSide } from './filters.ts';
+import * as hand from './hand.ts';
+import { hasRoom } from './location-rules.ts';
 import { cardAt, locationAt } from './state-access.ts';
-import { hasRule, stacksOf } from './statuses.ts';
+import { absorbingStatus, hasRule, stacksOf } from './statuses.ts';
 
 export interface OngoingBonus {
   source: AbilitySource;
@@ -23,6 +32,8 @@ export class GameBoard implements Board {
   readonly catalog: Catalog;
   readonly state: GameState;
   readonly rng: Rng;
+  // Set by the Runtime: fires the "destroyed" abilities of a card once it left the board.
+  onDestroyed: (uid: string) => void = () => undefined;
   private readonly events: GameEvent[];
 
   constructor(catalog: Catalog, state: GameState, events: GameEvent[]) {
@@ -38,6 +49,14 @@ export class GameBoard implements Board {
 
   recordEvent(event: GameEvent): void {
     this.events.push(event);
+  }
+
+  defIdOf(uid: string): string {
+    return cardAt(this.state, uid).defId;
+  }
+
+  get handContext(): hand.HandContext {
+    return { catalog: this.catalog, state: this.state, events: this.events };
   }
 
   definitionOf(uid: string): CardDefinition {
@@ -95,6 +114,11 @@ export class GameBoard implements Board {
     if (card.zone !== 'board' || delta === 0 || (delta < 0 && hasRule(card, 'preventsPowerLoss'))) {
       return;
     }
+    const shield = delta < 0 ? absorbingStatus(card, 'absorbsPowerLoss') : null;
+    if (shield !== null) {
+      this.spendStack(uid, shield);
+      return;
+    }
     card.powerModifier += delta;
     this.events.push({ type: 'powerChanged', card: uid, delta });
   }
@@ -118,10 +142,68 @@ export class GameBoard implements Board {
     if (card.zone !== 'board' || card.location === null || hasRule(card, 'preventsDestroy')) {
       return;
     }
+    const shield = absorbingStatus(card, 'absorbsDestroy');
+    if (shield !== null) {
+      this.spendStack(uid, shield);
+      return;
+    }
     const slot = locationAt(this.state, card.location).cards[card.owner];
     slot.splice(slot.indexOf(uid), 1);
     card.zone = 'destroyed';
     this.events.push({ type: 'cardDestroyed', card: uid });
+    this.onDestroyed(uid);
+  }
+
+  move(uid: string, destination: MoveDestination): void {
+    const card = cardAt(this.state, uid);
+    if (card.zone !== 'board' || card.location === null) {
+      return;
+    }
+    const from = card.location;
+    const options = this.moveOptions(card.owner, from, destination);
+    const to = destination === 'random' && options.length > 0 ? this.rng.pick(options) : options[0];
+    if (to === undefined) {
+      return;
+    }
+    const slot = locationAt(this.state, from).cards[card.owner];
+    slot.splice(slot.indexOf(uid), 1);
+    locationAt(this.state, to).cards[card.owner].push(uid);
+    card.location = to;
+    this.events.push({ type: 'cardMoved', card: uid, from, to });
+  }
+
+  addHandCost(player: PlayerIndex, amount: number, tag: string | null): void {
+    hand.addHandCost(this.handContext, player, amount, tag);
+  }
+
+  addNextCost(player: PlayerIndex, amount: number, tag: string | null): void {
+    hand.addNextCost(this.handContext, player, amount, tag);
+  }
+
+  addToHand(player: PlayerIndex, defId: string): void {
+    hand.addToHand(this.handContext, player, defId);
+  }
+
+  // Locations of the same side where the card could go, in board order.
+  private moveOptions(owner: PlayerIndex, from: number, destination: MoveDestination): number[] {
+    const wanted = (index: number): boolean =>
+      index !== from &&
+      (destination === 'random' || index === from + (destination === 'left' ? -1 : 1)) &&
+      hasRoom(this.catalog, this.state, owner, index);
+    return this.state.locations.flatMap((_, index) => (wanted(index) ? [index] : []));
+  }
+
+  // A shield status pays one stack to cancel what was about to happen.
+  private spendStack(uid: string, status: StatusId): void {
+    const card = cardAt(this.state, uid);
+    const left = stacksOf(card, status) - 1;
+    if (left > 0) {
+      card.statuses[status] = left;
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- statuses is a plain JSON record
+      delete card.statuses[status];
+    }
+    this.events.push({ type: 'statusChanged', card: uid, status, stacks: left });
   }
 
   addStatus(uid: string, status: StatusId, stacks: number): void {
@@ -132,6 +214,7 @@ export class GameBoard implements Board {
     const total = stacksOf(card, status) + stacks;
     card.statuses[status] = total;
     this.events.push({ type: 'statusChanged', card: uid, status, stacks: total });
+    statusRule(status).onStacksChanged?.(this, uid, total);
   }
 
   removeStatus(uid: string, status: StatusId | null): void {
@@ -183,26 +266,4 @@ export class GameBoard implements Board {
       }
     }
   }
-}
-
-function inScope(filter: CardFilter, source: AbilitySource, location: number): boolean {
-  switch (filter.scope) {
-    case 'here':
-      return location === source.location;
-    case 'elsewhere':
-      return location !== source.location;
-    case 'everywhere':
-      return true;
-  }
-}
-
-// A location has no owner: only side "all" can match there.
-function onSide(filter: CardFilter, source: AbilitySource, player: PlayerIndex): boolean {
-  if (filter.side === 'all') {
-    return true;
-  }
-  if (source.owner === null) {
-    return false;
-  }
-  return player === (filter.side === 'ally' ? source.owner : opponentOf(source.owner));
 }

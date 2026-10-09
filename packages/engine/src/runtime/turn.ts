@@ -42,11 +42,11 @@ export class TurnFlow {
 
     for (const player of order) {
       const playerState = this.board.state.players[player];
-      const pending = playerState.pending;
-      playerState.pending = [];
-      pending.forEach((uid) => {
+      // A card leaves `pending` when it is revealed, so unrevealed plays still hold their place at a location.
+      for (let uid = playerState.pending[0]; uid !== undefined; uid = playerState.pending[0]) {
+        playerState.pending.shift();
         this.reveal(uid);
-      });
+      }
     }
     this.endOfTurn(order);
 
@@ -68,6 +68,7 @@ export class TurnFlow {
     if (card.location === null) {
       throw new RangeError(`Pending card ${uid} has no location`);
     }
+    const playedAt = card.location;
     card.zone = 'board';
     locationAt(this.board.state, card.location).cards[card.owner].push(uid);
     this.events.push({
@@ -81,6 +82,7 @@ export class TurnFlow {
       this.board.addStatus(uid, status, 1);
     }
     this.abilities.fireCard(uid, 'onReveal');
+    this.abilities.fireCardPlayed(uid, playedAt);
   }
 
   // Locations first (left to right), then the cards in reveal priority order, then the status rules.
