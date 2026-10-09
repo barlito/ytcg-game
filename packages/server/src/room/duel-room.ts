@@ -16,6 +16,7 @@ import {
   actionInputSchema,
 } from '../protocol.ts';
 import { GameSession, SessionError } from '../session/game-session.ts';
+import { RoomCodes } from './room-code.ts';
 import { type TurnSchedule, type TurnTiming, revealCount, scheduleTurn } from '../session/turn-clock.ts';
 
 export interface RoomServices extends TurnTiming {
@@ -41,19 +42,24 @@ type Timer = ReturnType<Room['clock']['setTimeout']>;
 
 // Services are bound by defineDuelRoom(), never read from client options.
 export function defineDuelRoom(services: RoomServices): new () => DuelRoom {
+  const codes = new RoomCodes();
   return class extends DuelRoom {
     protected readonly services = services;
+    protected readonly codes = codes;
   };
 }
 
 export abstract class DuelRoom extends Room<{ client: DuelClient }> {
   override maxClients = 2;
   protected abstract readonly services: RoomServices;
+  protected abstract readonly codes: RoomCodes;
   private session!: GameSession;
   private turnTimer: Timer | null = null;
   private schedule: TurnSchedule | null = null;
 
   override onCreate(): void {
+    // The friend code is the room id: Colyseus lets onCreate replace it before the room is recorded.
+    this.roomId = this.codes.allocate();
     this.session = new GameSession(this.services.catalog, this.services.newSeed());
     void this.setPrivate(true);
     this.onMessage(MESSAGE_ACTION, actionInputSchema, (client: DuelClient, input: ActionInput) => {
@@ -107,6 +113,7 @@ export abstract class DuelRoom extends Room<{ client: DuelClient }> {
   }
 
   override onDispose(): void {
+    this.codes.release(this.roomId);
     this.stopTurnTimer();
   }
 
