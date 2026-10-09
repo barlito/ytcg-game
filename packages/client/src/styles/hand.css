@@ -1,6 +1,6 @@
 /* Hand: a fan of cards (±7°), the playable ones raised, lifted again on hover; too expensive ones at 60 %. */
 .hand {
-  --n: 1;
+  --hand-n: 1;
   position: relative;
   display: flex;
   justify-content: center;
@@ -13,22 +13,22 @@
     box-shadow 0.2s;
 }
 .hand[data-count='2'] {
-  --n: 2;
+  --hand-n: 2;
 }
 .hand[data-count='3'] {
-  --n: 3;
+  --hand-n: 3;
 }
 .hand[data-count='4'] {
-  --n: 4;
+  --hand-n: 4;
 }
 .hand[data-count='5'] {
-  --n: 5;
+  --hand-n: 5;
 }
 .hand[data-count='6'] {
-  --n: 6;
+  --hand-n: 6;
 }
 .hand[data-count='7'] {
-  --n: 7;
+  --hand-n: 7;
 }
 .hand > .card-slot {
   flex: 0 0 var(--hand-card);
@@ -39,7 +39,7 @@
 }
 /* Gap that fits the n cards in the hand width (100cqi): an overlap, at most 0.5rem apart. */
 .hand > .card-slot + .card-slot {
-  margin-left: clamp(-9rem, (100cqi - var(--n) * var(--hand-card) - 1rem - 2px) / (var(--n) - 1), 0.5rem);
+  margin-left: clamp(-9rem, (100cqi - var(--hand-n) * var(--hand-card) - 1rem - 2px) / (var(--hand-n) - 1), 0.5rem);
 }
 .hand > .card-slot.is-playable {
   transform: rotate(var(--fan, 0deg)) translateY(-1.4rem);
@@ -82,6 +82,7 @@
 @media (max-width: 900px) {
   .hand {
     justify-content: safe center;
+    min-height: calc(var(--hand-card) / 0.718 + 2.5rem);
     padding-top: 1.6rem;
     overflow-x: auto;
     scrollbar-width: thin;
