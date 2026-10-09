@@ -64,6 +64,7 @@ export function CardPlate(props: PlateProps): React.JSX.Element {
         <span className="tcard__mat" />
         {hasSheen(rarity) && <span className="tcard__sheen" />}
         <span className="tcard__name">{definition.name}</span>
+        <span className="tcard__ext">{catalog.extensions.get(definition.extension) ?? ''}</span>
         <CardBand definition={definition} rarity={rarity} size={size} cost={cost} power={power} trend={trend} />
         <StatusPills labels={statuses} />
       </div>
