@@ -81,7 +81,11 @@
 .tband__glass {
   inset: 0;
   clip-path: polygon(0 var(--slant), 100% 0, 100% 100%, 0 100%);
-  background: linear-gradient(180deg, rgb(59 20 102 / calc(var(--o1) * 100%)), rgb(22 10 41 / calc(var(--o2) * 100%)));
+  background: linear-gradient(
+    180deg,
+    rgb(59 20 102 / calc((var(--o1) + var(--o-flat, 0)) * 100%)),
+    rgb(22 10 41 / calc((var(--o2) + var(--o-flat, 0)) * 100%))
+  );
   backdrop-filter: var(--band-blur, blur(5px) saturate(1.25));
 }
 .tband__edge {

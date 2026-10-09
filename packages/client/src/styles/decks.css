@@ -87,8 +87,10 @@ a.btn-arcade {
 .deck-cards .tcard__body {
   transform: none;
 }
-/* Dozens of backdrop blurs on one page make the compositor drop layers: flat band in the grids. */
+/* Dozens of backdrop blurs on one page make the compositor drop layers: flat band in the grids.
+   --o-flat makes up for the missing blur / saturation so the glass reads as dense as on the hand or the fan. */
 .pool-tile .tcard__body,
 .deck-cards .tcard__body {
   --band-blur: none;
+  --o-flat: 0.14;
 }
