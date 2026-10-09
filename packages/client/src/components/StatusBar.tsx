@@ -62,7 +62,8 @@ function Timer({ turnDeadline, revealUntil }: Pick<Props, 'turnDeadline' | 'reve
   return <span className={clock.seconds <= 10 ? 'timer is-urgent' : 'timer'}>{clock.seconds} s</span>;
 }
 
-function HandBacks({ count }: { count: number }): React.JSX.Element {
+// `arriving`: the last back is the one the replay just added.
+function HandBacks({ count, arriving }: { count: number; arriving: boolean }): React.JSX.Element {
   return (
     <span
       className="hand-backs"
@@ -74,7 +75,7 @@ function HandBacks({ count }: { count: number }): React.JSX.Element {
         return (
           <span
             key={index}
-            className="mini-back"
+            className={arriving && index === Math.min(count, 7) - 1 ? 'mini-back fx-back-in' : 'mini-back'}
             style={{ '--tilt': `${String(angle)}deg`, '--fan-y': offset } as React.CSSProperties}
           />
         );
@@ -83,13 +84,23 @@ function HandBacks({ count }: { count: number }): React.JSX.Element {
   );
 }
 
+// The opponent hand as the replay shows it: cards they are about to add are not counted yet.
+function useOpponentHand(view: PlayerView): { count: number; arriving: boolean } {
+  const { current, opponentAdds } = useScene();
+  return {
+    count: view.opponent.handCount - opponentAdds,
+    arriving: current?.type === 'cardAddedToHand' && current.player !== view.you,
+  };
+}
+
 // Bumps when the replay shows the opponent drawing.
-function OpponentCounts({ view }: { view: PlayerView }): React.JSX.Element {
+function OpponentCounts({ view, count }: { view: PlayerView; count: number }): React.JSX.Element {
   const { current } = useScene();
   const drawing = current?.type === 'cardDrawn' && current.player !== view.you;
+  const adding = current?.type === 'cardAddedToHand' && current.player !== view.you;
   return (
     <span className="status-counts">
-      <span className={drawing ? 'hand-count fx-bump' : 'hand-count'}>{view.opponent.handCount} en main</span> ·{' '}
+      <span className={drawing || adding ? 'hand-count fx-bump' : 'hand-count'}>{count} en main</span> ·{' '}
       {view.opponent.deckCount} au deck
     </span>
   );
@@ -98,12 +109,13 @@ function OpponentCounts({ view }: { view: PlayerView }): React.JSX.Element {
 function OpponentInfo({ view, seats }: { view: PlayerView; seats: SeatInfo[] }): React.JSX.Element {
   const opponent = seats[view.you === 0 ? 1 : 0];
   const name = opponent?.name ?? 'Adversaire';
+  const { count, arriving } = useOpponentHand(view);
   return (
     <div className="status-opponent">
       <Avatar name={name} tone="opponent" />
       <div className="status-opponent__text">
         <span className="status-name">{name}</span>
-        <OpponentCounts view={view} />
+        <OpponentCounts view={view} count={count} />
         <span className="status-badges">
           {view.opponent.pendingCount > 0 && (
             <span className="badge-pending">
@@ -114,7 +126,7 @@ function OpponentInfo({ view, seats }: { view: PlayerView; seats: SeatInfo[] }):
           {view.opponent.ready && view.status !== 'ended' && <span className="badge-ready">a fini son tour</span>}
         </span>
       </div>
-      <HandBacks count={view.opponent.handCount} />
+      <HandBacks count={count} arriving={arriving} />
     </div>
   );
 }

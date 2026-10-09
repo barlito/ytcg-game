@@ -23,20 +23,30 @@ const DURATIONS: Record<PlayerEvent['type'], number> = {
   revealPriority: 900,
   cardRevealed: 550,
   powerChanged: 500,
-  cardDestroyed: 650,
-  cardMoved: 500,
-  costChanged: 100,
-  cardAddedToHand: 300,
+  cardDestroyed: 800,
+  cardMoved: 700,
+  costChanged: 650,
+  cardAddedToHand: 750,
   statusChanged: 500,
-  crisisStarted: 100,
+  crisisStarted: 950,
+  contagionSpread: 750,
+  abilityTriggered: 450,
   gameEnded: 600,
 };
 
 const OPPONENT_DRAW = 120;
+const OPPONENT_ADD = 450;
+const SHIELD_BREAK = 650;
 
 export function durationOf(event: PlayerEvent, you: PlayerIndex): number {
   if (event.type === 'cardDrawn' && event.player !== you) {
     return OPPONENT_DRAW;
+  }
+  if (event.type === 'cardAddedToHand' && event.player !== you) {
+    return OPPONENT_ADD;
+  }
+  if (event.type === 'statusChanged' && event.spent === true) {
+    return SHIELD_BREAK;
   }
   return DURATIONS[event.type];
 }
@@ -50,9 +60,28 @@ function stepsOf(event: PlayerEvent, you: PlayerIndex): Step[] {
   return isSpotlit(event) ? [{ event, duration: SPOTLIGHT_MS, spotlight: true }, landing] : [landing];
 }
 
+// The engine announces onDestroyed after the destruction: the card must light up while it is still there.
+export function lightBeforeDestruction(events: readonly PlayerEvent[]): PlayerEvent[] {
+  const ordered = [...events];
+  for (let i = 1; i < ordered.length; i++) {
+    const previous = ordered[i - 1];
+    const event = ordered[i];
+    if (
+      previous?.type === 'cardDestroyed' &&
+      event?.type === 'abilityTriggered' &&
+      event.trigger === 'onDestroyed' &&
+      event.card === previous.card
+    ) {
+      ordered[i - 1] = event;
+      ordered[i] = previous;
+    }
+  }
+  return ordered;
+}
+
 // Reduced motion: nothing is replayed, the final view shows at once (no spotlight either).
 export function stepsFor(events: readonly PlayerEvent[], you: PlayerIndex, reducedMotion: boolean): Step[] {
-  return reducedMotion ? [] : events.flatMap((event) => stepsOf(event, you));
+  return reducedMotion ? [] : lightBeforeDestruction(events).flatMap((event) => stepsOf(event, you));
 }
 
 // steps[index] is playing; index === steps.length means idle.

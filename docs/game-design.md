@@ -223,6 +223,20 @@ Mots de l'utilisateur : la folie est un effet « très versatile » : des cartes
 - **Par défaut** : une carte sans effet de folie tire une **crise** au hasard (Rage +2, Délire −2, Errance, Contagion, Implosion), stockée sur la carte, publique, une seule par carte. Détails et interactions : [`effects.md`](effects.md#folie-effet-défini-crises).
 - **À rejouer** : le pool et les valeurs (±2) sont une première version ; la Folie est maintenant un malus en moyenne neutre (Rage/Délire) avec de la propagation, à régler au vu des parties.
 
+## Animations des briques d'effets (phase 5b)
+
+Chaque événement de la phase 5a est une étape de la file de replay (`animation/queue.ts`), jouée sur la vue finale ; « Passer l'animation » vide la file, « réduire les animations » ne rejoue rien (état final juste). Le journal n'imprime une ligne qu'une fois son étape jouée.
+
+- **Déplacement** (700 ms) : la carte glisse de son ancien emplacement au nouveau (FLIP, arc, 450 ms) ; les deux lieux flashent. Avant l'étape elle reste dessinée au lieu de départ.
+- **Folie** (950 ms) : tremblement avec aberration cyan / magenta, la pastille « Folie · crise » apparaît avec un pop (avant : « Folie » seule), étiquette flottante avec le nom de la crise. Errance = déplacement ; Contagion = arc magenta de la source vers la cible (750 ms) puis glitch de la cible ; Implosion = la carte se contracte puis éclate en étincelles (800 ms), puis les +2 flottants sur les autres folles.
+- **Ajout en main** : la carte arrive en se retournant depuis la carte source sur le plateau, sinon depuis le compteur de deck (750 ms) ; l'adversaire voit un mini-dos s'ajouter à son éventail (450 ms).
+- **Coût** (650 ms, joueur seulement) : le badge de mana pulse vert / rouge avec « ancien → nouveau » ; le contour vert (moins cher) ou rouge (plus cher) reste tant que le coût diffère du coût imprimé (lu dans le catalogue, la vue ne change pas).
+- **Réactions** (`onCardPlayedHere`, `onDestroyed`, 450 ms) : la carte ou le terrain qui réagit s'illumine avant ses effets ; pour une destruction, avant de disparaître.
+- **États** : Ivresse = oscillation continue + flottant ±2 ; Protection = bouclier cyan translucide, qui se brise en absorbant (650 ms) ; Surchauffe = pastille de plus en plus rouge, chaleur et vapeur à 2, destruction explosive à 3.
+- **Règles de terrain** : pastilles sur la tuile (« 3 places », « Ouvre au tour 5 », « Fermé à partir du tour 6 »), emplacements indisponibles barrés ou grisés (fermé). Pas d'infobulle de terrain.
+- **Événements ajoutés au moteur** pour savoir qui réagit : `abilityTriggered` (carte ou terrain, public), `contagionSpread` (source et cible), `statusChanged.spent` (Protection payée), `cardAddedToHand.from` (carte source). Aucun ne révèle d'information cachée.
+- **Bac à sable** (`?sandbox`) : un bouton par animation, qui rejoue une résolution fabriquée.
+
 ## Design Violet Arcade (phase 4c)
 
 Décisions du 2026-10-09, à partir du handoff Claude Design (cartes, plateau, révélation, fin de partie, accueil, deck builder, profil/classement, logo) :

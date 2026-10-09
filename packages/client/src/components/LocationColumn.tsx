@@ -1,9 +1,11 @@
 import { useDroppable } from '@dnd-kit/core';
 import { type CardView, LOCATION_CAPACITY, type LocationView, type PlayerView } from '@ytcg-game/engine';
-import { type Side, ghostsAt } from '../animation/placements.ts';
+import { type RowCard, type Side, departingAt, ghostsAt, rowWithGhosts } from '../animation/placements.ts';
 import { usePlacements, useScene } from '../animation/useReplay.ts';
 import { type DropTarget, canDrop, dropId } from '../dnd.ts';
+import { catalog } from '../catalog.ts';
 import { leadOf } from '../lib/lead.ts';
+import { type SlotKind, type TerrainState, emptySlotKinds, terrainState } from '../lib/terrainRules.ts';
 import { BoardCard, PendingCard } from './card/BoardCards.tsx';
 import { useDragged } from './dnd/DragContext.ts';
 import { LocationHeader } from './LocationHeader.tsx';
@@ -20,6 +22,7 @@ interface SideProps {
   location: number;
   side: Side;
   cards: CardView[];
+  terrain: TerrainState;
   // Face-down cards of this turn (your side only) and whether a card can land here now.
   pending?: React.ReactNode;
   pendingCount?: number;
@@ -27,11 +30,12 @@ interface SideProps {
 }
 
 // Empty slots complete the row to the location capacity; the first one is the drop zone while a card can land.
-function EmptySlots({ count, accepting }: { count: number; accepting: boolean }): React.JSX.Element {
-  const wide = accepting && count >= 2;
+// Slots the terrain takes away are barred, the others grey out while the location is closed.
+function EmptySlots({ kinds, accepting }: { kinds: SlotKind[]; accepting: boolean }): React.JSX.Element {
+  const wide = accepting && kinds.length >= 2;
   return (
     <>
-      {Array.from({ length: count }, (_, index) => {
+      {kinds.map((kind, index) => {
         if (accepting && index === 0) {
           return (
             <span key={index} className="slot is-drop" style={wide ? { gridColumn: 'span 2' } : undefined}>
@@ -39,33 +43,47 @@ function EmptySlots({ count, accepting }: { count: number; accepting: boolean })
             </span>
           );
         }
-        return wide && index === 1 ? null : <span key={index} className="slot" />;
+        return wide && index === 1 ? null : (
+          <span key={index} className={`slot${kind === 'open' ? '' : ` is-${kind}`}`} />
+        );
       })}
     </>
   );
+}
+
+// The cards of one side: those whose move is still to come stand at the location they leave.
+function useStanding(
+  location: number,
+  side: Side,
+  cards: CardView[],
+): { standing: CardView[]; ghosts: CardView[]; row: RowCard[] } {
+  const scene = useScene();
+  const placements = usePlacements();
+  const settled = cards.filter((card) => !scene.unmoved.has(card.uid));
+  const departing = departingAt(placements, scene.unmoved, { location, side });
+  const standing = [...settled, ...departing];
+  const ghosts = ghostsAt(placements, scene.dying, { location, side, present: standing });
+  return { standing, ghosts, row: rowWithGhosts(placements, standing, ghosts) };
 }
 
 function SideCards({
   location,
   side,
   cards,
+  terrain,
   pending,
   pendingCount = 0,
   accepting = false,
 }: SideProps): React.JSX.Element {
-  const scene = useScene();
-  const ghosts = ghostsAt(usePlacements(), scene.dying, { location, side, present: cards });
-  const empty = Math.max(0, LOCATION_CAPACITY - cards.length - ghosts.length - pendingCount);
+  const { standing, ghosts, row } = useStanding(location, side, cards);
+  const empty = Math.max(0, LOCATION_CAPACITY - standing.length - ghosts.length - pendingCount);
   return (
     <>
-      {cards.map((card) => (
-        <BoardCard key={card.uid} card={card} own={side === 'you'} />
-      ))}
-      {ghosts.map((card) => (
-        <BoardCard key={card.uid} card={card} own={side === 'you'} ghost />
+      {row.map(({ card, ghost }) => (
+        <BoardCard key={card.uid} card={card} own={side === 'you'} ghost={ghost} />
       ))}
       {pending}
-      <EmptySlots count={empty} accepting={accepting} />
+      <EmptySlots kinds={emptySlotKinds(empty, terrain)} accepting={accepting} />
     </>
   );
 }
@@ -83,6 +101,12 @@ function dropClass(dragging: boolean, valid: boolean, isOver: boolean): string {
 
 export function LocationColumn({ location, view, selected, onPlay, onCancel }: Props): React.JSX.Element {
   const { index } = location;
+  const scene = useScene();
+  const revealed = location.defId !== null && !scene.hiddenLocations.has(index);
+  const terrain = terrainState(
+    revealed && location.defId !== null ? catalog.location(location.defId).rules : {},
+    view.turn,
+  );
   const target: DropTarget = { kind: 'location', index };
   const dragged = useDragged();
   const valid = dragged !== null && canDrop(view, dragged, target);
@@ -100,14 +124,15 @@ export function LocationColumn({ location, view, selected, onPlay, onCancel }: P
       onClick={canPlay ? play : undefined}
     >
       <div className="location-side opponent">
-        <SideCards location={index} side="opponent" cards={location.cards.opponent} />
+        <SideCards location={index} side="opponent" cards={location.cards.opponent} terrain={terrain} />
       </div>
-      <LocationHeader location={location} />
+      <LocationHeader location={location} turn={view.turn} />
       <div className="location-side you">
         <SideCards
           location={index}
           side="you"
           cards={location.cards.you}
+          terrain={terrain}
           pendingCount={location.yourPending.length}
           accepting={valid || canPlay}
           pending={location.yourPending.map((card) => (

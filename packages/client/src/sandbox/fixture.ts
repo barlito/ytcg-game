@@ -2,12 +2,15 @@ import type {
   CardDefinition,
   CardView,
   Catalog,
+  CrisisId,
   GameResult,
   LocationView,
   PlayerView,
   StatusId,
 } from '@ytcg-game/engine';
 import type { GameMessage, Outcome, SeatInfo } from '@ytcg-game/server/protocol';
+import { SCENARIOS } from './scenarios.ts';
+import type { ScenarioId } from './scenarios.ts';
 
 export type Ending = 'none' | 'win' | 'loss' | 'draw';
 
@@ -18,9 +21,11 @@ export interface FixtureOptions {
   ending: Ending;
   // Adds the reveal events of one board card, so the real replay plays it.
   replay: boolean;
+  // A fabricated resolution of the effect bricks (final view + events), see `scenarios.ts`.
+  scenario: ScenarioId | null;
 }
 
-export const DEFAULT_OPTIONS: FixtureOptions = { handCount: 7, turn: 4, ending: 'none', replay: false };
+export const DEFAULT_OPTIONS: FixtureOptions = { handCount: 7, turn: 4, ending: 'none', replay: false, scenario: null };
 
 const SEATS: SeatInfo[] = [
   { name: 'Toi', connected: true },
@@ -32,6 +37,7 @@ const HAND_COSTS = [1, 1, 2, 3, 3, 5, 6];
 interface Tweak {
   delta?: number;
   statuses?: Partial<Record<StatusId, number>>;
+  crisis?: CrisisId;
 }
 
 interface Rows {
@@ -63,7 +69,7 @@ function viewOf(definition: CardDefinition, uid: string, tweak: Tweak = {}): Car
     power: Math.max(0, definition.power + modifier),
     breakdown: { printed: definition.power, modifier, ongoing: [] },
     statuses: tweak.statuses ?? {},
-    crisis: null,
+    crisis: tweak.crisis ?? null,
   };
 }
 
@@ -78,14 +84,14 @@ function boardRows(catalog: Catalog): Rows[] {
         viewOf(rarity('legendary'), 'y0', { delta: 2 }),
         viewOf(cost(1), 'y1'),
         viewOf(cost(3), 'y2', { statuses: { tough: 1 } }),
-        viewOf(cost(2), 'y3', { delta: -1, statuses: { high: 2, mad: 1 } }),
+        viewOf(cost(2), 'y3', { delta: -1, statuses: { high: 2, mad: 1 }, crisis: 'rage' }),
       ],
       opponent: [
         viewOf(
           nth(all, (card) => card.unique, 0),
           'o0',
         ),
-        viewOf(cost(4), 'o1', { delta: 3, statuses: { mad: 1 } }),
+        viewOf(cost(4), 'o1', { delta: 3, statuses: { mad: 1 }, crisis: 'implosion' }),
         viewOf(cost(1, 1), 'o2'),
         viewOf(rarity('uncommon', 1), 'o3', { delta: -2 }),
       ],
@@ -157,7 +163,7 @@ function resultOf(ending: Exclude<Ending, 'none'>): GameResult {
 }
 
 function locationViews(catalog: Catalog, rows: readonly Rows[], result: GameResult | null): LocationView[] {
-  const ids = [...catalog.locations.keys()].sort();
+  const ids = [...catalog.locations.keys()].filter((id) => !id.startsWith('sandbox-')).sort();
   const chosen = ['you', 'opponent', null] as const;
   return rows.map((row, index) => {
     const shown = result?.locationPowers[index];
@@ -207,15 +213,18 @@ function viewOfGame(catalog: Catalog, options: FixtureOptions, rows: readonly Ro
 // A fabricated server message on the real catalog: nothing here talks to a server.
 export function buildFixture(catalog: Catalog, options: FixtureOptions, now: number): GameMessage {
   const rows = boardRows(catalog);
-  const view = viewOfGame(catalog, options, rows);
+  const base = viewOfGame(catalog, options, rows);
   const revealed = rows[0]?.you[0];
+  const scenario = options.scenario === null ? null : SCENARIOS[options.scenario].run(base);
+  const view = scenario?.view ?? base;
   return {
     seats: SEATS,
     view,
     events:
-      options.replay && revealed !== undefined
+      scenario?.events ??
+      (options.replay && revealed !== undefined
         ? [{ type: 'cardRevealed', card: revealed.uid, defId: revealed.defId, player: 0, location: 0 }]
-        : [],
+        : []),
     serverTime: now,
     turnDeadline: view.result === null ? now + TURN_SECONDS * 1000 : null,
     revealUntil: null,

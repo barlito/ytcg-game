@@ -57,6 +57,8 @@ const FORMATTERS: { [K in PlayerEvent['type']]: Formatter<Extract<PlayerEvent, {
     `${cardName(known, event.card)} passe du lieu ${event.from + 1} au lieu ${event.to + 1}.`,
   costChanged: (event, known) => costLine(event, known),
   cardAddedToHand: (event, _known, seats) => addedLine(event, seats),
+  contagionSpread: (event, known) => `${cardName(known, event.from)} contamine ${cardName(known, event.to)}.`,
+  abilityTriggered: () => null,
   cardDrawn: () => null,
   gameEnded: () => null,
 };

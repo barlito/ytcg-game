@@ -1,5 +1,5 @@
 import type { CardView } from '@ytcg-game/engine';
-import { cardFx } from '../../animation/scene.ts';
+import { cardFx, costView, explodes, sceneCard } from '../../animation/fx.ts';
 import { useScene } from '../../animation/useReplay.ts';
 import { catalog } from '../../catalog.ts';
 import type { FanPose } from '../../lib/fan.ts';
@@ -19,7 +19,12 @@ interface BoardProps {
 
 // A revealed card, or one the replay has not revealed yet: still face down for the opponent, dimmed for its owner.
 export function BoardCard({ card, own, ghost = false }: BoardProps): React.JSX.Element {
-  const fx = cardFx(useScene(), card.uid);
+  const scene = useScene();
+  const playing = cardFx(scene, card.uid);
+  const fx = {
+    ...playing,
+    effect: playing.effect === 'destroy' && explodes(card) ? ('burst' as const) : playing.effect,
+  };
   const hidden = fx.faceDown && !own;
   const classes = ['on-board', ghost ? 'is-ghost' : '', fx.faceDown && own ? 'is-pending' : ''];
   return (
@@ -29,7 +34,7 @@ export function BoardCard({ card, own, ghost = false }: BoardProps): React.JSX.E
       className={classes.join(' ')}
       label={hidden ? 'Carte face cachée' : labelOf(card)}
     >
-      {hidden ? <CardBack /> : <CardFace card={card} size="compact" effect={fx.effect} />}
+      {hidden ? <CardBack /> : <CardFace card={sceneCard(scene, card)} size="compact" effect={fx.effect} />}
     </CardButton>
   );
 }
@@ -76,7 +81,9 @@ interface HandProps {
 }
 
 export function HandCard({ card, playable, selected, pose, narrow, onSelect }: HandProps): React.JSX.Element {
-  const fx = cardFx(useScene(), card.uid);
+  const scene = useScene();
+  const fx = cardFx(scene, card.uid);
+  const { shown, flow } = costView(scene, card);
   const classes = ['in-hand', selected ? 'is-selected' : '', playable ? 'is-playable' : 'is-disabled'];
   return (
     <DraggableCard
@@ -97,7 +104,12 @@ export function HandCard({ card, playable, selected, pose, narrow, onSelect }: H
           : undefined
       }
     >
-      <CardFace card={card} size={narrow ? 'compact' : 'full'} effect={fx.effect} />
+      <CardFace
+        card={{ ...card, cost: shown }}
+        size={narrow ? 'compact' : 'full'}
+        effect={flow === null ? fx.effect : 'cost'}
+        costFlow={flow}
+      />
     </DraggableCard>
   );
 }
