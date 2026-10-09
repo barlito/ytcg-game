@@ -156,7 +156,7 @@ Identités données par l'utilisateur, traduites en capacités (détail carte pa
 | Warny, Bernard | drogues et alcool ; Bernard est aussi mécano | gros bonus immédiat puis **Défonce** ; Bernard renforce les **machines** |
 | Linettes | souvent des sœurs, persos atypiques | **+1 par autre Linette** ; variantes selon l'univers |
 
-Les **états ne sont liés à aucun personnage** : n'importe quelle carte peut en poser ou en subir un (Barlito peut finir Ivre). Idées validées, à implémenter au fil de l'eau : **Ivre** (fin de tour : +2 ou −2 au hasard), **Endormie** (capacités coupées N tours), **Charmée** (capacités coupées tant que la carte qui charme est en jeu), **Saignement** (−1 par tour, soignable), **Protégée** (encaisse la prochaine destruction ou le prochain malus), **Marquée** (prime pour qui la détruit), **Surchauffe** (détruite à 3 cumuls), **Enragée** (+1 par tour, insensible aux bonus alliés).
+Les **états ne sont liés à aucun personnage** : n'importe quelle carte peut en poser ou en subir un (Barlito peut finir Ivre). Idées validées : **Ivre**, **Protégée** et **Surchauffe** sont implémentées (phase 5a, voir [Briques d'effets](#briques-deffets-phase-5a)) ; restent, à implémenter au fil de l'eau : **Endormie** (capacités coupées N tours), **Charmée** (capacités coupées tant que la carte qui charme est en jeu), **Saignement** (−1 par tour, soignable), **Marquée** (prime pour qui la détruit), **Enragée** (+1 par tour, insensible aux bonus alliés).
 
 Traits ajoutés : `trait:machine` (vaisseaux, robots, armes), `trait:epee` (les deux épées d'Eldia, qui se renforcent ensemble). D'autres traits et états viendront au fil de l'eau. **Bankai** (Bleach) : prévu plus tard, avec une brique « transformation ».
 
@@ -197,6 +197,24 @@ Décisions du 2026-10-08 :
 
 - Colyseus **monitor** et **playground** au déploiement.
 
+## Briques d'effets (phase 5a)
+
+Décisions du 2026-10-09 : on valide de nouvelles briques **avant** une passe de réécriture des cartes extension par extension ; cette phase n'ajoute que des briques (moteur, serveur, texte joueur), aucune carte de `data/` ne change. Référence détaillée, exemples JSON et interactions : [`effects.md`](effects.md).
+
+**Règle d'écriture des cartes** (validée) : chaque extension a une **mécanique signature**, sans exclure les autres extensions de l'utiliser ; **un texte n'apparaît jamais à l'identique dans deux extensions** ; **toute rare ou légendaire a un effet**.
+
+| Brique | Choix |
+|---|---|
+| Déplacement `move` | vers un autre lieu **du camp de la carte** avec une place libre ; destinations `random` (défaut, tirage seedé), `left`, `right` (voisin direct, sans rebouclage) ; rien s'il n'y a pas de place (les poses encore face cachée du joueur comptent comme occupées). Les effets `ongoing` suivent, `onReveal` ne se redéclenche pas, ce n'est pas une « pose ». Événement public `cardMoved` |
+| `onCardPlayedHere` | une **autre** carte est révélée sur ce lieu après celle-ci ; filtre `played` (camp, tag, état) ; fonctionne aussi pour les terrains. Résolution : `onReveal` de la carte, puis les cartes déjà présentes (le joueur qui révèle d'abord, puis l'autre), puis le terrain |
+| `onDestroyed` | la carte a déjà quitté le plateau, ses cibles sont relatives à son ancien lieu ; une carte qui survit (Coriace, Protection) ne déclenche rien |
+| `addCost` | modifie le coût des cartes en **main** (toutes, ou d'un tag) ou de la **prochaine carte jouée** ; coût plancher 0 ; le coût effectif est utilisé partout (pose, `playableCards`, vue, bots). Information cachée : seul le propriétaire reçoit `costChanged` |
+| `addToHand` | ajoute une copie de la carte, ou d'une carte du catalogue, en main (instance neuve, main de 7 maximum). L'adversaire ne voit que la main grossir (`cardAddedToHand` sans identité) |
+| Règles de terrain `rules` | `capacity` (1 à 4), `closedFromTurn`, `openFromTurn` : propriétés du lieu lues par les règles (`openLocations`), actives une fois le lieu révélé, sans expulser de carte déjà posée |
+| États | **Ivresse** (`drunk`, ±2 au hasard par cumul en fin de tour), **Protection** (`protected`, annule la prochaine destruction ou le prochain malus ponctuel, un cumul à la fois), **Surchauffe** (`overheat`, détruite à 3 cumuls) |
+
+Interactions : Coriace passe avant Protection (rien n'est consommé) ; Protection n'absorbe pas les malus continus ; Surchauffe + Coriace ne détruit jamais, Surchauffe + Protection retarde la destruction d'un tour. **Folie** : pas de règle propre pour l'instant (en discussion) ; le registre d'états la recevra comme une simple entrée.
+
 ## Design Violet Arcade (phase 4c)
 
 Décisions du 2026-10-09, à partir du handoff Claude Design (cartes, plateau, révélation, fin de partie, accueil, deck builder, profil/classement, logo) :
@@ -217,8 +235,9 @@ Décisions du 2026-10-09, à partir du handoff Claude Design (cartes, plateau, r
 5. **Phase 3 — intégration ytcg** (PR côté youl-tcg) : tags sur les cartes (gérés sur le site, filtres joueurs), entités de deck, API de deck validé, lien vers le jeu.
 6. **Phase 3b — decks ytcg dans le jeu** : `YtcgDeckProvider` (deck validé par ytcg au moment de rejoindre, puis règles du jeu), constructeur de decks dans le client (liste, édition, courbe en direct, erreurs ytcg par champ, connexion expirée). Reste : déploiement sur le domaine ytcg et mise en place côté ytcg (voir [Decks ytcg](#decks-ytcg-phase-3b)).
 7. **Phase 4 — polish** : drag & drop, rendu façon ytcg, animation de chaque événement, pause de lecture, infobulles, bonus/malus visibles, bundle découpé. **4b** : pause proportionnelle aux révélations, mise en avant de chaque carte révélée, main plus grande, revue visuelle de 375 à 1920 px.
-8. **Phase 5+** : invitations entre amis, déploiement derrière Traefik, Bankai.
-9. **Phase finale — bots d'équilibrage** : un bot glouton rapide (simule ses poses avant de jouer), puis un bot plus malin (Monte Carlo) ; decks d'archétype et constructeur de decks évolutif ; rapport des combos (gain par paire de cartes, popularité dans les decks gagnants).
+8. **Phase 5a — briques d'effets** : déplacement, déclencheurs « jouée ici » et « détruite », coût modifié, ajout en main, règles de terrain, états Ivresse / Protection / Surchauffe (aucune carte réécrite). Puis réécriture des cartes extension par extension.
+9. **Phase 5+** : invitations entre amis, déploiement derrière Traefik, Bankai.
+10. **Phase finale — bots d'équilibrage** : un bot glouton rapide (simule ses poses avant de jouer), puis un bot plus malin (Monte Carlo) ; decks d'archétype et constructeur de decks évolutif ; rapport des combos (gain par paire de cartes, popularité dans les decks gagnants).
 
 ## Questions ouvertes
 
