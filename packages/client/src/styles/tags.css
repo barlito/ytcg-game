@@ -1,0 +1,57 @@
+/* Card tags: compact mono pills grouped by type (universe, character, family, trait, other). */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.tag-chip {
+  --tag: var(--text-dim);
+
+  padding: 0.12rem 0.45rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  color: var(--tag);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tag) 45%, transparent);
+}
+.tag-universe {
+  --tag: #c58bff;
+}
+.tag-character {
+  --tag: var(--cyan);
+}
+.tag-family {
+  --tag: var(--magenta-soft);
+}
+.tag-trait {
+  --tag: var(--soon);
+}
+/* A tag the card's text reads: filled and brighter. */
+.tag-chip.is-read {
+  color: #fff;
+  background: color-mix(in srgb, var(--tag) 32%, transparent);
+  box-shadow: inset 0 0 0 1px var(--tag);
+}
+.tag-more {
+  --tag: var(--text);
+
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+.tag-more:hover {
+  background: var(--hairline);
+}
+.tip-card .tag-list {
+  margin-top: 0.45rem;
+}
+.spotlight__tags .tag-list {
+  margin: 0.55rem 0 0;
+}
+.spotlight__tags .tag-chip {
+  font-size: 0.74rem;
+  padding: 0.18rem 0.55rem;
+}

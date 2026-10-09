@@ -6,3 +6,4 @@ coverage/
 .env.local
 .idea/
 .vscode/
+.claude/worktrees/

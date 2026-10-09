@@ -14,6 +14,7 @@ export interface CardButtonProps {
   // Keeps the tooltip open (selected card, tap on touch screens).
   pinned?: boolean;
   disabled?: boolean;
+  style?: React.CSSProperties;
   onClick?: (() => void) | undefined;
   dragRef?: ((element: HTMLElement | null) => void) | undefined;
   dragListeners?: DraggableSyntheticListeners;
@@ -22,7 +23,18 @@ export interface CardButtonProps {
 
 // The focusable shell of a card: tooltip (hover, focus, pin), replay float, optional drag handle.
 export function CardButton(props: CardButtonProps): React.JSX.Element {
-  const { card, fx, className, label, pinned = false, disabled = false, onClick, dragRef, dragListeners } = props;
+  const {
+    card,
+    fx,
+    className,
+    label,
+    pinned = false,
+    disabled = false,
+    style,
+    onClick,
+    dragRef,
+    dragListeners,
+  } = props;
   const { anchor, setAnchor, id, open, handlers } = useTooltipAnchor(pinned);
   const setRef = (element: HTMLButtonElement | null): void => {
     setAnchor(element);
@@ -39,6 +51,7 @@ export function CardButton(props: CardButtonProps): React.JSX.Element {
         aria-label={label}
         aria-describedby={showTip ? id : undefined}
         aria-disabled={disabled}
+        style={style}
         {...dragListeners}
         {...handlers}
         onClick={onClick}

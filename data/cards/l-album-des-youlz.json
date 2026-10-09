@@ -25,7 +25,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "bouboubou-card-ratio-mask-background-6a764689d0ad3121838470.png"
     },
     {
       "id": "019fdde6-bd75-7754-b69d-ce9d1c8e43c0",
@@ -43,7 +44,8 @@
             "type": "draw"
           }
         }
-      ]
+      ],
+      "mask": "developper-card-ratio-mask-background-6a7645f41f584169033514.png"
     },
     {
       "id": "019fdde6-bd69-7d2c-8fbd-152af515683b",
@@ -66,7 +68,8 @@
             "amount": -2
           }
         }
-      ]
+      ],
+      "mask": "french-monster-card-ratio-mask-background-6a76466cce3b5577156010.png"
     },
     {
       "id": "019fdde6-bd5f-70fd-9de5-cac847edaabc",
@@ -90,7 +93,9 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "itt-card-ratio-mask-background-6a7645e6abf35885899476.png",
+      "holo": "basic"
     },
     {
       "id": "019fdde6-bd59-74dc-9179-0dd6e2894a1f",
@@ -113,7 +118,8 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "mask": "l-arabe-du-futur-card-ratio-mask-background-6a7645d994545762137150.png"
     },
     {
       "id": "019fdde6-bd52-718c-a391-16152b56b8e4",
@@ -124,7 +130,8 @@
       "cost": 2,
       "power": 3,
       "tags": [],
-      "abilities": []
+      "abilities": [],
+      "mask": "mes-garages-card-ratio-mask-background-6a764655cf2d5963333455.png"
     },
     {
       "id": "019fdde6-bd89-7819-88fe-23543a34491e",
@@ -138,7 +145,9 @@
       "statuses": [
         "tough"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "moktar-card-ratio-mask-background-6a76469a6b10e219793696.png",
+      "holo": "basic"
     },
     {
       "id": "019fdde6-bd82-7524-908b-637558bb8df5",
@@ -160,7 +169,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "pablo-and-mila-card-ratio-mask-background-6a76460024897938519623.png"
     },
     {
       "id": "019fdde6-bd43-72f1-9492-35022b9e8eb5",
@@ -183,7 +193,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "pipipou-card-ratio-mask-background-6a76464a57b91586150745.png"
     },
     {
       "id": "019fdde6-bd48-7312-be0f-d21feb482747",
@@ -207,7 +218,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "ragequit-card-ratio-mask-background-6a7645cbaa5b7796836963.png"
     },
     {
       "id": "019fdde6-bd3f-7051-8c2b-35edad7cae06",
@@ -237,7 +249,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "sale-pute-card-ratio-mask-background-6a7645b7b8dc9437944647.png"
     },
     {
       "id": "019fde06-5e5e-7795-aead-f98de49c5b30",
@@ -257,7 +270,8 @@
             "type": "draw"
           }
         }
-      ]
+      ],
+      "mask": "taxi-gandalf-card-ratio-mask-background-6a76475b78702017994319.png"
     },
     {
       "id": "019fdde6-bd39-7876-b98c-d7a34f3f6db4",
@@ -282,7 +296,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "toz-card-ratio-mask-background-6a76463f30de0261679631.png"
     },
     {
       "id": "019fdde6-bd36-7e89-8e85-aa0bfa2707cd",
@@ -295,7 +310,8 @@
       "tags": [
         "trait:machine"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "ventilo-card-ratio-mask-subject-6a7645a1d714a068635147.png"
     },
     {
       "id": "019fdde7-aaf7-7c03-ac54-89ed9d2bec87",
@@ -318,7 +334,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "youlz-card-ratio-mask-subject-6a76467dc22a2752267511.png"
     },
     {
       "id": "019fdde6-bd2f-7d89-9ada-0bcecd1044b9",
@@ -341,7 +358,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "youlz-artist-card-ratio-mask-background-6a76462795836882519506.png"
     }
   ]
 }

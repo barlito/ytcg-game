@@ -33,7 +33,9 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "babou-linette-la-chromee-6ac0f10ae947c881685642.png",
+      "holo": "basic"
     },
     {
       "id": "01a101ad-94b2-7942-b248-1c4464b3b366",
@@ -67,7 +69,9 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "mask": "veli-le-corpo-6ac0f10b6ba81779018231.png",
+      "holo": "basic"
     },
     {
       "id": "01a101ad-968d-7a53-8f3b-355e24441e6b",
@@ -96,7 +100,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "barlito-maire-de-new-la-6ac0f10bdfa2f740142753.png"
     },
     {
       "id": "01a101ad-9893-76c0-aafa-54b52c8c93a5",
@@ -124,7 +129,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "gala-de-charite-6ac0f10c69f30576566426.png"
     },
     {
       "id": "01a101ad-9a9f-70f3-b3d0-2c3a05defe76",
@@ -149,7 +155,8 @@
             "amount": -1
           }
         }
-      ]
+      ],
+      "mask": "inspecteur-farf-6ac0f10ce9da5100913187.png"
     },
     {
       "id": "01a101ad-9cab-7449-8000-ce175f01d282",
@@ -172,7 +179,8 @@
             "type": "destroy"
           }
         }
-      ]
+      ],
+      "mask": "mercenaire-bone-6ac0f10d75af4384127012.png"
     },
     {
       "id": "01a101ad-a0a0-7c2e-88e3-213ca194e075",
@@ -199,7 +207,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "bernard-le-robot-6ac0f10e78e8c505366150.png"
     },
     {
       "id": "01a101ad-a2b0-78db-a3f8-8e49fdf545c7",
@@ -225,7 +234,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "bibou-linette-6ac0f10f059a1701744565.png"
     },
     {
       "id": "01a101ad-a491-7173-a682-a62a16327620",
@@ -251,7 +261,8 @@
             "amount": 4
           }
         }
-      ]
+      ],
+      "mask": "bebou-linette-la-disparue-6ac0f10f7b1ec518237121.png"
     },
     {
       "id": "01a101ad-a6af-75e2-b731-e3a6d61e9818",
@@ -275,7 +286,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "julian-le-baroudeur-6ac0f1100b4da709085618.png"
     },
     {
       "id": "01a101ad-a883-7c94-ae7e-4b1ba515875d",
@@ -307,7 +319,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "officier-benj-6ac0f1107dc70764640042.png"
     },
     {
       "id": "01a101ad-aa67-742c-b1bf-4372bfd5c5d1",
@@ -333,7 +346,8 @@
             "amount": -2
           }
         }
-      ]
+      ],
+      "mask": "acp-2038-22-lr-6ac0f110f3ce0849588034.png"
     },
     {
       "id": "01a101ad-b051-71cd-9d37-ff43b92f8485",
@@ -357,7 +371,8 @@
             "status": "high"
           }
         }
-      ]
+      ],
+      "mask": "la-pegre-de-new-la-6ac0f1127cf2f629261095.png"
     },
     {
       "id": "01a101ad-d00c-7c9d-8a9a-144042d26f4b",
@@ -376,7 +391,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "recrue-judith-6ac0f11a9b308013255781.png"
     },
     {
       "id": "01a101ad-d23e-75bd-9c3d-f6f760b65dd2",
@@ -403,7 +419,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "warny-le-street-kid-6ac0f11b3025b146212420.png"
     }
   ]
 }

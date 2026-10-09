@@ -1,5 +1,6 @@
 import type { JoinOptions } from '@ytcg-game/server/protocol';
 import { useState } from 'react';
+import { ROOM_CODE_MAX_LENGTH, normalizeRoomCode } from '../../lib/roomCode.ts';
 
 export interface PlayHandlers {
   onCreate: (options: JoinOptions) => void;
@@ -11,47 +12,59 @@ interface Props extends PlayHandlers {
   options: (() => JoinOptions) | null;
 }
 
+// « Code d'un ami » and « Rejoindre » in one combined field.
 function JoinForm({ disabled, onJoin }: { disabled: boolean; onJoin: (code: string) => void }): React.JSX.Element {
   const [code, setCode] = useState('');
+  const empty = code.trim() === '';
   return (
-    <div className="join">
-      <input
-        placeholder="Code de la partie"
-        aria-label="Code de la partie"
-        value={code}
-        onChange={(event) => {
-          setCode(event.target.value);
-        }}
-      />
-      <button
-        type="button"
-        className="btn-arcade"
-        disabled={disabled || code.trim() === ''}
-        onClick={() => {
+    <form
+      className="join-field"
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (!disabled && !empty) {
           onJoin(code);
-        }}
-      >
+        }
+      }}
+    >
+      <label className="join-field__input">
+        <span>Code d’un ami</span>
+        <input
+          placeholder="KQX"
+          autoComplete="off"
+          autoCapitalize="characters"
+          spellCheck={false}
+          // Room for a pasted « kq x » or « K-Q-X »: the value is normalized and clamped below.
+          maxLength={ROOM_CODE_MAX_LENGTH * 2}
+          value={code}
+          onChange={(event) => {
+            setCode(normalizeRoomCode(event.target.value).slice(0, ROOM_CODE_MAX_LENGTH));
+          }}
+        />
+      </label>
+      <button type="submit" className="join-field__go" disabled={disabled || empty}>
         Rejoindre
       </button>
-    </div>
+    </form>
   );
 }
 
 export function PlayActions({ options, onCreate, onJoin }: Props): React.JSX.Element {
   return (
-    <div className="home-actions">
-      <button
-        type="button"
-        className="btn-arcade"
-        disabled={options === null}
-        onClick={() => {
-          if (options !== null) {
-            onCreate(options());
-          }
-        }}
-      >
-        Créer une partie
-      </button>
+    <div className="play">
+      <span className="btn-glow">
+        <button
+          type="button"
+          className="btn-arcade btn-lg"
+          disabled={options === null}
+          onClick={() => {
+            if (options !== null) {
+              onCreate(options());
+            }
+          }}
+        >
+          Créer une partie
+        </button>
+      </span>
       <JoinForm
         disabled={options === null}
         onJoin={(code) => {

@@ -1,78 +1,122 @@
-import { type CardView, STATUS_IDS, describeCard, statusRule } from '@ytcg-game/engine';
+import type { CardDefinition, CardView } from '@ytcg-game/engine';
+import cardBack from '../../assets/card-back.svg';
 import { catalog } from '../../catalog.ts';
 import { tiltOnLeave, tiltOnMove } from '../../lib/hoverTilt.ts';
-import { powerTrend } from '../../power.ts';
+import { type PowerTrend, powerTrend, statusLines } from '../../power.ts';
 import type { CardEffect } from '../../animation/scene.ts';
+import '../../styles/card-band.css';
+import '../../styles/cards.css';
+import '../../styles/holo.css';
+import '../../styles/holo-cosmos.css';
+import '../../styles/holo-shine-basic.css';
+import '../../styles/holo-trainer.css';
 import { Artwork } from '../Artwork.tsx';
+import { CardBand, type CardSize } from './CardBand.tsx';
+import { HoloLayers, useHolo } from './Holo.tsx';
+import { type RarityKey, rarityKey } from './rarity.ts';
 
-interface Props {
-  card: CardView;
-  // Hand cards are bigger and print their effect text.
-  withText?: boolean;
+export interface PlateProps {
+  definition: CardDefinition;
+  cost: number;
+  power: number;
+  trend?: PowerTrend;
+  // Status pills glued to the left edge (« Folie », « Défonce ×2 »).
+  statuses?: readonly string[];
+  size?: CardSize;
   effect?: CardEffect | null;
+  // Just played this turn: cyan outline.
+  fresh?: boolean;
+  // A card the player no longer owns: faded and grey.
+  dim?: boolean;
 }
 
-const TREND_LABEL = { up: 'renforcée', down: 'affaiblie', even: '' } as const;
-
-export function PowerBadge({ card }: { card: CardView }): React.JSX.Element {
-  const trend = powerTrend(card);
-  return (
-    <span className={`tcard__power trend-${trend}`} aria-label={`Puissance ${card.power} ${TREND_LABEL[trend]}`}>
-      {card.power}
-    </span>
-  );
-}
-
-function StatusPips({ card }: { card: CardView }): React.JSX.Element | null {
-  const statuses = STATUS_IDS.filter((status) => (card.statuses[status] ?? 0) > 0);
-  if (statuses.length === 0) {
+function StatusPills({ labels }: { labels: readonly string[] }): React.JSX.Element | null {
+  if (labels.length === 0) {
     return null;
   }
   return (
     <span className="tcard__statuses">
-      {statuses.map((status) => (
-        <span key={status} className={`pip status-${status}`}>
-          {statusRule(status).name}
-          {(card.statuses[status] ?? 0) > 1 ? ` ×${String(card.statuses[status])}` : ''}
+      {labels.map((label) => (
+        <span key={label} className="pip">
+          {label}
         </span>
       ))}
     </span>
   );
 }
 
-// Lightweight port of the ytcg card: artwork under a dark mat, neon line, name, badges, rarity glow, hover tilt.
-export function CardFace({ card, withText = false, effect = null }: Props): React.JSX.Element {
-  const definition = catalog.card(card.defId);
-  const classes = ['tcard', withText ? 'has-text' : '', effect === null ? '' : `fx-${effect}`];
+function plateClasses({ effect = null, fresh = false, dim = false }: PlateProps, holo: string): string {
+  return ['tcard', effect === null ? '' : `fx-${effect}`, fresh ? 'is-fresh' : '', dim ? 'is-dim' : '', holo]
+    .filter(Boolean)
+    .join(' ');
+}
+
+// The printed card from plain values: ytcg frame (artwork, mat, name) under the « biseau verre » band.
+export function CardPlate(props: PlateProps): React.JSX.Element {
+  const { definition, cost, power, trend = 'even', statuses = [], size = 'full' } = props;
+  const rarity = rarityKey(definition);
+  const holo = useHolo(definition, size);
   return (
     <div
-      className={classes.join(' ')}
-      data-rarity={definition.rarity}
+      className={plateClasses(props, holo.className)}
+      style={holo.style}
+      data-rarity={rarity}
+      data-size={size}
+      onPointerEnter={holo.arm}
       onPointerMove={tiltOnMove}
       onPointerLeave={tiltOnLeave}
     >
       <div className="tcard__body">
         <Artwork key={definition.id} image={definition.image} className="tcard__art" />
-        <span className="tcard__glare" />
+        {holo.lit ? <HoloLayers /> : <span className="tcard__glare" />}
         <span className="tcard__mat" />
-        <span className="tcard__cost" aria-label={`Coût ${card.cost}`}>
-          {card.cost}
-        </span>
-        <PowerBadge card={card} />
         <span className="tcard__name">{definition.name}</span>
-        {withText && <span className="tcard__text">{describeCard(catalog, definition).join(' ')}</span>}
-        <span className="tcard__rarity" />
-        <StatusPips card={card} />
+        <span className="tcard__ext">{catalog.extensions.get(definition.extension) ?? ''}</span>
+        <CardBand definition={definition} rarity={rarity} size={size} cost={cost} power={power} trend={trend} />
+        <StatusPills labels={statuses} />
       </div>
     </div>
   );
 }
 
-export function CardBack({ effect = null }: { effect?: CardEffect | null }): React.JSX.Element {
+interface FaceProps {
+  card: CardView;
+  size?: CardSize;
+  effect?: CardEffect | null;
+  fresh?: boolean;
+  dim?: boolean;
+}
+
+// A card of the game: live cost, power (renforcée / affaiblie) and statuses.
+export function CardFace({ card, ...rest }: FaceProps): React.JSX.Element {
+  const statuses = statusLines(card).map(({ name, stacks }) => (stacks > 1 ? `${name} ×${String(stacks)}` : name));
   return (
-    <div className={`tcard is-back${effect === null ? '' : ` fx-${effect}`}`} aria-label="Carte face cachée">
+    <CardPlate
+      definition={catalog.card(card.defId)}
+      cost={card.cost}
+      power={card.power}
+      trend={powerTrend(card)}
+      statuses={statuses}
+      {...rest}
+    />
+  );
+}
+
+interface BackProps {
+  effect?: CardEffect | null;
+  // Known to the viewer only (own cards): the rarity glow stays, an unknown card glows common.
+  rarity?: RarityKey;
+}
+
+export function CardBack({ effect = null, rarity = 'common' }: BackProps): React.JSX.Element {
+  return (
+    <div
+      className={`tcard is-back${effect === null ? '' : ` fx-${effect}`}`}
+      data-rarity={rarity}
+      aria-label="Carte face cachée"
+    >
       <div className="tcard__body">
-        <span className="tcard__logo">YOUL</span>
+        <img className="tcard__art" src={cardBack} alt="" draggable={false} />
       </div>
     </div>
   );

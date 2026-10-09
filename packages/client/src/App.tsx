@@ -1,10 +1,13 @@
 import { Suspense, lazy } from 'react';
+import { Toast } from './components/ui/Toast.tsx';
 import { Lobby } from './components/Lobby.tsx';
 import { useDuel } from './useDuel.ts';
 
 // The catalog, the engine and the board load on demand: the first paint only needs React and the SDK.
 const Home = lazy(() => import('./components/Home.tsx'));
 const Board = lazy(() => import('./components/Board.tsx'));
+// Dev only: the constant is false in a production build, so the sandbox chunk is dropped.
+const Sandbox = import.meta.env.DEV ? lazy(() => import('./sandbox/Sandbox.tsx')) : null;
 
 function Loading(): React.JSX.Element {
   return (
@@ -32,7 +35,11 @@ function Screen(): React.JSX.Element {
       return (
         <>
           <Board game={phase.game} send={duel.send} onLeave={duel.leave} />
-          {duel.error !== null && <p className="toast">{duel.error}</p>}
+          {duel.error !== null && (
+            <Toast tone="danger" title="Erreur" floating>
+              {duel.error}
+            </Toast>
+          )}
         </>
       );
   }
@@ -41,7 +48,7 @@ function Screen(): React.JSX.Element {
 export function App(): React.JSX.Element {
   return (
     <Suspense fallback={<Loading />}>
-      <Screen />
+      {Sandbox !== null && new URLSearchParams(location.search).has('sandbox') ? <Sandbox /> : <Screen />}
     </Suspense>
   );
 }

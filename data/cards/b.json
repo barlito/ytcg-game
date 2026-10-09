@@ -29,7 +29,9 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "barlito-bankai-6abe5c1b9692b072839947.png",
+      "holo": "basic"
     },
     {
       "id": "01a0f797-cdf3-7efe-995d-344c707467d6",
@@ -66,7 +68,9 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "benj-bankai-6abe5c1c23e2a301049598.png",
+      "holo": "basic"
     },
     {
       "id": "01a0f797-cfe8-75f3-af38-6efcd0f24ed0",
@@ -96,7 +100,9 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "farf-bankai-6abe5c1c9de53690836261.png",
+      "holo": "basic"
     },
     {
       "id": "01a0f797-d1f4-70cd-a463-9eec0d2b76c4",
@@ -138,7 +144,9 @@
             "amount": 4
           }
         }
-      ]
+      ],
+      "mask": "veli-kenpachi-6abe5c1d29d37300589841.png",
+      "holo": "basic"
     },
     {
       "id": "01a0f797-d40a-7eba-9b20-59fc5b843aa8",
@@ -164,7 +172,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "babou-linette-bankai-6abe5c1dac35e699521332.png"
     },
     {
       "id": "01a0f797-d5d5-7a90-91bf-9e5d2dbbe3db",
@@ -191,7 +200,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "commandant-capitaine-benj-6abe5c1e28113786458593.png"
     },
     {
       "id": "01a0f797-d7d1-703d-afdd-e7d17592bafb",
@@ -223,7 +233,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "julian-resurreccion-6abe5c1ea3f3b654124537.png"
     },
     {
       "id": "01a0f797-d9cf-7611-b98b-977eaad27260",
@@ -257,7 +268,8 @@
             "type": "destroy"
           }
         }
-      ]
+      ],
+      "mask": "nairy-vasto-lorde-6abe5c1f2c632305842432.png"
     },
     {
       "id": "01a0f797-db7e-7d39-b837-95db48c86822",
@@ -285,7 +297,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "warny-vollstandig-6abe5c1f95bc4094361964.png"
     },
     {
       "id": "01a0f797-dd69-78a0-8cc6-f75837a6cfd0",
@@ -323,7 +336,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "bebou-linette-lame-ecarlate-6abe5c20199b9226833836.png"
     },
     {
       "id": "01a0f797-df4f-7848-9ecb-bbcfd6a361e3",
@@ -339,7 +353,8 @@
       "statuses": [
         "tough"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "capitaine-barlito-6abe5c20903a8581802972.png"
     },
     {
       "id": "01a0f797-9a5f-7f83-93e3-f5f84affb416",
@@ -370,7 +385,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "capitaine-bernard-6abe5c0ee543a789762383.png"
     },
     {
       "id": "01a0f797-e31c-7085-a860-c53a70ea33a6",
@@ -395,7 +411,8 @@
             "amount": -1
           }
         }
-      ]
+      ],
+      "mask": "capitaine-farf-6abe5c2189383227893473.png"
     },
     {
       "id": "01a0f797-e4e5-7dc9-894d-892f0715def9",
@@ -425,7 +442,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "hollow-zaraki-6abe5c220529e706913076.png"
     },
     {
       "id": "01a0f797-e6b1-7931-a122-7a6032319565",
@@ -451,7 +469,8 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "mask": "vice-capitaine-bibou-linette-6abe5c22756c7638363338.png"
     },
     {
       "id": "01a0f797-e897-756f-ae2f-e529c927e55f",
@@ -478,7 +497,8 @@
             "amount": -1
           }
         }
-      ]
+      ],
+      "mask": "bebou-linette-shikai-6abe5c22ebbe9263872360.png"
     },
     {
       "id": "01a0f797-ea56-722b-857b-9170cab3e598",
@@ -504,7 +524,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "capitaine-babou-linette-6abe5c2364f33178708190.png"
     },
     {
       "id": "01a0f797-ec23-72e4-b10d-11486d42cb4d",
@@ -525,7 +546,8 @@
             "type": "draw"
           }
         }
-      ]
+      ],
+      "mask": "frieda-linette-r-la-rapide-6abe5c23d538a579065424.png"
     },
     {
       "id": "01a0f797-edd1-7745-80c5-b46f4a672f96",
@@ -536,7 +558,8 @@
       "cost": 1,
       "power": 2,
       "tags": [],
-      "abilities": []
+      "abilities": [],
+      "mask": "hollow-6abe5c244a1e0199094218.png"
     },
     {
       "id": "01a0f797-efa2-7165-bd82-5f4f75d1fa1e",
@@ -562,7 +585,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "numero-4-julian-6abe5c24bbb19467150604.png"
     },
     {
       "id": "01a0f797-f1ac-7c8b-a882-c5382f534e03",
@@ -588,7 +612,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "numero-8-nairy-zaranega-6abe5c254725d227817349.png"
     },
     {
       "id": "01a0f797-fad1-7370-9312-9e043c903eb8",
@@ -613,7 +638,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "veli-de-la-11e-division-6abe5c279a5f4161367489.png"
     },
     {
       "id": "01a0f797-fca8-7904-9cac-ecde625087db",
@@ -633,7 +659,8 @@
             "type": "draw"
           }
         }
-      ]
+      ],
+      "mask": "warny-stern-ritter-6abe5c2819239749354007.png"
     }
   ]
 }

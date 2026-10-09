@@ -1,0 +1,286 @@
+/* Three locations: opponent row (bottom aligned), notched tile with the two score hexagons, your row (top aligned). */
+.locations {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.75rem;
+  padding-top: 0.5rem;
+}
+.location {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 0.9rem;
+  container-type: inline-size;
+  transition: opacity 0.2s;
+}
+.location.can-play {
+  z-index: 3;
+  cursor: pointer;
+}
+/* Above the raised hand so « Poser ici » stays clickable; the rest of your row lets the hand cards through. */
+.location.can-play .location-side.you {
+  pointer-events: none;
+}
+.location.can-play .play-here,
+.location.can-play .slot.is-drop {
+  pointer-events: auto;
+}
+.location.drop-invalid {
+  opacity: 0.45;
+}
+.location-side {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, var(--slot-w));
+  justify-content: center;
+  gap: 0.5rem;
+  /* One row of cards even when empty. */
+  min-height: calc(var(--slot-w) / 0.718);
+}
+.location-side.opponent {
+  align-content: end;
+}
+.location-side.you {
+  align-content: start;
+}
+.slot {
+  aspect-ratio: 0.718;
+  border: 1px dashed rgb(120 80 220 / 30%);
+  border-radius: 4px;
+}
+.slot.is-drop {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1.45;
+  border-color: var(--cyan);
+  background: rgb(70 230 230 / 7%);
+  box-shadow: inset 0 0 24px rgb(70 230 230 / 20%);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--cyan);
+}
+.location.drop-over .slot.is-drop,
+.location.can-play .slot.is-drop {
+  border-style: solid;
+  background: rgb(70 230 230 / 14%);
+}
+.play-here {
+  position: absolute;
+  z-index: 3;
+  right: 0;
+  bottom: 0;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.75rem;
+}
+
+/* Tile. --tone-rgb is the owner colour: magenta opponent, violet random, cyan yours. */
+.location-tile {
+  --tone-rgb: 120 80 220;
+  --tone: rgb(var(--tone-rgb));
+  --clip: polygon(1rem 0, 100% 0, 100% calc(100% - 1rem), calc(100% - 1rem) 100%, 0 100%, 0 1rem);
+  position: relative;
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr) 3.5rem;
+  grid-template-areas: 'opp text you';
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 9.4rem;
+  padding: 0 1rem;
+  isolation: isolate;
+  transition: filter 0.4s;
+}
+.location-tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  clip-path: var(--clip);
+  background: linear-gradient(160deg, rgb(var(--tone-rgb) / 25%), rgb(20 10 36 / 95%) 45%);
+  box-shadow: inset 0 0 0 1px rgb(var(--tone-rgb) / 60%);
+}
+.location-tile.tone-opponent {
+  --tone-rgb: 255 62 165;
+}
+.location-tile.tone-you {
+  --tone-rgb: 70 230 230;
+}
+.location-tile.tone-hidden {
+  opacity: 0.6;
+}
+.location-tile:focus-visible {
+  outline: 2px solid var(--magenta);
+  outline-offset: 3px;
+}
+.location-art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.14;
+  clip-path: var(--clip);
+}
+.tile-text {
+  grid-area: text;
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+  text-align: center;
+}
+.tile-owner {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--tone);
+}
+.tone-random .tile-owner,
+.tone-hidden .tile-owner {
+  color: var(--text-dim);
+}
+.location-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+.location-text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+
+/* Score hexagon: solid and glowing when the side leads, hollow otherwise. */
+.score-hex {
+  --hex: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  --side: 255 62 165;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3.4rem;
+  transition: filter 0.4s;
+}
+.score-hex.side-opponent {
+  grid-area: opp;
+}
+.score-hex.side-you {
+  --side: 70 230 230;
+  grid-area: you;
+  justify-self: end;
+}
+.score-hex::before,
+.score-hex::after {
+  content: '';
+  position: absolute;
+  clip-path: var(--hex);
+}
+.score-hex::before {
+  inset: 0;
+  background: rgb(var(--side) / 55%);
+}
+.score-hex::after {
+  inset: 2px;
+  background: #120a20;
+  transition: background 0.4s;
+}
+.score-hex.is-lit {
+  filter: drop-shadow(0 0 10px rgb(var(--side) / 80%));
+}
+.score-hex.is-lit::before {
+  background: rgb(var(--side));
+}
+.score-hex.is-lit::after {
+  background: rgb(var(--side));
+}
+.score-hex__num {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--text-dim);
+}
+.score-hex.is-lit .score-hex__num {
+  color: #fff;
+}
+.score-hex.side-you.is-lit .score-hex__num {
+  color: var(--bg);
+}
+
+/* Phones: three narrow columns, two cards per row, the scores under the tile text. */
+@media (max-width: 900px) {
+  .locations {
+    gap: 0.4rem;
+    padding-top: 0.4rem;
+  }
+  .location {
+    gap: 0.5rem;
+  }
+  .location-side {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: normal;
+    gap: 0.25rem;
+    /* Two rows of mini cards (container: the location). */
+    min-height: calc((100cqi - 0.25rem) / 2 / 0.718 * 2 + 0.25rem);
+  }
+  .slot.is-drop {
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+  }
+  .location-tile {
+    --clip: polygon(0.6rem 0, 100% 0, 100% calc(100% - 0.6rem), calc(100% - 0.6rem) 100%, 0 100%, 0 0.6rem);
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 'text text' 'opp you';
+    align-content: center;
+    min-height: 6.25rem;
+    gap: 0.25rem 0.6rem;
+    padding: 0.4rem 0.4rem;
+  }
+  .tile-owner {
+    display: none;
+  }
+  .location-name {
+    font-size: 0.85rem;
+  }
+  .location-text {
+    -webkit-line-clamp: 2;
+    font-size: 0.62rem;
+  }
+  .score-hex {
+    width: auto;
+    height: auto;
+  }
+  .score-hex.side-opponent {
+    justify-self: end;
+  }
+  .score-hex.side-you {
+    justify-self: start;
+  }
+  .score-hex::before,
+  .score-hex::after {
+    display: none;
+  }
+  .score-hex.is-lit {
+    filter: none;
+  }
+  .score-hex__num,
+  .score-hex.is-lit .score-hex__num,
+  .score-hex.side-you.is-lit .score-hex__num {
+    font-size: 1rem;
+  }
+  .score-hex.is-lit .score-hex__num {
+    color: rgb(var(--side));
+    text-shadow: 0 0 8px rgb(var(--side));
+  }
+  .score-hex.side-you.is-lit .score-hex__num {
+    color: rgb(var(--side));
+  }
+}

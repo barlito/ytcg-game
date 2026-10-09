@@ -31,17 +31,24 @@ export interface PoolFilter {
   // COST_MAX means « COST_MAX or more ».
   cost: number | null;
   tag: string | null;
+  // Matched against the card name, accents and case ignored.
+  search: string;
 }
 
 export const COST_MAX = 6;
-export const NO_FILTER: PoolFilter = { universe: null, cost: null, tag: null };
+export const NO_FILTER: PoolFilter = { universe: null, cost: null, tag: null, search: '' };
+
+export function normalizeText(text: string): string {
+  return text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
+}
 
 function matches(card: CardDefinition, filter: PoolFilter): boolean {
   const cost = Math.min(card.cost, COST_MAX);
   return (
     (filter.universe === null || card.extension === filter.universe) &&
     (filter.cost === null || cost === filter.cost) &&
-    (filter.tag === null || card.tags.includes(filter.tag))
+    (filter.tag === null || card.tags.includes(filter.tag)) &&
+    (filter.search === '' || normalizeText(card.name).includes(normalizeText(filter.search)))
   );
 }
 

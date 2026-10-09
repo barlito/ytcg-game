@@ -28,7 +28,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "babou-linette-mask-background-6a78a7d966dba980104196.png"
     },
     {
       "id": "019fe745-97ef-778d-9408-658ef40da927",
@@ -58,7 +59,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "barlito-waa-mask-background-6a78a7e37fef3661333528.png"
     },
     {
       "id": "019fe745-9802-79a9-a081-08c6777ec944",
@@ -86,7 +88,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "bebou-linette-mask-background-6a78a7ec3a493150793285.png"
     },
     {
       "id": "019fe745-97fe-7ea5-a215-8a8429096137",
@@ -123,7 +126,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "benjamen-mask-background-6a78a7f54d053641660963.png"
     },
     {
       "id": "019fe745-980f-7556-beaa-9321b0397690",
@@ -149,7 +153,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "bibou-linette-mask-background-6a78a7b17478d063772413.png"
     },
     {
       "id": "019fe745-9808-711e-af6c-101bbafba70e",
@@ -181,7 +186,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "farf-mask-background-6a78a80005905121836309.png"
     },
     {
       "id": "019fe745-97eb-7811-8872-e84bd8f0008b",
@@ -207,7 +213,9 @@
             "stacks": 2
           }
         }
-      ]
+      ],
+      "mask": "jean-raoulz-mask-background-6a78a7a1ab946933787572.png",
+      "holo": "basic"
     },
     {
       "id": "019fe745-97f3-737f-b265-e3953a828fa0",
@@ -231,7 +239,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "julieng-mask-background-6a78a80b380c1835610117.png"
     },
     {
       "id": "019fe745-97f7-7390-a89b-0c1764f4137b",
@@ -258,7 +267,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "velo-mask-background-6a78a813759a7473959950.png"
     },
     {
       "id": "019fe745-97fb-7250-a416-4ea6f1453e4c",
@@ -295,7 +305,9 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "warnyx-mask-background-6a78a7cd81ba5835379055.png",
+      "holo": "basic"
     }
   ]
 }

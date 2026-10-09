@@ -28,6 +28,8 @@ interface GameCard {
   rarity: Rarity;
   unique: boolean;
   image?: string;
+  mask?: string;
+  holo?: string;
   cost: number;
   power: number;
   tags: string[];
@@ -43,8 +45,14 @@ interface LocationFile {
   locations: { id: string; image?: string }[];
 }
 
-// Production dump of ytcg: { "<slug>": { "cards": [{ "id", "imageName" }] } }.
-type ProdDump = Record<string, { cards: { id: string; imageName?: string | null }[] }>;
+// Production dump of ytcg: { "<slug>": { "cards": [{ "id", "imageName", "imageMaskName", "alwaysHolo" }] } }.
+interface DumpCard {
+  id: string;
+  imageName?: string | null;
+  imageMaskName?: string | null;
+  alwaysHolo?: boolean;
+}
+type ProdDump = Record<string, { cards: DumpCard[] }>;
 
 const COST_RANGE: Record<Rarity, number[]> = { common: [1, 2], uncommon: [2, 3], rare: [3, 4], legendary: [5, 6] };
 const VANILLA_POWER = [1, 2, 3, 4, 6, 9, 12];
@@ -110,25 +118,43 @@ function writeJson(path: string, content: unknown): void {
   writeFileSync(path, `${JSON.stringify(content, null, 2)}\n`);
 }
 
-function readImages(dumpPath: string | undefined): Map<string, string> {
+function readDump(dumpPath: string | undefined): DumpCard[] {
+  return dumpPath === undefined ? [] : Object.values(readJson(dumpPath) as ProdDump).flatMap(({ cards }) => cards);
+}
+
+function readImages(dump: DumpCard[]): Map<string, string> {
   const images = new Map<string, string>();
-  if (dumpPath === undefined) {
-    return images;
-  }
-  for (const { cards } of Object.values(readJson(dumpPath) as ProdDump)) {
-    for (const card of cards) {
-      if (typeof card.imageName === 'string' && card.imageName !== '') {
-        images.set(card.id, card.imageName);
-      }
+  for (const card of dump) {
+    if (typeof card.imageName === 'string' && card.imageName !== '') {
+      images.set(card.id, card.imageName);
     }
   }
   return images;
+}
+
+// The holo look of a card: its ytcg mask and, when ytcg always draws it holo, a preset (basic = ytcg's own fallback).
+function readHolo(dump: DumpCard[]): Map<string, { mask?: string; holo?: string }> {
+  const looks = new Map<string, { mask?: string; holo?: string }>();
+  for (const card of dump) {
+    const mask = typeof card.imageMaskName === 'string' && card.imageMaskName !== '' ? card.imageMaskName : undefined;
+    looks.set(card.id, {
+      ...(mask === undefined ? {} : { mask }),
+      ...(card.alwaysHolo === true ? { holo: 'basic' } : {}),
+    });
+  }
+  return looks;
 }
 
 // Unknown to the dump (or no dump given): the current image stays.
 function withImage<T extends { id: string; image?: string }>(entry: T, images: Map<string, string>): T {
   const image = images.get(entry.id);
   return image === undefined ? entry : { ...entry, image };
+}
+
+// The mask is refreshed; a hand-picked preset is never overwritten by the default one.
+function withHolo(card: GameCard, looks: Map<string, { mask?: string; holo?: string }>): GameCard {
+  const look = looks.get(card.id);
+  return look === undefined ? card : { ...card, ...look, ...(card.holo === undefined ? {} : { holo: card.holo }) };
 }
 
 // Returns every terrain id, after refreshing their images.
@@ -168,6 +194,7 @@ interface ImportContext {
   outDir: string;
   terrains: ReadonlySet<string>;
   images: Map<string, string>;
+  looks: Map<string, { mask?: string; holo?: string }>;
 }
 
 function importManifest(manifest: Manifest, context: ImportContext): void {
@@ -187,14 +214,14 @@ function importManifest(manifest: Manifest, context: ImportContext): void {
       known.delete(card.prodId);
       if (previous === undefined) {
         added++;
-        return newCard(card, context.images.get(card.prodId));
+        return withHolo(newCard(card, context.images.get(card.prodId)), context.looks);
       }
       const updated = { ...previous, name: card.name, rarity: card.rarity, unique: card.unique === true };
-      return withImage(updated, context.images);
+      return withHolo(withImage(updated, context.images), context.looks);
     });
 
   const orphans = [...known.values()].filter((card) => !context.terrains.has(card.id));
-  cards.push(...orphans.map((card) => withImage(card, context.images)));
+  cards.push(...orphans.map((card) => withHolo(withImage(card, context.images), context.looks)));
   for (const orphan of orphans) {
     console.warn(`  ! ${slug}: ${orphan.name} (${orphan.id}) is no longer in the manifest, kept as is`);
   }
@@ -209,8 +236,14 @@ if (assetsDir === undefined) {
   process.exit(1);
 }
 
-const images = readImages(dumpPath);
-const context: ImportContext = { outDir, images, terrains: refreshTerrains(join(outDir, '..', 'locations'), images) };
+const dump = readDump(dumpPath);
+const images = readImages(dump);
+const context: ImportContext = {
+  outDir,
+  images,
+  looks: readHolo(dump),
+  terrains: refreshTerrains(join(outDir, '..', 'locations'), images),
+};
 const ytcgDir = join(assetsDir, 'YTCG');
 for (const folder of readdirSync(ytcgDir).sort()) {
   const manifestPath = join(ytcgDir, folder, 'manifest.json');

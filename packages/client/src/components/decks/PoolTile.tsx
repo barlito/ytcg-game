@@ -1,9 +1,9 @@
-import { type CardDefinition, describeCard } from '@ytcg-game/engine';
+import type { CardDefinition } from '@ytcg-game/engine';
 import { catalog } from '../../catalog.ts';
 import type { PoolCard } from '../../decks/pool.ts';
-import { tiltOnLeave, tiltOnMove } from '../../lib/hoverTilt.ts';
 import { useTooltipAnchor } from '../../lib/useTooltipAnchor.ts';
-import { Artwork } from '../Artwork.tsx';
+import type { CardSize } from '../card/CardBand.tsx';
+import { CardPlate } from '../card/CardFace.tsx';
 import { Tooltip } from '../Tooltip.tsx';
 import { DefinitionTip } from './DefinitionTip.tsx';
 
@@ -15,27 +15,17 @@ interface Props {
   onToggle: () => void;
 }
 
-// The game card as in hand (artwork, cost, power, effect text), straight from its definition.
-export function DefinitionFace({ definition }: { definition: CardDefinition }): React.JSX.Element {
-  return (
-    <div
-      className="tcard has-text"
-      data-rarity={definition.rarity}
-      onPointerMove={tiltOnMove}
-      onPointerLeave={tiltOnLeave}
-    >
-      <div className="tcard__body">
-        <Artwork image={definition.image} className="tcard__art" />
-        <span className="tcard__glare" />
-        <span className="tcard__mat" />
-        <span className="tcard__cost">{definition.cost}</span>
-        <span className="tcard__power">{definition.power}</span>
-        <span className="tcard__name">{definition.name}</span>
-        <span className="tcard__text">{describeCard(catalog, definition).join(' ')}</span>
-        <span className="tcard__rarity" />
-      </div>
-    </div>
-  );
+// The game card straight from its definition (compact in grids, full for hand-sized tiles).
+export function DefinitionFace({
+  definition,
+  size = 'compact',
+  dim = false,
+}: {
+  definition: CardDefinition;
+  size?: CardSize;
+  dim?: boolean;
+}): React.JSX.Element {
+  return <CardPlate definition={definition} cost={definition.cost} power={definition.power} size={size} dim={dim} />;
 }
 
 function TileTip({ card }: { card: PoolCard }): React.JSX.Element {
@@ -72,8 +62,15 @@ export function PoolTile({ card, selected, disabled, errors, onToggle }: Props):
         {...handlers}
       >
         <DefinitionFace definition={card.definition} />
-        {selected && <span className="pool-tile__check">Dans le deck</span>}
       </button>
+      <span className="pool-tile__own" aria-hidden="true">
+        ×{card.quantity}
+      </span>
+      {selected && (
+        <span className="pool-tile__deck" aria-hidden="true">
+          Deck
+        </span>
+      )}
       {errors !== undefined && <p className="error is-small">{errors.join(' ')}</p>}
       {open && (
         <Tooltip anchor={anchor} id={id}>

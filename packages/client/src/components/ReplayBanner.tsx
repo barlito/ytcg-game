@@ -47,9 +47,12 @@ export function ReplayBanner({ you, seats, onSkip }: Props): React.JSX.Element |
           {text}
         </p>
       )}
-      <button type="button" className="replay-skip btn-ghost" onClick={onSkip}>
-        Passer l’animation
-      </button>
+      <div className="replay-skip">
+        <span>Les effets se jouent après chaque révélation</span>
+        <button type="button" className="btn-ghost" onClick={onSkip}>
+          Passer l’animation
+        </button>
+      </div>
     </>
   );
 }

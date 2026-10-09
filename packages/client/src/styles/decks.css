@@ -1,8 +1,4 @@
-/* Deck list (home) and deck editor. */
-.btn-small {
-  padding: 0.45rem 0.9rem;
-  font-size: 0.85rem;
-}
+/* Small shared bits and the deck thumbnails (dev home). */
 a.btn-arcade {
   text-decoration: none;
   display: inline-block;
@@ -11,249 +7,9 @@ a.btn-arcade {
   opacity: 0.4;
   cursor: default;
 }
-.notice {
-  display: grid;
-  gap: 1rem;
-  padding: 1.2rem;
-  background: var(--surface);
-  border: 1px solid var(--hairline);
-}
-.notice p {
-  margin: 0;
-}
-.badge {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 0.2rem 0.5rem;
-  border: 1px solid currentColor;
-  white-space: nowrap;
-}
-.badge.is-ok {
-  color: var(--live);
-}
-.badge.is-ko {
-  color: var(--soon);
-}
-.warning {
-  color: var(--soon);
-  margin: 0;
-  font-size: 0.9rem;
-}
 .error.is-small {
   font-size: 0.8rem;
   margin: 0.2rem 0 0;
-}
-
-.deck-list__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.6rem;
-}
-.deck-list ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.4rem;
-}
-.deck-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.6rem 0.8rem;
-  background: var(--surface);
-  border-left: 3px solid var(--hairline);
-}
-.deck-row.is-selected {
-  border-left-color: var(--magenta);
-  box-shadow: 0 0 18px -8px var(--magenta);
-}
-.deck-row__pick {
-  flex: 1 1 14rem;
-  display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-  cursor: pointer;
-}
-.deck-row__name {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-}
-.deck-row__meta {
-  color: var(--text-muted);
-  font-size: 0.8rem;
-}
-.deck-row .error {
-  flex-basis: 100%;
-  margin: 0;
-}
-
-/* Editor */
-.editor {
-  max-width: 90rem;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  display: grid;
-  gap: 1.2rem;
-}
-.editor__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-.title.is-small {
-  font-size: 1.8rem;
-}
-.editor__layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 20rem;
-  gap: 1.5rem;
-  align-items: start;
-}
-.editor__side {
-  position: sticky;
-  top: 1rem;
-  max-height: calc(100vh - 2rem);
-  overflow-y: auto;
-  display: grid;
-  gap: 1rem;
-  padding: 1rem;
-  background: var(--surface);
-  border: 1px solid var(--hairline);
-}
-.editor__side select {
-  min-width: 0;
-  width: 100%;
-}
-.pool-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  margin-bottom: 1rem;
-}
-.field.is-inline select {
-  min-width: 10rem;
-}
-.pool-grid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-  gap: 0.9rem;
-}
-.pool-tile .card-slot {
-  cursor: pointer;
-}
-.pool-tile .card-slot.is-disabled {
-  cursor: not-allowed;
-}
-/* Opacity rather than the hand's filter: dozens of filtered 3D cards glitch the compositor. */
-.pool-tile .card-slot.is-disabled .tcard {
-  filter: none;
-  opacity: 0.45;
-}
-.pool-tile.is-selected .tcard__body {
-  box-shadow:
-    0 0 0 2px var(--magenta),
-    0 0 22px var(--magenta);
-}
-.pool-tile__check {
-  position: absolute;
-  left: 50%;
-  top: 36%;
-  transform: translate(-50%, -50%);
-  padding: 0.25rem 0.6rem;
-  background: var(--gradient-brand);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  white-space: nowrap;
-  pointer-events: none;
-}
-.selected-cards {
-  grid-template-columns: 1fr !important;
-}
-.selected-cards li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.5rem;
-}
-.selected-cards li.is-problem {
-  border-left-color: var(--danger);
-}
-.selected-cards em {
-  color: var(--danger);
-  font-style: normal;
-}
-.selected-cards .remove {
-  background: none;
-  border: 0;
-  cursor: pointer;
-  color: var(--text-muted);
-  font-size: 1.1rem;
-  line-height: 1;
-}
-.curve__bars {
-  list-style: none;
-  margin: 0 0 0.6rem;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 0.4rem;
-  height: 7.5rem;
-}
-.curve__bars li {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 0.2rem;
-}
-.curve__bar {
-  width: 70%;
-  min-height: 2px;
-  background: var(--gradient-brand);
-}
-.curve__count,
-.curve__cost {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-.curve__rules {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-size: 0.85rem;
-}
-.curve__rules .is-ok {
-  color: var(--live);
-}
-.curve__rules .is-ko {
-  color: var(--soon);
-}
-
-@media (max-width: 860px) {
-  .editor__layout {
-    grid-template-columns: 1fr;
-  }
-  .editor__side {
-    position: static;
-    max-height: none;
-    order: -1;
-  }
-  .pool-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  }
 }
 
 /* A deck shown with its card visuals (home page). */
@@ -324,16 +80,17 @@ a.btn-arcade {
 .deck-cards.is-small .deck-cards__terrain-text {
   display: none;
 }
-.deck-row .deck-cards {
-  flex: 1 1 100%;
-}
-.deck-cards__card.is-missing .tcard {
-  opacity: 0.35;
-}
 /* Flat thumbnails: a dozen 3D card layers on one page make the compositor drop some artwork. */
 .deck-cards .tcard {
   perspective: none;
 }
 .deck-cards .tcard__body {
   transform: none;
+}
+/* Dozens of backdrop blurs on one page make the compositor drop layers: flat band in the grids.
+   --o-flat makes up for the missing blur / saturation so the glass reads as dense as on the hand or the fan. */
+.pool-tile .tcard__body,
+.deck-cards .tcard__body {
+  --band-blur: none;
+  --o-flat: 0.14;
 }

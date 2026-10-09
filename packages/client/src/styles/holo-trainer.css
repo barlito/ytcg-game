@@ -1,0 +1,125 @@
+/*
+ * Holo presets of the ytcg card, ported for the game card (`.tcard`).
+ *
+ * Derived from poke-holo.simey.me (github.com/simeydotme/pokemon-cards-css,
+ * Copyright (C) 2022 Simon Goellner, GNU GPL v3, see NOTICE.md at the repository
+ * root) through the ytcg port (youl-tcg assets/styles/cards/holo-presets.css).
+ * Selectors renamed (`.card` -> `.tcard`, `.card__shine` -> `.tholo__shine`,
+ * `.card__glare` -> `.tholo__glare`), textures repointed to src/assets/holo/.
+ * Preset: trainer (v full art + trainer full art).
+ */
+
+/* =================================================================== trainer
+ * pokeholo: v-full-art.css (supporter base) + trainer-full-art.css overrides */
+
+.tcard.holo--trainer .tholo__shine,
+.tcard.holo--trainer .tholo__shine:after {
+  --space: 5%;
+  --angle: 133deg;
+  /* no --imgsize here: the cover default comes from the card root */
+  /* fallback: a masked card without its own foil must keep the trainer look
+       (the :not(.is-masked) rule below can't reach it, and an unset var() kills
+       the whole background-image) */
+  background-image:
+    var(--foil, url('../assets/holo/trainerbg.png')),
+    repeating-linear-gradient(
+      0deg,
+      var(--sunpillar-clr-1) calc(var(--space) * 1),
+      var(--sunpillar-clr-2) calc(var(--space) * 2),
+      var(--sunpillar-clr-3) calc(var(--space) * 3),
+      var(--sunpillar-clr-4) calc(var(--space) * 4),
+      var(--sunpillar-clr-5) calc(var(--space) * 5),
+      var(--sunpillar-clr-6) calc(var(--space) * 6),
+      var(--sunpillar-clr-1) calc(var(--space) * 7)
+    ),
+    repeating-linear-gradient(
+      var(--angle),
+      #0e152e 0%,
+      hsl(180, 10%, 60%) 3.8%,
+      hsl(180, 29%, 66%) 4.5%,
+      hsl(180, 10%, 60%) 5.2%,
+      #0e152e 10%,
+      #0e152e 12%
+    ),
+    radial-gradient(
+      farthest-corner circle at var(--pointer-x) var(--pointer-y),
+      hsla(0, 0%, 0%, 0.1) 12%,
+      hsla(0, 0%, 0%, 0.15) 20%,
+      hsla(0, 0%, 0%, 0.25) 120%
+    );
+  background-position:
+    center center,
+    0% var(--background-y),
+    calc(var(--background-x) + (var(--background-y) * 0.2)) var(--background-y),
+    var(--background-x) var(--background-y);
+  background-blend-mode: soft-light, hue, hard-light;
+  background-size:
+    var(--imgsize),
+    200% 700%,
+    300% 100%,
+    200% 100%;
+  /* trainer-full-art override */
+  filter: brightness(calc((var(--pointer-from-center) * 0.05) + 0.8)) contrast(1.75) saturate(1.2);
+}
+
+.tcard.holo--trainer .tholo__shine:after {
+  content: '';
+  background-position:
+    center center,
+    0% var(--background-y),
+    calc((var(--background-x) + (var(--background-y) * 0.2)) * -1) calc(var(--background-y) * -1),
+    var(--background-x) var(--background-y);
+  background-size:
+    var(--imgsize),
+    200% 400%,
+    195% 100%,
+    200% 100%;
+  mix-blend-mode: exclusion;
+  /* trainer-full-art override */
+  filter: brightness(calc((var(--pointer-from-center) * 0.4) + 0.85)) contrast(2) saturate(0.5);
+}
+
+.tcard.holo--trainer .tholo__shine:before {
+  content: '';
+  -webkit-mask-image: none;
+  mask-image: none;
+  /* trainer-full-art override of the v-full-art white pop */
+  background-image: radial-gradient(
+    farthest-corner circle at var(--pointer-x) var(--pointer-y),
+    hsl(0, 0%, 100%) 0%,
+    hsla(0, 0%, 0%, 0) 80%
+  );
+  background-position: center;
+  background-size: cover;
+  mix-blend-mode: screen;
+  opacity: 0.5;
+  z-index: 1;
+}
+
+.tcard.holo--trainer .tholo__glare {
+  background-image: radial-gradient(
+    farthest-corner circle at var(--pointer-x) var(--pointer-y),
+    hsl(0, 0%, 75%) 5%,
+    hsl(200, 5%, 35%) 60%,
+    hsl(320, 40%, 10%) 150%
+  );
+  background-position: center center;
+  mix-blend-mode: multiply;
+  /* trainer-full-art override */
+  opacity: calc(var(--card-opacity) * 0.75);
+  filter: brightness(1.5) contrast(1.4) saturate(1);
+  background-size: 170% 170%;
+}
+
+/* Trainer foil default (upstream :not(.masked)), set on the card root so it stays an overridable default. */
+.tcard.holo--trainer:not(.is-masked) {
+  --foil: url('../assets/holo/trainerbg.png');
+  --imgsize: 20%;
+}
+
+.tcard.holo--trainer:not(.is-masked) .tholo__shine,
+.tcard.holo--trainer:not(.is-masked) .tholo__shine:after {
+  --mask: none;
+  background-blend-mode: color-burn, hue, hard-light;
+  filter: brightness(calc((var(--pointer-from-center) * 0.05) + 0.6)) contrast(1.5) saturate(1.2);
+}

@@ -1,6 +1,7 @@
 import { type CardDefinition, describeCard } from '@ytcg-game/engine';
 import type { ReactNode } from 'react';
 import { catalog } from '../../catalog.ts';
+import { TagList } from '../card/TagList.tsx';
 
 // Tooltip body of a card known only by its definition (deck screens): name, cost, power, full effect.
 export function DefinitionTip({
@@ -22,6 +23,7 @@ export function DefinitionTip({
       <p className={`tip-text${text.length === 0 ? ' is-empty' : ''}`}>
         {text.length === 0 ? 'Aucun effet.' : text.join(' ')}
       </p>
+      <TagList definition={definition} />
       {children}
     </div>
   );

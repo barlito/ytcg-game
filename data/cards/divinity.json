@@ -25,7 +25,9 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "god-almighty-6abe634e1d841514206474.png",
+      "holo": "basic"
     },
     {
       "id": "01a0f7b3-eb3a-7cfd-8cf9-8e1ae6be1c4a",
@@ -59,7 +61,9 @@
             "type": "destroy"
           }
         }
-      ]
+      ],
+      "mask": "zocnoth-the-world-eater-6abe634e9ea2d357234986.png",
+      "holo": "basic"
     },
     {
       "id": "01a0f7b3-ed78-7d7f-9b4d-84b5cf13a60e",
@@ -86,7 +90,8 @@
             "amount": -2
           }
         }
-      ]
+      ],
+      "mask": "ahlototh-the-sightless-6abe634f369dc327760693.png"
     },
     {
       "id": "01a0f7b3-ef64-7bb7-a000-969cce1684a9",
@@ -111,7 +116,8 @@
             "type": "destroy"
           }
         }
-      ]
+      ],
+      "mask": "julian-the-god-killer-6abe634faeb9b969612684.png"
     },
     {
       "id": "01a0f7b3-f146-727b-bf7c-7cc30110e982",
@@ -137,7 +143,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "benj-the-eternal-6abe6350302c8111448517.png"
     },
     {
       "id": "01a0f7b3-f336-792f-94ab-7f14e910a5e8",
@@ -166,7 +173,8 @@
             "type": "destroy"
           }
         }
-      ]
+      ],
+      "mask": "veli-the-fiery-6abe6350a958a901324802.png"
     },
     {
       "id": "01a0f7b3-f57b-7bf2-beb2-141c5ede05cd",
@@ -194,7 +202,8 @@
             "status": "tough"
           }
         }
-      ]
+      ],
+      "mask": "barlito-the-arcane-master-6abe635142f51244263999.png"
     },
     {
       "id": "01a0f7b3-f75b-72f6-94b6-b3e193ca3ba1",
@@ -219,7 +228,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "bernard-the-father-6abe6351b80ac435360249.png"
     },
     {
       "id": "01a0f7b3-f932-7278-8aad-4ec2e33c0a8c",
@@ -243,7 +253,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "farf-the-beyonder-6abe635236ef1329193222.png"
     },
     {
       "id": "01a0f7b3-fb53-7146-ab7d-dd07c28fb55a",
@@ -269,7 +280,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "warny-the-watcher-6abe6352bbf63773597935.png"
     },
     {
       "id": "01a0f7b3-fd54-78ca-894b-0762df6ef74f",
@@ -306,7 +318,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "xizta-the-demented-6abe6353451ca913684630.png"
     },
     {
       "id": "01a0f7b3-ffba-7a8e-b6b9-4efe1d209904",
@@ -330,7 +343,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "veli-the-devout-6abe6353db287604340506.png"
     },
     {
       "id": "01a0f7b4-01ca-702b-8abb-b501d3da2396",
@@ -343,7 +357,8 @@
       "tags": [
         "character:julian"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "julian-the-unremarkable-6abe635467c3a928346608.png"
     },
     {
       "id": "01a0f7b4-03cc-71c5-a42a-a645d282ce28",
@@ -369,7 +384,8 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "mask": "herald-of-zocnoth-6abe6354e52c4890456938.png"
     },
     {
       "id": "01a0f7b4-05d5-73cf-a3e7-6cf31c22795c",
@@ -395,7 +411,8 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "mask": "book-of-xizta-the-demented-6abe635570378622615557.png"
     },
     {
       "id": "01a0f7b4-07a2-72c5-9a3d-72ca819b377f",
@@ -421,7 +438,8 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "mask": "cult-of-ahlototh-6abe6355e0e50558926035.png"
     },
     {
       "id": "01a0f7b4-129d-798e-9e09-3e54bc7faca3",
@@ -444,7 +462,8 @@
             "amount": -1
           }
         }
-      ]
+      ],
+      "mask": "storm-of-time-6abe6358b2b54730807445.png"
     }
   ]
 }

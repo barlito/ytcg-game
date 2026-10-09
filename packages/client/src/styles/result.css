@@ -1,0 +1,399 @@
+/* End of game: tilted ticker, title with chromatic aberration, location rows in cascade, decisive card.
+   Sequence: title 0, card 700 ms, rows 1000 / 1300 / 1600 ms, stats 2000 ms. */
+@property --n {
+  syntax: '<integer>';
+  inherits: false;
+  initial-value: 0;
+}
+.result {
+  --accent: var(--cyan);
+  --accent-rgb: 70 230 230;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: minmax(0, 44rem) minmax(0, 26rem);
+  justify-content: center;
+  align-items: center;
+  gap: 4rem;
+  padding: 9rem 2rem 2rem;
+  overflow: auto;
+  background:
+    var(--scanlines), radial-gradient(ellipse 45% 60% at 74% 48%, rgb(var(--accent-rgb) / 22%), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgb(120 80 220 / 25%), transparent 70%), rgb(8 5 15 / 97%);
+  backdrop-filter: blur(18px);
+}
+.result.is-loss {
+  --accent: var(--magenta);
+  --accent-rgb: 255 62 165;
+}
+.result.is-draw {
+  --accent: var(--primary);
+  --accent-rgb: 163 53 238;
+}
+.result-ticker {
+  position: absolute;
+  left: -5rem;
+  right: -5rem;
+  top: 3.5rem;
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  height: 2.75rem;
+  overflow: hidden;
+  white-space: nowrap;
+  transform: rotate(-6deg);
+  background: var(--accent);
+  color: var(--bg);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.3em;
+  animation: result-fade 0.6s ease both;
+}
+.result-main {
+  position: relative;
+  display: grid;
+  gap: 1.6rem;
+}
+.result-eyebrow {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.result-title {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-display);
+  font-size: min(8.25rem, 15vw);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  transform-origin: 0 50%;
+  text-shadow:
+    4px 0 var(--magenta),
+    -4px 0 var(--cyan),
+    0 0 40px rgb(var(--accent-rgb) / 55%);
+  animation: result-title 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.result-subtitle {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-muted);
+}
+.result-rows {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.result-row {
+  animation: result-row 0.5s ease both;
+  animation-delay: calc(1000ms + var(--step) * 300ms);
+}
+.result-row__panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 7.5rem 6.9rem;
+  align-items: center;
+  padding: 1.1rem 1.5rem;
+}
+.result-row.is-lost .result-row__panel {
+  background: rgb(20 10 36 / 60%);
+}
+.result-row__name {
+  display: grid;
+  gap: 0.15rem;
+}
+.result-row__name strong {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+}
+.result-row.is-lost .result-row__name strong {
+  color: var(--text-muted);
+}
+.result-row__name small {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.result-row__score,
+.result-total__value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.75rem;
+}
+.result-row__score i,
+.result-total__value i {
+  margin: 0 0.35em;
+  font-style: normal;
+  color: var(--violet);
+}
+.is-you {
+  color: var(--cyan);
+}
+.is-opponent {
+  color: var(--magenta);
+}
+.result-pill {
+  justify-self: end;
+  padding: 0.4rem 0.65rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.result-pill.is-won {
+  background: var(--cyan);
+  color: var(--bg);
+}
+.result-pill.is-lost {
+  color: var(--magenta);
+  box-shadow: inset 0 0 0 1px var(--magenta);
+}
+.result-pill.is-tie {
+  color: var(--text-muted);
+  box-shadow: inset 0 0 0 1px var(--text-dim);
+}
+.result-total {
+  display: grid;
+  gap: 0.25rem;
+  animation: result-fade 0.5s ease 2s both;
+}
+.result-total__label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.result-total__value {
+  font-family: var(--font-mono);
+  font-size: 2.5rem;
+}
+/* Counts up from 0 (integer custom property, no JS); under reduced motion it shows the final value. */
+.result-count {
+  counter-reset: n var(--n);
+  animation: result-count 1.2s ease-out 2s both;
+}
+.result-count::after {
+  content: counter(n);
+}
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  animation: result-fade 0.5s ease 2.2s both;
+}
+
+/* Decisive card, tilted 4°. */
+.result-decisive {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 1.5rem;
+}
+.result-decisive__label {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--magenta);
+  animation: result-fade 0.5s ease 0.7s both;
+}
+.result-decisive__card {
+  width: min(22.5rem, 100%);
+  transform: rotate(4deg);
+  animation: result-card 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.7s both;
+}
+.result-decisive__caption {
+  margin: 0;
+  text-align: center;
+  color: var(--text-muted);
+  animation: result-fade 0.5s ease 0.7s both;
+}
+.result-decisive__caption strong {
+  color: var(--text);
+}
+
+@keyframes result-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes result-title {
+  from {
+    opacity: 0;
+    transform: scale(1.25);
+    filter: blur(12px);
+  }
+}
+@keyframes result-row {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+}
+@keyframes result-card {
+  from {
+    opacity: 0;
+    transform: rotate(-6deg) translateY(60px);
+  }
+}
+@keyframes result-count {
+  from {
+    --n: 0;
+  }
+  to {
+    --n: var(--target);
+  }
+}
+
+/* Folded: only a bar, the board stays visible and playable to read. */
+.result-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 1.2rem;
+  transform: translateX(-50%);
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 1px var(--cyan),
+    0 0.6rem 1.8rem rgb(0 0 0 / 60%);
+  white-space: nowrap;
+}
+.result-bar.is-loss {
+  box-shadow:
+    inset 0 0 0 1px var(--magenta),
+    0 0.6rem 1.8rem rgb(0 0 0 / 60%);
+}
+.result-bar strong {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+}
+.result-bar .btn-ghost,
+.result-bar .btn-arcade {
+  padding: 0.6rem 1.1rem;
+  font-size: 0.75rem;
+}
+
+/* Short desktop windows: tighter, so the actions stay in view. */
+@media (min-width: 901px) and (max-height: 860px) {
+  .result {
+    padding-top: 7.25rem;
+    gap: 3rem;
+  }
+  .result-ticker {
+    top: 2.25rem;
+  }
+  .result-main {
+    gap: 0.9rem;
+  }
+  .result-title {
+    font-size: min(5.5rem, 15vw);
+  }
+  .result-subtitle {
+    font-size: 1.05rem;
+  }
+  .result-row__panel {
+    padding: 0.65rem 1.25rem;
+  }
+  .result-decisive {
+    gap: 0.9rem;
+  }
+  .result-decisive__card {
+    width: min(18rem, 100%);
+  }
+}
+
+/* Phones: one column, card compact under the subtitle. */
+@media (max-width: 900px) {
+  .result {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    align-content: start;
+    gap: 1.5rem;
+    padding: 5.5rem 1.2rem 1.5rem;
+    justify-items: center;
+    text-align: center;
+  }
+  .result-ticker {
+    top: 2.5rem;
+    height: 2.25rem;
+    font-size: 0.9rem;
+  }
+  .result-main {
+    gap: 1rem;
+    width: 100%;
+    justify-items: center;
+  }
+  .result-title {
+    font-size: 3.5rem;
+  }
+  .result-subtitle {
+    font-size: 0.9rem;
+  }
+  .result-rows,
+  .result-row,
+  .result-row__panel {
+    width: 100%;
+  }
+  .result-row__panel {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 0.6rem;
+    padding: 0.7rem 0.9rem;
+    text-align: left;
+  }
+  .result-row__name strong {
+    font-size: 1rem;
+  }
+  .result-row__score {
+    font-size: 1.1rem;
+  }
+  .result-pill {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.65rem;
+  }
+  .result-decisive {
+    order: -1;
+    gap: 0.8rem;
+  }
+  .result-decisive__card {
+    width: 10.6rem;
+  }
+  .result-total__value {
+    font-size: 1.8rem;
+  }
+  .result-bar {
+    width: calc(100vw - 1rem);
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result-ticker,
+  .result-title,
+  .result-row,
+  .result-total,
+  .result-actions,
+  .result-decisive__label,
+  .result-decisive__card,
+  .result-decisive__caption {
+    animation: none;
+  }
+  .result-count {
+    --n: var(--target);
+    animation: none;
+  }
+}

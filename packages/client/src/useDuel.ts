@@ -3,6 +3,7 @@ import type { ActionInput, ErrorMessage, GameMessage, JoinOptions, LobbyMessage 
 import { MESSAGE_ACTION, MESSAGE_ERROR, MESSAGE_GAME, MESSAGE_LOBBY, ROOM_NAME } from '@ytcg-game/server/messages';
 import { toLocalClock } from './clock.ts';
 import { actionErrorText } from './errors.ts';
+import { normalizeRoomCode } from './lib/roomCode.ts';
 import { type Dispatch, type SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 
 export type DuelPhase =
@@ -98,7 +99,7 @@ export function useDuel(): Duel {
       connect(() => client.create(ROOM_NAME, options));
     },
     join: (code, options) => {
-      connect(() => client.joinById(code.trim(), options));
+      connect(() => client.joinById(normalizeRoomCode(code), options));
     },
     send: (input) => {
       room.current?.send(MESSAGE_ACTION, input);

@@ -2,6 +2,7 @@ import type { CardView } from '@ytcg-game/engine';
 import { cardFx } from '../../animation/scene.ts';
 import { useScene } from '../../animation/useReplay.ts';
 import { catalog } from '../../catalog.ts';
+import type { FanPose } from '../../lib/fan.ts';
 import { DraggableCard } from '../dnd/DraggableCard.tsx';
 import { CardButton } from './CardButton.tsx';
 import { CardBack, CardFace } from './CardFace.tsx';
@@ -28,7 +29,7 @@ export function BoardCard({ card, own, ghost = false }: BoardProps): React.JSX.E
       className={classes.join(' ')}
       label={hidden ? 'Carte face cachée' : labelOf(card)}
     >
-      {hidden ? <CardBack /> : <CardFace card={card} effect={fx.effect} />}
+      {hidden ? <CardBack /> : <CardFace card={card} size="compact" effect={fx.effect} />}
     </CardButton>
   );
 }
@@ -39,7 +40,7 @@ interface PendingProps {
   onCancel: (uid: string) => void;
 }
 
-// An own face-down card of this turn: click or drag it back to the hand to take it back.
+// An own face-down card of this turn (`fresh`: played this turn, straight from the view): click or drag it back to the hand to take it back.
 export function PendingCard({ card, locked, onCancel }: PendingProps): React.JSX.Element {
   const fx = cardFx(useScene(), card.uid);
   return (
@@ -59,7 +60,7 @@ export function PendingCard({ card, locked, onCancel }: PendingProps): React.JSX
             }
       }
     >
-      <CardFace card={card} effect={fx.effect} />
+      <CardFace card={card} size="compact" effect={fx.effect} fresh />
     </DraggableCard>
   );
 }
@@ -68,12 +69,15 @@ interface HandProps {
   card: CardView;
   playable: boolean;
   selected: boolean;
+  // Position on the fan circle and the narrow layout (compact cards, no text).
+  pose: FanPose;
+  narrow: boolean;
   onSelect: (uid: string | null) => void;
 }
 
-export function HandCard({ card, playable, selected, onSelect }: HandProps): React.JSX.Element {
+export function HandCard({ card, playable, selected, pose, narrow, onSelect }: HandProps): React.JSX.Element {
   const fx = cardFx(useScene(), card.uid);
-  const classes = ['in-hand', selected ? 'is-selected' : '', playable ? '' : 'is-disabled'];
+  const classes = ['in-hand', selected ? 'is-selected' : '', playable ? 'is-playable' : 'is-disabled'];
   return (
     <DraggableCard
       card={card}
@@ -81,6 +85,7 @@ export function HandCard({ card, playable, selected, onSelect }: HandProps): Rea
       dragged={{ uid: card.uid, origin: 'hand' }}
       draggable={playable}
       className={classes.join(' ')}
+      style={{ '--fan': `${String(pose.angle)}deg`, '--fan-y': pose.offset } as React.CSSProperties}
       label={`${labelOf(card)}${playable ? '' : ', pas jouable maintenant'}`}
       pinned={selected}
       disabled={!playable}
@@ -92,7 +97,7 @@ export function HandCard({ card, playable, selected, onSelect }: HandProps): Rea
           : undefined
       }
     >
-      <CardFace card={card} withText effect={fx.effect} />
+      <CardFace card={card} size={narrow ? 'compact' : 'full'} effect={fx.effect} />
     </DraggableCard>
   );
 }

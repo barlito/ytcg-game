@@ -24,8 +24,8 @@ export function TerrainField({ terrain, terrains, errors, onChange }: Props): Re
   const current = terrain === null ? undefined : catalog.locations.get(terrain);
   const lost = terrain !== null && !terrains.some((option) => option.id === terrain);
   return (
-    <section className="deck">
-      <h2 className="eyebrow">Terrain (optionnel)</h2>
+    <section className="panel-field is-terrain">
+      <h2 className="panel-label">Terrain (optionnel)</h2>
       <select
         aria-label="Terrain"
         value={terrain ?? NONE}

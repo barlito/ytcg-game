@@ -17,12 +17,20 @@ const imageSchema = z
   .nullable()
   .default(null);
 
+// Holo recipes of the ytcg card (CardEffectEnum), ported by the client.
+export const HOLO_PRESETS = ['shine', 'basic', 'cosmos', 'trainer'] as const;
+
+export type HoloPreset = (typeof HOLO_PRESETS)[number];
+
 const cardSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   rarity: z.enum(RARITIES),
   unique: z.boolean().default(false),
   image: imageSchema,
+  // ytcg mask (/uploads/masks/) clipping the holo to the lit area, and the holo recipe (null = a plain card).
+  mask: imageSchema,
+  holo: z.enum(HOLO_PRESETS).nullable().default(null),
   cost: z.number().int().min(0).max(10),
   power: z.number().int(),
   tags: z.array(tagSchema).default([]),
@@ -57,6 +65,8 @@ export interface CardDefinition {
   readonly rarity: Rarity;
   readonly unique: boolean;
   readonly image: string | null;
+  readonly mask: string | null;
+  readonly holo: HoloPreset | null;
   readonly cost: number;
   readonly power: number;
   readonly tags: readonly string[];
@@ -162,6 +172,8 @@ function loadCardFile(
       rarity: card.rarity,
       unique: card.unique,
       image: card.image,
+      mask: card.mask,
+      holo: card.holo,
       cost: card.cost,
       power: card.power,
       tags: [...new Set([`universe:${extension.slug}`, ...card.tags])],
