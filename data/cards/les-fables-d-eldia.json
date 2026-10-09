@@ -28,7 +28,9 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "julien-roi-d-eldia-6ac0f0f51b7fd640179951.png",
+      "holo": "basic"
     },
     {
       "id": "01a101ad-40c4-7078-8867-335fdaed10cf",
@@ -51,7 +53,9 @@
             "amount": -2
           }
         }
-      ]
+      ],
+      "mask": "rog-le-dragon-celeste-6ac0f0f5e909a146834246.png",
+      "holo": "basic"
     },
     {
       "id": "01a101ad-4303-73b7-98b6-0f71d15cacc7",
@@ -77,7 +81,8 @@
             "type": "destroy"
           }
         }
-      ]
+      ],
+      "mask": "babou-linette-la-joueuse-de-mort-6ac0f0f6814bf471926275.png"
     },
     {
       "id": "01a101ad-44f0-7d23-ba83-831af05376e2",
@@ -105,7 +110,8 @@
             "amount": -2
           }
         }
-      ]
+      ],
+      "mask": "barlito-le-prince-de-glace-6ac0f0f705e00169110518.png"
     },
     {
       "id": "01a101ad-46f9-714e-b4b2-2dff644a6415",
@@ -131,7 +137,8 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "mask": "l-epee-divine-enc-6ac0f0f784be5336350610.png"
     },
     {
       "id": "01a101ad-48f0-719c-8b75-f04fd4cb4930",
@@ -157,7 +164,8 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "mask": "l-epee-demoniaque-ule-6ac0f0f80b754399290901.png"
     },
     {
       "id": "01a101ad-4aef-786f-a15e-ceba051da430",
@@ -181,7 +189,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "benj-gardien-de-l-arbre-6ac0f0f888420831916953.png"
     },
     {
       "id": "01a101ad-4cf1-7b16-9b47-d1ec2759ef25",
@@ -208,7 +217,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "chevalier-de-la-lumiere-6ac0f0f911c96303523925.png"
     },
     {
       "id": "01a101ad-5035-72ab-a21d-bfd8efd6ee87",
@@ -233,7 +243,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "l-enchantement-de-bibou-linette-6ac0f0f9dd91c668642112.png"
     },
     {
       "id": "01a101ad-524d-7bcb-9003-91e2a3b3ef9d",
@@ -255,7 +266,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "le-miroir-des-confins-6ac0f0fa6c84a792714936.png"
     },
     {
       "id": "01a101ad-5443-7e3f-8411-d912e1b657af",
@@ -275,7 +287,8 @@
             "count": {}
           }
         }
-      ]
+      ],
+      "mask": "bande-de-hobgobelins-6ac0f0fae7181741511892.png"
     },
     {
       "id": "01a101ad-565e-7ad7-8b0b-2cd51d93d6ab",
@@ -294,7 +307,8 @@
             "status": "mad"
           }
         }
-      ]
+      ],
+      "mask": "billy-le-frenetique-6ac0f0fb76733709752246.png"
     },
     {
       "id": "01a101ad-5870-7516-a126-ebef3e8ef0a1",
@@ -320,7 +334,8 @@
             "amount": -1
           }
         }
-      ]
+      ],
+      "mask": "farf-le-farfade-6ac0f0fc03946813504991.png"
     },
     {
       "id": "01a101ad-5a60-7e7a-be96-e79740315bb6",
@@ -343,7 +358,8 @@
             "amount": -1
           }
         }
-      ]
+      ],
+      "mask": "le-charme-du-marchand-de-sable-6ac0f0fc7cc60797845527.png"
     },
     {
       "id": "01a101ad-5c6d-7f31-a413-3d2495b213c0",
@@ -370,7 +386,8 @@
             "amount": -2
           }
         }
-      ]
+      ],
+      "mask": "le-sommeil-de-bebou-linette-6ac0f0fd08e85944081515.png"
     },
     {
       "id": "01a101ad-5e61-7cf0-8904-c405b2c331ce",
@@ -395,7 +412,8 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "mask": "veli-l-ogre-des-sables-6ac0f0fd82f9a418596027.png"
     },
     {
       "id": "01a101ad-61fc-71eb-849d-79918d56e004",
@@ -408,7 +426,8 @@
       "tags": [
         "character:warny"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "warny-le-paysan-6ac0f0fe6febd618064202.png"
     }
   ]
 }

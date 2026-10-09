@@ -27,7 +27,9 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "ahri-more-6ac0f100d925a266807991.png",
+      "holo": "basic"
     },
     {
       "id": "01a101ad-6d3d-7282-af6f-0801ae890671",
@@ -53,7 +55,9 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "benj-big-boss-6ac0f10152ed7197108301.png",
+      "holo": "basic"
     },
     {
       "id": "01a101ad-6f3f-7d20-966e-2244f18ca1fc",
@@ -98,7 +102,9 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "benj-le-manager-6ac0f101d0acd438530738.png",
+      "holo": "basic"
     },
     {
       "id": "01a101ad-7108-7e09-9826-9a96e5912517",
@@ -122,7 +128,9 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "jean-neon-raoul-6ac0f1024bf49032335357.png",
+      "holo": "basic"
     },
     {
       "id": "01a101ad-72b2-76f9-8c44-e834f394cc41",
@@ -148,7 +156,9 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "julian-fan-n-1-6ac0f102b40cb637738774.png",
+      "holo": "basic"
     },
     {
       "id": "01a101ad-7481-7987-98ea-dc66260944aa",
@@ -174,7 +184,8 @@
             "amount": -3
           }
         }
-      ]
+      ],
+      "mask": "akali-the-baddest-6ac0f10330e65480936107.png"
     },
     {
       "id": "01a101ad-7657-72df-84f6-da6a7281ac67",
@@ -203,7 +214,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "dj-barlito-6ac0f103a3aaa131037394.png"
     },
     {
       "id": "01a101ad-784e-7a2b-8bfa-c0e1648a382d",
@@ -234,7 +246,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "evelynn-villain-6ac0f1042a55f310439827.png"
     },
     {
       "id": "01a101ad-7a30-7999-901e-87a7ad7e5117",
@@ -259,7 +272,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "kai-sa-drum-go-dum-6ac0f1049ffbc604355653.png"
     },
     {
       "id": "01a101ad-7c70-7a5c-ad93-fb82f7b85291",
@@ -289,7 +303,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "warny-le-producteur-6ac0f10538577464199347.png"
     },
     {
       "id": "01a101ad-7e87-7bcb-8462-edae61d7b403",
@@ -313,7 +328,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "ahri-6ac0f105bb22b762544167.png"
     },
     {
       "id": "01a101ad-8072-7e3d-8723-25a2734aad82",
@@ -337,7 +353,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "farf-pianiste-6ac0f1063efc8716275761.png"
     },
     {
       "id": "01a101ad-8262-7594-8d6f-26bb01452c6a",
@@ -360,7 +377,8 @@
             "amount": -2
           }
         }
-      ]
+      ],
+      "mask": "jinx-6ac0f106b8000960606355.png"
     },
     {
       "id": "01a101ad-8458-7cd9-94d1-d2d078c4cc11",
@@ -385,7 +403,8 @@
             "status": "tough"
           }
         }
-      ]
+      ],
+      "mask": "veli-le-garde-du-corps-6ac0f1073e63f526252325.png"
     },
     {
       "id": "01a101ad-863c-789b-9709-8c4be2085933",
@@ -398,7 +417,8 @@
       "tags": [
         "character:akali"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "akali-6ac0f107b477a589147771.png"
     },
     {
       "id": "01a101ad-8806-75e1-9aa0-5c2a2d8eacfc",
@@ -424,7 +444,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "evelynn-6ac0f1082ff4e379193940.png"
     },
     {
       "id": "01a101ad-89dd-7cb9-9532-739b77467b5c",
@@ -450,7 +471,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "jean-raoul-6ac0f108a3302477786835.png"
     },
     {
       "id": "01a101ad-8bbb-7268-ace9-b53896acba07",
@@ -476,7 +498,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "julian-6ac0f109239ac534445817.png"
     },
     {
       "id": "01a101ad-8d88-7ae7-aebc-f0b3bfd6602c",
@@ -497,7 +520,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "kai-sa-6ac0f109943e4009232842.png"
     }
   ]
 }

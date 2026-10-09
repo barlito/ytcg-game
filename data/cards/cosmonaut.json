@@ -39,7 +39,9 @@
             "amount": 4
           }
         }
-      ]
+      ],
+      "mask": "veli-chef-du-parti-6ac0f0d3af188740959825.png",
+      "holo": "basic"
     },
     {
       "id": "01a101ac-bce6-784e-bde6-53466f6e5f59",
@@ -64,7 +66,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "julian-heros-de-la-nation-6ac0f0d4304d5496078714.png"
     },
     {
       "id": "01a101ac-5f46-7197-85ba-ad731bedf46c",
@@ -94,7 +97,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "kosmonaut-warny-6ac0f0bc362f0886153339.png"
     },
     {
       "id": "01a101ac-6338-7d12-9389-a09fbc53788c",
@@ -118,7 +122,8 @@
             "amount": -1
           }
         }
-      ]
+      ],
+      "mask": "komrade-farf-6ac0f0bd3a530593566037.png"
     },
     {
       "id": "01a101ac-bebf-7d4b-899a-8baeef067608",
@@ -143,7 +148,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "bernard-membre-du-parti-6ac0f0d4a3df9226553700.png"
     },
     {
       "id": "01a101ac-67e4-7436-8689-68bcee2ea5ed",
@@ -171,7 +177,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "ingenieur-barlito-6ac0f0be69e18540542662.png"
     }
   ]
 }

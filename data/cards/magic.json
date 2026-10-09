@@ -27,7 +27,9 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "ancient-foreign-king-mask-background-6a78a67fbc4bb723758576.png",
+      "holo": "basic"
     },
     {
       "id": "019fe735-1796-70f8-9210-f2a4790d460f",
@@ -53,7 +55,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "babou-linette-mask-background-6a78a6901676b806979991.png"
     },
     {
       "id": "019fe735-1790-78bf-a671-36ea82260f5a",
@@ -75,7 +78,8 @@
             "count": 2
           }
         }
-      ]
+      ],
+      "mask": "babou-linette-scout-mask-background-6a78a6f906e95069125274.png"
     },
     {
       "id": "019fe735-179e-74f0-8762-ee0d46a4d40b",
@@ -102,7 +106,9 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "bebou-linette-empress-mask-background-6a78a6ad5f054873443185.png",
+      "holo": "basic"
     },
     {
       "id": "019fe735-1781-75e8-84c6-8462aaf132f8",
@@ -126,7 +132,9 @@
             "status": "tough"
           }
         }
-      ]
+      ],
+      "mask": "bernard-the-enchanter-mask-background-6a78a64b9b0a8883273697.png",
+      "holo": "basic"
     },
     {
       "id": "019fe735-17a1-75c8-ab1b-85a3e63d245e",
@@ -147,7 +155,8 @@
             "type": "draw"
           }
         }
-      ]
+      ],
+      "mask": "bibou-linette-cartographer-mask-background-6a78a638a6bec296217757.png"
     },
     {
       "id": "019fe735-1775-7401-bfa1-6a478cf98653",
@@ -181,7 +190,9 @@
             "type": "destroy"
           }
         }
-      ]
+      ],
+      "mask": "demon-king-julian-mask-background-6a78a72a076e8674136714.png",
+      "holo": "basic"
     },
     {
       "id": "019fe735-178a-72b9-88d6-55100e2b3336",
@@ -215,7 +226,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "elder-farph-mask-background-6a78a5e1a2491355875330.png"
     },
     {
       "id": "019fe735-1784-7505-956b-9508abd55571",
@@ -241,7 +253,8 @@
             "amount": -2
           }
         }
-      ]
+      ],
+      "mask": "hunter-julian-mask-background-6a78a6a0883a8485540313.png"
     },
     {
       "id": "019fe735-17a4-7074-ba3a-f2ae8118e28d",
@@ -272,7 +285,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "jben-alchemist-mask-background-6a78a61d13ad9912526062.png"
     },
     {
       "id": "019fe735-17a7-726a-9e22-224aac64fce0",
@@ -305,7 +319,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "jben-the-wise-mask-background-6a78a611aacad958902081.png"
     },
     {
       "id": "019fe735-1778-7837-9bbc-1975bf6ee0ad",
@@ -331,7 +346,8 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "mask": "king-julian-the-brave-mask-background-6a78a5ef88ffa208332458.png"
     },
     {
       "id": "019fe735-177b-7884-a72f-1197fbbe7567",
@@ -357,7 +373,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "old-king-julian-the-fool-mask-background-6a78a603ba297921956542.png"
     },
     {
       "id": "019fe735-17a9-7aa7-b72c-2364e1d300ff",
@@ -370,7 +387,8 @@
       "tags": [
         "character:veli"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "veli-foreigner-mask-background-6a78a629c23e7314324031.png"
     },
     {
       "id": "019fe735-177e-7750-bb5d-66d1607526af",
@@ -383,7 +401,8 @@
       "tags": [
         "character:warny"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "warny-novice-mask-background-6a78a5d30d392069190508.png"
     },
     {
       "id": "019fe735-1787-71be-9ca6-56a5f310d79c",
@@ -396,7 +415,8 @@
       "tags": [
         "character:warny"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "warny-the-fortune-teller-mask-background-6a78a71907267801497837.png"
     }
   ]
 }

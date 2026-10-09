@@ -19,7 +19,8 @@
       "statuses": [
         "tough"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "bibou-linette-cyberpunk-mask-background-6a764137e05ee676554103.png"
     },
     {
       "id": "019fddbd-f4c9-7f45-85cf-4924c5d0cdfd",
@@ -57,7 +58,9 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "babou-linette-3-cyberpunk-mask-background-6a7641732e6ad147992756.png",
+      "holo": "basic"
     },
     {
       "id": "019fddbd-f4b6-7e98-b518-38d8aa447a3f",
@@ -73,7 +76,8 @@
       "statuses": [
         "tough"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "barlito-1-cyberpunk-mask-background-6a7640981d681032551868.png"
     },
     {
       "id": "019fddbd-f4b9-7ece-a77f-3e8895cf6f2c",
@@ -101,7 +105,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "bebou-linette-5-cyberpunk-mask-background-6a7640b7e8328414095159.png"
     },
     {
       "id": "019fddbd-f4cc-7f99-90c8-628df4812d41",
@@ -127,7 +132,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "bebou-linette-3-cyberpunk-mask-background-6a7641060fa1d109694445.png"
     },
     {
       "id": "019fddbd-f4e0-7427-890f-1446b6b7125d",
@@ -172,7 +178,9 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "benj-cyberpsycho-cyberpunk-mask-background-6a76412cc87ac477654540.png",
+      "holo": "basic"
     },
     {
       "id": "019fddbd-f4d0-7778-aae4-5614311e2884",
@@ -198,7 +206,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "benj-2-cyberpunk-2-mask-background-6a7640cf7b645420880570.png"
     },
     {
       "id": "019fddbd-f4dd-7220-9108-d47c968a0d60",
@@ -225,7 +234,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "benj-ledjo-evo-cyberpunk-1-mask-background-6a76415ea3f29887990867.png"
     },
     {
       "id": "019fddbd-f4bd-726b-ad65-a3e982345172",
@@ -252,7 +262,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "bernard-1-cyberpunk-mask-background-6a7640691a7d8524241436.png"
     },
     {
       "id": "019fddbd-f4e5-7b4f-b7e6-7f39953c9300",
@@ -273,7 +284,8 @@
             "type": "draw"
           }
         }
-      ]
+      ],
+      "mask": "bibou-linette-cyberpunk-alt-2-mask-background-6a764168bf13f556943521.png"
     },
     {
       "id": "019fddbd-f4c0-7a66-a8ad-e890d9972e73",
@@ -299,7 +311,8 @@
             "type": "destroy"
           }
         }
-      ]
+      ],
+      "mask": "bibou-linette-cyberpunk-mask-background-6a76414a1f2d1258455891.png"
     },
     {
       "id": "019fddbd-f4e9-738e-895b-5ba43c6a876d",
@@ -327,7 +340,9 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "1-cyberpunk-mask-background-6a7641192a3cc916589676.png",
+      "holo": "basic"
     },
     {
       "id": "019fddbd-f4d6-7a10-bd86-ad9166001a6b",
@@ -353,7 +368,8 @@
             "amount": 4
           }
         }
-      ]
+      ],
+      "mask": "julian-1-cyberpunk-mask-background-6a7640ee3441b584674195.png"
     },
     {
       "id": "019fddbd-f4d3-767a-9f35-f4221c10185b",
@@ -377,7 +393,8 @@
             "type": "removeStatus"
           }
         }
-      ]
+      ],
+      "mask": "farph-cyberpunk-mask-background-6a7640e03d80b896354595.png"
     },
     {
       "id": "019fddbd-f4c3-7d66-8fb4-4007c8bc1a5d",
@@ -402,7 +419,8 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "mask": "veli-cyberpunk-mask-background-6a7640fa0f292614976683.png"
     },
     {
       "id": "019fddbd-f4c6-7f03-b23a-b0464036eab7",
@@ -433,7 +451,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "weebou-cyberpunk-mask-background-6a7641550f2a8343745034.png"
     }
   ]
 }

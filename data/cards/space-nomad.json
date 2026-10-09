@@ -28,7 +28,9 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "vaisseau-monde-6ac0f0e8780d4647264119.png",
+      "holo": "basic"
     },
     {
       "id": "01a101ad-0e23-70a5-a3cb-1eb30436bcb2",
@@ -57,7 +59,9 @@
             "type": "destroy"
           }
         }
-      ]
+      ],
+      "mask": "veli-capitaine-corsaire-6ac0f0e8f2b88385364625.png",
+      "holo": "basic"
     },
     {
       "id": "01a101ad-101e-73a0-a5d6-898d1f13e5b8",
@@ -80,7 +84,8 @@
             "type": "draw"
           }
         }
-      ]
+      ],
+      "mask": "barlito-le-nomade-6ac0f0e97a6b9080570858.png"
     },
     {
       "id": "01a101ad-121f-7181-893b-c06ee518ac5d",
@@ -104,7 +109,8 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "mask": "benj-l-aristocrate-6ac0f0ea032d9510188543.png"
     },
     {
       "id": "01a101ad-140f-7e93-a546-a53c241b66b1",
@@ -123,7 +129,8 @@
             "count": 2
           }
         }
-      ]
+      ],
+      "mask": "brex-maitre-contrebandier-6ac0f0ea7c63c647737104.png"
     },
     {
       "id": "01a101ad-1829-7b8f-86c1-e786f43b4a67",
@@ -144,7 +151,8 @@
             "count": 2
           }
         }
-      ]
+      ],
+      "mask": "julian-chef-du-marche-noir-6ac0f0eb88dd5189207708.png"
     },
     {
       "id": "01a101ad-1a67-7b9e-99b7-c4048ab83c67",
@@ -169,7 +177,8 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "mask": "vaisseau-corsaire-6ac0f0ec20c9f323811708.png"
     },
     {
       "id": "01a101ad-1c34-76f3-bd75-05012a56eae9",
@@ -195,7 +204,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "farf-chef-d-escadron-6ac0f0ec9175d386257841.png"
     },
     {
       "id": "01a101ad-1e73-7be4-8b39-f5122127ed59",
@@ -219,7 +229,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "hipo-le-vice-capitaine-6ac0f0ed298e7542527961.png"
     },
     {
       "id": "01a101ad-228a-7e2e-9561-5c25f62b6bf3",
@@ -232,7 +243,8 @@
       "tags": [
         "trait:machine"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "transport-luxueux-6ac0f0ee3507b716138100.png"
     },
     {
       "id": "01a101ad-250f-798d-bbdb-59a2b3936906",
@@ -252,7 +264,8 @@
             "type": "draw"
           }
         }
-      ]
+      ],
+      "mask": "warny-le-marchand-6ac0f0eed2836149116936.png"
     },
     {
       "id": "01a101ad-2712-7a07-b468-4d6bdf3a4d97",
@@ -278,7 +291,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "benj-soldat-de-l-union-6ac0f0ef5c369694896283.png"
     },
     {
       "id": "01a101ad-2924-7b31-a242-b42692fb87ba",
@@ -291,7 +305,8 @@
       "tags": [
         "trait:machine"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "excavateur-d-helium-6ac0f0efdd8f8972036432.png"
     },
     {
       "id": "01a101ad-3211-7ece-a516-0cb01f87c1d8",
@@ -314,7 +329,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "pilote-de-l-union-6ac0f0f22f0e7212498269.png"
     },
     {
       "id": "01a101ad-3802-7575-9ef5-d4c393b279a8",
@@ -327,7 +343,8 @@
       "tags": [
         "trait:machine"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "vaisseau-de-fret-6ac0f0f3ae3a0973908524.png"
     }
   ]
 }

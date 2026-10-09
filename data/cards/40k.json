@@ -26,7 +26,9 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "empereur-de-l-humanite-6ac0f0de91f6a538744411.png",
+      "holo": "basic"
     },
     {
       "id": "01a101ac-e797-7604-9f19-1d35e535f6a5",
@@ -60,7 +62,9 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "prince-demon-du-chaos-6ac0f0df1ecba837281989.png",
+      "holo": "basic"
     },
     {
       "id": "01a101ac-e9cc-7f85-8403-c4f3d0a332bb",
@@ -103,7 +107,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "benj-champion-du-chaos-6ac0f0dfa8d6a054744986.png"
     },
     {
       "id": "01a101ac-ebb5-7700-8b31-1b3f2c4c6593",
@@ -123,7 +128,8 @@
             "count": {}
           }
         }
-      ]
+      ],
+      "mask": "nuee-de-tyranides-6ac0f0e02bfa7237521178.png"
     },
     {
       "id": "01a101ac-edd8-7325-bf52-5568bb6dd82f",
@@ -149,7 +155,8 @@
             "amount": 2
           }
         }
-      ]
+      ],
+      "mask": "princeps-du-mechanicus-6ac0f0e0b164f767571335.png"
     },
     {
       "id": "01a101ac-efbc-7d20-809f-fc88e2903873",
@@ -178,7 +185,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "tempete-du-warp-6ac0f0e133827546726021.png"
     },
     {
       "id": "01a101ac-f1a2-7a87-a052-4486d7ea0bb9",
@@ -194,7 +202,8 @@
       "statuses": [
         "tough"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "barlito-de-la-4e-legion-6ac0f0e1aa3ba521367835.png"
     },
     {
       "id": "01a101ac-f3a0-715c-ad03-9ac4e9007a1d",
@@ -219,7 +228,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "farf-de-la-8e-legion-6ac0f0e232793383575868.png"
     },
     {
       "id": "01a101ac-f57b-71b7-8946-55312c0f9f09",
@@ -243,7 +253,8 @@
             }
           }
         }
-      ]
+      ],
+      "mask": "julian-de-la-7e-legion-6ac0f0e2a67f4548960514.png"
     },
     {
       "id": "01a101ac-f747-7cda-943f-0a9e33c76a42",
@@ -268,7 +279,8 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "mask": "veli-de-la-3e-legion-6ac0f0e322d53447218635.png"
     },
     {
       "id": "01a101ac-f94e-73cc-af73-557b8cbc7d90",
@@ -295,7 +307,8 @@
             }
           ]
         }
-      ]
+      ],
+      "mask": "warny-de-la-13e-legion-6ac0f0e3a1610941433881.png"
     },
     {
       "id": "01a101ac-fb5c-7f53-9446-dee90a623b60",
@@ -318,7 +331,8 @@
             "amount": 1
           }
         }
-      ]
+      ],
+      "mask": "combattant-eldar-6ac0f0e42dd4f598599965.png"
     },
     {
       "id": "01a101ac-fd4a-7039-8fbf-8f53a8ffefa4",
@@ -337,7 +351,8 @@
             "status": "mad"
           }
         }
-      ]
+      ],
+      "mask": "demon-du-chaos-6ac0f0e4a62a4497765749.png"
     },
     {
       "id": "01a101ac-ff7a-7f81-8b19-4219f20117a5",
@@ -350,7 +365,8 @@
       "tags": [
         "trait:machine"
       ],
-      "abilities": []
+      "abilities": [],
+      "mask": "guerrier-necron-6ac0f0e53ad76997078693.png"
     },
     {
       "id": "01a101ad-0352-710b-98f7-fa35d76a6aae",
@@ -370,7 +386,8 @@
             "count": {}
           }
         }
-      ]
+      ],
+      "mask": "ork-de-la-waaagh-6ac0f0e636cf9534984979.png"
     },
     {
       "id": "01a101ad-0532-7e8a-9d3d-b6957f34db28",
@@ -381,7 +398,8 @@
       "cost": 2,
       "power": 3,
       "tags": [],
-      "abilities": []
+      "abilities": [],
+      "mask": "soldat-du-peuple-t-au-6ac0f0e6a6d82909973116.png"
     },
     {
       "id": "01a101ad-071b-7d9a-a84a-aa243984a098",
@@ -400,7 +418,8 @@
             "status": "mad"
           }
         }
-      ]
+      ],
+      "mask": "space-marine-du-chaos-6ac0f0e72f4d5545372345.png"
     }
   ]
 }
