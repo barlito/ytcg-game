@@ -16,7 +16,7 @@
   justify-content: center;
   align-items: center;
   gap: 4rem;
-  padding: 6rem 2rem 2rem;
+  padding: 8rem 2rem 2rem;
   overflow: auto;
   background:
     var(--scanlines), radial-gradient(ellipse 45% 60% at 74% 48%, rgb(var(--accent-rgb) / 22%), transparent 70%),
@@ -283,6 +283,35 @@
 .result-bar .btn-arcade {
   padding: 0.6rem 1.1rem;
   font-size: 0.75rem;
+}
+
+/* Short desktop windows: tighter, so the actions stay in view. */
+@media (min-width: 901px) and (max-height: 860px) {
+  .result {
+    padding-top: 7.25rem;
+    gap: 3rem;
+  }
+  .result-ticker {
+    top: 2.25rem;
+  }
+  .result-main {
+    gap: 0.9rem;
+  }
+  .result-title {
+    font-size: min(5.5rem, 15vw);
+  }
+  .result-subtitle {
+    font-size: 1.05rem;
+  }
+  .result-row__panel {
+    padding: 0.65rem 1.25rem;
+  }
+  .result-decisive {
+    gap: 0.9rem;
+  }
+  .result-decisive__card {
+    width: min(18rem, 100%);
+  }
 }
 
 /* Phones: one column, card compact under the subtitle. */
