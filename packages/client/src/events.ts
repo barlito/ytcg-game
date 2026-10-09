@@ -1,4 +1,4 @@
-import { type PlayerEvent, statusRule } from '@ytcg-game/engine';
+import { type PlayerEvent, crisisRule, statusRule } from '@ytcg-game/engine';
 import type { SeatInfo } from '@ytcg-game/server/protocol';
 import { catalog } from './catalog.ts';
 
@@ -21,6 +21,10 @@ function signedPower(delta: number): string {
 function statusLine(name: string, event: Extract<PlayerEvent, { type: 'statusChanged' }>): string {
   const adjective = statusRule(event.status).adjective;
   return event.stacks === 0 ? `${name} n'est plus ${adjective}.` : `${name} devient ${adjective}.`;
+}
+
+function crisisLine(name: string, event: Extract<PlayerEvent, { type: 'crisisStarted' }>): string {
+  return `${name} est prise de folie : ${crisisRule(event.crisis).name}.`;
 }
 
 function costLine(event: Extract<PlayerEvent, { type: 'costChanged' }>, known: KnownCards): string {
@@ -48,6 +52,7 @@ const FORMATTERS: { [K in PlayerEvent['type']]: Formatter<Extract<PlayerEvent, {
   powerChanged: (event, known) => `${cardName(known, event.card)} : ${signedPower(event.delta)}.`,
   cardDestroyed: (event, known) => `${cardName(known, event.card)} est détruite.`,
   statusChanged: (event, known) => statusLine(cardName(known, event.card), event),
+  crisisStarted: (event, known) => crisisLine(cardName(known, event.card), event),
   cardMoved: (event, known) =>
     `${cardName(known, event.card)} passe du lieu ${event.from + 1} au lieu ${event.to + 1}.`,
   costChanged: (event, known) => costLine(event, known),

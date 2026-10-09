@@ -49,6 +49,12 @@ describe('game log', () => {
     );
   });
 
+  it('logs the crisis drawn by a card gone mad', () => {
+    expect(describeEvent({ type: 'crisisStarted', card: 'p1c3', crisis: 'implosion' }, known, seats)).toBe(
+      `${name} est prise de folie : Implosion.`,
+    );
+  });
+
   it('logs moves, cost changes and cards added to hand', () => {
     expect(describeEvent({ type: 'cardMoved', card: 'p1c3', from: 0, to: 2 }, known, seats)).toBe(
       `${name} passe du lieu 1 au lieu 3.`,

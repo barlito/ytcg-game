@@ -89,8 +89,20 @@ describe('power breakdown', () => {
   it('lists statuses with their stacks and rule', () => {
     const card = { ...printedCard('a', defId), statuses: { high: 2, mad: 1 } };
     expect(statusLines(card)).toEqual([
-      { id: 'mad', name: 'Folie', stacks: 1, rule: 'Sans effet propre : d’autres cartes la lisent.' },
+      { id: 'mad', name: 'Folie', stacks: 1, rule: 'Ses effets de folie sont décrits sur la carte.' },
       { id: 'high', name: 'Défonce', stacks: 2, rule: 'Perd 1 puissance par cumul à chaque fin de tour.' },
+    ]);
+  });
+
+  it('names the crisis on the Folie pill and explains it', () => {
+    const card = { ...printedCard('a', defId), statuses: { mad: 1 }, crisis: 'wandering' as const };
+    expect(statusLines(card)).toEqual([
+      {
+        id: 'mad',
+        name: 'Folie · Errance',
+        stacks: 1,
+        rule: 'En fin de tour : se déplace vers un autre lieu au hasard.',
+      },
     ]);
   });
 });

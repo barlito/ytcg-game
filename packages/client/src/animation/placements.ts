@@ -15,7 +15,15 @@ export type Placements = ReadonlyMap<string, Placement>;
 // A card only known from its reveal event: printed values.
 export function printedCard(uid: string, defId: string): CardView {
   const { cost, power } = catalog.card(defId);
-  return { uid, defId, cost, power, breakdown: { printed: power, modifier: 0, ongoing: [] }, statuses: {} };
+  return {
+    uid,
+    defId,
+    cost,
+    power,
+    breakdown: { printed: power, modifier: 0, ongoing: [] },
+    statuses: {},
+    crisis: null,
+  };
 }
 
 export function trackPlacements(previous: Placements, view: PlayerView, events: readonly PlayerEvent[]): Placements {

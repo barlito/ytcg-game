@@ -1,4 +1,4 @@
-import { type CardView, STATUS_IDS, type StatusId, statusRule } from '@ytcg-game/engine';
+import { type CardView, STATUS_IDS, type StatusId, crisisRule, statusRule } from '@ytcg-game/engine';
 import { catalog } from './catalog.ts';
 
 export type PowerTrend = 'up' | 'down' | 'even';
@@ -48,6 +48,7 @@ export interface StatusLine {
 }
 
 const NO_RULE = 'Sans effet propre : d’autres cartes la lisent.';
+const MAD_OWN_RULE = 'Ses effets de folie sont décrits sur la carte.';
 
 export function statusLines(card: CardView): StatusLine[] {
   return STATUS_IDS.flatMap((id) => {
@@ -56,8 +57,20 @@ export function statusLines(card: CardView): StatusLine[] {
       return [];
     }
     const { name, rule } = statusRule(id);
+    if (id === 'mad') {
+      return [madLine(card, name, stacks)];
+    }
     return [{ id, name, stacks, rule: rule === undefined ? NO_RULE : capitalize(rule) }];
   });
+}
+
+// The Folie pill names the crisis (« Folie · Errance ») and the tooltip explains it.
+function madLine(card: CardView, name: string, stacks: number): StatusLine {
+  if (card.crisis === null) {
+    return { id: 'mad', name, stacks, rule: MAD_OWN_RULE };
+  }
+  const crisis = crisisRule(card.crisis);
+  return { id: 'mad', name: `${name} · ${crisis.name}`, stacks, rule: crisis.description };
 }
 
 function capitalize(text: string): string {
