@@ -1,7 +1,7 @@
 import type { CardView, GameResult, LocationView, PlayerView } from '@ytcg-game/engine';
 import { describe, expect, it } from 'vitest';
 import { decisiveCard, locationRows, resultKind, resultSubtitle, totalPower } from '../src/lib/endgame.ts';
-import { backAngles, fanAngle, turnSegments } from '../src/lib/fan.ts';
+import { backAngles, FAN_STEP, fanPose, fanRadiusRatio, turnSegments } from '../src/lib/fan.ts';
 import { leadOf } from '../src/lib/lead.ts';
 import { viewWith } from './support.ts';
 
@@ -89,9 +89,46 @@ describe('end of game', () => {
 });
 
 describe('board helpers', () => {
-  it('fans cards from -spread to +spread', () => {
-    expect(fanAngle(0, 1, 7)).toBe(0);
-    expect([0, 1, 2].map((index) => fanAngle(index, 3, 7))).toEqual([-7, 0, 7]);
+  it('puts the cards of the hand on one circle', () => {
+    expect(fanPose(0, 1)).toEqual({ angle: 0, offset: 0 });
+    for (const count of [2, 3, 4, 5, 6, 7]) {
+      const poses = Array.from({ length: count }, (_, index) => fanPose(index, count));
+      const angles = poses.map((pose) => pose.angle);
+      expect(angles[0]).toBeCloseTo(-(angles.at(-1) ?? 0));
+      expect(Math.abs(angles[0] ?? 0)).toBeLessThanOrEqual(10);
+      angles.slice(1).forEach((angle, index) => {
+        expect(angle - (angles[index] ?? 0)).toBeCloseTo(FAN_STEP);
+      });
+      poses.forEach((pose, index) => {
+        expect(pose.offset).toBeCloseTo(poses[count - 1 - index]?.offset ?? NaN);
+        expect(pose.offset).toBeLessThanOrEqual(1e-12);
+      });
+      expect(poses[0]?.offset).toBeCloseTo(0);
+    }
+    expect(fanPose(3, 7).angle).toBe(0);
+    expect(fanPose(6, 7).angle).toBeCloseTo(3 * FAN_STEP);
+    expect(fanPose(2, 5).offset).toBeLessThan(fanPose(1, 5).offset);
+  });
+
+  it('keeps the card centres on a circle of radius pitch / sin(step)', () => {
+    const radius = 1000 * fanRadiusRatio();
+    const centres = Array.from({ length: 7 }, (_, index) => {
+      const { angle, offset } = fanPose(index, 7);
+      const theta = (angle * Math.PI) / 180;
+      return { x: radius * Math.sin(theta), y: radius * offset };
+    });
+    const pivot = { x: 0, y: radius * fanPose(3, 7).offset + radius };
+    centres.forEach((centre) => {
+      const distance = Math.hypot(centre.x - pivot.x, centre.y - pivot.y);
+      expect(Math.abs(distance - radius)).toBeLessThan(1);
+    });
+  });
+
+  it('keeps the large hands under the cap', () => {
+    expect(Math.abs(fanPose(0, 12).angle)).toBeLessThanOrEqual(10);
+  });
+
+  it('fans the opponent card backs', () => {
     expect(backAngles(0)).toEqual([]);
     expect(backAngles(9)).toHaveLength(7);
     expect(backAngles(2)).toEqual([-8, 12]);

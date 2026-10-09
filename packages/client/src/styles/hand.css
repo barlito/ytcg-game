@@ -1,6 +1,13 @@
-/* Hand: a fan of cards (±7°), the playable ones raised, lifted again on hover; too expensive ones at 60 %. */
+/* Hand: the cards sit on one circle (lib/fan.ts: --fan = angle, --fan-y = height in radius units, --fan-ratio = R / pitch);
+   hovering / selecting slides a card out along its own radius; too expensive ones at 60 %. */
 .hand {
   --hand-n: 1;
+  --hand-gap: clamp(
+    -9rem,
+    (100cqi - var(--hand-n) * var(--hand-card) - 1rem - 2px) / max(var(--hand-n) - 1, 1),
+    0.5rem
+  );
+  --fan-r: calc((var(--hand-card) + var(--hand-gap)) * var(--fan-ratio, 20));
   position: relative;
   display: flex;
   justify-content: center;
@@ -31,31 +38,28 @@
   --hand-n: 7;
 }
 .hand > .card-slot {
+  --out: 0rem;
   flex: 0 0 var(--hand-card);
   align-self: end;
-  transform: rotate(var(--fan, 0deg));
-  transform-origin: 50% 140%;
-  transition: transform 0.25s;
+  /* Slide to the circle, turn to its tangent, then move along the card's own radius. */
+  transform: translateY(calc(var(--fan-r) * var(--fan-y, 0))) rotate(var(--fan, 0deg)) translateY(var(--out))
+    scale(var(--pop, 1));
+  transition: transform 0.2s;
 }
 /* Gap that fits the n cards in the hand width (100cqi): an overlap, at most 0.5rem apart. */
 .hand > .card-slot + .card-slot {
-  margin-left: clamp(-9rem, (100cqi - var(--hand-n) * var(--hand-card) - 1rem - 2px) / (var(--hand-n) - 1), 0.5rem);
+  margin-left: var(--hand-gap);
 }
-.hand > .card-slot.is-playable {
-  transform: rotate(var(--fan, 0deg)) translateY(-1.4rem);
-}
-.hand > .card-slot.is-playable:hover,
-.hand > .card-slot.is-playable:focus-visible,
+/* Playable or not, every card stays on the circle: only the opacity tells them apart. */
+.hand > .card-slot:hover,
+.hand > .card-slot:focus-visible,
 .hand > .card-slot.is-selected {
+  --out: -2.4rem;
+  --pop: 1.06;
   z-index: 2;
-  transform: translateY(-2.5rem) scale(1.04);
 }
 .hand > .card-slot.is-disabled {
   opacity: 0.6;
-}
-.hand > .card-slot.is-disabled:hover,
-.hand > .card-slot:focus-visible {
-  z-index: 2;
 }
 .hand.drop-valid {
   border-color: var(--cyan);
@@ -93,15 +97,15 @@
   .hand > .card-slot {
     scroll-snap-align: center;
   }
+  .hand {
+    --hand-gap: 0.4rem;
+  }
   .hand > .card-slot + .card-slot {
     margin-left: 0.4rem;
   }
-  .hand > .card-slot.is-playable {
-    transform: rotate(var(--fan, 0deg)) translateY(-0.9rem);
-  }
-  .hand > .card-slot.is-playable:hover,
-  .hand > .card-slot.is-playable:focus-visible,
+  .hand > .card-slot:hover,
+  .hand > .card-slot:focus-visible,
   .hand > .card-slot.is-selected {
-    transform: translateY(-1.4rem) scale(1.04);
+    --out: -1.2rem;
   }
 }

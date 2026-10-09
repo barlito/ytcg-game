@@ -2,6 +2,7 @@ import type { CardView } from '@ytcg-game/engine';
 import { cardFx } from '../../animation/scene.ts';
 import { useScene } from '../../animation/useReplay.ts';
 import { catalog } from '../../catalog.ts';
+import type { FanPose } from '../../lib/fan.ts';
 import { DraggableCard } from '../dnd/DraggableCard.tsx';
 import { CardButton } from './CardButton.tsx';
 import { CardBack, CardFace } from './CardFace.tsx';
@@ -68,13 +69,13 @@ interface HandProps {
   card: CardView;
   playable: boolean;
   selected: boolean;
-  // Position in the fan (rotation, in degrees) and the narrow layout (compact cards, no text).
-  angle: number;
+  // Position on the fan circle and the narrow layout (compact cards, no text).
+  pose: FanPose;
   narrow: boolean;
   onSelect: (uid: string | null) => void;
 }
 
-export function HandCard({ card, playable, selected, angle, narrow, onSelect }: HandProps): React.JSX.Element {
+export function HandCard({ card, playable, selected, pose, narrow, onSelect }: HandProps): React.JSX.Element {
   const fx = cardFx(useScene(), card.uid);
   const classes = ['in-hand', selected ? 'is-selected' : '', playable ? 'is-playable' : 'is-disabled'];
   return (
@@ -84,7 +85,7 @@ export function HandCard({ card, playable, selected, angle, narrow, onSelect }: 
       dragged={{ uid: card.uid, origin: 'hand' }}
       draggable={playable}
       className={classes.join(' ')}
-      style={{ '--fan': `${String(angle)}deg` } as React.CSSProperties}
+      style={{ '--fan': `${String(pose.angle)}deg`, '--fan-y': pose.offset } as React.CSSProperties}
       label={`${labelOf(card)}${playable ? '' : ', pas jouable maintenant'}`}
       pinned={selected}
       disabled={!playable}

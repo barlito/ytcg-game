@@ -22,9 +22,6 @@
 .card-slot.is-dragging {
   opacity: 0.25;
 }
-.card-slot.in-hand.is-selected .tcard {
-  transform: translateY(-10px);
-}
 .card-slot.in-hand.is-selected .tcard__body {
   box-shadow:
     0 0 0 2px var(--magenta),

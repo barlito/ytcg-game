@@ -1,11 +1,33 @@
 export type SegmentState = 'past' | 'current' | 'future';
 
-// Rotation of card `index` in a fan of `count` cards, from -spread to +spread degrees.
-export function fanAngle(index: number, count: number, spread: number): number {
-  if (count <= 1) {
-    return 0;
-  }
-  return Math.round((index / (count - 1) - 0.5) * 2 * spread * 10) / 10;
+// Angular spacing between two neighbours (degrees) and the largest angle a card may reach on the circle.
+export const FAN_STEP = 2.6;
+export const NARROW_FAN_STEP = 1.5;
+// Narrow screens (compact cards, scrolling hand) get a lighter arc.
+export function fanStep(narrow: boolean): number {
+  return narrow ? NARROW_FAN_STEP : FAN_STEP;
+}
+const MAX_ANGLE = 10;
+
+export interface FanPose {
+  // Rotation of the card, degrees: its angle on the circle.
+  angle: number;
+  // Vertical offset in radius units (down is positive), the hand edges at 0: (1 - cos θ) - (1 - cos θ_edge).
+  offset: number;
+}
+
+// Pose of card `index` among `count` cards on one circle: constant angular step, centre highest, y = R (1 - cos θ).
+export function fanPose(index: number, count: number, step: number = FAN_STEP): FanPose {
+  const gap = Math.min(step, count > 1 ? (2 * MAX_ANGLE) / (count - 1) : step);
+  const angle = (index - (count - 1) / 2) * gap;
+  const edge = ((count - 1) / 2) * gap;
+  const sag = (degrees: number): number => 1 - Math.cos((degrees * Math.PI) / 180);
+  return { angle, offset: sag(angle) - sag(edge) };
+}
+
+// Radius / pitch between two neighbours: R = pitch / sin(step), so the centres stay on the circle.
+export function fanRadiusRatio(step: number = FAN_STEP): number {
+  return 1 / Math.sin((step * Math.PI) / 180);
 }
 
 // Mini card backs of the opponent hand (at most `cap`), fanned from -8° to +12° like the design.

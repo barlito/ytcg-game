@@ -2,7 +2,7 @@ import { useDroppable } from '@dnd-kit/core';
 import type { PlayerView } from '@ytcg-game/engine';
 import { useScene } from '../animation/useReplay.ts';
 import { canDrop, dropId } from '../dnd.ts';
-import { fanAngle } from '../lib/fan.ts';
+import { fanPose, fanRadiusRatio, fanStep } from '../lib/fan.ts';
 import { useMediaQuery } from '../lib/useMediaQuery.ts';
 import { HandCard } from './card/BoardCards.tsx';
 import { useDragged } from './dnd/DragContext.ts';
@@ -22,6 +22,7 @@ export function HandBar({ view, selected, onSelect }: Props): React.JSX.Element 
   const { setNodeRef, isOver } = useDroppable({ id: dropId({ kind: 'hand' }), disabled: !takesBack });
   const redrawing = scene.current?.type === 'handRedrawn' && scene.current.player === view.you;
   const shown = view.hand.filter((card) => !scene.undrawn.has(card.uid));
+  const step = fanStep(narrow);
   const classes = [
     'hand',
     takesBack ? 'drop-valid' : '',
@@ -29,7 +30,13 @@ export function HandBar({ view, selected, onSelect }: Props): React.JSX.Element 
     redrawing ? 'fx-shuffle' : '',
   ];
   return (
-    <div ref={setNodeRef} className={classes.join(' ')} aria-label="Ta main" data-count={shown.length}>
+    <div
+      ref={setNodeRef}
+      className={classes.join(' ')}
+      aria-label="Ta main"
+      data-count={shown.length}
+      style={{ '--fan-ratio': fanRadiusRatio(step) } as React.CSSProperties}
+    >
       {takesBack && <p className="hand-hint">Lâche ici pour reprendre la carte</p>}
       {shown.map((card, index) => (
         <HandCard
@@ -37,7 +44,7 @@ export function HandBar({ view, selected, onSelect }: Props): React.JSX.Element 
           card={card}
           playable={view.playableCards.includes(card.uid)}
           selected={selected === card.uid}
-          angle={fanAngle(index, shown.length, narrow ? 3 : 7)}
+          pose={fanPose(index, shown.length, step)}
           narrow={narrow}
           onSelect={onSelect}
         />
