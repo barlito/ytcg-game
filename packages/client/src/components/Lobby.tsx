@@ -18,6 +18,7 @@ export function Lobby({ code, onLeave }: Props): React.JSX.Element {
       >
         {code}
       </button>
+      <p>Touche le code pour le copier.</p>
       <button type="button" className="btn-ghost" onClick={onLeave}>
         Annuler
       </button>

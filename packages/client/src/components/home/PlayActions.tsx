@@ -1,5 +1,6 @@
 import type { JoinOptions } from '@ytcg-game/server/protocol';
 import { useState } from 'react';
+import { ROOM_CODE_MAX_LENGTH, normalizeRoomCode } from '../../lib/roomCode.ts';
 
 export interface PlayHandlers {
   onCreate: (options: JoinOptions) => void;
@@ -28,12 +29,15 @@ function JoinForm({ disabled, onJoin }: { disabled: boolean; onJoin: (code: stri
       <label className="join-field__input">
         <span>Code d’un ami</span>
         <input
-          placeholder="K7-Q2X"
+          placeholder="KQX"
           autoComplete="off"
+          autoCapitalize="characters"
           spellCheck={false}
+          // Room for a pasted « kq x » or « K-Q-X »: the value is normalized and clamped below.
+          maxLength={ROOM_CODE_MAX_LENGTH * 2}
           value={code}
           onChange={(event) => {
-            setCode(event.target.value);
+            setCode(normalizeRoomCode(event.target.value).slice(0, ROOM_CODE_MAX_LENGTH));
           }}
         />
       </label>
