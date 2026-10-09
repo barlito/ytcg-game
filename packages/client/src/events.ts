@@ -23,6 +23,18 @@ function statusLine(name: string, event: Extract<PlayerEvent, { type: 'statusCha
   return event.stacks === 0 ? `${name} n'est plus ${adjective}.` : `${name} devient ${adjective}.`;
 }
 
+function costLine(event: Extract<PlayerEvent, { type: 'costChanged' }>, known: KnownCards): string {
+  const change = `${Math.abs(event.delta)} de ${event.delta < 0 ? 'moins' : 'plus'}`;
+  return event.card === null
+    ? `La prochaine carte que tu joues coûte ${change}.`
+    : `${cardName(known, event.card)} coûte ${change}.`;
+}
+
+function addedLine(event: Extract<PlayerEvent, { type: 'cardAddedToHand' }>, seats: readonly SeatInfo[]): string {
+  const name = event.defId === null ? 'une carte' : (catalog.cards.get(event.defId)?.name ?? 'une carte');
+  return `${seatName(seats, event.player)} ajoute ${name} à sa main.`;
+}
+
 type Formatter<E extends PlayerEvent> = (event: E, known: KnownCards, seats: readonly SeatInfo[]) => string | null;
 
 // One formatter per event type: TypeScript refuses the table if a type is missing.
@@ -36,6 +48,10 @@ const FORMATTERS: { [K in PlayerEvent['type']]: Formatter<Extract<PlayerEvent, {
   powerChanged: (event, known) => `${cardName(known, event.card)} : ${signedPower(event.delta)}.`,
   cardDestroyed: (event, known) => `${cardName(known, event.card)} est détruite.`,
   statusChanged: (event, known) => statusLine(cardName(known, event.card), event),
+  cardMoved: (event, known) =>
+    `${cardName(known, event.card)} passe du lieu ${event.from + 1} au lieu ${event.to + 1}.`,
+  costChanged: (event, known) => costLine(event, known),
+  cardAddedToHand: (event, _known, seats) => addedLine(event, seats),
   cardDrawn: () => null,
   gameEnded: () => null,
 };

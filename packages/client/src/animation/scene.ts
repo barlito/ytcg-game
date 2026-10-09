@@ -78,9 +78,19 @@ function statusFloat(event: Extract<PlayerEvent, { type: 'statusChanged' }>): st
   return event.stacks > 1 ? `${name} ×${event.stacks}` : name;
 }
 
+type CardEffectEvent = Extract<
+  PlayerEvent,
+  { type: 'cardRevealed' | 'cardDestroyed' | 'powerChanged' | 'statusChanged' | 'cardDrawn' }
+>;
+
+// Moves, cost changes and cards added to hand have no animation yet: the journal line is enough.
+function isCardEffectEvent(event: PlayerEvent): event is CardEffectEvent {
+  return ['cardRevealed', 'cardDestroyed', 'powerChanged', 'statusChanged', 'cardDrawn'].includes(event.type);
+}
+
 function effectOn(event: PlayerEvent, uid: string): Omit<CardFx, 'faceDown'> {
   const none = { effect: null, float: null };
-  if (!('card' in event) || event.card !== uid) {
+  if (!isCardEffectEvent(event) || event.card !== uid) {
     return none;
   }
   switch (event.type) {

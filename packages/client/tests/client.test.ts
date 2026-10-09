@@ -49,6 +49,24 @@ describe('game log', () => {
     );
   });
 
+  it('logs moves, cost changes and cards added to hand', () => {
+    expect(describeEvent({ type: 'cardMoved', card: 'p1c3', from: 0, to: 2 }, known, seats)).toBe(
+      `${name} passe du lieu 1 au lieu 3.`,
+    );
+    expect(describeEvent({ type: 'costChanged', player: 0, card: 'p1c3', delta: -1 }, known, seats)).toBe(
+      `${name} coûte 1 de moins.`,
+    );
+    expect(describeEvent({ type: 'costChanged', player: 0, card: null, delta: -2 }, known, seats)).toBe(
+      'La prochaine carte que tu joues coûte 2 de moins.',
+    );
+    expect(describeEvent({ type: 'cardAddedToHand', player: 1, card: 'p1c20', defId }, known, seats)).toBe(
+      `Bob ajoute ${name} à sa main.`,
+    );
+    expect(describeEvent({ type: 'cardAddedToHand', player: 1, card: null, defId: null }, known, seats)).toBe(
+      'Bob ajoute une carte à sa main.',
+    );
+  });
+
   it('stays vague about unknown cards and silent about draws', () => {
     expect(describeEvent({ type: 'cardDestroyed', card: 'p0c9' }, known, seats)).toBe('Une carte est détruite.');
     expect(describeEvent({ type: 'cardDrawn', player: 1, card: null }, known, seats)).toBeNull();
