@@ -6,9 +6,14 @@ import { type PowerTrend, powerTrend, statusLines } from '../../power.ts';
 import type { CardEffect } from '../../animation/scene.ts';
 import '../../styles/card-band.css';
 import '../../styles/cards.css';
+import '../../styles/holo.css';
+import '../../styles/holo-cosmos.css';
+import '../../styles/holo-shine-basic.css';
+import '../../styles/holo-trainer.css';
 import { Artwork } from '../Artwork.tsx';
 import { CardBand, type CardSize } from './CardBand.tsx';
-import { type RarityKey, hasSheen, rarityKey } from './rarity.ts';
+import { HoloLayers, useHolo } from './Holo.tsx';
+import { type RarityKey, rarityKey } from './rarity.ts';
 
 export interface PlateProps {
   definition: CardDefinition;
@@ -40,8 +45,8 @@ function StatusPills({ labels }: { labels: readonly string[] }): React.JSX.Eleme
   );
 }
 
-function plateClasses({ effect = null, fresh = false, dim = false }: PlateProps): string {
-  return ['tcard', effect === null ? '' : `fx-${effect}`, fresh ? 'is-fresh' : '', dim ? 'is-dim' : '']
+function plateClasses({ effect = null, fresh = false, dim = false }: PlateProps, holo: string): string {
+  return ['tcard', effect === null ? '' : `fx-${effect}`, fresh ? 'is-fresh' : '', dim ? 'is-dim' : '', holo]
     .filter(Boolean)
     .join(' ');
 }
@@ -50,19 +55,21 @@ function plateClasses({ effect = null, fresh = false, dim = false }: PlateProps)
 export function CardPlate(props: PlateProps): React.JSX.Element {
   const { definition, cost, power, trend = 'even', statuses = [], size = 'full' } = props;
   const rarity = rarityKey(definition);
+  const holo = useHolo(definition, size);
   return (
     <div
-      className={plateClasses(props)}
+      className={plateClasses(props, holo.className)}
+      style={holo.style}
       data-rarity={rarity}
       data-size={size}
+      onPointerEnter={holo.arm}
       onPointerMove={tiltOnMove}
       onPointerLeave={tiltOnLeave}
     >
       <div className="tcard__body">
         <Artwork key={definition.id} image={definition.image} className="tcard__art" />
-        <span className="tcard__glare" />
+        {holo.lit ? <HoloLayers /> : <span className="tcard__glare" />}
         <span className="tcard__mat" />
-        {hasSheen(rarity) && <span className="tcard__sheen" />}
         <span className="tcard__name">{definition.name}</span>
         <span className="tcard__ext">{catalog.extensions.get(definition.extension) ?? ''}</span>
         <CardBand definition={definition} rarity={rarity} size={size} cost={cost} power={power} trend={trend} />

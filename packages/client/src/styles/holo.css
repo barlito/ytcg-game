@@ -1,0 +1,217 @@
+/*
+ * Holo layers of the game card: shine + glare over the artwork, driven by the pointer variables written by
+ * lib/hoverTilt.ts (no React render). The recipes live in holo-*.css (ported from the ytcg card, GPL v3, see NOTICE.md).
+ */
+@property --pointer-x {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 35%;
+}
+@property --pointer-y {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 30%;
+}
+@property --pointer-from-left {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.35;
+}
+@property --pointer-from-top {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.3;
+}
+@property --pointer-from-center {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0.5;
+}
+@property --background-x {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 46%;
+}
+@property --background-y {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 43%;
+}
+@property --card-opacity {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+:root {
+  --sunpillar-1: hsl(2deg 100% 73%);
+  --sunpillar-2: hsl(53deg 100% 69%);
+  --sunpillar-3: hsl(93deg 100% 69%);
+  --sunpillar-4: hsl(176deg 100% 76%);
+  --sunpillar-5: hsl(228deg 100% 74%);
+  --sunpillar-6: hsl(283deg 100% 73%);
+}
+
+.tcard.is-holo {
+  --glitter: url('../assets/holo/glitter.webp');
+  --glittersize: 25%;
+  --glare-strength: 0.7;
+  --space: 5%;
+  --angle: 133deg;
+  --imgsize: cover;
+  --red: #f80e35;
+  --yellow: #eedf10;
+  --green: #21e985;
+  --blue: #0dbde9;
+  --violet: #c929f1;
+  --sunpillar-clr-1: var(--sunpillar-1);
+  --sunpillar-clr-2: var(--sunpillar-2);
+  --sunpillar-clr-3: var(--sunpillar-3);
+  --sunpillar-clr-4: var(--sunpillar-4);
+  --sunpillar-clr-5: var(--sunpillar-5);
+  --sunpillar-clr-6: var(--sunpillar-6);
+  transition:
+    transform 0.2s ease,
+    filter 0.2s,
+    --card-opacity 0.3s;
+}
+
+/* Layers: absolute, grid-stacked pseudo-elements (base.css .card__shine). */
+.tholo__shine,
+.tholo__glare {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  overflow: hidden;
+  pointer-events: none;
+  /* Off the paint path unless the card is lit: a board of 24 cards pays nothing at rest. */
+  visibility: hidden;
+  transition: visibility 0s 0.3s;
+}
+.tholo__shine {
+  background: transparent;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.85) contrast(2.75) saturate(0.65);
+  mix-blend-mode: color-dodge;
+  opacity: var(--card-opacity);
+}
+.tholo__shine::before,
+.tholo__shine::after {
+  --sunpillar-clr-1: var(--sunpillar-5);
+  --sunpillar-clr-2: var(--sunpillar-6);
+  --sunpillar-clr-3: var(--sunpillar-1);
+  --sunpillar-clr-4: var(--sunpillar-2);
+  --sunpillar-clr-5: var(--sunpillar-3);
+  --sunpillar-clr-6: var(--sunpillar-4);
+  grid-area: 1 / 1;
+  border-radius: inherit;
+}
+.tholo__shine::after {
+  --sunpillar-clr-1: var(--sunpillar-6);
+  --sunpillar-clr-2: var(--sunpillar-1);
+  --sunpillar-clr-3: var(--sunpillar-2);
+  --sunpillar-clr-4: var(--sunpillar-3);
+  --sunpillar-clr-5: var(--sunpillar-4);
+  --sunpillar-clr-6: var(--sunpillar-5);
+}
+.tholo__glare {
+  background-image: radial-gradient(
+    farthest-corner circle at var(--pointer-x) var(--pointer-y),
+    hsl(0deg 0% 100% / 55%) 10%,
+    hsl(0deg 0% 100% / 40%) 20%,
+    hsl(0deg 0% 0% / 50%) 90%
+  );
+  opacity: calc(var(--card-opacity) * var(--glare-strength));
+  mix-blend-mode: overlay;
+}
+.tcard[class*='holo--'] .tholo__shine {
+  opacity: var(--card-opacity);
+}
+.tcard[class*='holo--'] .tholo__glare {
+  opacity: calc(var(--card-opacity) * var(--glare-strength));
+}
+
+/* The ytcg mask clips the foil to the lit area of the artwork (CORS: same origin or the dev proxy). */
+.tcard.is-masked .tholo__shine,
+.tcard.is-masked .tholo__shine::before,
+.tcard.is-masked .tholo__shine::after {
+  mask-image: var(--mask);
+  mask-size: cover;
+  mask-position: center;
+}
+
+/* Lit by the pointer, or at rest on the big cards (hand, spotlight, previews) at a fixed pose. */
+.tcard.is-holo.is-tilting {
+  --card-opacity: 1;
+}
+.tcard.is-holo[data-size='full'] {
+  --card-opacity: 0.5;
+}
+.tcard.is-holo[data-size='full'].is-tilting {
+  --card-opacity: 1;
+}
+.tcard.is-holo.is-tilting .tholo__shine,
+.tcard.is-holo.is-tilting .tholo__glare,
+.tcard.is-holo[data-size='full'] .tholo__shine,
+.tcard.is-holo[data-size='full'] .tholo__glare {
+  visibility: visible;
+  transition: none;
+}
+
+/* Spotlight: nobody holds the pointer, so the light drifts by itself (all seven variables move together). */
+.spotlight__face .tcard.is-holo {
+  --card-opacity: 0.8;
+  animation: holo-drift 7s ease-in-out infinite alternate;
+}
+@keyframes holo-drift {
+  0% {
+    --pointer-x: 22%;
+    --pointer-y: 18%;
+    --pointer-from-left: 0.22;
+    --pointer-from-top: 0.18;
+    --pointer-from-center: 0.85;
+    --background-x: 42.7%;
+    --background-y: 39.1%;
+  }
+  33% {
+    --pointer-x: 78%;
+    --pointer-y: 30%;
+    --pointer-from-left: 0.78;
+    --pointer-from-top: 0.3;
+    --pointer-from-center: 0.69;
+    --background-x: 57.3%;
+    --background-y: 43.2%;
+  }
+  66% {
+    --pointer-x: 60%;
+    --pointer-y: 82%;
+    --pointer-from-left: 0.6;
+    --pointer-from-top: 0.82;
+    --pointer-from-center: 0.67;
+    --background-x: 52.6%;
+    --background-y: 60.9%;
+  }
+  100% {
+    --pointer-x: 28%;
+    --pointer-y: 70%;
+    --pointer-from-left: 0.28;
+    --pointer-from-top: 0.7;
+    --pointer-from-center: 0.59;
+    --background-x: 44.3%;
+    --background-y: 56.8%;
+  }
+}
+
+/* Reduced motion: a still foil on the big cards, no drift, no fade. */
+@media (prefers-reduced-motion: reduce) {
+  .spotlight__face .tcard.is-holo {
+    animation: none;
+  }
+  .tcard.is-holo {
+    transition: none;
+  }
+  .tcard.is-holo[data-size='full'] {
+    --card-opacity: 0.6;
+  }
+}
