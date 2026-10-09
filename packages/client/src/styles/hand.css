@@ -60,6 +60,11 @@
 }
 .hand > .card-slot.is-disabled {
   opacity: 0.6;
+} /* Desktop: the hand sits lower, its bottom may leave the board (clipped there), so the lifted card clears the tiles. */
+@media (min-width: 901px) {
+  .hand {
+    top: calc(var(--hand-card) * 0.25);
+  }
 }
 .hand.drop-valid {
   border-color: var(--cyan);

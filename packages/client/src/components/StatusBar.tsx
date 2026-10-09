@@ -3,7 +3,7 @@ import type { SeatInfo } from '@ytcg-game/server/protocol';
 import { useEffect, useState } from 'react';
 import { useScene } from '../animation/useReplay.ts';
 import { turnClock } from '../clock.ts';
-import { backAngles, turnSegments } from '../lib/fan.ts';
+import { BACK_STEP, fanPose, fanRadiusRatio, turnSegments } from '../lib/fan.ts';
 import { Avatar } from './ui/Avatar.tsx';
 
 interface Props {
@@ -64,10 +64,21 @@ function Timer({ turnDeadline, revealUntil }: Pick<Props, 'turnDeadline' | 'reve
 
 function HandBacks({ count }: { count: number }): React.JSX.Element {
   return (
-    <span className="hand-backs" aria-hidden="true">
-      {backAngles(count).map((angle, index) => (
-        <span key={index} className="mini-back" style={{ '--tilt': `${String(angle)}deg` } as React.CSSProperties} />
-      ))}
+    <span
+      className="hand-backs"
+      aria-hidden="true"
+      style={{ '--fan-ratio': fanRadiusRatio(BACK_STEP) } as React.CSSProperties}
+    >
+      {Array.from({ length: Math.min(count, 7) }, (_, index) => {
+        const { angle, offset } = fanPose(index, Math.min(count, 7), BACK_STEP);
+        return (
+          <span
+            key={index}
+            className="mini-back"
+            style={{ '--tilt': `${String(angle)}deg`, '--fan-y': offset } as React.CSSProperties}
+          />
+        );
+      })}
     </span>
   );
 }

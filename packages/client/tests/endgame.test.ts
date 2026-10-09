@@ -1,7 +1,7 @@
 import type { CardView, GameResult, LocationView, PlayerView } from '@ytcg-game/engine';
 import { describe, expect, it } from 'vitest';
 import { decisiveCard, locationRows, resultKind, resultSubtitle, totalPower } from '../src/lib/endgame.ts';
-import { backAngles, FAN_STEP, fanPose, fanRadiusRatio, turnSegments } from '../src/lib/fan.ts';
+import { BACK_STEP, FAN_STEP, fanPose, fanRadiusRatio, turnSegments } from '../src/lib/fan.ts';
 import { leadOf } from '../src/lib/lead.ts';
 import { viewWith } from './support.ts';
 
@@ -128,10 +128,8 @@ describe('board helpers', () => {
     expect(Math.abs(fanPose(0, 12).angle)).toBeLessThanOrEqual(10);
   });
 
-  it('fans the opponent card backs', () => {
-    expect(backAngles(0)).toEqual([]);
-    expect(backAngles(9)).toHaveLength(7);
-    expect(backAngles(2)).toEqual([-8, 12]);
+  it('keeps a wide fan symmetrical', () => {
+    expect(fanPose(0, 7, BACK_STEP).angle).toBeCloseTo(-fanPose(6, 7, BACK_STEP).angle);
   });
 
   it('marks the six turn segments', () => {

@@ -17,6 +17,8 @@
   max-width: 120rem;
   margin: 0 auto;
   padding: 0 1rem 1rem;
+  /* The lowered hand may leave the bottom: no page scroll. */
+  overflow-y: clip;
 }
 
 /* Backdrop: radials, scanlines, perspective grid on the floor. */
@@ -118,6 +120,8 @@
 .hand-backs {
   display: flex;
   margin-left: 0.5rem;
+  /* Same circle as the hand: radius = pitch (card width minus overlap) / sin(step). */
+  --back-r: calc(0.85rem * var(--fan-ratio));
 }
 .mini-back {
   position: relative;
@@ -131,7 +135,7 @@
     0 0 0 1px var(--primary),
     0 0 8px rgb(160 53 238 / 55%),
     0 2px 6px rgb(0 0 0 / 60%);
-  transform: rotate(var(--tilt));
+  transform: translateY(calc(var(--back-r) * var(--fan-y))) rotate(var(--tilt));
 }
 .mini-back + .mini-back {
   margin-left: -0.9rem;
