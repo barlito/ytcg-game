@@ -31,10 +31,11 @@
 .location-side {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, var(--slot-w));
+  justify-content: center;
   gap: 0.5rem;
-  /* One row of cards even when empty (container: the location). */
-  min-height: calc((100cqi - 1.5rem) / 4 / 0.718);
+  /* One row of cards even when empty. */
+  min-height: calc(var(--slot-w) / 0.718);
 }
 .location-side.opponent {
   align-content: end;
@@ -225,6 +226,7 @@
   }
   .location-side {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: normal;
     gap: 0.25rem;
     /* Two rows of mini cards (container: the location). */
     min-height: calc((100cqi - 0.25rem) / 2 / 0.718 * 2 + 0.25rem);
