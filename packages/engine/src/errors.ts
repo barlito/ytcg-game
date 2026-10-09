@@ -7,6 +7,7 @@ export type IllegalActionCode =
   | 'notEnoughEnergy'
   | 'unknownLocation'
   | 'locationFull'
+  | 'locationClosed'
   | 'mulliganUnavailable';
 
 export class IllegalActionError extends Error {

@@ -6,7 +6,15 @@ import { leadOf } from '../src/lib/lead.ts';
 import { viewWith } from './support.ts';
 
 function card(uid: string, power: number): CardView {
-  return { uid, defId: 'x', cost: 1, power, breakdown: { printed: power, modifier: 0, ongoing: [] }, statuses: {} };
+  return {
+    uid,
+    defId: 'x',
+    cost: 1,
+    power,
+    breakdown: { printed: power, modifier: 0, ongoing: [] },
+    statuses: {},
+    crisis: null,
+  };
 }
 
 // Location 0: you 12 vs 5 (won), location 1: 3 vs 9 (lost), location 2: 7 vs 7 (tie).

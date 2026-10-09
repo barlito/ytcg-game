@@ -7,7 +7,7 @@ import {
   type OngoingEffect,
   cardFilterSchema,
 } from './board.ts';
-import { PLAYERS } from '../state.ts';
+import { AddCostEffect, AddToHandEffect, MoveEffect, owners } from './effects-cards.ts';
 import { statusSchema } from './statuses.ts';
 
 const addPowerSchema = z.object({
@@ -84,7 +84,7 @@ export class DrawEffect implements Effect {
 
   // A location has no owner: both players draw.
   apply(board: Board, source: AbilitySource): void {
-    for (const player of source.owner === null ? PLAYERS : [source.owner]) {
+    for (const player of owners(source)) {
       board.draw(player, this.params.count);
     }
   }
@@ -150,6 +150,9 @@ export const effectSchema = z.discriminatedUnion('type', [
   DestroyEffect.schema,
   AddStatusEffect.schema,
   RemoveStatusEffect.schema,
+  MoveEffect.schema,
+  AddCostEffect.schema,
+  AddToHandEffect.schema,
 ]);
 
 export type EffectParams = z.output<typeof effectSchema>;
@@ -157,7 +160,7 @@ export type EffectParams = z.output<typeof effectSchema>;
 export const ONGOING_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['addPower', 'addPowerPerCard']);
 
 // Effects that ignore the target of their ability.
-export const UNTARGETED_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['draw']);
+export const UNTARGETED_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['draw', 'addCost', 'addToHand']);
 
 export function createEffect(params: EffectParams): Effect {
   switch (params.type) {
@@ -173,5 +176,11 @@ export function createEffect(params: EffectParams): Effect {
       return new AddStatusEffect(params);
     case 'removeStatus':
       return new RemoveStatusEffect(params);
+    case 'move':
+      return new MoveEffect(params);
+    case 'addCost':
+      return new AddCostEffect(params);
+    case 'addToHand':
+      return new AddToHandEffect(params);
   }
 }

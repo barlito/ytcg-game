@@ -26,7 +26,7 @@ function playCheckedTurn(start: GameState, rng: Rng): GameState {
   for (const player of PLAYERS) {
     const actions: GameAction[] = [];
     const card = playableCards(catalog, state, player)[0];
-    const location = openLocations(state, player)[0];
+    const location = openLocations(catalog, state, player)[0];
     if (card !== undefined && location !== undefined) {
       actions.push({ type: 'play', player, card, location });
       if (rng.int(4) === 0) {

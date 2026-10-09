@@ -20,18 +20,34 @@ export const cardFilterSchema = z.object(cardFilterShape);
 
 export type CardFilter = z.output<typeof cardFilterSchema>;
 
+// Which card played on a location triggers an onCardPlayedHere ability (side defaults to "all": any card).
+export const playedFilterSchema = z.object({
+  side: sideSchema.default('all'),
+  tag: tagSchema.optional(),
+  status: statusSchema.optional(),
+});
+
+export type PlayedFilter = z.output<typeof playedFilterSchema>;
+
 // Where an ability comes from: a card (owner + card set) or a location (both null).
 export interface AbilitySource {
   readonly owner: PlayerIndex | null;
   readonly location: number;
   readonly card: string | null;
+  // The card that was just played, for the onCardPlayedHere trigger.
+  readonly played?: string;
 }
+
+export const MOVE_DESTINATIONS = ['random', 'left', 'right'] as const;
+
+export type MoveDestination = (typeof MOVE_DESTINATIONS)[number];
 
 // Read-only view of the board. Only revealed cards on the board exist for abilities.
 export interface BoardView {
   readonly turn: number;
   cardsMatching(source: AbilitySource, filter: CardFilter): string[];
   power(card: string): number;
+  hasStatus(card: string, status: StatusId): boolean;
 }
 
 // What effects may do on top of reading.
@@ -43,6 +59,17 @@ export interface Board extends BoardView {
   addStatus(card: string, status: StatusId, stacks: number): void;
   // null removes every status.
   removeStatus(card: string, status: StatusId | null): void;
+  // Moves a board card to another location of its side that has a free place; nothing happens without one.
+  move(card: string, destination: MoveDestination): void;
+  // Changes the cost of the cards in hand of a player (tag null = every card), or of the next card played.
+  addHandCost(player: PlayerIndex, amount: number, tag: string | null): void;
+  addNextCost(player: PlayerIndex, amount: number, tag: string | null): void;
+  // Adds a new copy of a catalog card to the hand (nothing when the hand is full).
+  addToHand(player: PlayerIndex, defId: string): void;
+  // A card just went mad: fires its onMad abilities, or draws its crisis when it has no madness effect of its own.
+  becomeMad(card: string): void;
+  // Id of the definition of a board card.
+  defIdOf(card: string): string;
 }
 
 export interface Condition {

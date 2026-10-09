@@ -188,6 +188,16 @@
             "type": "addPower",
             "amount": 1
           }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
         }
       ],
       "mask": "benj-gardien-de-l-arbre-6ac0f0f888420831916953.png"

@@ -24,7 +24,11 @@ const DURATIONS: Record<PlayerEvent['type'], number> = {
   cardRevealed: 550,
   powerChanged: 500,
   cardDestroyed: 650,
+  cardMoved: 500,
+  costChanged: 100,
+  cardAddedToHand: 300,
   statusChanged: 500,
+  crisisStarted: 100,
   gameEnded: 600,
 };
 

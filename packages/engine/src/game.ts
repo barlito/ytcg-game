@@ -2,8 +2,9 @@ import type { GameAction } from './action.ts';
 import type { Catalog } from './catalog.ts';
 import { Runtime } from './runtime/runtime.ts';
 import { type GameSetup, startGame } from './runtime/setup.ts';
-import { cardAt, locationAt, occupancy } from './runtime/state-access.ts';
-import { LOCATION_CAPACITY } from './rules.ts';
+import { effectiveCost } from './runtime/hand.ts';
+import { canPlayAt } from './runtime/location-rules.ts';
+import { cardAt, locationAt } from './runtime/state-access.ts';
 import type { GameEvent, GameState, PlayerIndex } from './state.ts';
 
 export { type GameSetup, type PlayerSetup, validateDeck } from './runtime/setup.ts';
@@ -64,11 +65,17 @@ export function remainingEnergy(state: GameState, player: PlayerIndex): number {
   return energy - spent;
 }
 
-export function playableCards(catalog: Catalog, state: GameState, player: PlayerIndex): string[] {
-  const left = remainingEnergy(state, player);
-  return state.players[player].hand.filter((uid) => catalog.card(cardAt(state, uid).defId).cost <= left);
+// What a card costs now (cost changes included, never below 0).
+export function costOf(catalog: Catalog, state: GameState, card: string): number {
+  return effectiveCost(new Runtime(catalog, state).board.handContext, card);
 }
 
-export function openLocations(state: GameState, player: PlayerIndex): number[] {
-  return state.locations.flatMap((_, index) => (occupancy(state, player, index) < LOCATION_CAPACITY ? [index] : []));
+export function playableCards(catalog: Catalog, state: GameState, player: PlayerIndex): string[] {
+  const left = remainingEnergy(state, player);
+  return state.players[player].hand.filter((uid) => costOf(catalog, state, uid) <= left);
+}
+
+// Locations where a card can be played: open, with a free place.
+export function openLocations(catalog: Catalog, state: GameState, player: PlayerIndex): number[] {
+  return state.locations.flatMap((_, index) => (canPlayAt(catalog, state, player, index) ? [index] : []));
 }

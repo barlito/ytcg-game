@@ -125,6 +125,16 @@
               "status": "mad"
             }
           }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
         }
       ],
       "mask": "benjamen-mask-background-6a78a7f54d053641660963.png"

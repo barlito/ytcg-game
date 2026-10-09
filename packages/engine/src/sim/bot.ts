@@ -8,7 +8,7 @@ export function playRandomTurn(catalog: Catalog, state: GameState, player: Playe
   let current = state;
   for (;;) {
     const cards = playableCards(catalog, current, player);
-    const locations = openLocations(current, player);
+    const locations = openLocations(catalog, current, player);
     if (cards.length === 0 || locations.length === 0 || rng.next() < 0.1) {
       break;
     }

@@ -1,24 +1,22 @@
 import type { AbilityParams } from './abilities/ability.ts';
-import type { CardFilter } from './abilities/board.ts';
 import type { ConditionParams } from './abilities/conditions.ts';
-import type { EffectParams } from './abilities/effects.ts';
-import { type StatusId, statusRule } from './abilities/statuses.ts';
+import { statusRule } from './abilities/statuses.ts';
 import type { TargetParams } from './abilities/targets.ts';
 import type { CardDefinition, Catalog, LocationDefinition } from './catalog.ts';
 import type { CurveRule } from './deck.ts';
+import { describeEffect, describeFollowingEffect } from './describe-effects.ts';
+import { type Context, type TargetText, cards, plural, scope, the } from './describe-text.ts';
+import type { LocationRules } from './state.ts';
 
-const TRAIT_LABEL: Record<string, string> = { epee: 'épée' };
+export { tagLabel } from './describe-text.ts';
 
-const TRIGGER_TEXT: Record<AbilityParams['trigger'], string> = {
+const TRIGGER_TEXT = {
   onReveal: 'À la révélation',
   ongoing: 'En continu',
   endOfTurn: 'En fin de tour',
-};
-
-interface Context {
-  catalog: Catalog;
-  onLocation: boolean;
-}
+  onDestroyed: 'Quand cette carte est détruite',
+  onMad: 'Quand elle devient folle',
+} as const;
 
 export function describeCard(catalog: Catalog, card: CardDefinition): string[] {
   const keywords = card.statuses.map((status) => {
@@ -29,12 +27,33 @@ export function describeCard(catalog: Catalog, card: CardDefinition): string[] {
 }
 
 export function describeLocation(catalog: Catalog, location: LocationDefinition): string[] {
-  return location.abilities.map((ability) => describeAbility(catalog, ability.params, true));
+  return [
+    ...describeLocationRules(location.rules),
+    ...location.abilities.map((ability) => describeAbility(catalog, ability.params, true)),
+  ];
+}
+
+// The rules a terrain changes (read by the game rules, not triggered).
+function describeLocationRules(rules: LocationRules): string[] {
+  const lines: string[] = [];
+  if (rules.capacity !== undefined) {
+    lines.push(`Chaque joueur ne peut poser que ${plural(rules.capacity, 'carte')} ici.`);
+  }
+  if (rules.openFromTurn !== undefined) {
+    lines.push(`Aucune carte ne peut être posée ici avant le tour ${rules.openFromTurn}.`);
+  }
+  if (rules.closedFromTurn !== undefined) {
+    lines.push(`Plus aucune carte ne peut être posée ici à partir du tour ${rules.closedFromTurn}.`);
+  }
+  return lines;
 }
 
 export function describeAbility(catalog: Catalog, ability: AbilityParams, onLocation: boolean): string {
   const context: Context = { catalog, onLocation };
-  const condition = ability.condition === undefined ? '' : `${describeCondition(context, ability.condition)}, `;
+  const condition =
+    ability.condition === undefined || ability.condition.type === 'mad'
+      ? ''
+      : `${describeCondition(context, ability.condition)}, `;
   const target = describeTarget(context, ability.target);
   const effects = ability.effect
     .map((effect, index) => {
@@ -42,7 +61,24 @@ export function describeAbility(catalog: Catalog, ability: AbilityParams, onLoca
       return pronoun ?? describeEffect(context, effect, target);
     })
     .join(' et ');
-  return `${TRIGGER_TEXT[ability.trigger]} : ${condition}${effects}.`;
+  return `${describeTrigger(context, ability)} : ${condition}${effects}.`;
+}
+
+function describeTrigger(context: Context, ability: AbilityParams): string {
+  if (ability.condition?.type === 'mad') {
+    // « Folle : +1 puissance. » / « En fin de tour, si elle est folle : … »
+    return ability.trigger === 'ongoing' ? 'Folle' : `${triggerText(context, ability)}, si elle est folle`;
+  }
+  return triggerText(context, ability);
+}
+
+function triggerText(context: Context, ability: AbilityParams): string {
+  if (ability.trigger !== 'onCardPlayedHere') {
+    return TRIGGER_TEXT[ability.trigger];
+  }
+  const { side = 'all', tag, status } = ability.played ?? {};
+  const played = cards(context, { side, scope: 'here', includeSelf: false, tag, status }, false);
+  return `Quand une ${played} est jouée ici`;
 }
 
 // « Au moins 2 cartes à 1 » / « Au plus 3 cartes à 5 ou plus »
@@ -52,45 +88,10 @@ export function describeCurveRule(rule: CurveRule): string {
     : `Au plus ${plural(rule.count, 'carte')} à ${rule.fromCost} ou plus`;
 }
 
-export function tagLabel(catalog: Catalog, tag: string): string {
-  const [family = '', value = ''] = tag.split(':');
-  if (family === 'universe') {
-    return catalog.extensions.get(value) ?? value;
-  }
-  if (family === 'trait') {
-    return TRAIT_LABEL[value] ?? value;
-  }
-  return value
-    .split('-')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
-
-// « autre carte Benj alliée » / « autres cartes Benj alliées »
-function cards(context: Context, filter: CardFilter, plural: boolean): string {
-  const s = plural ? 's' : '';
-  const other =
-    !filter.includeSelf && !context.onLocation && filter.side !== 'enemy' && filter.scope !== 'elsewhere'
-      ? `autre${s} `
-      : '';
-  const tag = filter.tag === undefined ? '' : ` ${tagLabel(context.catalog, filter.tag)}`;
-  const status = filter.status === undefined ? '' : ` ${statusRule(filter.status).adjective}${s}`;
-  const side = filter.side === 'all' ? '' : ` ${filter.side === 'ally' ? 'alliée' : 'ennemie'}${s}`;
-  return `${other}carte${s}${tag}${status}${side}`;
-}
-
-function scope(filter: CardFilter): string {
-  switch (filter.scope) {
-    case 'here':
-      return 'ici';
-    case 'elsewhere':
-      return 'sur les autres lieux';
-    case 'everywhere':
-      return 'sur le plateau';
-  }
-}
-
 function describeCondition(context: Context, condition: ConditionParams): string {
+  if (condition.type === 'mad') {
+    return 'si elle est folle';
+  }
   if (condition.type === 'turn') {
     const { min, max } = condition;
     if (min !== undefined && max !== undefined) {
@@ -98,6 +99,10 @@ function describeCondition(context: Context, condition: ConditionParams): string
     }
     return min !== undefined ? `à partir du tour ${min}` : `jusqu'au tour ${max ?? ''}`;
   }
+  return describeCount(context, condition);
+}
+
+function describeCount(context: Context, condition: Extract<ConditionParams, { type: 'count' }>): string {
   const { min, max } = condition;
   if (max === 0) {
     return `s'il n'y a aucune ${cards(context, condition, false)} ${scope(condition)}`;
@@ -109,12 +114,6 @@ function describeCondition(context: Context, condition: ConditionParams): string
     return `s'il y a une ${cards(context, condition, false)} ${scope(condition)}`;
   }
   return `s'il y a au moins ${min} ${cards(context, condition, true)} ${scope(condition)}`;
-}
-
-interface TargetText {
-  text: string;
-  plural: boolean;
-  self: boolean;
 }
 
 function describeTarget(context: Context, target: TargetParams): TargetText {
@@ -139,87 +138,4 @@ function describeTarget(context: Context, target: TargetParams): TargetText {
         self: false,
       };
   }
-}
-
-// French elisions and contractions: « la autre » → « l'autre », « à les » → « aux », « de une » → « d'une ».
-function the(noun: string): string {
-  return /^[aeiouéè]/.test(noun) ? `l'${noun}` : `la ${noun}`;
-}
-
-function to(target: string): string {
-  return target.startsWith('les ') ? `aux ${target.slice(4)}` : `à ${target}`;
-}
-
-function of(target: string): string {
-  if (target.startsWith('les ')) {
-    return `des ${target.slice(4)}`;
-  }
-  return /^[aeiouéè]/.test(target) ? `d'${target}` : `de ${target}`;
-}
-
-function signed(amount: number): string {
-  return amount > 0 ? `+${amount}` : `−${-amount}`;
-}
-
-function statusAdjective(status: StatusId, plural: boolean): string {
-  const adjective = statusRule(status).adjective;
-  return plural && !adjective.endsWith('s') ? `${adjective}s` : adjective;
-}
-
-// After the first effect of an ability, the same targets are referred to by a pronoun.
-function describeFollowingEffect(effect: EffectParams, plural: boolean): string | null {
-  const direct = plural ? 'les' : 'la';
-  const indirect = plural ? 'leur' : 'lui';
-  switch (effect.type) {
-    case 'addPower':
-      return `${indirect} donne ${signed(effect.amount)} puissance`;
-    case 'addStatus':
-      return `${direct} rend ${statusAdjective(effect.status, plural)}${stacksSuffix(effect.stacks)}`;
-    case 'destroy':
-      return `${direct} détruit`;
-    case 'removeStatus':
-      return `${indirect} retire ${removedStatus(effect.status)}`;
-    case 'addPowerPerCard':
-    case 'draw':
-      return null;
-  }
-}
-
-function describeEffect(context: Context, effect: EffectParams, target: TargetText): string {
-  switch (effect.type) {
-    case 'addPower':
-      return withTarget(`${signed(effect.amount)} puissance`, target);
-    case 'addPowerPerCard':
-      return `${withTarget(`${signed(effect.amount)} puissance`, target)} par ${cards(context, effect.count, false)} ${scope(effect.count)}`;
-    case 'draw':
-      return `${context.onLocation ? 'chaque joueur pioche' : 'pioche'} ${plural(effect.count, 'carte')}`;
-    case 'destroy':
-      return `détruit ${target.text}`;
-    case 'addStatus':
-      return `${statusVerb(effect.status, target)}${stacksSuffix(effect.stacks)}`;
-    case 'removeStatus':
-      return `retire ${removedStatus(effect.status)} ${of(target.text)}`;
-  }
-}
-
-function withTarget(text: string, target: TargetText): string {
-  return target.self ? text : `${text} ${to(target.text)}`;
-}
-
-function statusVerb(status: StatusId, target: TargetText): string {
-  return target.self
-    ? `devient ${statusAdjective(status, false)}`
-    : `rend ${target.text} ${statusAdjective(status, target.plural)}`;
-}
-
-function removedStatus(status: StatusId | undefined): string {
-  return status === undefined ? 'tous les états' : `la ${statusRule(status).name}`;
-}
-
-function stacksSuffix(stacks: number): string {
-  return stacks > 1 ? ` (×${stacks})` : '';
-}
-
-function plural(count: number, noun: string): string {
-  return `${count} ${noun}${count > 1 ? 's' : ''}`;
 }

@@ -63,6 +63,7 @@ function viewOf(definition: CardDefinition, uid: string, tweak: Tweak = {}): Car
     power: Math.max(0, definition.power + modifier),
     breakdown: { printed: definition.power, modifier, ongoing: [] },
     statuses: tweak.statuses ?? {},
+    crisis: null,
   };
 }
 

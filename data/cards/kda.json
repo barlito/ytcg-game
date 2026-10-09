@@ -54,6 +54,16 @@
             "type": "addPower",
             "amount": 2
           }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
         }
       ],
       "mask": "benj-big-boss-6ac0f10152ed7197108301.png",
@@ -100,6 +110,16 @@
               "scope": "everywhere",
               "status": "mad"
             }
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
           }
         }
       ],

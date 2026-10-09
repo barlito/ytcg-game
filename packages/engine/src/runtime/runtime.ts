@@ -14,7 +14,14 @@ export class Runtime {
 
   constructor(catalog: Catalog, state: GameState) {
     this.board = new GameBoard(catalog, state, this.events);
-    this.turns = new TurnFlow(this.board, new AbilityRunner(this.board), this.events);
+    const abilities = new AbilityRunner(this.board);
+    this.board.onDestroyed = (uid) => {
+      abilities.fireDestroyed(uid);
+    };
+    this.board.onMad = (uid) => {
+      abilities.fireCard(uid, 'onMad');
+    };
+    this.turns = new TurnFlow(this.board, abilities, this.events);
     this.actions = new ActionHandler(this.board, this.turns);
   }
 
