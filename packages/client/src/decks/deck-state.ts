@@ -23,6 +23,28 @@ export function deckState(catalog: Catalog, deck: Deck): DeckState {
   return refusal === null ? { kind: 'ready' } : { kind: 'rules', text: refusal };
 }
 
+export interface DeckBadge {
+  label: string;
+  ok: boolean;
+  // The engine's reason when the game rules refuse the deck.
+  detail: string | null;
+}
+
+// Short status of a deck tile: green « Jouable », or the reason in yellow.
+export function deckBadge(catalog: Catalog, deck: Deck): DeckBadge {
+  const state = deckState(catalog, deck);
+  if (state.kind === 'ready') {
+    return { label: 'Jouable', ok: true, detail: null };
+  }
+  if (state.kind === 'rules') {
+    return { label: 'Règles du duel', ok: false, detail: state.text };
+  }
+  const missing = deck.missingCards.length;
+  const label =
+    missing === 0 ? state.text : `${String(missing)} carte${missing > 1 ? 's' : ''} manque${missing > 1 ? 'nt' : ''}`;
+  return { label, ok: false, detail: null };
+}
+
 // The deck to play: the chosen one while it is playable, else the first playable one.
 export function playableDeckId(catalog: Catalog, decks: readonly Deck[], chosen: string | null): string | null {
   const playable = decks.filter((deck) => deckState(catalog, deck).kind === 'ready').map((deck) => deck.id);

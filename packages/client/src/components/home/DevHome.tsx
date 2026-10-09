@@ -2,7 +2,11 @@ import type { JoinOptions } from '@ytcg-game/server/protocol';
 import { useState } from 'react';
 import { describeLocation } from '@ytcg-game/engine';
 import { catalog, randomDeck } from '../../catalog.ts';
+import { pickFan } from '../../decks/showcase.ts';
 import { DeckCards } from '../decks/DeckCards.tsx';
+import { Toast } from '../ui/Toast.tsx';
+import { Hero } from './Hero.tsx';
+import { HomeShell } from './HomeShell.tsx';
 import { type PlayHandlers, PlayActions } from './PlayActions.tsx';
 
 const NAME_KEY = 'ytcg-game:name';
@@ -10,7 +14,7 @@ const NO_LOCATION = '';
 
 function DeckPreview({ deck, onReroll }: { deck: string[]; onReroll: () => void }): React.JSX.Element {
   return (
-    <section className="deck">
+    <section className="home-section">
       <h2 className="eyebrow">Ton deck (aléatoire sans Youl TCG, courbe de coûts respectée)</h2>
       <DeckCards cards={deck} terrain={null} size="large" />
       <button type="button" className="btn-ghost" onClick={onReroll}>
@@ -30,7 +34,7 @@ function LocationPicker({
 }): React.JSX.Element {
   const chosen = location === NO_LOCATION ? null : catalog.location(location);
   return (
-    <section className="deck">
+    <section className="home-section">
       <h2 className="eyebrow">Ton terrain (optionnel, placé sur un des trois lieux)</h2>
       <select
         value={location}
@@ -56,8 +60,8 @@ function LocationPicker({
 
 function NameField({ name, onChange }: { name: string; onChange: (name: string) => void }): React.JSX.Element {
   return (
-    <label className="field">
-      Pseudo (dev)
+    <label className="name-field">
+      <span>Pseudo (dev)</span>
       <input
         value={name}
         maxLength={30}
@@ -69,8 +73,10 @@ function NameField({ name, onChange }: { name: string; onChange: (name: string) 
   );
 }
 
+const stay = (): void => undefined;
+
 // Standalone development (no ytcg): a pseudo and a random deck, only accepted by the dev server.
-export function DevHome(handlers: PlayHandlers): React.JSX.Element {
+export function DevHome({ error, ...handlers }: PlayHandlers & { error: string | null }): React.JSX.Element {
   const [name, setName] = useState(() => localStorage.getItem(NAME_KEY) ?? '');
   const [cards, setCards] = useState(randomDeck);
   const [location, setLocation] = useState(NO_LOCATION);
@@ -80,17 +86,23 @@ export function DevHome(handlers: PlayHandlers): React.JSX.Element {
     const deck = location === NO_LOCATION ? { cards } : { cards, location };
     return trimmed === '' ? { deck } : { name: trimmed, deck };
   };
+  const definitions = cards.flatMap((id) => catalog.cards.get(id) ?? []);
   return (
-    <>
-      <NameField name={name} onChange={setName} />
-      <DeckPreview
-        deck={cards}
-        onReroll={() => {
-          setCards(randomDeck());
-        }}
-      />
-      <LocationPicker location={location} onChange={setLocation} />
-      <PlayActions options={options} {...handlers} />
-    </>
+    <HomeShell active="arena" onArena={stay} player={name}>
+      <main className="home">
+        <Hero fan={pickFan(definitions, [])}>
+          <NameField name={name} onChange={setName} />
+          <PlayActions options={options} {...handlers} />
+        </Hero>
+        <DeckPreview
+          deck={cards}
+          onReroll={() => {
+            setCards(randomDeck());
+          }}
+        />
+        <LocationPicker location={location} onChange={setLocation} />
+        {error !== null && <Toast tone="danger">{error}</Toast>}
+      </main>
+    </HomeShell>
   );
 }
