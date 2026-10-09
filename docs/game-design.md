@@ -213,7 +213,15 @@ Décisions du 2026-10-09 : on valide de nouvelles briques **avant** une passe de
 | Règles de terrain `rules` | `capacity` (1 à 4), `closedFromTurn`, `openFromTurn` : propriétés du lieu lues par les règles (`openLocations`), actives une fois le lieu révélé, sans expulser de carte déjà posée |
 | États | **Ivresse** (`drunk`, ±2 au hasard par cumul en fin de tour), **Protection** (`protected`, annule la prochaine destruction ou le prochain malus ponctuel, un cumul à la fois), **Surchauffe** (`overheat`, détruite à 3 cumuls) |
 
-Interactions : Coriace passe avant Protection (rien n'est consommé) ; Protection n'absorbe pas les malus continus ; Surchauffe + Coriace ne détruit jamais, Surchauffe + Protection retarde la destruction d'un tour. **Folie** : pas de règle propre pour l'instant (en discussion) ; le registre d'états la recevra comme une simple entrée.
+Interactions : Coriace passe avant Protection (rien n'est consommé) ; Protection n'absorbe pas les malus continus ; Surchauffe + Coriace ne détruit jamais, Surchauffe + Protection retarde la destruction d'un tour. **Folie** : voir ci-dessous.
+
+### Folie (décision du 2026-10-09)
+
+Mots de l'utilisateur : la folie est un effet « très versatile » : des cartes qui se debuff, qui se buff, qui bougent d'endroit, qui s'auto-détruisent si folles ; **soit** un ou plusieurs effets aléatoires, **soit** un effet de folie défini par la carte. Plus tôt : « la folie buff les Benj, debuff les autres, a une certaine propagation, peut déplacer des cartes, voire s'auto-détruire avec des buffs pour d'autres cartes folles ».
+
+- **Effet défini** : condition `mad`, déclencheur `onMad` (« Folle : … », « Quand elle devient folle : … »). Les Benj l'utilisent : « Folle : +1 puissance » (coût ≤ 3), « +2 » (au-delà). Pas de cas particulier dans le moteur.
+- **Par défaut** : une carte sans effet de folie tire une **crise** au hasard (Rage +2, Délire −2, Errance, Contagion, Implosion), stockée sur la carte, publique, une seule par carte. Détails et interactions : [`effects.md`](effects.md#folie-effet-défini-crises).
+- **À rejouer** : le pool et les valeurs (±2) sont une première version ; la Folie est maintenant un malus en moyenne neutre (Rage/Délire) avec de la propagation, à régler au vu des parties.
 
 ## Design Violet Arcade (phase 4c)
 

@@ -284,6 +284,16 @@
               "status": "high"
             }
           ]
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
         }
       ],
       "mask": "jben-alchemist-mask-background-6a78a61d13ad9912526062.png"
@@ -317,6 +327,16 @@
           "effect": {
             "type": "addPower",
             "amount": 2
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
           }
         }
       ],

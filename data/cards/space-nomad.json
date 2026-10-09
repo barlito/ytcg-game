@@ -108,6 +108,16 @@
             "type": "addPower",
             "amount": 3
           }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
         }
       ],
       "mask": "benj-l-aristocrate-6ac0f0ea032d9510188543.png"
@@ -289,6 +299,16 @@
               "scope": "everywhere",
               "tag": "character:benj"
             }
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
           }
         }
       ],

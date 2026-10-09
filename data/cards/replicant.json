@@ -318,6 +318,16 @@
               "status": "mad"
             }
           ]
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
         }
       ],
       "mask": "officier-benj-6ac0f1107dc70764640042.png"

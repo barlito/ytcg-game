@@ -11,6 +11,7 @@ La boîte à outils pour décrire les capacités des cartes et des lieux dans `d
 | `endOfTurn` | à la fin de chaque tour, après les révélations |
 | `onCardPlayedHere` | quand une **autre** carte est révélée sur ce lieu après celle-ci (cartes et terrain) ; filtre optionnel `played` |
 | `onDestroyed` | quand cette carte est détruite (cartes seulement) |
+| `onMad` | quand cette carte **devient** folle (passe de 0 à 1 cumul de Folie ; pas sur un cumul de plus), cartes seulement |
 
 **Ordre de résolution d'une révélation** : la carte est posée sur le plateau, reçoit ses états innés, joue sa capacité `onReveal`, puis les capacités `onCardPlayedHere` des cartes déjà présentes sur ce lieu (le joueur qui révèle d'abord, dans l'ordre où ses cartes sont arrivées, puis l'autre joueur), puis celles du terrain. La carte révélée ne se déclenche jamais elle-même. En fin de tour : terrains, puis cartes (`endOfTurn`), puis règles des états.
 
@@ -40,7 +41,7 @@ Marqueurs posés sur une carte du plateau pendant la partie, cumulables. Registr
 
 | Id | Nom | Règle |
 |---|---|---|
-| `mad` | Folie | aucune : lue par d'autres cartes (Benj, Chaos…). Sa règle propre est en discussion |
+| `mad` | Folie | pas de règle fixe : l'effet vient de la carte (condition `mad`, déclencheur `onMad`) ou d'une **crise** tirée au hasard (voir Folie) |
 | `high` | Défonce | perd 1 puissance par cumul à chaque fin de tour |
 | `tough` | Coriace | ne peut être ni détruite ni affaiblie (malus continus compris) |
 | `drunk` | Ivresse | à chaque fin de tour, **par cumul**, gagne ou perd 2 puissance au hasard (tirage seedé) |
@@ -53,9 +54,33 @@ Marqueurs posés sur une carte du plateau pendant la partie, cumulables. Registr
 - Protection absorbe tout malus de puissance **ponctuel** (`addPower` négatif d'une carte ou d'un terrain, ticks de Défonce et d'Ivresse), un par cumul, et la destruction (y compris celle de la Surchauffe). Elle n'absorbe **pas** les malus **continus** (`ongoing`) : ils sont recalculés à chaque lecture, ce ne sont pas des événements.
 - Ivresse tire toujours son nombre au hasard, même si le −2 est ignoré (Coriace) ou absorbé (Protection) : le rejeu reste identique.
 - Surchauffe + Coriace : la carte n'est jamais détruite, ses cumuls continuent de monter ; si la Coriace disparaît, elle est détruite à la fin du tour. Surchauffe + Protection : la Protection retarde la destruction d'une fois (le cumul de Protection est dépensé, la carte reste à 3+), la fin de tour la détruit.
-- Un état s'ajoute au registre `statuses.ts` : texte, `rule`, puis les crochets `preventsDestroy` / `preventsPowerLoss` (immunités), `absorbsDestroy` / `absorbsPowerLoss` (boucliers à cumuls), `endOfTurn` et `onStacksChanged`. La Folie recevra sa règle de la même façon, sans refonte.
+- Un état s'ajoute au registre `statuses.ts` : texte, `rule`, puis les crochets `preventsDestroy` / `preventsPowerLoss` (immunités), `absorbsDestroy` / `absorbsPowerLoss` (boucliers à cumuls), `endOfTurn`, `onStacksChanged` et `onGained` (premier cumul).
 
 Une carte peut porter un état **inné**, posé dès sa révélation : `"statuses": ["tough"]` (Barlito).
+
+## Folie (effet défini, crises)
+
+La Folie est un état sans règle fixe, très versatile : buff, debuff, déplacement, auto-destruction, propagation.
+
+**1. Effet défini par la carte.** Les capacités qui ne valent que lorsque la carte est folle : condition `{ "type": "mad" }` avec `ongoing` ou `endOfTurn` (ou tout autre déclencheur), et le déclencheur `onMad` (une fois, quand elle devient folle). Une carte qui a au moins une capacité `mad` / `onMad` **ne tire pas de crise**.
+
+```json
+{ "trigger": "ongoing", "condition": { "type": "mad" }, "effect": { "type": "addPower", "amount": 2 } }
+```
+
+Texte généré : `Folle : +2 puissance.` ; `En fin de tour, si elle est folle : …` ; `Quand elle devient folle : …`. Les Benj ont tous « Folle : +1 puissance » (coût 3 ou moins) ou « +2 » (au-delà) : la Folie buff les Benj, par la donnée.
+
+**2. Crise tirée au hasard.** Une carte **sans** effet de folie défini tire, quand elle devient folle, UNE crise dans le pool ci-dessous (tirage seedé, rejouable). La crise est stockée sur la carte (`CardInstance.crisis`), publique (`CardView.crisis`, événement `crisisStarted`), affichée « FOLIE · NOM » et expliquée dans l'infobulle. Registre réglable : `packages/engine/src/abilities/crises.ts`.
+
+| Id | Crise | Effet |
+|---|---|---|
+| `rage` | Rage | en continu : +2 puissance |
+| `delirium` | Délire | en continu : −2 puissance (Coriace l'ignore ; Protection ne l'absorbe pas : malus continu) |
+| `wandering` | Errance | en fin de tour : se déplace vers un autre lieu au hasard (brique `move`) |
+| `contagion` | Contagion | en fin de tour : rend folle une autre carte non folle ici au hasard (les deux camps) ; la nouvelle folle tire sa propre crise |
+| `implosion` | Implosion | en fin de tour : se détruit et donne +2 puissance (permanent) aux autres cartes folles ici ; si elle survit (Coriace, Protection) il n'y a pas de bonus |
+
+Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de nouvelle crise) ; une carte qui perd la Folie (`removeStatus`) **perd sa crise** et, si elle redevient folle, en retire une ; Coriace peut devenir folle, mais Délire ne l'affaiblit pas et Implosion ne la détruit pas ; l'effet de fin de tour d'une crise s'exécute après les capacités `endOfTurn` des cartes et les règles des autres états.
 
 ## Conditions (`condition`)
 
@@ -63,6 +88,7 @@ Une carte peut porter un état **inné**, posé dès sa révélation : `"statuse
 |---|---|---|
 | `count` | filtre + `min` (défaut 1), `max` | « s'il y a un autre Benj ici » : `{ "type": "count", "tag": "character:benj" }` |
 | `turn` | `min`, `max` | « à partir du tour 4 » : `{ "type": "turn", "min": 4 }` |
+| `mad` | aucun | « cette carte est folle » : `{ "type": "mad" }` (cartes seulement, avec n'importe quel déclencheur) |
 
 ## Cibles (`target`, défaut `self`)
 
@@ -205,4 +231,4 @@ Terrain : « Quand une carte est jouée ici : chaque carte ici gagne +1 ».
 
 ## Ce qui n'existe pas encore
 
-Transformation (Bankai : une version renforcée quand la version de base est en jeu), défausse, sacrifice, condition de pose, états Endormie, Charmée, Saignement, Marquée, Enragée (voir le game design), règle propre de la Folie. Chaque nouvelle brique = une classe, son schéma et ses tests (voir `packages/engine/CLAUDE.md`).
+Transformation (Bankai : une version renforcée quand la version de base est en jeu), défausse, sacrifice, condition de pose, états Endormie, Charmée, Saignement, Marquée, Enragée (voir le game design), Chaque nouvelle brique = une classe, son schéma et ses tests (voir `packages/engine/CLAUDE.md`).

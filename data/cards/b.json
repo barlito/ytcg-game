@@ -67,6 +67,16 @@
               "status": "mad"
             }
           }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
         }
       ],
       "mask": "benj-bankai-6abe5c1c23e2a301049598.png",
@@ -198,6 +208,16 @@
           "effect": {
             "type": "addPower",
             "amount": 2
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
           }
         }
       ],

@@ -177,6 +177,16 @@
               "includeSelf": true
             }
           }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
         }
       ],
       "mask": "benj-cyberpsycho-cyberpunk-mask-background-6a76412cc87ac477654540.png",
@@ -205,6 +215,16 @@
               "tag": "character:benj"
             }
           }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
+          }
         }
       ],
       "mask": "benj-2-cyberpunk-2-mask-background-6a7640cf7b645420880570.png"
@@ -232,6 +252,16 @@
           "effect": {
             "type": "addPower",
             "amount": 2
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 1
           }
         }
       ],

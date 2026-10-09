@@ -35,6 +35,7 @@ Pure game rules. Imported by the server (authoritative) and the client (types, p
 ## Statuses
 
 - Registry `src/abilities/statuses.ts`: one entry per status (French `name` + `adjective` for the text, optional `rule`, immunities `preventsDestroy` / `preventsPowerLoss`, one-shot shields `absorbsDestroy` / `absorbsPowerLoss` (one stack each, `GameBoard.spendStack`), hooks `endOfTurn` and `onStacksChanged`). Adding one = an entry there + tests; the zod enum and the text follow. Stacks live on the card instance (`statuses`), cleared by `removeStatus`.
+- Folie has no fixed rule: a card with a `mad` condition / `onMad` trigger defines its own madness, otherwise `becomeMad` (hook `onGained`) draws one crisis from the table in `src/abilities/crises.ts` (stored in `CardInstance.crisis`, one per Folie, forgotten by `removeStatus`). Ongoing crises are added in `GameBoard.ongoingBonuses`, end-of-turn ones run from `TurnFlow` (`runtime/crises.ts`). Tune the pool there.
 - `tough` also ignores negative ONGOING bonuses (`Runtime.power`), not only `addPower`.
 
 ## Effect text

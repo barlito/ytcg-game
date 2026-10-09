@@ -106,6 +106,16 @@
               "status": "mad"
             }
           }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "mad"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
         }
       ],
       "mask": "benj-champion-du-chaos-6ac0f0dfa8d6a054744986.png"
