@@ -44,7 +44,6 @@
   --badges-justify: flex-end;
   --glyph-display: none;
   --name-display: none;
-  --status-display: none;
   --badge-w: 40cqi;
   --badge-h: 45cqi;
   --badge-num: 23cqi;
@@ -56,7 +55,6 @@
     --mana-display: none;
     --glyph-display: none;
     --name-display: none;
-    --status-display: none;
     --badge-w: 40cqi;
     --badge-h: 45cqi;
     --badge-num: 23cqi;
@@ -263,8 +261,13 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 1cqi;
+  max-width: 78%;
 }
 .pip {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   padding: var(--status-pad);
   background: var(--magenta);
   color: #fff;
@@ -274,6 +277,77 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   box-shadow: 0 0 3cqi rgb(255 62 165 / 70%);
+}
+
+/* Board cards: one round icon per status on the left edge, clear of the artwork centre and the badges. */
+.tcard:not([data-size='full']) .tcard__statuses {
+  left: 2cqi;
+  gap: 2cqi;
+}
+.sbadge {
+  --c: var(--magenta);
+  --d: max(18px, 16cqi);
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--d);
+  height: var(--d);
+  border-radius: 50%;
+  background: #1a0b33;
+  box-shadow:
+    0 0 0 max(1px, 0.7cqi) var(--c),
+    0 0 2.5cqi color-mix(in srgb, var(--c) 70%, transparent);
+  color: var(--c);
+}
+.sbadge svg {
+  width: 68%;
+  height: 68%;
+  fill: color-mix(in srgb, currentcolor 28%, transparent);
+  stroke: currentcolor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sbadge[data-status='mad'] svg {
+  fill: none;
+}
+.sbadge[data-status='high'] {
+  --c: #8be04e;
+}
+.sbadge[data-status='tough'] {
+  --c: #f5c542;
+}
+.sbadge[data-status='drunk'] {
+  --c: #c77dff;
+}
+.sbadge[data-status='protected'] {
+  --c: var(--cyan);
+}
+.sbadge[data-status='overheat'] {
+  --c: color-mix(in srgb, #ff4a1a calc(var(--stacks, 1) * 33%), #ffb03a);
+}
+.sbadge__n,
+.sbadge__crisis {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  min-width: 50%;
+  height: 50%;
+  border-radius: 999px;
+  background: #fff;
+  color: #1a0b33;
+  font: 800 max(9px, 0.5 * var(--d)) / 1 var(--font-mono);
+  font-style: normal;
+}
+.sbadge__n {
+  right: -22%;
+  bottom: -18%;
+}
+.sbadge__crisis {
+  right: -22%;
+  top: -18%;
+  background: var(--c);
+  color: #fff;
 }
 
 /* States. */

@@ -75,7 +75,8 @@
     filter: drop-shadow(0.1rem 0 0 var(--cyan)) drop-shadow(-0.1rem 0 0 var(--magenta));
   }
 }
-.fx-crisis .pip {
+.fx-crisis .pip,
+.fx-crisis .sbadge {
   animation: fx-pip-pop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
 }
 @keyframes fx-pip-pop {
@@ -382,7 +383,7 @@
   color: var(--cyan);
 }
 
-/* Overheat: the pill turns red with each stack, heat haze at 2, then the blast. */
+/* Overheat: the pill (the icon colours itself in card-band.css) turns red with each stack, heat haze at 2, then the blast. */
 .pip[data-status='overheat'] {
   background: color-mix(in srgb, #ff5a1a calc(var(--stacks, 1) * 33%), var(--magenta));
 }

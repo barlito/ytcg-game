@@ -71,7 +71,7 @@ export function CardPlate(props: PlateProps): React.JSX.Element {
           trend={trend}
           costFlow={costFlow}
         />
-        <StatusPills labels={statuses} states={props.states} />
+        <StatusPills labels={statuses} states={props.states} size={size} />
         {stacksOf(props.states, 'protected') > 0 && <span className="tcard__shield" />}
       </div>
     </div>

@@ -84,7 +84,7 @@ function boardRows(catalog: Catalog): Rows[] {
         viewOf(rarity('legendary'), 'y0', { delta: 2 }),
         viewOf(cost(1), 'y1'),
         viewOf(cost(3), 'y2', { statuses: { tough: 1 } }),
-        viewOf(cost(2), 'y3', { delta: -1, statuses: { high: 2, mad: 1 }, crisis: 'rage' }),
+        viewOf(cost(2), 'y3', { delta: -1, statuses: { high: 2, mad: 1, tough: 1 }, crisis: 'rage' }),
       ],
       opponent: [
         viewOf(
