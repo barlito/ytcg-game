@@ -196,6 +196,17 @@ Décisions du 2026-10-08 :
 
 - Colyseus **monitor** et **playground** au déploiement.
 
+## Design Violet Arcade (phase 4c)
+
+Décisions du 2026-10-09, à partir du handoff Claude Design (cartes, plateau, révélation, fin de partie, accueil, deck builder, profil/classement, logo) :
+
+- **Le handoff est une référence haute fidélité, pas du code** : écrans recréés dans le client React avec les tokens Violet Arcade, le cadre de carte ytcg conservé (nom en Pirata One) et le **bandeau « biseau verre »** (piste 1a) par-dessus. Logo **7c « Arcade chromatique »** avec le wordmark YOUL officiel, jamais recoloré ni recadré.
+- **Les règles du jeu priment sur la maquette** : 1 exemplaire par carte (la maquette en autorisait 2), quota de coûts du moteur complet (la maquette n'affichait que le maximum à 5+). Le bouton d'enregistrement et les pastilles des decks affichent la raison du moteur.
+- **Pas de données inventées** : pas d'écran Profil / Classement, de rang, de PR, de saison ni de compteur « en ligne » (aucun système n'existe). « Classement » est visible mais désactivé (« bientôt »). Pas de bouton « Revanche » (pas de revanche dans le serveur).
+- **Reflet holo** sur les légendaires et les uniques (balayage CSS de 5 s, coupé avec `prefers-reduced-motion`), comme le demande le design ; il reste cosmétique.
+- **Texte d'effet** : trois tailles selon la longueur, et le bandeau grandit vers le haut si besoin ; aucun texte n'est tronqué (vérifié sur les 187 cartes).
+- **Plateau et fin de partie, design Violet Arcade (phase 4c)** : nom de carte en Pirata One en haut du cadre ; la carte posée ce tour (face cachée, `yourPending`) porte le contour cyan `fresh` ; le journal s'ouvre depuis le bouton « Journal » de la barre du haut ; la fin de partie affiche Victoire / Défaite / Égalité, les lieux gagnés / perdus (résultat du moteur), la puissance totale et la **carte décisive** = la carte la plus puissante du vainqueur sur un lieu qu'il a remporté (première à égalité, aucune en cas d'égalité) ; pas de revanche, de rang ni de PR (rien de tel n'existe).
+
 ## Phases
 
 1. **Phase 0 — moteur** : `packages/engine`, règles complètes, registre d'effets, cartes importées de YoulzAssets, tests, simulation par bots.
@@ -216,5 +227,3 @@ Décisions du 2026-10-08 :
 - Un nouveau joueur a-t-il assez de cartes distinctes pour composer 12 cartes dès ses premiers jours ?
 - Le slug de Bleach est temporairement `benj-reviens` en prod ; les données de jeu gardent `b` (manifeste) jusqu'à la synchronisation avec ytcg.
 - Valeurs des capacités : première version à relire dans `cards.md`, à rejouer en vrai.
-
-- **Plateau et fin de partie, design Violet Arcade (phase 4c)** : nom de carte en Pirata One en haut du cadre ; la carte posée ce tour (face cachée, `yourPending`) porte le contour cyan `fresh` ; le journal s'ouvre depuis le bouton « Journal » de la barre du haut ; la fin de partie affiche Victoire / Défaite / Égalité, les lieux gagnés / perdus (résultat du moteur), la puissance totale et la **carte décisive** = la carte la plus puissante du vainqueur sur un lieu qu'il a remporté (première à égalité, aucune en cas d'égalité) ; pas de revanche, de rang ni de PR (rien de tel n'existe).
