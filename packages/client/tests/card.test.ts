@@ -1,6 +1,6 @@
 import { describeCard, statusRule } from '@ytcg-game/engine';
 import { describe, expect, it } from 'vitest';
-import { effectLines } from '../src/components/card/effectText.ts';
+import { effectLines, effectTier } from '../src/components/card/effectText.ts';
 import { hasSheen, rarityGlyph, rarityKey } from '../src/components/card/rarity.ts';
 import { catalog } from '../src/catalog.ts';
 
@@ -37,6 +37,21 @@ describe('effectLines', () => {
       const names = definition.statuses.map((status) => statusRule(status).name);
       const parsed = effectLines(describeCard(catalog, definition), names);
       expect(parsed.filter((line) => line.keyword !== '').length).toBe(names.length);
+    }
+  });
+});
+
+describe('effectTier', () => {
+  it('steps the type down as the effect text gets longer', () => {
+    expect(effectTier(['Folie.'])).toBe(1);
+    expect(effectTier(['x'.repeat(90)])).toBe(1);
+    expect(effectTier(['x'.repeat(45), 'y'.repeat(45)])).toBe(2);
+    expect(effectTier(['x'.repeat(131)])).toBe(3);
+  });
+
+  it('keeps every catalog card in a tier', () => {
+    for (const definition of catalog.cards.values()) {
+      expect([1, 2, 3]).toContain(effectTier(describeCard(catalog, definition)));
     }
   });
 });

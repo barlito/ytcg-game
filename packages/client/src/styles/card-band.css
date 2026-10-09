@@ -3,6 +3,7 @@
    full (hand, previews, spotlight), compact (board, grids; falls back to mini under 76px), mini (power only). */
 .tcard[data-size='full'] .tcard__body {
   --band-h: 52cqi;
+  --slant: 8.3cqi;
   --o1: 0.5;
   --o2: 0.7;
   --edge-angle: -4.76deg;
@@ -20,6 +21,7 @@
 }
 .tcard[data-size='compact'] .tcard__body {
   --band-h: 34cqi;
+  --slant: 5.4cqi;
   --o1: 0.62;
   --o2: 0.82;
   --edge-angle: -3.11deg;
@@ -63,45 +65,55 @@
 }
 
 .tband,
+.tband__glass,
 .tband__edge,
-.tband__text,
-.tband__badges,
 .tcard__name,
-.tcard__statuses {
+.tcard__statuses,
+.tband__badges {
   position: absolute;
 }
+/* The band grows upward with its text (min-height = the design height), so the text always fits inside. */
 .tband {
   display: var(--band-display, block);
   inset: auto 0 0;
-  height: var(--band-h);
-  clip-path: polygon(0 16%, 100% 0, 100% 100%, 0 100%);
+  min-height: var(--band-h);
+}
+.tband__glass {
+  inset: 0;
+  clip-path: polygon(0 var(--slant), 100% 0, 100% 100%, 0 100%);
   background: linear-gradient(180deg, rgb(59 20 102 / calc(var(--o1) * 100%)), rgb(22 10 41 / calc(var(--o2) * 100%)));
   backdrop-filter: var(--band-blur, blur(5px) saturate(1.25));
 }
 .tband__edge {
-  display: var(--band-display, block);
   left: -3cqi;
   width: 106cqi;
   height: 0.8cqi;
-  bottom: calc(var(--band-h) * 0.92 - 0.4cqi);
+  bottom: calc(100% - var(--slant) / 2 - 0.4cqi);
   transform: rotate(var(--edge-angle));
   background: var(--band-line);
   box-shadow: 0 0 2cqi rgb(70 230 230 / 60%);
 }
+/* Effect text size by length (`effectTier`): 5.1 / 4.4 / 3.8cqi, never under 6.5px. */
 .tband__text {
+  --text-size: 5.1cqi;
+  position: relative;
   display: var(--text-display, none);
-  left: 7cqi;
-  right: 7cqi;
-  bottom: 20cqi;
+  padding: calc(var(--slant) + 2.5cqi) 7cqi 23cqi;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: max(5.1cqi, 8px);
+  font-size: max(var(--text-size), 6.5px);
   line-height: 1.24;
   color: var(--text);
   text-wrap: pretty;
   text-shadow:
     0 0.3cqi 0.6cqi rgb(0 0 0 / 95%),
     0 0 2cqi rgb(8 5 15 / 85%);
+}
+.tband__text[data-tier='2'] {
+  --text-size: 4.4cqi;
+}
+.tband__text[data-tier='3'] {
+  --text-size: 3.8cqi;
 }
 .tband__keyword {
   color: var(--magenta-soft);

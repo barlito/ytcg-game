@@ -15,3 +15,15 @@ export function effectLines(lines: readonly string[], statusNames: readonly stri
     return rest === '.' ? { keyword: line, text: '' } : { keyword: name, text: rest };
   });
 }
+
+// Font size step of the effect text: the longer the text, the smaller the type (the band also grows if needed).
+export type EffectTier = 1 | 2 | 3;
+export const TIER_MAX_LENGTH = { 1: 90, 2: 130 } as const;
+
+export function effectTier(lines: readonly string[]): EffectTier {
+  const length = lines.join(' ').length;
+  if (length <= TIER_MAX_LENGTH[1]) {
+    return 1;
+  }
+  return length <= TIER_MAX_LENGTH[2] ? 2 : 3;
+}

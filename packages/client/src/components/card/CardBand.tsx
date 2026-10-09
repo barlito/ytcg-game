@@ -1,7 +1,7 @@
 import { type CardDefinition, describeCard, statusRule } from '@ytcg-game/engine';
 import { catalog } from '../../catalog.ts';
 import type { PowerTrend } from '../../power.ts';
-import { effectLines } from './effectText.ts';
+import { effectLines, effectTier } from './effectText.ts';
 import { type RarityKey, rarityGlyph } from './rarity.ts';
 
 // full: hand, previews, spotlight (effect text). compact: board, grids (no text). mini: small board cards (power only).
@@ -31,12 +31,13 @@ export function PowerBadge({ power, trend }: { power: number; trend: PowerTrend 
 
 // The effect text of a card, its status keywords in pink; the wording comes from the engine.
 export function EffectText({ definition }: { definition: CardDefinition }): React.JSX.Element {
+  const printed = describeCard(catalog, definition);
   const lines = effectLines(
-    describeCard(catalog, definition),
+    printed,
     definition.statuses.map((status) => statusRule(status).name),
   );
   return (
-    <span className="tband__text">
+    <span className="tband__text" data-tier={effectTier(printed)}>
       {lines.map(({ keyword, text }) => (
         <span key={`${keyword}${text}`}>
           {keyword !== '' && <span className="tband__keyword">{keyword}</span>}
@@ -60,9 +61,11 @@ interface BandProps {
 export function CardBand({ definition, rarity, size, cost, power, trend }: BandProps): React.JSX.Element {
   return (
     <>
-      <span className="tband" />
-      <span className="tband__edge" />
-      {size === 'full' && <EffectText definition={definition} />}
+      <span className="tband">
+        <span className="tband__glass" />
+        <span className="tband__edge" />
+        {size === 'full' && <EffectText definition={definition} />}
+      </span>
       <span className="tband__badges">
         <ManaBadge cost={cost} />
         <span className="tband__rarity">{rarityGlyph(rarity)}</span>
