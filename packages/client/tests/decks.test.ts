@@ -71,11 +71,11 @@ describe('curve display', () => {
   it('counts cards per cost and checks the engine rules live', () => {
     const cheap = [...catalog.cards.values()].filter((card) => card.cost === 1).map((card) => card.id);
     const bars = curveBars(catalog, [...cheap.slice(0, 3), 'unknown-card']);
-    expect(bars.map((bar) => bar.label)).toEqual(['1', '2', '3', '4', '5', '6+']);
+    expect(bars.map((bar) => bar.label)).toEqual(['1', '2', '3', '4', '5+']);
     expect(bars[0]?.count).toBe(3);
     const lines = curveLines(catalog, cheap.slice(0, 2));
-    expect(lines[0]).toEqual({ text: 'Au moins 2 cartes à 1', actual: 2, ok: true });
-    expect(lines[1]).toEqual({ text: 'Au moins 2 cartes à 2', actual: 0, ok: false });
+    expect(lines[0]).toEqual({ kind: 'minimum', text: 'Au moins 2 cartes à 1', actual: 2, ok: true });
+    expect(lines[1]).toEqual({ kind: 'minimum', text: 'Au moins 2 cartes à 2', actual: 0, ok: false });
   });
 });
 

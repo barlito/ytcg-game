@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import { DECK_SIZE } from '@ytcg-game/engine';
 import type { LocationDefinition } from '@ytcg-game/engine';
+import { catalog } from '../../catalog.ts';
 import type { DraftStatus } from '../../decks/draft.ts';
 import { DECK_NAME_MAX } from '../../decks/draft.ts';
+import { saveLabel } from '../../decks/save-label.ts';
 import type { DeckEditorState } from '../../decks/useDeckEditor.ts';
+import { Progress } from '../ui/Progress.tsx';
 import { CurvePanel } from './CurvePanel.tsx';
 import { SelectedCards } from './SelectedCards.tsx';
 import { TerrainField } from './TerrainField.tsx';
@@ -12,7 +16,6 @@ interface Props {
   status: DraftStatus;
   terrains: LocationDefinition[];
   owned: ReadonlySet<string>;
-  onCancel: () => void;
 }
 
 function Messages({ items, loginUrl }: { items: string[]; loginUrl: string | null }): React.JSX.Element | null {
@@ -31,12 +34,13 @@ function Messages({ items, loginUrl }: { items: string[]; loginUrl: string | nul
 
 function NameField({ editor }: { editor: DeckEditorState }): React.JSX.Element {
   return (
-    <label className="field">
-      Nom du deck
+    <label className="deck-name">
+      <span className="panel-label is-accent">Deck</span>
       <input
         value={editor.draft.name}
         maxLength={DECK_NAME_MAX}
-        placeholder="Mon deck"
+        placeholder="Nom du deck"
+        aria-label="Nom du deck"
         onChange={(event) => {
           editor.dispatch({ type: 'rename', name: event.target.value });
         }}
@@ -46,33 +50,60 @@ function NameField({ editor }: { editor: DeckEditorState }): React.JSX.Element {
   );
 }
 
-function Footer({ editor, status, onCancel }: Omit<Props, 'terrains' | 'owned'>): React.JSX.Element {
+function Count({ total }: { total: number }): React.JSX.Element {
   return (
-    <div className="home-actions">
-      <button type="button" className="btn-arcade" disabled={!status.canSave || editor.saving} onClick={editor.save}>
-        {editor.saving ? 'Enregistrement…' : 'Enregistrer'}
-      </button>
-      <button type="button" className="btn-ghost" onClick={onCancel}>
-        Annuler
-      </button>
+    <div className="deck-count">
+      <div className="deck-count__row">
+        <span className="panel-label">Cartes</span>
+        <span className={`deck-count__n${total === DECK_SIZE ? ' is-full' : ''}`}>
+          <b>{total}</b> / {DECK_SIZE}
+        </span>
+      </div>
+      <Progress value={total / DECK_SIZE} tone={total === DECK_SIZE ? 'live' : 'default'} label="Cartes du deck" />
     </div>
   );
 }
 
-export function EditorSidebar({ editor, status, terrains, owned, onCancel }: Props): React.JSX.Element {
-  const { draft, errors } = editor;
+function SaveButton({ editor, status }: Pick<Props, 'editor' | 'status'>): React.JSX.Element {
+  const enabled = status.canSave && status.gameRefusal === null && !editor.saving;
   return (
-    <aside className="editor__side">
-      <NameField editor={editor} />
-      <SelectedCards
-        cards={draft.cards}
-        owned={owned}
-        errors={errors.byCard}
-        onRemove={(card) => {
-          editor.dispatch({ type: 'toggle', card });
+    <span className="btn-glow deck-save">
+      <button type="button" className="btn-arcade btn-lg" disabled={!enabled} onClick={editor.save}>
+        {saveLabel(catalog, editor.draft, status, editor.saving)}
+      </button>
+    </span>
+  );
+}
+
+export function DeckPanel({ editor, status, terrains, owned }: Props): React.JSX.Element {
+  const { draft, errors } = editor;
+  // Mobile only: the drawer shows the summary, the handle opens the list and the terrain.
+  const [open, setOpen] = useState(false);
+  return (
+    <aside className={`deck-panel${open ? ' is-open' : ''}`}>
+      <button
+        type="button"
+        className="deck-panel__handle"
+        aria-expanded={open}
+        aria-label={open ? 'Replier le deck' : 'Afficher le deck'}
+        onClick={() => {
+          setOpen(!open);
         }}
       />
-      <Messages items={errors.cards} loginUrl={null} />
+      <NameField editor={editor} />
+      <Count total={draft.cards.length} />
+      <div className="panel-details">
+        <SelectedCards
+          cards={draft.cards}
+          owned={owned}
+          errors={errors.byCard}
+          onRemove={(card) => {
+            editor.dispatch({ type: 'toggle', card });
+          }}
+        />
+        <Messages items={errors.cards} loginUrl={null} />
+      </div>
+      <CurvePanel cards={draft.cards} refusal={status.gameRefusal} />
       <TerrainField
         terrain={draft.terrain}
         terrains={terrains}
@@ -81,11 +112,8 @@ export function EditorSidebar({ editor, status, terrains, owned, onCancel }: Pro
           editor.dispatch({ type: 'terrain', terrain });
         }}
       />
-      <CurvePanel cards={draft.cards} />
-      {status.gameRefusal !== null && <p className="warning">{status.gameRefusal}</p>}
-      {!status.full && <p className="location-help">Choisis encore {DECK_SIZE - draft.cards.length} carte(s).</p>}
       <Messages items={errors.general} loginUrl={errors.loginUrl} />
-      <Footer editor={editor} status={status} onCancel={onCancel} />
+      <SaveButton editor={editor} status={status} />
     </aside>
   );
 }

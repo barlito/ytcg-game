@@ -1,25 +1,37 @@
-import { DECK_SIZE } from '@ytcg-game/engine';
 import { catalog } from '../../catalog.ts';
 import { curveBars, curveLines } from '../../decks/curve.ts';
 
-const BAR_MAX_REM = 5;
+// Bars scale to the fullest bucket, at least 4 cards high (as in the design).
+const MIN_SCALE = 4;
 
-// Cost histogram and the engine's curve rules, live.
-export function CurvePanel({ cards }: { cards: string[] }): React.JSX.Element {
+// Cost histogram 1…5+ and the engine's curve rules, live; the 5+ bar turns yellow beyond the engine's maximum.
+export function CurvePanel({ cards, refusal }: { cards: string[]; refusal: string | null }): React.JSX.Element {
   const bars = curveBars(catalog, cards);
   const lines = curveLines(catalog, cards);
+  const over = lines.find((line) => line.kind === 'maximum' && !line.ok);
+  const scale = Math.max(MIN_SCALE, ...bars.map((bar) => bar.count));
+  // The refusal already names the broken rules once the deck is full.
+  const alert = refusal ?? (over === undefined ? null : `${over.text} : ${String(over.actual)} dans ce deck.`);
   return (
     <section className="curve">
-      <h2 className="eyebrow">Courbe de coûts</h2>
+      <h2 className="panel-label">Courbe de coûts</h2>
       <ol className="curve__bars" aria-label="Cartes par coût">
-        {bars.map((bar) => (
-          <li key={bar.label} aria-label={`Coût ${bar.label} : ${bar.count}`}>
+        {bars.map((bar, index) => (
+          <li key={bar.label} aria-label={`Coût ${bar.label} : ${String(bar.count)}`}>
             <span className="curve__count">{bar.count}</span>
-            <span className="curve__bar" style={{ height: `${(bar.count / DECK_SIZE) * BAR_MAX_REM}rem` }} />
+            <span
+              className={`curve__bar${index === bars.length - 1 && over !== undefined ? ' is-over' : ''}`}
+              style={{ '--h': bar.count / scale } as React.CSSProperties}
+            />
             <span className="curve__cost">{bar.label}</span>
           </li>
         ))}
       </ol>
+      {alert !== null && (
+        <p className="curve__alert" role="status">
+          {alert}
+        </p>
+      )}
       <ul className="curve__rules">
         {lines.map((line) => (
           <li key={line.text} className={line.ok ? 'is-ok' : 'is-ko'}>

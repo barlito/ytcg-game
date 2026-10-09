@@ -62,8 +62,15 @@ export function PoolTile({ card, selected, disabled, errors, onToggle }: Props):
         {...handlers}
       >
         <DefinitionFace definition={card.definition} />
-        {selected && <span className="pool-tile__check">Dans le deck</span>}
       </button>
+      <span className="pool-tile__own" aria-hidden="true">
+        ×{card.quantity}
+      </span>
+      {selected && (
+        <span className="pool-tile__deck" aria-hidden="true">
+          Deck
+        </span>
+      )}
       {errors !== undefined && <p className="error is-small">{errors.join(' ')}</p>}
       {open && (
         <Tooltip anchor={anchor} id={id}>

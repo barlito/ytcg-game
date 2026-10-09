@@ -6,12 +6,13 @@ export interface CurveBar {
 }
 
 export interface CurveLine {
+  kind: 'minimum' | 'maximum';
   text: string;
   actual: number;
   ok: boolean;
 }
 
-const LAST_BUCKET = 6;
+const LAST_BUCKET = 5;
 
 // Cards of the game catalog only: a card the game does not know has no cost.
 function knownCosts(catalog: Catalog, cards: readonly string[]): number[] {
@@ -21,7 +22,7 @@ function knownCosts(catalog: Catalog, cards: readonly string[]): number[] {
   });
 }
 
-// Histogram 1…5 then 6+ (a 0 cost counts with the 1s).
+// Histogram 1…4 then 5+, the engine's « expensive » bucket (a 0 cost counts with the 1s).
 export function curveBars(catalog: Catalog, cards: readonly string[]): CurveBar[] {
   const costs = knownCosts(catalog, cards).map((cost) => Math.min(Math.max(cost, 1), LAST_BUCKET));
   return Array.from({ length: LAST_BUCKET }, (_, index) => {
@@ -33,5 +34,10 @@ export function curveBars(catalog: Catalog, cards: readonly string[]): CurveBar[
 // The engine rules, checked live against the current selection.
 export function curveLines(catalog: Catalog, cards: readonly string[]): CurveLine[] {
   const known = cards.filter((id) => catalog.cards.has(id));
-  return deckCurveChecks(catalog, known).map(({ rule, actual, ok }) => ({ text: describeCurveRule(rule), actual, ok }));
+  return deckCurveChecks(catalog, known).map(({ rule, actual, ok }) => ({
+    kind: rule.kind,
+    text: describeCurveRule(rule),
+    actual,
+    ok,
+  }));
 }

@@ -1,25 +1,28 @@
-import { useMemo, useState } from 'react';
-import { catalog } from '../../catalog.ts';
-import { NO_FILTER, type PoolCard, type PoolFilter, filterOptions, filterPool } from '../../decks/pool.ts';
-import { PoolFilters } from './PoolFilters.tsx';
+import { type PoolCard, type PoolFilter, filterPool } from '../../decks/pool.ts';
 import { PoolTile } from './PoolTile.tsx';
 
 interface Props {
   cards: PoolCard[];
+  filter: PoolFilter;
   selected: string[];
   full: boolean;
   errors: Record<string, string[]>;
   onToggle: (card: string) => void;
 }
 
-export function CardPool({ cards, selected, full, errors, onToggle }: Props): React.JSX.Element {
-  const [filter, setFilter] = useState<PoolFilter>(NO_FILTER);
-  const options = useMemo(() => filterOptions(catalog, cards), [cards]);
+export function CardPool({ cards, filter, selected, full, errors, onToggle }: Props): React.JSX.Element {
   const shown = filterPool(cards, filter);
   return (
     <section className="pool" aria-label="Ta collection">
-      <h2 className="eyebrow">Ta collection jouable ({cards.length} cartes)</h2>
-      <PoolFilters options={options} filter={filter} onChange={setFilter} />
+      <header className="pool__head">
+        <h2>Ta collection</h2>
+        <span>
+          {shown.length === cards.length
+            ? `${String(cards.length)} cartes jouables en duel`
+            : `${String(shown.length)} / ${String(cards.length)} cartes`}
+        </span>
+        <span className="pool__sort">Tri · coût ↑</span>
+      </header>
       {shown.length === 0 ? (
         <p className="location-help">
           {cards.length === 0
