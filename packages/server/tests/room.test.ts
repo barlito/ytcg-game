@@ -77,6 +77,14 @@ describe('duel room', () => {
     expect(game.revealUntil).toBeNull();
   });
 
+  it('gives each room its own 3-letter code', async () => {
+    const first = await colyseus.sdk.create(ROOM_NAME, { name: 'Alice', deck: randomDeck(1) });
+    const second = await colyseus.sdk.create(ROOM_NAME, { name: 'Bob', deck: randomDeck(2) });
+    expect(first.roomId).toMatch(/^[A-Z]{3}$/);
+    expect(second.roomId).toMatch(/^[A-Z]{3}$/);
+    expect(second.roomId).not.toBe(first.roomId);
+  });
+
   it('refuses a join without a legal deck and a third player', async () => {
     const [location] = catalog.locations.keys();
     await expect(

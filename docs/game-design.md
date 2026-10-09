@@ -130,6 +130,7 @@ Les lieux suivent le même modèle (`data/locations/`), avec leur univers et leu
 ## Multijoueur (phase 2)
 
 - **Parties privées par code** : un joueur crée la partie, reçoit un code (l'id de la room) et l'envoie à un ami, qui rejoint avec. La partie démarre dès que le second joueur arrive.
+- **Code à 3 lettres** (2026-10-09) : l'id de la room est tiré parmi 24 lettres (A-Z sans I ni O), soit 13 824 codes, unique parmi les parties en cours ; repli sur 4 lettres si 3 sont saturées. Le client accepte minuscules, espaces et tirets. Risque assumé : un inconnu peut deviner le code d'une partie en attente (pas de limite de tentatives côté serveur, une partie pleine refuse le troisième) ; à durcir (limite par IP) si le jeu devient public.
 - **Chrono de tour : 60 s** (`TURN_SECONDS`). À l'échéance, le serveur termine le tour des joueurs qui ne l'ont pas fait, avec les cartes déjà posées.
 - **Déconnexion** : 30 s pour revenir (`RECONNECT_SECONDS`), un rafraîchissement de page ramène dans la partie. Passé ce délai, ou en quittant, le joueur **perd par forfait**.
 - **Decks** : jusqu'à la phase 3b, le client envoyait un deck de 12 cartes du catalogue (aléatoire), vérifié contre le catalogue seulement. Depuis la phase 3b, voir [Decks ytcg](#decks-ytcg-phase-3b) ; le flux aléatoire ne reste qu'en développement.
