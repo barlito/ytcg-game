@@ -411,6 +411,17 @@ button.chip {
 .deck-save {
   display: flex;
 }
+@media (min-width: 861px) {
+  /* Short windows: the save button stays reachable while the panel scrolls. */
+  .deck-save {
+    position: sticky;
+    bottom: -1.5rem;
+    z-index: 2;
+    margin: 0 -1.5rem -1.5rem;
+    padding: 0.75rem 1.5rem 1.5rem;
+    background: linear-gradient(transparent, rgb(12 7 22 / 96%) 35%);
+  }
+}
 .deck-save .btn-arcade {
   width: 100%;
   padding: 1.05rem 1rem;
@@ -425,6 +436,7 @@ button.chip {
   }
   .editor__filters {
     gap: 0.875rem;
+    min-width: 0;
   }
   .pool-filters {
     flex-direction: row;
@@ -441,6 +453,14 @@ button.chip {
     height: 1px;
     overflow: hidden;
     clip-path: inset(50%);
+  }
+  .filter-group {
+    position: relative;
+    flex: none;
+    min-width: max-content;
+  }
+  .filter-search {
+    min-width: 0;
   }
   .filter-search {
     flex: 0 0 9rem;
