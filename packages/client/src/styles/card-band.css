@@ -66,6 +66,7 @@
 
 .tband,
 .tband__glass,
+.tband__blur,
 .tband__edge,
 .tcard__name,
 .tcard__statuses,
@@ -86,6 +87,15 @@
     rgb(59 20 102 / calc((var(--o1) + var(--o-flat, 0)) * 100%)),
     rgb(22 10 41 / calc((var(--o2) + var(--o-flat, 0)) * 100%))
   );
+}
+/* The blur lives on a rotated box whose top edge is the bevel: no clip-path needed (a clipped backdrop-filter can leak). */
+.tband__blur {
+  left: -20cqi;
+  top: calc(var(--slant) + 20cqi * tan(var(--edge-angle) * -1));
+  width: 140cqi;
+  height: 200cqi;
+  transform-origin: 0 0;
+  transform: rotate(var(--edge-angle));
   backdrop-filter: var(--band-blur, blur(5px) saturate(1.25));
 }
 .tband__edge {

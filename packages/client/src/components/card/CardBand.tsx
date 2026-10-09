@@ -62,6 +62,7 @@ export function CardBand({ definition, rarity, size, cost, power, trend }: BandP
   return (
     <>
       <span className="tband">
+        <span className="tband__blur" />
         <span className="tband__glass" />
         <span className="tband__edge" />
         {size === 'full' && <EffectText definition={definition} />}
