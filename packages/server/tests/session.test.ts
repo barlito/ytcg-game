@@ -30,6 +30,18 @@ describe('game session', () => {
     expect(() => session.apply(0, { type: 'play', card, location: 0 })).toThrow(IllegalActionError);
   });
 
+  it('keeps cost changes and added cards of a hand hidden from the opponent', () => {
+    const session = startedSession();
+    const raw = [
+      { type: 'costChanged' as const, player: 0 as const, card: 'p0c1', delta: -1 },
+      { type: 'cardAddedToHand' as const, player: 0 as const, card: 'p0c13', defId: 'secret' },
+    ];
+    expect(session.messageFor(0, raw, null).events).toEqual(raw);
+    expect(session.messageFor(1, raw, null).events).toEqual([
+      { type: 'cardAddedToHand', player: 0, card: null, defId: null },
+    ]);
+  });
+
   it('lets a player redraw their hand on turn 1', () => {
     const session = startedSession();
     const events = session.apply(0, { type: 'mulligan' });
