@@ -2,9 +2,7 @@ import { type LocationView, type PlayerEvent, describeLocation } from '@ytcg-gam
 import { useScene } from '../animation/useReplay.ts';
 import { catalog } from '../catalog.ts';
 import { leadOf } from '../lib/lead.ts';
-import { useTooltipAnchor } from '../lib/useTooltipAnchor.ts';
 import { Artwork } from './Artwork.tsx';
-import { Tooltip } from './Tooltip.tsx';
 
 const OWNER_LABEL = { you: 'Ton terrain', opponent: 'Terrain adverse', random: 'Terrain aléatoire' } as const;
 
@@ -58,18 +56,13 @@ function tileEffects(current: PlayerEvent | null, index: number): string {
 
 function RevealedHeader({ location, defId }: { location: LocationView; defId: string }): React.JSX.Element {
   const scene = useScene();
-  const { anchor, setAnchor, id, open, handlers } = useTooltipAnchor(false);
   const terrain = catalog.location(defId);
   const text = describeLocation(catalog, terrain).join(' ') || 'Aucun effet.';
   const tone = location.chosenBy ?? 'random';
   return (
     <header
-      ref={setAnchor}
       className={`location-tile tone-${tone}${tileEffects(scene.current, location.index)}`}
       data-location-header={location.index}
-      tabIndex={0}
-      aria-describedby={open ? id : undefined}
-      {...handlers}
     >
       <Artwork key={terrain.id} image={terrain.image} className="location-art" />
       <TileBody location={location}>
@@ -77,18 +70,6 @@ function RevealedHeader({ location, defId }: { location: LocationView; defId: st
         <span className="location-name">{terrain.name}</span>
         <span className="location-text">{text}</span>
       </TileBody>
-      {open && (
-        <Tooltip anchor={anchor} id={id}>
-          <div className="tip-card">
-            <p className="tip-title">
-              {terrain.name}
-              <span>{catalog.extensions.get(terrain.extension ?? '') ?? 'Terrain neutre'}</span>
-            </p>
-            <p className="tip-text">{text}</p>
-            <p className="tip-note">Un terrain touche les cartes des deux camps.</p>
-          </div>
-        </Tooltip>
-      )}
     </header>
   );
 }
