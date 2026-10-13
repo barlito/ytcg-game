@@ -2,7 +2,7 @@ import type { JoinOptions } from '@ytcg-game/server/protocol';
 import { useState } from 'react';
 import { describeLocation } from '@ytcg-game/engine';
 import { catalog, randomDeck } from '../../catalog.ts';
-import { pickFan } from '../../decks/showcase.ts';
+import { dailyFan, dayKey } from '../../decks/showcase.ts';
 import { DeckCards } from '../decks/DeckCards.tsx';
 import { Toast } from '../ui/Toast.tsx';
 import { Hero } from './Hero.tsx';
@@ -90,7 +90,7 @@ export function DevHome({ error, ...handlers }: PlayHandlers & { error: string |
   return (
     <HomeShell active="arena" onArena={stay} player={name}>
       <main className="home">
-        <Hero fan={pickFan(definitions, [])}>
+        <Hero fan={dailyFan(definitions, [], dayKey(new Date()))}>
           <NameField name={name} onChange={setName} />
           <PlayActions options={options} {...handlers} />
         </Hero>

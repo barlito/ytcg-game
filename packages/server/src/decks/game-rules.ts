@@ -29,5 +29,6 @@ export function assertGameRules(catalog: Catalog, deck: DeckChoice): DeckChoice 
   if (refusal !== null) {
     throw new DeckError(refusal);
   }
-  return deck;
+  // Holo only counts for cards of the deck (a stray id would be refused by the engine).
+  return deck.holo === undefined ? deck : { ...deck, holo: deck.holo.filter((id) => deck.cards.includes(id)) };
 }

@@ -27,5 +27,6 @@ export class YtcgDeckProvider implements DeckProvider {
 }
 
 export function toDeckChoice(deck: ServerDeck): DeckChoice {
-  return deck.terrain === null ? { cards: deck.cards } : { cards: deck.cards, location: deck.terrain };
+  const base = { cards: deck.cards, holo: deck.holoCards };
+  return deck.terrain === null ? base : { ...base, location: deck.terrain };
 }

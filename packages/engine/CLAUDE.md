@@ -47,3 +47,4 @@ Pure game rules. Imported by the server (authoritative) and the client (types, p
 
 - `tests/support.ts`: `newGame()` puts chosen cards in hand with 10 energy, `playTurn()` plays both sides by definition id, `skipToTurn()`, `powerAt()`.
 - `make sim ARGS="--games 2000 --mode universe"`: random bots, seat balance, win rate per universe and per card. Random bots only tell broken from fine; they are not a balance verdict.
+- Holo copies: `PlayerSetup.holo` (deck card ids played in a holo copy, must be in the deck) sets `CardInstance.holo`, projected as `CardView.holo` and carried by the `cardRevealed` event. Cosmetic, public once the card is visible; effect-created cards are never holo. The preset itself stays in the card data.

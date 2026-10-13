@@ -11,6 +11,8 @@ interface Props {
   terrain: string | null;
   // Cards the player no longer owns: shown greyed out.
   missing?: readonly string[];
+  // Cards played in a holo copy.
+  holo?: readonly string[];
   // Hand-sized tiles with their effect text, or small thumbnails (artwork and numbers).
   size?: 'large' | 'small';
 }
@@ -18,10 +20,12 @@ interface Props {
 function CardThumb({
   definition,
   missing,
+  holo,
   size,
 }: {
   definition: CardDefinition;
   missing: boolean;
+  holo: boolean;
   size: 'large' | 'small';
 }): React.JSX.Element {
   const { anchor, setAnchor, id, open, handlers } = useTooltipAnchor(false);
@@ -35,7 +39,12 @@ function CardThumb({
         aria-describedby={open ? id : undefined}
         {...handlers}
       >
-        <DefinitionFace definition={definition} size={size === 'large' ? 'full' : 'compact'} dim={missing} />
+        <DefinitionFace
+          definition={definition}
+          size={size === 'large' ? 'full' : 'compact'}
+          dim={missing}
+          holo={holo}
+        />
       </button>
       {open && (
         <Tooltip anchor={anchor} id={id}>
@@ -61,7 +70,7 @@ function TerrainThumb({ terrain }: { terrain: LocationDefinition }): React.JSX.E
 }
 
 // The cards of a deck as the player will see them, cheapest first, then its terrain.
-export function DeckCards({ cards, terrain, missing = [], size = 'small' }: Props): React.JSX.Element {
+export function DeckCards({ cards, terrain, missing = [], holo = [], size = 'small' }: Props): React.JSX.Element {
   const known = cards
     .flatMap((id) => catalog.cards.get(id) ?? [])
     .sort((a, b) => a.cost - b.cost || a.name.localeCompare(b.name, 'fr'));
@@ -70,7 +79,13 @@ export function DeckCards({ cards, terrain, missing = [], size = 'small' }: Prop
   return (
     <ul className={`deck-cards is-${size}`}>
       {known.map((definition) => (
-        <CardThumb key={definition.id} definition={definition} missing={missing.includes(definition.id)} size={size} />
+        <CardThumb
+          key={definition.id}
+          definition={definition}
+          missing={missing.includes(definition.id)}
+          holo={holo.includes(definition.id)}
+          size={size}
+        />
       ))}
       {unknown > 0 && <li className="deck-cards__unknown">+{unknown} carte(s) inconnue(s) du jeu</li>}
       {location !== undefined && <TerrainThumb terrain={location} />}

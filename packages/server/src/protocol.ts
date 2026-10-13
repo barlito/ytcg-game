@@ -18,6 +18,8 @@ export type ActionInput = z.output<typeof actionInputSchema>;
 export const deckChoiceSchema = z.object({
   cards: z.array(z.string().min(1)).max(50),
   location: z.string().min(1).optional(),
+  // Cards of `cards` played in a holo copy.
+  holo: z.array(z.string().min(1)).max(50).optional(),
 });
 
 export type DeckChoice = z.output<typeof deckChoiceSchema>;

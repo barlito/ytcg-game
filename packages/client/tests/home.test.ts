@@ -5,7 +5,7 @@ import { deckBadge } from '../src/decks/deck-state.ts';
 import { draftFrom, draftStatus } from '../src/decks/draft.ts';
 import { NO_FILTER, buildPool, filterPool, normalizeText } from '../src/decks/pool.ts';
 import { saveLabel } from '../src/decks/save-label.ts';
-import { deckCover, pickFan, rarityRank } from '../src/decks/showcase.ts';
+import { dailyFan, dayKey, deckCover, pickFan, rarityRank } from '../src/decks/showcase.ts';
 import type { Deck } from '../src/ytcg/schemas.ts';
 
 const definitions = [...catalog.cards.values()];
@@ -16,9 +16,11 @@ function deck(cards: string[], overrides: Partial<Deck> = {}): Deck {
     name: 'Linettes',
     cards,
     terrain: null,
+    holoCards: [],
     valid: true,
     missingCards: [],
     issues: [],
+    changes: [],
     createdAt: '2026-10-08T10:00:00+02:00',
     updatedAt: '2026-10-08T10:00:00+02:00',
     ...overrides,
@@ -61,6 +63,23 @@ describe('home showcase', () => {
   it('falls back to the catalog when the player has fewer than three cards', () => {
     expect(pickFan(definitions.slice(0, 2), definitions)).toHaveLength(3);
     expect(pickFan([], [])).toEqual([]);
+  });
+
+  it('draws the same three cards and holo all day and others after midnight (Paris)', () => {
+    const day = (iso: string): string => dayKey(new Date(iso));
+    expect(day('2026-10-13T21:59:00Z')).toBe('2026-10-13');
+    expect(day('2026-10-13T22:01:00Z')).toBe('2026-10-14');
+    const today = dailyFan(definitions, [], '2026-10-13');
+    expect(today).toHaveLength(3);
+    expect(dailyFan(definitions, [], '2026-10-13')).toEqual(today);
+    const days = ['2026-10-14', '2026-10-15', '2026-10-16'].map((d) => dailyFan(definitions, [], d));
+    expect(
+      days.some((fan) => fan.map((c) => c.definition.id).join() !== today.map((c) => c.definition.id).join()),
+    ).toBe(true);
+    const holos = Array.from({ length: 30 }, (_, i) => dailyFan(definitions, [], `2027-01-${String(i + 1)}`)).flat();
+    expect(holos.some((c) => c.holo)).toBe(true);
+    expect(holos.some((c) => !c.holo)).toBe(true);
+    expect(dailyFan([], [], '2026-10-13')).toEqual([]);
   });
 
   it('covers a deck with one of its known cards, none for an unknown deck', () => {

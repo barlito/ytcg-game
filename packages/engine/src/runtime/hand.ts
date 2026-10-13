@@ -10,7 +10,7 @@ export interface HandContext {
   readonly events: GameEvent[];
 }
 
-export function newInstance(uid: string, defId: string, owner: PlayerIndex): CardInstance {
+export function newInstance(uid: string, defId: string, owner: PlayerIndex, holo = false): CardInstance {
   return {
     uid,
     defId,
@@ -24,6 +24,7 @@ export function newInstance(uid: string, defId: string, owner: PlayerIndex): Car
     playOrder: null,
     statuses: {},
     crisis: null,
+    holo,
   };
 }
 

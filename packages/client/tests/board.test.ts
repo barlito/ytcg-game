@@ -17,7 +17,7 @@ const seats = [
 ];
 
 describe('drag and drop', () => {
-  const pending = printedCard('p0c2', defId);
+  const pending = printedCard('p0c2', defId, false);
   const view = viewWith({ pending: [pending] }, { playableCards: ['p0c1'], openLocations: [0, 1] });
 
   it('lets a playable hand card drop on open locations only', () => {
@@ -61,7 +61,7 @@ describe('drag and drop', () => {
 
 describe('power breakdown', () => {
   it('shows buffs and debuffs against the printed power', () => {
-    const base = printedCard('a', defId);
+    const base = printedCard('a', defId, false);
     const printed = base.breakdown.printed;
     const buffed = {
       ...base,
@@ -87,7 +87,7 @@ describe('power breakdown', () => {
   });
 
   it('lists statuses with their stacks and rule', () => {
-    const card = { ...printedCard('a', defId), statuses: { high: 2, mad: 1 } };
+    const card = { ...printedCard('a', defId, false), statuses: { high: 2, mad: 1 } };
     expect(statusLines(card)).toEqual([
       { id: 'mad', name: 'Folie', stacks: 1, rule: 'Ses effets de folie sont décrits sur la carte.' },
       { id: 'high', name: 'Défonce', stacks: 2, rule: 'Perd 1 puissance par cumul à chaque fin de tour.' },
@@ -95,7 +95,7 @@ describe('power breakdown', () => {
   });
 
   it('names the crisis on the Folie pill and explains it', () => {
-    const card = { ...printedCard('a', defId), statuses: { mad: 1 }, crisis: 'wandering' as const };
+    const card = { ...printedCard('a', defId, false), statuses: { mad: 1 }, crisis: 'wandering' as const };
     expect(statusLines(card)).toEqual([
       {
         id: 'mad',

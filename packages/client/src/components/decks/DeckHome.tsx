@@ -5,7 +5,7 @@ import type { YtcgSessionHandle } from '../../ytcg/useYtcgSession.ts';
 import { catalog } from '../../catalog.ts';
 import { playableDeckId } from '../../decks/deck-state.ts';
 import { buildPool } from '../../decks/pool.ts';
-import { pickFan } from '../../decks/showcase.ts';
+import { dailyFan, dayKey } from '../../decks/showcase.ts';
 import { Toast } from '../ui/Toast.tsx';
 import { Hero } from '../home/Hero.tsx';
 import { HomeShell } from '../home/HomeShell.tsx';
@@ -34,10 +34,10 @@ function replaceDeck(saved: Deck): (decks: Deck[]) => Deck[] {
 const CATALOG_CARDS = [...catalog.cards.values()];
 
 // Cards of the active deck, else of the collection, else of the catalog: the fan shows real cards.
-function useFan(session: ReadySession, selected: Deck | undefined): ReturnType<typeof pickFan> {
+function useFan(session: ReadySession, selected: Deck | undefined): ReturnType<typeof dailyFan> {
   const owned = useMemo(() => buildPool(catalog, session.collection).cards.map((card) => card.definition), [session]);
   const deckCards = selected?.cards.flatMap((id) => catalog.cards.get(id) ?? []) ?? [];
-  return pickFan(deckCards.length >= 3 ? deckCards : owned, CATALOG_CARDS);
+  return dailyFan(deckCards.length >= 3 ? deckCards : owned, CATALOG_CARDS, dayKey(new Date()));
 }
 
 function scrollToDecks(): void {
@@ -93,6 +93,9 @@ function DeckLobby({
           onEdit={onEdit}
           onDeleted={(id) => {
             ytcg.updateDecks((decks) => decks.filter((deck) => deck.id !== id));
+          }}
+          onAcknowledged={(id) => {
+            ytcg.updateDecks((decks) => decks.map((deck) => (deck.id === id ? { ...deck, changes: [] } : deck)));
           }}
         />
         {error !== null && <Toast tone="danger">{error}</Toast>}

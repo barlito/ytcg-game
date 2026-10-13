@@ -45,14 +45,25 @@ describe('ytcg decks', () => {
 
   it('asks ytcg for the deck of the authenticated player, with the server token', async () => {
     const { provider, calls } = ytcg(() => json(200, serverDeck(cards, terrain)));
-    await expect(provider.deckFor(DISCORD, { deckId: 'deck-1' })).resolves.toEqual({ cards, location: terrain });
+    await expect(provider.deckFor(DISCORD, { deckId: 'deck-1' })).resolves.toEqual({
+      cards,
+      holo: [],
+      location: terrain,
+    });
     expect(calls[0]?.url).toBe('http://ytcg.test/api/duel/server/decks/deck-1?player=123456789012345678');
     expect(new Headers(calls[0]?.init?.headers).get('Authorization')).toBe('Bearer secret');
   });
 
   it('maps a deck without terrain to a choice without location', async () => {
     const { provider } = ytcg(() => json(200, serverDeck(cards, null)));
-    await expect(provider.deckFor(DISCORD, { deckId: 'deck-1' })).resolves.toEqual({ cards });
+    await expect(provider.deckFor(DISCORD, { deckId: 'deck-1' })).resolves.toEqual({ cards, holo: [] });
+  });
+
+  it('carries the cards ytcg says are played in a holo copy', async () => {
+    const [first = ''] = cards;
+    const body = { ...serverDeck(cards, null), holoCards: [first, 'not-in-the-deck'] };
+    const { provider } = ytcg(() => json(200, body));
+    await expect(provider.deckFor(DISCORD, { deckId: 'deck-1' })).resolves.toEqual({ cards, holo: [first] });
   });
 
   it('never accepts an inline deck', async () => {

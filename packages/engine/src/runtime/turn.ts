@@ -77,6 +77,7 @@ export class TurnFlow {
       defId: card.defId,
       player: card.owner,
       location: card.location,
+      holo: card.holo,
     });
     for (const status of this.board.definitionOf(uid).statuses) {
       this.board.addStatus(uid, status, 1);

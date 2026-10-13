@@ -17,10 +17,10 @@ const seats = [
 describe('spotlight', () => {
   it('shows the printed card with its owner, its place and its full text', () => {
     const view = viewWith({});
-    const reveal = { type: 'cardRevealed', card: 'p1c2', defId, player: 1, location: 1 } as const;
+    const reveal = { type: 'cardRevealed', card: 'p1c2', defId, player: 1, location: 1, holo: false } as const;
     expect(spotlightContent(reveal, view, seats)).toEqual({
       kind: 'card',
-      card: printedCard('p1c2', defId),
+      card: printedCard('p1c2', defId, false),
       owner: 'Bob',
       side: 'opponent',
       place: 'Lieu 2',
@@ -55,7 +55,8 @@ describe('spotlight', () => {
   });
 
   it('counts the power of a card through the effects of its own reveal only', () => {
-    const reveal = (card: string) => ({ type: 'cardRevealed', card, defId, player: 1, location: 0 }) as const;
+    const reveal = (card: string) =>
+      ({ type: 'cardRevealed', card, defId, player: 1, location: 0, holo: false }) as const;
     const boost = (card: string, delta: number) => ({ type: 'powerChanged', card, delta }) as const;
     const upcoming = [reveal('a'), boost('a', 2), boost('b', 5), boost('a', 4), reveal('b'), boost('a', 1)];
     expect(revealedPower('a', 7, upcoming)).toBe(13);

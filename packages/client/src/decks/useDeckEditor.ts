@@ -1,6 +1,7 @@
 import { type Dispatch, useReducer, useState } from 'react';
 import { saveDeck } from '../ytcg/api.ts';
-import type { Deck } from '../ytcg/schemas.ts';
+import type { Deck, OwnedCard } from '../ytcg/schemas.ts';
+import { kindsOf } from './copies.ts';
 import { type DeckDraft, type DraftAction, draftFrom, draftPayload, draftReducer } from './draft.ts';
 import { type DraftErrors, NO_ERRORS, errorsFromFailure } from './violations.ts';
 
@@ -12,12 +13,16 @@ export interface DeckEditorState {
   save: () => void;
 }
 
-export function useDeckEditor(deck: Deck | null, onSaved: (deck: Deck) => void): DeckEditorState {
+export function useDeckEditor(
+  deck: Deck | null,
+  collection: readonly OwnedCard[],
+  onSaved: (deck: Deck) => void,
+): DeckEditorState {
   const [draft, dispatch] = useReducer(draftReducer, deck, draftFrom);
   const [errors, setErrors] = useState<DraftErrors>(NO_ERRORS);
   const [saving, setSaving] = useState(false);
   const save = (): void => {
-    const payload = draftPayload(draft);
+    const payload = draftPayload(draft, kindsOf(collection));
     setSaving(true);
     void saveDeck(draft.id, payload).then((result) => {
       setSaving(false);
@@ -25,7 +30,7 @@ export function useDeckEditor(deck: Deck | null, onSaved: (deck: Deck) => void):
         onSaved(result.value);
         return;
       }
-      setErrors(errorsFromFailure(result.failure, payload.cards));
+      setErrors(errorsFromFailure(result.failure, payload));
     });
   };
   return { draft, dispatch, errors, saving, save };

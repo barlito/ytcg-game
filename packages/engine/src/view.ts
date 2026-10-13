@@ -24,6 +24,8 @@ export interface CardView {
   statuses: Partial<Record<StatusId, number>>;
   // The crisis of a mad card without a madness effect of its own (public: the card is revealed).
   crisis: CrisisId | null;
+  // A holo copy, cosmetic. Only revealed cards and your own hand are ever projected, so it leaks nothing.
+  holo: boolean;
 }
 
 export interface LocationView {
@@ -77,6 +79,7 @@ function cardView(catalog: Catalog, state: GameState, uid: string): CardView {
     breakdown: powerBreakdown(catalog, state, uid),
     statuses: { ...card.statuses },
     crisis: card.crisis,
+    holo: card.holo,
   };
 }
 

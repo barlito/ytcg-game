@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { projectEventsForPlayer, projectForPlayer } from '../src/index.ts';
-import { act, card, catalogWith, newGame, playTurn, uidOf } from './support.ts';
+import { createGame, projectEventsForPlayer, projectForPlayer } from '../src/index.ts';
+import { act, card, catalogWith, deckOf, moveToHand, newGame, playTurn, uidOf } from './support.ts';
 
 const catalog = catalogWith(
   [card('mine'), card('secret-a'), card('secret-b', { power: 4 })],
@@ -51,6 +51,54 @@ describe('player view', () => {
     const location = projectForPlayer(catalog, revealed, 0).locations[1];
     expect(location?.cards.opponent.map((card) => card.defId)).toEqual(['secret-b']);
     expect(location?.power).toEqual({ you: 1, opponent: 4 });
+  });
+});
+
+describe('holo copies', () => {
+  const holoGame = (): ReturnType<typeof createGame> =>
+    createGame(catalog, {
+      seed: 'holo',
+      players: [
+        { id: 'alice', deck: deckOf(['mine'], catalog), holo: ['mine'] },
+        { id: 'bob', deck: deckOf(['secret-a'], catalog) },
+      ],
+      locations: ['loc-a', 'loc-b', 'loc-c'],
+    });
+
+  it('flags the instances of the cards brought as holo, and nothing else', () => {
+    const { state } = holoGame();
+    const flagged = Object.values(state.cards).filter((c) => c.holo);
+    expect(flagged.map((c) => [c.owner, c.defId])).toEqual([[0, 'mine']]);
+  });
+
+  it('refuses a holo card that is not in the deck', () => {
+    expect(() =>
+      createGame(catalog, {
+        seed: 'x',
+        players: [
+          { id: 'alice', deck: deckOf([], catalog), holo: ['mine'] },
+          { id: 'bob', deck: deckOf([], catalog) },
+        ],
+      }),
+    ).toThrow(/holo card mine is not in the deck/);
+  });
+
+  it('shows the holo of your hand and of revealed cards, never a face-down opponent card', () => {
+    const { state } = holoGame();
+    moveToHand(state, 0, 'mine');
+    moveToHand(state, 1, 'secret-a');
+    state.players[0].energy = 10;
+    state.players[1].energy = 10;
+    const played = act(catalog, state, { type: 'play', player: 0, card: uidOf(state, 0, 'mine'), location: 0 }).state;
+    const asOpponent = projectForPlayer(catalog, played, 1);
+    expect(JSON.stringify(asOpponent)).not.toContain(uidOf(state, 0, 'mine'));
+    expect(asOpponent.locations.flatMap((l) => l.cards.opponent)).toEqual([]);
+    expect(projectForPlayer(catalog, played, 0).locations[0]?.yourPending[0]?.holo).toBe(true);
+
+    const revealed = playTurn(catalog, state, { p0: [['mine', 0]], p1: [['secret-a', 1]] });
+    expect(projectForPlayer(catalog, revealed.state, 1).locations[0]?.cards.opponent[0]?.holo).toBe(true);
+    const event = revealed.events.find((e) => e.type === 'cardRevealed' && e.player === 0);
+    expect(event).toMatchObject({ holo: true });
   });
 });
 

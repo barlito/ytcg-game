@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { catalog } from '../../catalog.ts';
 import { deckBadge } from '../../decks/deck-state.ts';
 import { deckCover } from '../../decks/showcase.ts';
-import { deleteDeck } from '../../ytcg/api.ts';
+import { acknowledgeChanges, deleteDeck } from '../../ytcg/api.ts';
 import type { Deck } from '../../ytcg/schemas.ts';
 import { Artwork } from '../Artwork.tsx';
+import { DeckChanges } from './DeckChanges.tsx';
 
 export interface TileHandlers {
   onSelect: (id: string) => void;
   onEdit: (deck: Deck) => void;
   onDeleted: (id: string) => void;
+  onAcknowledged: (id: string) => void;
 }
 
 interface Props extends TileHandlers {
@@ -47,6 +49,16 @@ function useDelete(
   return { confirm, error, run };
 }
 
+function acknowledge(id: string, done: (id: string) => void): () => void {
+  return () => {
+    void acknowledgeChanges(id).then((result) => {
+      if (result.ok || result.failure.kind === 'refused') {
+        done(id);
+      }
+    });
+  };
+}
+
 function cardCount(deck: Deck): string {
   const owned = deck.cards.length - deck.missingCards.length;
   return owned === deck.cards.length
@@ -55,7 +67,7 @@ function cardCount(deck: Deck): string {
 }
 
 // A playable deck is picked; a deck to fix opens the editor instead.
-export function DeckTile({ deck, selected, onSelect, onEdit, onDeleted }: Props): React.JSX.Element {
+export function DeckTile({ deck, selected, onSelect, onEdit, onDeleted, onAcknowledged }: Props): React.JSX.Element {
   const remove = useDelete(deck, onDeleted);
   const badge = deckBadge(catalog, deck);
   return (
@@ -96,6 +108,7 @@ export function DeckTile({ deck, selected, onSelect, onEdit, onDeleted }: Props)
           {remove.confirm ? 'Confirmer la suppression' : 'Supprimer'}
         </button>
       </div>
+      <DeckChanges deck={deck} onAcknowledge={acknowledge(deck.id, onAcknowledged)} />
       {remove.error !== null && <p className="error is-small">{remove.error}</p>}
     </li>
   );

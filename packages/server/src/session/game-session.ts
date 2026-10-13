@@ -36,10 +36,13 @@ interface Seat {
 
 // The engine takes no location key at all when the player brought none.
 function playerSetup(seat: Seat): PlayerSetup {
-  const { cards, location } = seat.deck;
-  return location === undefined
-    ? { id: seat.identity.id, deck: cards }
-    : { id: seat.identity.id, deck: cards, location };
+  const { cards, location, holo } = seat.deck;
+  return {
+    id: seat.identity.id,
+    deck: cards,
+    ...(location === undefined ? {} : { location }),
+    ...(holo === undefined ? {} : { holo }),
+  };
 }
 
 // One match between two seated players, wrapping the engine. No network, no clock: the room drives it.
