@@ -2,7 +2,8 @@ import type { PlayerEvent } from '@ytcg-game/engine';
 import { describe, expect, it } from 'vitest';
 import { ghostsAt, printedCard, trackPlacements } from '../src/animation/placements.ts';
 import { IDLE, SPOTLIGHT_MS, advance, currentStep, durationOf, enqueue, stepsFor } from '../src/animation/queue.ts';
-import { STILL, cardFx, isReplaying, sceneOf } from '../src/animation/scene.ts';
+import { cardFx } from '../src/animation/fx.ts';
+import { STILL, isReplaying, sceneOf } from '../src/animation/scene.ts';
 import { catalog } from '../src/catalog.ts';
 import { loggedCount } from '../src/events.ts';
 import { viewWith } from './support.ts';
@@ -79,7 +80,7 @@ describe('scene', () => {
     expect(cardFx(priority, 'p0c1').faceDown).toBe(true);
     const reveal = playUntil('cardRevealed', 2);
     expect(cardFx(reveal, 'p1c1').faceDown).toBe(false);
-    expect(cardFx(reveal, 'p0c1')).toEqual({ faceDown: false, effect: 'reveal', float: null });
+    expect(cardFx(reveal, 'p0c1')).toEqual({ faceDown: false, effect: 'reveal', float: null, flight: null });
   });
 
   it('keeps a spotlighted card face down on the board until it lands, its effects after', () => {
@@ -87,7 +88,7 @@ describe('scene', () => {
     expect(spotlight.spotlight).toEqual(resolution[2]);
     expect(spotlight.current).toBeNull();
     expect(isReplaying(spotlight)).toBe(true);
-    expect(cardFx(spotlight, 'p0c1')).toEqual({ faceDown: true, effect: null, float: null });
+    expect(cardFx(spotlight, 'p0c1')).toEqual({ faceDown: true, effect: null, float: null, flight: null });
     expect(cardFx(spotlight, 'p1c1').faceDown).toBe(false);
     expect(playUntil('cardRevealed', 2).spotlight).toBeNull();
     expect(playUntil('powerChanged').spotlight).toBeNull();
@@ -139,7 +140,12 @@ describe('placements', () => {
   it('remembers where a destroyed card stood, from the reveal event or an earlier view', () => {
     const view = viewWith({ opponent: [], you: [] });
     const placements = trackPlacements(new Map(), view, resolution);
-    expect(placements.get('p1c1')).toEqual({ location: 0, side: 'opponent', card: printedCard('p1c1', defId) });
+    expect(placements.get('p1c1')).toEqual({
+      location: 0,
+      side: 'opponent',
+      index: 0,
+      card: printedCard('p1c1', defId),
+    });
     const dying = new Set(['p1c1']);
     expect(ghostsAt(placements, dying, { location: 0, side: 'opponent', present: [] })).toHaveLength(1);
     expect(ghostsAt(placements, dying, { location: 1, side: 'opponent', present: [] })).toEqual([]);

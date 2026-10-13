@@ -6,6 +6,8 @@
   display: grid;
   gap: 0.5rem;
   max-width: 14rem;
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
   padding: 0.5rem 0.75rem;
   background: rgb(10 5 30 / 92%);
   border: 1px solid #ff3ea5;
@@ -20,4 +22,16 @@
 .sandbox label {
   display: grid;
   gap: 0.15rem;
+}
+
+.sandbox__scenarios {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0.4rem;
+  border: 1px solid #ff3ea5;
+}
+
+.sandbox button.is-active {
+  outline: 1px solid #46e6e6;
 }

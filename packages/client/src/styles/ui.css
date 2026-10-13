@@ -191,7 +191,7 @@ button.chip {
   z-index: 70;
 }
 
-/* Logo 7c « Arcade chromatique »: official YOUL wordmark, then DUEL skewed with a chromatic aberration. */
+/* Logo 7c « Arcade chromatique »: YOUL glyphs, then DUEL skewed with a chromatic aberration. */
 .logo {
   --duel-size: 8rem;
   --shift: 0.3125rem;
@@ -202,21 +202,15 @@ button.chip {
   text-decoration: none;
   color: var(--text);
 }
-/* The wordmark file is a card watermark: the window shows the YOUL word, the file itself is untouched. */
+/* Standalone YOUL glyphs cropped from the ytcg watermark (solid white). */
 .logo__youl {
-  position: relative;
   display: block;
-  width: calc(var(--duel-size) * 0.5);
-  aspect-ratio: 360 / 160;
+  width: calc(var(--duel-size) * 0.6);
   margin-left: 0.5rem;
-  overflow: hidden;
 }
 .logo__youl img {
-  position: absolute;
-  width: calc(718 / 360 * 100%);
-  left: calc(-170 / 360 * 100%);
-  top: calc(-680 / 160 * 100%);
-  max-width: none;
+  display: block;
+  width: 100%;
   pointer-events: none;
 }
 .logo__duel {
@@ -240,7 +234,7 @@ button.chip {
   gap: 0.5rem;
 }
 .logo.is-nav .logo__youl {
-  width: 2.2rem;
+  width: 3.1rem;
   margin: 0;
 }
 .logo.is-nav .logo__duel {

@@ -93,7 +93,7 @@ export function addNextCost(context: HandContext, player: PlayerIndex, amount: n
   context.events.push({ type: 'costChanged', player, card: null, delta: amount });
 }
 
-export function addToHand(context: HandContext, player: PlayerIndex, defId: string): void {
+export function addToHand(context: HandContext, player: PlayerIndex, defId: string, from?: string): void {
   const { state, events } = context;
   if (state.players[player].hand.length >= MAX_HAND) {
     return;
@@ -104,5 +104,5 @@ export function addToHand(context: HandContext, player: PlayerIndex, defId: stri
   card.zone = 'hand';
   state.cards[uid] = card;
   state.players[player].hand.push(uid);
-  events.push({ type: 'cardAddedToHand', player, card: uid, defId });
+  events.push({ type: 'cardAddedToHand', player, card: uid, defId, ...(from === undefined ? {} : { from }) });
 }

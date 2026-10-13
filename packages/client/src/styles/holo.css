@@ -141,20 +141,14 @@
   mask-position: center;
 }
 
-/* Lit by the pointer, or at rest on the big cards (hand, spotlight, previews) at a fixed pose. */
+/* Lit only while the pointer moves on it (a still foil reads as stripes), or drifting in the spotlight. */
 .tcard.is-holo.is-tilting {
-  --card-opacity: 1;
-}
-.tcard.is-holo[data-size='full'] {
-  --card-opacity: 0.5;
-}
-.tcard.is-holo[data-size='full'].is-tilting {
   --card-opacity: 1;
 }
 .tcard.is-holo.is-tilting .tholo__shine,
 .tcard.is-holo.is-tilting .tholo__glare,
-.tcard.is-holo[data-size='full'] .tholo__shine,
-.tcard.is-holo[data-size='full'] .tholo__glare {
+.spotlight__face .tcard.is-holo .tholo__shine,
+.spotlight__face .tcard.is-holo .tholo__glare {
   visibility: visible;
   transition: none;
 }
@@ -203,15 +197,12 @@
   }
 }
 
-/* Reduced motion: a still foil on the big cards, no drift, no fade. */
+/* Reduced motion: no tilt, a still foil only in the spotlight, no drift, no fade. */
 @media (prefers-reduced-motion: reduce) {
   .spotlight__face .tcard.is-holo {
     animation: none;
   }
   .tcard.is-holo {
     transition: none;
-  }
-  .tcard.is-holo[data-size='full'] {
-    --card-opacity: 0.6;
   }
 }

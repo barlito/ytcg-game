@@ -188,9 +188,14 @@ describe('crises', () => {
 
   it('Contagion makes a sane card here mad (both sides), and leaves loners alone', () => {
     const state = withCrisis([['patient', 0]], { patient: 'contagion' }, [['v1', 0]]);
-    const next = playTurn(catalog, state).state;
+    const { state: next, events } = playTurn(catalog, state);
     expect(next.cards[uidOf(next, 1, 'v1')]?.statuses.mad).toBe(1);
     expect(crisisOf(next, 'v1', 1)).not.toBeNull();
+    expect(events).toContainEqual({
+      type: 'contagionSpread',
+      from: uidOf(next, 0, 'patient'),
+      to: uidOf(next, 1, 'v1'),
+    });
     const alone = playTurn(catalog, withCrisis([['patient', 0]], { patient: 'contagion' })).state;
     expect(alone.cards[uidOf(alone, 0, 'patient')]?.statuses).toEqual({ mad: 1 });
   });

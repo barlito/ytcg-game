@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { effectLines, effectTier } from '../src/components/card/effectText.ts';
 import { rarityGlyph, rarityKey } from '../src/components/card/rarity.ts';
 import { catalog } from '../src/catalog.ts';
+import { statusBadge } from '../src/components/card/statusBadge.ts';
 import { holoPose } from '../src/lib/holoPose.ts';
 
 describe('rarity', () => {
@@ -69,5 +70,24 @@ describe('holoPose', () => {
   it('follows the corners the way ytcg damps them (37..63 %, 33..67 %), from-center capped at 1', () => {
     expect(holoPose(0, 0)).toMatchObject({ '--background-x': '37.0%', '--background-y': '33.0%' });
     expect(holoPose(1, 1)).toMatchObject({ '--pointer-from-left': '1.000', '--pointer-from-center': '1.000' });
+  });
+});
+
+describe('statusBadge', () => {
+  it('reads a pill label back to its status, stacks and crisis, with an accessible title', () => {
+    expect(statusBadge('Folie · Errance', { mad: 1 })).toEqual({
+      id: 'mad',
+      stacks: 1,
+      crisis: 'wandering',
+      title: 'Folie : Errance',
+    });
+    expect(statusBadge('Défonce ×2', { high: 2 })).toMatchObject({
+      id: 'high',
+      stacks: 2,
+      crisis: null,
+      title: 'Défonce ×2',
+    });
+    expect(statusBadge('Folie', { mad: 1 })?.crisis).toBeNull();
+    expect(statusBadge('Inconnu', {})).toBeNull();
   });
 });

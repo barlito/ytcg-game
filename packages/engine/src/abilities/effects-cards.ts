@@ -82,7 +82,7 @@ export class AddToHandEffect implements Effect {
     }
     for (const player of owners(source)) {
       for (let i = 0; i < this.params.count; i++) {
-        board.addToHand(player, defId);
+        board.addToHand(player, defId, ...(source.card === null ? [] : [source.card]));
       }
     }
   }

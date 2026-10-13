@@ -99,7 +99,13 @@ export type GameEvent =
   | { type: 'cardMoved'; card: string; from: number; to: number }
   // Private to the owner: the opponent never receives it. `card` null = the next card played.
   | { type: 'costChanged'; player: PlayerIndex; card: string | null; delta: number }
-  | { type: 'cardAddedToHand'; player: PlayerIndex; card: string; defId: string }
-  | { type: 'statusChanged'; card: string; status: StatusId; stacks: number }
+  // `from`: the board card whose ability added it, if any (public: the card is revealed).
+  | { type: 'cardAddedToHand'; player: PlayerIndex; card: string; defId: string; from?: string }
+  // The Contagion crisis of `from` makes `to` mad (announced right before the statusChanged of `to`).
+  | { type: 'contagionSpread'; from: string; to: string }
+  // `spent`: a shield status (Protection) paid a stack to cancel a destruction or a power loss.
+  | { type: 'statusChanged'; card: string; status: StatusId; stacks: number; spent?: true }
+  // A reaction ability (onCardPlayedHere, onDestroyed) of a card or a location is about to apply its effects.
+  | { type: 'abilityTriggered'; trigger: 'onCardPlayedHere' | 'onDestroyed'; card: string | null; location: number }
   | { type: 'crisisStarted'; card: string; crisis: CrisisId }
   | { type: 'gameEnded'; result: GameResult };

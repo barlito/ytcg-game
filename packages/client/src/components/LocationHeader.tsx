@@ -2,6 +2,7 @@ import { type LocationView, type PlayerEvent, describeLocation } from '@ytcg-gam
 import { useScene } from '../animation/useReplay.ts';
 import { catalog } from '../catalog.ts';
 import { leadOf } from '../lib/lead.ts';
+import { terrainState } from '../lib/terrainRules.ts';
 import { Artwork } from './Artwork.tsx';
 
 const OWNER_LABEL = { you: 'Ton terrain', opponent: 'Terrain adverse', random: 'Terrain aléatoire' } as const;
@@ -47,14 +48,44 @@ function HiddenHeader({ location }: { location: LocationView }): React.JSX.Eleme
   );
 }
 
-// The tile flips when its terrain is revealed and flashes when a card lands on the location.
-function tileEffects(current: PlayerEvent | null, index: number): string {
-  const flipping = current?.type === 'locationRevealed' && current.location === index;
-  const flashing = current?.type === 'cardRevealed' && current.location === index;
-  return `${flipping ? ' fx-flip' : ''}${flashing ? ' fx-flash' : ''}`;
+// Locations an event is about (a reaction of a card is shown on the card, not on the tile).
+function touched(event: PlayerEvent): number[] {
+  if (event.type === 'cardMoved') {
+    return [event.from, event.to];
+  }
+  const own = event.type === 'abilityTriggered' && event.card === null;
+  return event.type === 'locationRevealed' || event.type === 'cardRevealed' || own ? [event.location] : [];
 }
 
-function RevealedHeader({ location, defId }: { location: LocationView; defId: string }): React.JSX.Element {
+// The tile flips when its terrain is revealed, flashes when a card lands on or leaves the location, and lights up
+// when its own reaction triggers.
+function tileEffects(current: PlayerEvent | null, index: number): string {
+  if (current === null || !touched(current).includes(index)) {
+    return '';
+  }
+  if (current.type === 'locationRevealed') {
+    return ' fx-flip';
+  }
+  return current.type === 'abilityTriggered' ? ' fx-trigger' : ' fx-flash';
+}
+
+// The terrain rules at a glance: « 3 places », « Ouvre au tour 2 », « Fermé à partir du tour 5 ».
+function RulePills({ pills }: { pills: readonly string[] }): React.JSX.Element | null {
+  if (pills.length === 0) {
+    return null;
+  }
+  return (
+    <span className="tile-rules">
+      {pills.map((pill) => (
+        <span key={pill} className="tile-rule">
+          {pill}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function RevealedHeader({ location, defId, turn }: HeaderProps & { defId: string }): React.JSX.Element {
   const scene = useScene();
   const terrain = catalog.location(defId);
   const text = describeLocation(catalog, terrain).join(' ') || 'Aucun effet.';
@@ -69,15 +100,21 @@ function RevealedHeader({ location, defId }: { location: LocationView; defId: st
         <span className="tile-owner">{OWNER_LABEL[tone]}</span>
         <span className="location-name">{terrain.name}</span>
         <span className="location-text">{text}</span>
+        <RulePills pills={terrainState(terrain.rules, turn).pills} />
       </TileBody>
     </header>
   );
 }
 
-export function LocationHeader({ location }: { location: LocationView }): React.JSX.Element {
+interface HeaderProps {
+  location: LocationView;
+  turn: number;
+}
+
+export function LocationHeader({ location, turn }: HeaderProps): React.JSX.Element {
   const scene = useScene();
   if (location.defId === null || scene.hiddenLocations.has(location.index)) {
     return <HiddenHeader location={location} />;
   }
-  return <RevealedHeader location={location} defId={location.defId} />;
+  return <RevealedHeader location={location} defId={location.defId} turn={turn} />;
 }

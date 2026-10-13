@@ -194,8 +194,8 @@ export class GameBoard implements Board {
     hand.addNextCost(this.handContext, player, amount, tag);
   }
 
-  addToHand(player: PlayerIndex, defId: string): void {
-    hand.addToHand(this.handContext, player, defId);
+  addToHand(player: PlayerIndex, defId: string, from?: string): void {
+    hand.addToHand(this.handContext, player, defId, from);
   }
 
   // A shield status pays one stack to cancel what was about to happen.
@@ -208,7 +208,7 @@ export class GameBoard implements Board {
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- statuses is a plain JSON record
       delete card.statuses[status];
     }
-    this.events.push({ type: 'statusChanged', card: uid, status, stacks: left });
+    this.events.push({ type: 'statusChanged', card: uid, status, stacks: left, spent: true });
   }
 
   addStatus(uid: string, status: StatusId, stacks: number): void {
