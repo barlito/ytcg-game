@@ -1,5 +1,5 @@
 import { catalog } from '../catalog.ts';
-import { pickFan } from '../decks/showcase.ts';
+import { dailyFan, dayKey } from '../decks/showcase.ts';
 import type { YtcgSession } from '../ytcg/session.ts';
 import { useYtcgSession } from '../ytcg/useYtcgSession.ts';
 import { Toast } from './ui/Toast.tsx';
@@ -19,7 +19,6 @@ interface NoticeProps {
   reload: () => void;
 }
 
-const CATALOG_FAN = pickFan([...catalog.cards.values()], []);
 const stay = (): void => undefined;
 
 function SessionNotice({ session, reload }: NoticeProps): React.JSX.Element {
@@ -46,7 +45,7 @@ export default function Home({ error, ...handlers }: Props): React.JSX.Element {
   return (
     <HomeShell active="arena" onArena={stay}>
       <main className="home">
-        <Hero fan={CATALOG_FAN}>
+        <Hero fan={dailyFan([...catalog.cards.values()], [], dayKey(new Date()))}>
           <SessionNotice session={session} reload={ytcg.reload} />
         </Hero>
         {error !== null && <Toast tone="danger">{error}</Toast>}

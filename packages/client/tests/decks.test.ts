@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { catalog, randomDeck } from '../src/catalog.ts';
 import { curveBars, curveLines } from '../src/decks/curve.ts';
 import { deckState, playableDeckId } from '../src/decks/deck-state.ts';
+import { type CopyKind, copyKind, playsHolo } from '../src/decks/copies.ts';
+import { changeText, noticeTitle } from '../src/decks/notice.ts';
 import { draftFrom, draftPayload, draftReducer, draftStatus } from '../src/decks/draft.ts';
 import { NO_FILTER, buildPool, filterOptions, filterPool } from '../src/decks/pool.ts';
 import { errorsFromFailure, mapViolations } from '../src/decks/violations.ts';
@@ -11,6 +13,7 @@ import { deckSchema } from '../src/ytcg/schemas.ts';
 import type { Deck, OwnedCard } from '../src/ytcg/schemas.ts';
 
 const [terrain = ''] = catalog.locations.keys();
+const NOTHING_SENT = { cards: [], holoCards: [] };
 
 function deck(cards: string[], overrides: Partial<Deck> = {}): Deck {
   return {
@@ -18,9 +21,11 @@ function deck(cards: string[], overrides: Partial<Deck> = {}): Deck {
     name: 'Linettes',
     cards,
     terrain: null,
+    holoCards: [],
     valid: true,
     missingCards: [],
     issues: [],
+    changes: [],
     createdAt: '2026-10-08T10:00:00+02:00',
     updatedAt: '2026-10-08T10:00:00+02:00',
     ...overrides,
@@ -59,11 +64,68 @@ describe('deck draft', () => {
   it('can be saved once full and named, and tells what the game server would refuse', () => {
     const named = { ...draftFrom(deck(cards)), name: '  Linettes ' };
     expect(draftStatus(catalog, named)).toEqual({ full: true, canSave: true, gameRefusal: null });
-    expect(draftPayload({ ...named, terrain })).toEqual({ name: 'Linettes', cards, terrain });
+    expect(draftPayload({ ...named, terrain }, new Map())).toEqual({ name: 'Linettes', cards, terrain, holoCards: [] });
     expect(draftStatus(catalog, { ...named, name: ' ' }).canSave).toBe(false);
     const expensive = [...catalog.cards.values()].filter((card) => card.cost >= 5).map((card) => card.id);
     const status = draftStatus(catalog, { ...named, cards: expensive.slice(0, DECK_SIZE) });
     expect(status.gameRefusal).toContain('Courbe de coûts à revoir');
+  });
+});
+
+describe('holo choice', () => {
+  const cards = randomDeck();
+  const [a = '', b = '', c = '', d = ''] = cards;
+  const own = (quantity: number, holoQuantity: number): OwnedCard => ({ ...owned('x'), quantity, holoQuantity });
+
+  it('is a choice only when both kinds are owned', () => {
+    expect(copyKind(own(2, 1))).toBe('both');
+    expect(copyKind(own(1, 1))).toBe('holo');
+    expect(copyKind(own(2, 0))).toBe('normal');
+    expect(copyKind(own(0, 0))).toBe('none');
+    expect(copyKind(undefined)).toBe('none');
+    expect([
+      playsHolo('holo', false),
+      playsHolo('both', true),
+      playsHolo('both', false),
+      playsHolo('normal', true),
+    ]).toEqual([true, true, false, false]);
+  });
+
+  it('toggles holo only on deck cards and forgets it when the card leaves', () => {
+    let draft = draftFrom(deck(cards));
+    draft = draftReducer(draft, { type: 'holo', card: a });
+    draft = draftReducer(draft, { type: 'holo', card: b });
+    draft = draftReducer(draft, { type: 'holo', card: 'not-in-deck' });
+    expect(draft.holoCards).toEqual([a, b]);
+    draft = draftReducer(draft, { type: 'holo', card: a });
+    expect(draft.holoCards).toEqual([b]);
+    draft = draftReducer(draft, { type: 'toggle', card: b });
+    expect(draft.holoCards).toEqual([]);
+  });
+
+  it('sends what is played holo: forced for holo-only cards, the choice for both kinds, never for normal ones', () => {
+    const kinds = new Map<string, CopyKind>([
+      [a, 'holo'],
+      [b, 'both'],
+      [c, 'both'],
+      [d, 'normal'],
+    ]);
+    const draft = draftFrom(deck(cards, { holoCards: [b, d] }));
+    expect(draftPayload(draft, kinds).holoCards).toEqual(cards.filter((id) => id === a || id === b));
+  });
+
+  it('reads the notice of changes, defaulting to none for an older ytcg, and words each change', () => {
+    expect(deckSchema.parse({ ...deck(cards), holoCards: undefined, changes: undefined }).changes).toEqual([]);
+    const at = '2026-10-13T10:00:00+02:00';
+    expect(changeText({ card: a, name: 'Benj', type: 'removed', at })).toBe('Benj retirée (plus possédée)');
+    expect(changeText({ card: a, name: 'Benj', type: 'switchedToNormal', at })).toBe('Benj passe en normale');
+    expect(changeText({ card: a, name: 'Benj', type: 'switchedToHolo', at })).toBe('Benj passe en holo');
+    expect(noticeTitle('Linettes')).toBe('Ton deck Linettes a changé');
+  });
+
+  it('maps holoCards[i] violations to the card', () => {
+    const errors = mapViolations({ 'holoCards[1]': ['Pas de holo.'] }, { cards, holoCards: [a, b] });
+    expect(errors.byCard).toEqual({ [b]: ['Pas de holo.'] });
   });
 });
 
@@ -88,19 +150,25 @@ describe('ytcg violations', () => {
         terrain: ['Pas un terrain.'],
         cards: ['12 cartes.'],
       },
-      ['a', 'b'],
+      { cards: ['a', 'b'], holoCards: [] },
     );
     expect(errors.name).toEqual(['Nom vide.']);
     expect(errors.byCard).toEqual({ b: ['Carte introuvable dans ta collection.'] });
     expect(errors.terrain).toEqual(['Pas un terrain.']);
     expect(errors.cards).toEqual(['12 cartes.']);
-    expect(mapViolations({ 'cards[9]': ['?'] }, ['a']).cards).toEqual(['?']);
+    expect(mapViolations({ 'cards[9]': ['?'] }, { cards: ['a'], holoCards: [] }).cards).toEqual(['?']);
   });
 
   it('turns every failure into a message, with the login link on 401', () => {
-    const login = errorsFromFailure({ kind: 'login', message: 'Session expirée', loginUrl: 'https://login' }, []);
+    const login = errorsFromFailure(
+      { kind: 'login', message: 'Session expirée', loginUrl: 'https://login' },
+      NOTHING_SENT,
+    );
     expect(login).toMatchObject({ general: ['Session expirée'], loginUrl: 'https://login' });
-    const invalid = errorsFromFailure({ kind: 'invalid', message: 'Deck invalide.', violations: { name: ['x'] } }, []);
+    const invalid = errorsFromFailure(
+      { kind: 'invalid', message: 'Deck invalide.', violations: { name: ['x'] } },
+      NOTHING_SENT,
+    );
     expect(invalid).toMatchObject({ general: ['Deck invalide.'], name: ['x'] });
   });
 });

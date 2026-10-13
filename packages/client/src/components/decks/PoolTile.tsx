@@ -12,6 +12,7 @@ interface Props {
   selected: boolean;
   disabled: boolean;
   errors: string[] | undefined;
+  holo: boolean;
   onToggle: () => void;
 }
 
@@ -51,7 +52,7 @@ function TileTip({ card }: { card: PoolCard }): React.JSX.Element {
   );
 }
 
-export function PoolTile({ card, selected, disabled, errors, onToggle }: Props): React.JSX.Element {
+export function PoolTile({ card, selected, disabled, errors, holo, onToggle }: Props): React.JSX.Element {
   const { anchor, setAnchor, id, open, handlers } = useTooltipAnchor(false);
   const action = selected ? 'Retirer du deck' : 'Ajouter au deck';
   return (
@@ -72,7 +73,7 @@ export function PoolTile({ card, selected, disabled, errors, onToggle }: Props):
         }}
         {...handlers}
       >
-        <DefinitionFace definition={card.definition} holo={card.holo > 0} />
+        <DefinitionFace definition={card.definition} holo={holo} />
       </button>
       <span className="pool-tile__own" aria-hidden="true">
         ×{card.quantity}

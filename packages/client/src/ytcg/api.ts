@@ -87,6 +87,11 @@ export function saveDeck(id: string | null, payload: DeckPayload): Promise<ApiRe
     : call(`/api/duel/decks/${encodeURIComponent(id)}`, deckSchema, { method: 'PUT', body });
 }
 
+// The player has read the notice of changes of a deck.
+export function acknowledgeChanges(id: string): Promise<ApiResult<null>> {
+  return call(`/api/duel/decks/${encodeURIComponent(id)}/changes`, z.null(), { method: 'DELETE' });
+}
+
 export function deleteDeck(id: string): Promise<ApiResult<null>> {
   return call(`/api/duel/decks/${encodeURIComponent(id)}`, z.null(), { method: 'DELETE' });
 }

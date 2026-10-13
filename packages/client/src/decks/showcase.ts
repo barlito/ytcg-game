@@ -24,3 +24,57 @@ export function deckCover(catalog: Catalog, deck: Pick<Deck, 'cards'>): string |
   const known = deck.cards.flatMap((id) => catalog.cards.get(id) ?? []);
   return [...known].sort(byShowiness)[0]?.image ?? null;
 }
+
+export interface FanCard {
+  definition: CardDefinition;
+  holo: boolean;
+}
+
+// ytcg resets its daily quotas at midnight Europe/Paris: the showcase changes on the same clock.
+export const DAY_TIMEZONE = 'Europe/Paris';
+
+export function dayKey(now: Date): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: DAY_TIMEZONE }).format(now);
+}
+
+function hash(text: string): number {
+  let h = 2166136261;
+  for (const char of text) {
+    h = Math.imul(h ^ char.charCodeAt(0), 16777619);
+  }
+  return h >>> 0;
+}
+
+// Small seeded generator (mulberry32): the same seed always gives the same sequence.
+function seeded(seed: string): () => number {
+  let state = hash(seed);
+  return () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// Three random cards of the pool, each holo or not at random, identical all day (the seed is the day) and new after midnight.
+export function dailyFan(
+  cards: readonly CardDefinition[],
+  fallback: readonly CardDefinition[],
+  day: string,
+): FanCard[] {
+  const pool = [...(cards.length >= 3 ? cards : fallback)].sort((a, b) => a.id.localeCompare(b.id));
+  const random = seeded(`fan:${day}`);
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    const other = pool[j];
+    const current = pool[i];
+    if (other !== undefined && current !== undefined) {
+      pool[i] = other;
+      pool[j] = current;
+    }
+  }
+  return pickFan(pool.slice(0, 3), []).map((definition) => ({
+    definition,
+    holo: seeded(`holo:${day}:${definition.id}`)() < 0.5,
+  }));
+}

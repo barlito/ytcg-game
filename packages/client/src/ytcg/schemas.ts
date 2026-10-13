@@ -17,14 +17,27 @@ export type OwnedCard = z.output<typeof ownedCardSchema>;
 
 export const collectionSchema = z.object({ cards: z.array(ownedCardSchema) });
 
+export const deckChangeSchema = z.object({
+  card: z.string(),
+  name: z.string(),
+  type: z.enum(['removed', 'switchedToNormal', 'switchedToHolo']),
+  at: z.string(),
+});
+
+export type DeckChange = z.output<typeof deckChangeSchema>;
+
 export const deckSchema = z.object({
   id: z.string(),
   name: z.string(),
   cards: z.array(z.string()),
   terrain: z.string().nullable(),
+  // Cards played in their holo copy (forced with holo copies only, the player's choice with both kinds).
+  holoCards: z.array(z.string()).default([]),
   valid: z.boolean(),
   missingCards: z.array(z.string()),
   issues: z.array(z.string()),
+  // What ytcg changed on its last reconciliation with the collection, until acknowledged or the deck is saved.
+  changes: z.array(deckChangeSchema).default([]),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -45,4 +58,5 @@ export interface DeckPayload {
   name: string;
   cards: string[];
   terrain: string | null;
+  holoCards: string[];
 }

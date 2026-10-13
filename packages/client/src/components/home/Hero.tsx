@@ -1,9 +1,9 @@
-import type { CardDefinition } from '@ytcg-game/engine';
+import type { FanCard } from '../../decks/showcase.ts';
 import type { ReactNode } from 'react';
 import { CardFan } from './CardFan.tsx';
 
 interface Props {
-  fan: readonly CardDefinition[];
+  fan: readonly FanCard[];
   // Name field, play actions…
   children: ReactNode;
 }

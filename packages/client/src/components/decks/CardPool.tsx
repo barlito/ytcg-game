@@ -1,3 +1,4 @@
+import { type CopyKind, playsHolo } from '../../decks/copies.ts';
 import { type PoolCard, type PoolFilter, filterPool } from '../../decks/pool.ts';
 import { PoolTile } from './PoolTile.tsx';
 
@@ -7,10 +8,13 @@ interface Props {
   selected: string[];
   full: boolean;
   errors: Record<string, string[]>;
+  // Cards chosen to be played holo: their tile shines.
+  holo: readonly string[];
+  kinds: ReadonlyMap<string, CopyKind>;
   onToggle: (card: string) => void;
 }
 
-export function CardPool({ cards, filter, selected, full, errors, onToggle }: Props): React.JSX.Element {
+export function CardPool({ cards, filter, selected, full, errors, holo, kinds, onToggle }: Props): React.JSX.Element {
   const shown = filterPool(cards, filter);
   return (
     <section className="pool" aria-label="Ta collection">
@@ -40,6 +44,7 @@ export function CardPool({ cards, filter, selected, full, errors, onToggle }: Pr
                 selected={isSelected}
                 disabled={full && !isSelected}
                 errors={errors[card.definition.id]}
+                holo={playsHolo(kinds.get(card.definition.id), holo.includes(card.definition.id))}
                 onToggle={() => {
                   onToggle(card.definition.id);
                 }}

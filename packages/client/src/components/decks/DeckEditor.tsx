@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
 import { catalog } from '../../catalog.ts';
+import { kindsOf } from '../../decks/copies.ts';
 import { draftStatus } from '../../decks/draft.ts';
 import { NO_FILTER, type PoolFilter, buildPool, filterOptions } from '../../decks/pool.ts';
 import { useDeckEditor } from '../../decks/useDeckEditor.ts';
 import type { Deck, OwnedCard } from '../../ytcg/schemas.ts';
 import { HomeShell } from '../home/HomeShell.tsx';
 import { CardPool } from './CardPool.tsx';
+import { DeckChanges } from './DeckChanges.tsx';
 import { DeckPanel } from './DeckPanel.tsx';
 import { PoolFilters } from './PoolFilters.tsx';
 import '../../styles/cards.css';
@@ -22,11 +24,12 @@ interface Props {
 }
 
 export function DeckEditor({ deck, collection, onCancel, onSaved }: Props): React.JSX.Element {
-  const editor = useDeckEditor(deck, onSaved);
+  const editor = useDeckEditor(deck, collection, onSaved);
   const [filter, setFilter] = useState<PoolFilter>(NO_FILTER);
   const pool = useMemo(() => buildPool(catalog, collection), [collection]);
   const options = useMemo(() => filterOptions(catalog, pool.cards), [pool]);
   const owned = useMemo(() => new Set(collection.map((card) => card.id)), [collection]);
+  const kinds = useMemo(() => kindsOf(collection), [collection]);
   const status = draftStatus(catalog, editor.draft);
   return (
     <HomeShell active="decks" onArena={onCancel} tabs={false}>
@@ -36,6 +39,7 @@ export function DeckEditor({ deck, collection, onCancel, onSaved }: Props): Reac
             ← Mes decks
           </button>
           <h1 className="editor__title">{deck === null ? 'Nouveau deck' : 'Modifier le deck'}</h1>
+          {deck !== null && <DeckChanges deck={deck} />}
           <PoolFilters options={options} filter={filter} onChange={setFilter} />
         </aside>
         <CardPool
@@ -44,11 +48,13 @@ export function DeckEditor({ deck, collection, onCancel, onSaved }: Props): Reac
           selected={editor.draft.cards}
           full={status.full}
           errors={editor.errors.byCard}
+          holo={editor.draft.holoCards}
+          kinds={kinds}
           onToggle={(card) => {
             editor.dispatch({ type: 'toggle', card });
           }}
         />
-        <DeckPanel editor={editor} status={status} terrains={pool.terrains} owned={owned} />
+        <DeckPanel editor={editor} status={status} terrains={pool.terrains} owned={owned} kinds={kinds} />
       </main>
     </HomeShell>
   );

@@ -13,10 +13,25 @@ export interface DraftErrors {
 export const NO_ERRORS: DraftErrors = { name: [], cards: [], byCard: {}, terrain: [], general: [], loginUrl: null };
 
 const CARD_INDEX = /^cards\[(\d+)\]$/;
+const HOLO_INDEX = /^holoCards\[(\d+)\]$/;
 
-function place(errors: DraftErrors, key: string, messages: string[], sentCards: readonly string[]): void {
+// What was sent: ytcg reports `cards[i]` / `holoCards[i]`, indexes in these lists.
+export interface SentLists {
+  cards: readonly string[];
+  holoCards: readonly string[];
+}
+
+function cardOf(key: string, sent: SentLists): string | undefined {
+  const holoIndex = HOLO_INDEX.exec(key)?.[1];
+  if (holoIndex !== undefined) {
+    return sent.holoCards[Number(holoIndex)];
+  }
   const index = CARD_INDEX.exec(key)?.[1];
-  const card = index === undefined ? undefined : sentCards[Number(index)];
+  return index === undefined ? undefined : sent.cards[Number(index)];
+}
+
+function place(errors: DraftErrors, key: string, messages: string[], sent: SentLists): void {
+  const card = cardOf(key, sent);
   if (card !== undefined) {
     errors.byCard[card] = [...(errors.byCard[card] ?? []), ...messages];
   } else if (key === 'name' || key === 'terrain' || key === 'cards') {
@@ -26,18 +41,18 @@ function place(errors: DraftErrors, key: string, messages: string[], sentCards: 
   }
 }
 
-export function mapViolations(violations: Record<string, string[]>, sentCards: readonly string[]): DraftErrors {
+export function mapViolations(violations: Record<string, string[]>, sent: SentLists): DraftErrors {
   const errors: DraftErrors = { ...NO_ERRORS, name: [], cards: [], byCard: {}, terrain: [], general: [] };
   for (const [key, messages] of Object.entries(violations)) {
-    place(errors, key, messages, sentCards);
+    place(errors, key, messages, sent);
   }
   return errors;
 }
 
-export function errorsFromFailure(failure: ApiFailure, sentCards: readonly string[]): DraftErrors {
+export function errorsFromFailure(failure: ApiFailure, sent: SentLists): DraftErrors {
   switch (failure.kind) {
     case 'invalid': {
-      const errors = mapViolations(failure.violations, sentCards);
+      const errors = mapViolations(failure.violations, sent);
       return { ...errors, general: [failure.message] };
     }
     case 'login':

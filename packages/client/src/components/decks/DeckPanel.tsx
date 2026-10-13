@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { DECK_SIZE } from '@ytcg-game/engine';
 import type { LocationDefinition } from '@ytcg-game/engine';
 import { catalog } from '../../catalog.ts';
+import type { CopyKind } from '../../decks/copies.ts';
 import type { DraftStatus } from '../../decks/draft.ts';
 import { DECK_NAME_MAX } from '../../decks/draft.ts';
 import { saveLabel } from '../../decks/save-label.ts';
@@ -16,6 +17,7 @@ interface Props {
   status: DraftStatus;
   terrains: LocationDefinition[];
   owned: ReadonlySet<string>;
+  kinds: ReadonlyMap<string, CopyKind>;
 }
 
 function Messages({ items, loginUrl }: { items: string[]; loginUrl: string | null }): React.JSX.Element | null {
@@ -75,7 +77,7 @@ function SaveButton({ editor, status }: Pick<Props, 'editor' | 'status'>): React
   );
 }
 
-export function DeckPanel({ editor, status, terrains, owned }: Props): React.JSX.Element {
+export function DeckPanel({ editor, status, terrains, owned, kinds }: Props): React.JSX.Element {
   const { draft, errors } = editor;
   // Mobile only: the drawer shows the summary, the handle opens the list and the terrain.
   const [open, setOpen] = useState(false);
@@ -97,8 +99,13 @@ export function DeckPanel({ editor, status, terrains, owned }: Props): React.JSX
           cards={draft.cards}
           owned={owned}
           errors={errors.byCard}
+          kinds={kinds}
+          holo={draft.holoCards}
           onRemove={(card) => {
             editor.dispatch({ type: 'toggle', card });
+          }}
+          onHolo={(card) => {
+            editor.dispatch({ type: 'holo', card });
           }}
         />
         <Messages items={errors.cards} loginUrl={null} />
