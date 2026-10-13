@@ -14,6 +14,7 @@ function card(uid: string, power: number): CardView {
     breakdown: { printed: power, modifier: 0, ongoing: [] },
     statuses: {},
     crisis: null,
+    holo: false,
   };
 }
 

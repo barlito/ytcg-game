@@ -20,12 +20,23 @@ export function DefinitionFace({
   definition,
   size = 'compact',
   dim = false,
+  holo = false,
 }: {
   definition: CardDefinition;
   size?: CardSize;
   dim?: boolean;
+  holo?: boolean;
 }): React.JSX.Element {
-  return <CardPlate definition={definition} cost={definition.cost} power={definition.power} size={size} dim={dim} />;
+  return (
+    <CardPlate
+      definition={definition}
+      cost={definition.cost}
+      power={definition.power}
+      size={size}
+      dim={dim}
+      holo={holo}
+    />
+  );
 }
 
 function TileTip({ card }: { card: PoolCard }): React.JSX.Element {
@@ -61,7 +72,7 @@ export function PoolTile({ card, selected, disabled, errors, onToggle }: Props):
         }}
         {...handlers}
       >
-        <DefinitionFace definition={card.definition} />
+        <DefinitionFace definition={card.definition} holo={card.holo > 0} />
       </button>
       <span className="pool-tile__own" aria-hidden="true">
         ×{card.quantity}

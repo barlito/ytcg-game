@@ -63,7 +63,7 @@ function cardContent(
   const definition = catalog.card(event.defId);
   return {
     kind: 'card',
-    card: printedCard(event.card, event.defId),
+    card: printedCard(event.card, event.defId, event.holo),
     owner: yours ? 'Toi' : (seats[event.player]?.name ?? 'Adversaire'),
     side: yours ? 'you' : 'opponent',
     place: placeName(view, event.location),

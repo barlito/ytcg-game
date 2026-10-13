@@ -15,7 +15,7 @@ export interface Placement {
 export type Placements = ReadonlyMap<string, Placement>;
 
 // A card only known from its reveal event: printed values.
-export function printedCard(uid: string, defId: string): CardView {
+export function printedCard(uid: string, defId: string, holo: boolean): CardView {
   const { cost, power } = catalog.card(defId);
   return {
     uid,
@@ -25,6 +25,7 @@ export function printedCard(uid: string, defId: string): CardView {
     breakdown: { printed: power, modifier: 0, ongoing: [] },
     statuses: {},
     crisis: null,
+    holo,
   };
 }
 
@@ -53,7 +54,12 @@ function statusesAfter(
 function applyEvent(next: Map<string, Placement>, view: PlayerView, event: PlayerEvent): void {
   if (event.type === 'cardRevealed' && !next.has(event.card)) {
     const side = event.player === view.you ? 'you' : 'opponent';
-    next.set(event.card, { location: event.location, side, index: 0, card: printedCard(event.card, event.defId) });
+    next.set(event.card, {
+      location: event.location,
+      side,
+      index: 0,
+      card: printedCard(event.card, event.defId, event.holo),
+    });
   }
   if (event.type === 'crisisStarted' || event.type === 'statusChanged') {
     const known = next.get(event.card);

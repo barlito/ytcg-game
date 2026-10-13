@@ -38,6 +38,8 @@ interface Tweak {
   delta?: number;
   statuses?: Partial<Record<StatusId, number>>;
   crisis?: CrisisId;
+  // A holo copy (the preset comes from the card definition).
+  holo?: boolean;
 }
 
 interface Rows {
@@ -70,6 +72,7 @@ function viewOf(definition: CardDefinition, uid: string, tweak: Tweak = {}): Car
     breakdown: { printed: definition.power, modifier, ongoing: [] },
     statuses: tweak.statuses ?? {},
     crisis: tweak.crisis ?? null,
+    holo: tweak.holo ?? false,
   };
 }
 
@@ -81,7 +84,7 @@ function boardRows(catalog: Catalog): Rows[] {
   return [
     {
       you: [
-        viewOf(rarity('legendary'), 'y0', { delta: 2 }),
+        viewOf(rarity('legendary'), 'y0', { delta: 2, holo: true }),
         viewOf(cost(1), 'y1'),
         viewOf(cost(3), 'y2', { statuses: { tough: 1 } }),
         viewOf(cost(2), 'y3', { delta: -1, statuses: { high: 2, mad: 1, tough: 1 }, crisis: 'rage' }),
@@ -90,6 +93,7 @@ function boardRows(catalog: Catalog): Rows[] {
         viewOf(
           nth(all, (card) => card.unique, 0),
           'o0',
+          { holo: true },
         ),
         viewOf(cost(4), 'o1', { delta: 3, statuses: { mad: 1 }, crisis: 'implosion' }),
         viewOf(cost(1, 1), 'o2'),
@@ -103,7 +107,7 @@ function boardRows(catalog: Catalog): Rows[] {
       pending: [viewOf(cost(2, 2), 'p0')],
     },
     {
-      you: [viewOf(rarity('legendary', 1), 'y6')],
+      you: [viewOf(rarity('legendary', 1), 'y6', { holo: true })],
       opponent: [viewOf(cost(3, 1), 'o5'), viewOf(cost(1, 2), 'o6')],
       pending: [],
     },
@@ -116,6 +120,7 @@ function handCards(catalog: Catalog, count: number): CardView[] {
     viewOf(
       nth(all, (card) => card.cost === cost, i),
       `h${String(i)}`,
+      { holo: i % 3 === 0 },
     ),
   ).slice(0, count);
 }
@@ -223,7 +228,16 @@ export function buildFixture(catalog: Catalog, options: FixtureOptions, now: num
     events:
       scenario?.events ??
       (options.replay && revealed !== undefined
-        ? [{ type: 'cardRevealed', card: revealed.uid, defId: revealed.defId, player: 0, location: 0 }]
+        ? [
+            {
+              type: 'cardRevealed',
+              card: revealed.uid,
+              defId: revealed.defId,
+              player: 0,
+              location: 0,
+              holo: revealed.holo,
+            },
+          ]
         : []),
     serverTime: now,
     turnDeadline: view.result === null ? now + TURN_SECONDS * 1000 : null,

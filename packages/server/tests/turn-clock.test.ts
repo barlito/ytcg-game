@@ -28,9 +28,9 @@ describe('turn clock', () => {
   it('counts revealed cards and terrains only', () => {
     const events: GameEvent[] = [
       { type: 'revealPriority', player: 0 },
-      { type: 'cardRevealed', card: 'p0c1', defId: 'a', player: 0, location: 0 },
+      { type: 'cardRevealed', card: 'p0c1', defId: 'a', player: 0, location: 0, holo: false },
       { type: 'powerChanged', card: 'p0c1', delta: 2 },
-      { type: 'cardRevealed', card: 'p1c1', defId: 'b', player: 1, location: 2 },
+      { type: 'cardRevealed', card: 'p1c1', defId: 'b', player: 1, location: 2, holo: false },
       { type: 'turnStarted', turn: 3 },
       { type: 'locationRevealed', location: 2 },
     ];

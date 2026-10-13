@@ -4,6 +4,7 @@ import { effectLines, effectTier } from '../src/components/card/effectText.ts';
 import { rarityGlyph, rarityKey } from '../src/components/card/rarity.ts';
 import { catalog } from '../src/catalog.ts';
 import { statusBadge } from '../src/components/card/statusBadge.ts';
+import { holoPreset } from '../src/components/card/Holo.tsx';
 import { holoPose } from '../src/lib/holoPose.ts';
 
 describe('rarity', () => {
@@ -89,5 +90,14 @@ describe('statusBadge', () => {
     });
     expect(statusBadge('Folie', { mad: 1 })?.crisis).toBeNull();
     expect(statusBadge('Inconnu', {})).toBeNull();
+  });
+});
+
+describe('holoPreset', () => {
+  it('lights a card only for a holo copy, the preset coming from the definition', () => {
+    expect(holoPreset({ holo: 'cosmos' }, false)).toBeNull();
+    expect(holoPreset({ holo: null }, false)).toBeNull();
+    expect(holoPreset({ holo: 'cosmos' }, true)).toBe('cosmos');
+    expect(holoPreset({ holo: null }, true)).toBe('basic');
   });
 });

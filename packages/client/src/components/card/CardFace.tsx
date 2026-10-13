@@ -33,6 +33,8 @@ export interface PlateProps {
   fresh?: boolean;
   // A card the player no longer owns: faded and grey.
   dim?: boolean;
+  // This copy is holo (the player owns one and brought it): the preset itself comes from the definition.
+  holo?: boolean;
 }
 
 function plateClasses({ effect = null, fresh = false, dim = false, states }: PlateProps, holo: string): string {
@@ -44,7 +46,7 @@ function plateClasses({ effect = null, fresh = false, dim = false, states }: Pla
 export function CardPlate(props: PlateProps): React.JSX.Element {
   const { definition, cost, power, trend = 'even', statuses = [], size = 'full', costFlow = null } = props;
   const rarity = rarityKey(definition);
-  const holo = useHolo(definition, size);
+  const holo = useHolo(definition, size, props.holo ?? false);
   return (
     <div
       className={plateClasses(props, holo.className)}
@@ -98,6 +100,7 @@ export function CardFace({ card, ...rest }: FaceProps): React.JSX.Element {
       trend={powerTrend(card)}
       statuses={statuses}
       states={card.statuses}
+      holo={card.holo}
       {...rest}
     />
   );

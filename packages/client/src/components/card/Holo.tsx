@@ -1,4 +1,4 @@
-import type { CardDefinition } from '@ytcg-game/engine';
+import type { CardDefinition, HoloPreset } from '@ytcg-game/engine';
 import { useState } from 'react';
 import { maskUrl } from '../../artwork.ts';
 import type { CardSize } from './CardBand.tsx';
@@ -12,10 +12,17 @@ interface HoloState {
   arm: () => void;
 }
 
-// A holo card carries its ytcg recipe; small cards only fetch the mask and mount the layers once hovered.
-export function useHolo(definition: CardDefinition, size: CardSize): HoloState {
+// A plain copy never shines; a holo copy of a card without a preset falls back to `basic`, like ytcg.
+export function holoPreset(definition: Pick<CardDefinition, 'holo'>, isHolo: boolean): HoloPreset | null {
+  return isHolo ? (definition.holo ?? 'basic') : null;
+}
+
+// The recipe (preset, mask) comes from the card definition; whether THIS copy is holo is up to the player.
+// Small cards only fetch the mask and mount the layers once hovered.
+export function useHolo(definition: CardDefinition, size: CardSize, isHolo: boolean): HoloState {
   const [armed, setArmed] = useState(false);
-  const { holo, mask } = definition;
+  const { mask } = definition;
+  const holo = holoPreset(definition, isHolo);
   if (holo === null) {
     return { className: '', style: undefined, lit: false, arm: () => undefined };
   }

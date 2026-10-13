@@ -12,7 +12,7 @@ export function CardFan({ cards }: { cards: readonly CardDefinition[] }): React.
     <div className="fan" aria-hidden="true">
       {cards.slice(0, 3).map((definition, index) => (
         <div key={definition.id} className={`fan__card is-${['left', 'centre', 'right'][index] ?? 'centre'}`}>
-          <DefinitionFace definition={definition} size={narrow ? 'compact' : 'full'} />
+          <DefinitionFace definition={definition} size={narrow ? 'compact' : 'full'} holo={definition.holo !== null} />
         </div>
       ))}
     </div>

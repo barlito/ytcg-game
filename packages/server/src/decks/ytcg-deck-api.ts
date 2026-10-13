@@ -14,6 +14,8 @@ const serverDeckSchema = z.object({
   id: z.string(),
   name: z.string(),
   cards: z.array(z.string().min(1)),
+  // Cards the player owns in a holo copy; absent from an older ytcg.
+  holoCards: z.array(z.string().min(1)).default([]),
   terrain: z.string().min(1).nullable(),
 });
 

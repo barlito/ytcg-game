@@ -35,6 +35,8 @@ export interface CardInstance {
   statuses: Partial<Record<StatusId, number>>;
   // Drawn when the card goes mad without a madness effect of its own, forgotten with the Folie.
   crisis: CrisisId | null;
+  // The player brought a holo copy of this card (cosmetic, public once the card is revealed).
+  holo: boolean;
 }
 
 export interface PlayerState {
@@ -93,7 +95,7 @@ export type GameEvent =
   | { type: 'cardDrawn'; player: PlayerIndex; card: string }
   | { type: 'handRedrawn'; player: PlayerIndex }
   | { type: 'revealPriority'; player: PlayerIndex }
-  | { type: 'cardRevealed'; card: string; defId: string; player: PlayerIndex; location: number }
+  | { type: 'cardRevealed'; card: string; defId: string; player: PlayerIndex; location: number; holo: boolean }
   | { type: 'powerChanged'; card: string; delta: number }
   | { type: 'cardDestroyed'; card: string }
   | { type: 'cardMoved'; card: string; from: number; to: number }

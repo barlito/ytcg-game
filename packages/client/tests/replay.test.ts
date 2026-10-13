@@ -12,8 +12,8 @@ const [defId = ''] = catalog.cards.keys();
 
 const resolution: PlayerEvent[] = [
   { type: 'revealPriority', player: 1 },
-  { type: 'cardRevealed', card: 'p1c1', defId, player: 1, location: 0 },
-  { type: 'cardRevealed', card: 'p0c1', defId, player: 0, location: 0 },
+  { type: 'cardRevealed', card: 'p1c1', defId, player: 1, location: 0, holo: false },
+  { type: 'cardRevealed', card: 'p0c1', defId, player: 0, location: 0, holo: false },
   { type: 'powerChanged', card: 'p0c1', delta: 2 },
   { type: 'cardDestroyed', card: 'p1c1' },
   { type: 'turnStarted', turn: 3 },
@@ -144,7 +144,7 @@ describe('placements', () => {
       location: 0,
       side: 'opponent',
       index: 0,
-      card: printedCard('p1c1', defId),
+      card: printedCard('p1c1', defId, false),
     });
     const dying = new Set(['p1c1']);
     expect(ghostsAt(placements, dying, { location: 0, side: 'opponent', present: [] })).toHaveLength(1);
@@ -153,7 +153,7 @@ describe('placements', () => {
   });
 
   it('never doubles a card still in the view', () => {
-    const card = printedCard('p0c1', defId);
+    const card = printedCard('p0c1', defId, false);
     const view = viewWith({ you: [card] });
     const placements = trackPlacements(new Map(), view, []);
     expect(ghostsAt(placements, new Set(['p0c1']), { location: 0, side: 'you', present: [card] })).toEqual([]);

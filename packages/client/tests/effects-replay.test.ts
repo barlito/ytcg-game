@@ -28,6 +28,7 @@ const card = (uid: string, extra: Partial<CardView> = {}): CardView => ({
   breakdown: { printed: 3, modifier: 0, ongoing: [] },
   statuses: {},
   crisis: null,
+  holo: false,
   ...extra,
 });
 

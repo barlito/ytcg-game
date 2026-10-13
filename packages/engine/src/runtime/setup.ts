@@ -12,6 +12,8 @@ export interface PlayerSetup {
   deck: readonly string[];
   // The player's location card, placed on one of the three locations.
   location?: string;
+  // Deck cards the player plays in a holo copy (cosmetic only). Cards created by effects are never holo.
+  holo?: readonly string[];
 }
 
 export interface GameSetup {
@@ -42,9 +44,10 @@ export function startGame(catalog: Catalog, setup: GameSetup): Runtime {
     const deck = rng.shuffle([...setup.players[player].deck]);
     guaranteeOpening(deck, (id) => catalog.card(id).cost, OPENING_CARDS, rng);
     // Instance ids are given after the shuffle so they say nothing about the deck list order.
+    const holo = new Set(setup.players[player].holo);
     deck.forEach((defId, index) => {
       const uid = `p${player}c${index + 1}`;
-      state.cards[uid] = newInstance(uid, defId, player);
+      state.cards[uid] = newInstance(uid, defId, player, holo.has(defId));
       state.players[player].deck.push(uid);
     });
   }
@@ -85,6 +88,8 @@ function assertValidSetup(catalog: Catalog, setup: GameSetup): void {
   }
   setup.players.forEach((player, index) => {
     issues.push(...validateDeck(catalog, player.deck).map((issue) => `player ${index}: ${issue}`));
+    const stray = (player.holo ?? []).filter((id) => !player.deck.includes(id));
+    issues.push(...stray.map((id) => `player ${index}: holo card ${id} is not in the deck`));
     if (player.location !== undefined && !catalog.locations.has(player.location)) {
       issues.push(`player ${index}: unknown location ${player.location}`);
     }
