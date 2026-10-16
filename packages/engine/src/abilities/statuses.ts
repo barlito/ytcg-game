@@ -14,6 +14,8 @@ export interface StatusRule {
   // One-shot shields: each stack cancels one destruction / one power loss, then goes away (Protégée).
   readonly absorbsDestroy?: boolean;
   readonly absorbsPowerLoss?: boolean;
+  // ... or one status put by an enemy card (the status is not put).
+  readonly absorbsEnemyStatus?: boolean;
   endOfTurn?(board: Board, card: string, stacks: number): void;
   // Right after the card got this status while it had none.
   onGained?(board: Board, card: string): void;
@@ -63,9 +65,10 @@ export const STATUSES = {
   protected: {
     name: 'Protection',
     adjective: 'protégée',
-    rule: 'annule la prochaine destruction ou le prochain malus de puissance, puis disparaît (un cumul par protection)',
+    rule: 'annule la prochaine destruction, le prochain malus de puissance ou le prochain état posé par une carte ennemie, puis disparaît (un cumul par protection)',
     absorbsDestroy: true,
     absorbsPowerLoss: true,
+    absorbsEnemyStatus: true,
   },
   overheat: {
     name: 'Surchauffe',

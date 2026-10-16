@@ -1,17 +1,28 @@
 import { overridesStatus } from '../abilities/ability.ts';
 import { STATUS_IDS, type StatusId, type StatusRule, statusRule } from '../abilities/statuses.ts';
+import { type PlayerIndex, opponentOf } from '../state.ts';
 import type { GameBoard } from './board.ts';
 import { cardAt } from './state-access.ts';
-import { stacksOf } from './statuses.ts';
+import { absorbingStatus, stacksOf } from './statuses.ts';
 
 // The default rule of a status for this card, or null when the card defines its own effect for it.
 export function ruleFor(board: GameBoard, uid: string, status: StatusId): StatusRule | null {
   return overridesStatus(board.definitionOf(uid).abilities, status) ? null : statusRule(status);
 }
 
-export function addStatus(board: GameBoard, uid: string, status: StatusId, stacks: number): void {
+export interface StatusChange {
+  status: StatusId;
+  stacks: number;
+  // Owner of the card that applies it; null for a terrain (belongs to nobody).
+  by: PlayerIndex | null;
+}
+
+export function addStatus(board: GameBoard, uid: string, { status, stacks, by }: StatusChange): void {
   const card = cardAt(board.state, uid);
   if (card.zone !== 'board' || stacks <= 0) {
+    return;
+  }
+  if (absorbed(board, uid, { status, stacks, by })) {
     return;
   }
   const previous = stacksOf(card, status);
@@ -24,6 +35,17 @@ export function addStatus(board: GameBoard, uid: string, status: StatusId, stack
     board.onStatusGained(uid, status);
   }
   rule?.onStacksChanged?.(board, uid, total);
+}
+
+// A shield (Protection) cancels a status put by an enemy card, whatever the stacks, but never a shield itself.
+function absorbed(board: GameBoard, uid: string, { status, by }: StatusChange): boolean {
+  const card = cardAt(board.state, uid);
+  const shield = by === opponentOf(card.owner) ? absorbingStatus(card, 'absorbsEnemyStatus') : null;
+  if (shield === null || shield === status) {
+    return false;
+  }
+  spendStack(board, uid, shield);
+  return true;
 }
 
 export function removeStatus(board: GameBoard, uid: string, status: StatusId | null): void {

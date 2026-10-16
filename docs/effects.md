@@ -46,13 +46,14 @@ Marqueurs posés sur une carte du plateau pendant la partie, cumulables. Registr
 | `high` | Défonce | perd 1 puissance par cumul à chaque fin de tour |
 | `tough` | Coriace | ne peut être ni détruite ni affaiblie (malus continus compris) |
 | `drunk` | Ivresse | à chaque fin de tour, **par cumul**, gagne ou perd 2 puissance au hasard (tirage seedé) |
-| `protected` | Protection | annule la prochaine destruction **ou** le prochain malus de puissance, puis perd un cumul (disparaît à zéro) |
+| `protected` | Protection | annule la prochaine destruction, le prochain malus de puissance **ou** le prochain état posé par une carte ennemie, puis perd un cumul (disparaît à zéro) |
 | `overheat` | Surchauffe | détruite dès 3 cumuls (à l'instant où elle les atteint, puis réessayé à chaque fin de tour) |
 
 **Interactions** (toutes testées) :
 
 - Coriace passe avant Protection : une carte coriace et protégée n'est pas détruite ni affaiblie, **sans** consommer sa Protection.
 - Protection absorbe tout malus de puissance **ponctuel** (`addPower` négatif d'une carte ou d'un terrain, ticks de Défonce et d'Ivresse), un par cumul, et la destruction (y compris celle de la Surchauffe). Elle n'absorbe **pas** les malus **continus** (`ongoing`) : ils sont recalculés à chaque lecture, ce ne sont pas des événements.
+- Protection contre les **états** : un état posé par une carte **ennemie** (effet `addStatus`, crise Contagion d'une carte ennemie) n'est pas posé et un cumul de Protection est dépensé (événement `statusChanged` avec `spent: true`), quel que soit le nombre de cumuls de l'effet. Ne sont **pas** absorbés : la Protection elle-même, les états innés de la carte, ceux posés par une carte alliée, ceux posés par un **terrain** (il n'appartient à personne). Coriace ne bloque pas les états.
 - Ivresse tire toujours son nombre au hasard, même si le −2 est ignoré (Coriace) ou absorbé (Protection) : le rejeu reste identique.
 - Surchauffe + Coriace : la carte n'est jamais détruite, ses cumuls continuent de monter ; si la Coriace disparaît, elle est détruite à la fin du tour. Surchauffe + Protection : la Protection retarde la destruction d'une fois (le cumul de Protection est dépensé, la carte reste à 3+), la fin de tour la détruit.
 - Un état s'ajoute au registre `statuses.ts` : texte, `rule`, puis les crochets `preventsDestroy` / `preventsPowerLoss` (immunités), `absorbsDestroy` / `absorbsPowerLoss` (boucliers à cumuls), `endOfTurn`, `onStacksChanged` et `onGained` (premier cumul).

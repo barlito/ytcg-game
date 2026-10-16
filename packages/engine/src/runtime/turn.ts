@@ -80,7 +80,7 @@ export class TurnFlow {
       holo: card.holo,
     });
     for (const status of this.board.definitionOf(uid).statuses) {
-      this.board.addStatus(uid, status, 1);
+      this.board.addStatus(uid, status, 1, card.owner);
     }
     this.abilities.fireCard(uid, 'onReveal');
     this.abilities.fireCardPlayed(uid, playedAt);

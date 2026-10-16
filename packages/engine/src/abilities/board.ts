@@ -58,7 +58,8 @@ export interface Board extends BoardView {
   addPower(card: string, delta: number): void;
   draw(player: PlayerIndex, count: number): void;
   destroy(card: string): void;
-  addStatus(card: string, status: StatusId, stacks: number): void;
+  // `by`: owner of the card applying it (null for a terrain); a Protection absorbs a status put by the enemy.
+  addStatus(card: string, status: StatusId, stacks: number, by: PlayerIndex | null): void;
   // null removes every status.
   removeStatus(card: string, status: StatusId | null): void;
   // Moves a board card to another location of its side that has a free place; nothing happens without one.

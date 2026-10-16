@@ -116,9 +116,9 @@ export class AddStatusEffect implements Effect {
     this.params = params;
   }
 
-  apply(board: Board, _source: AbilitySource, targets: readonly string[]): void {
+  apply(board: Board, source: AbilitySource, targets: readonly string[]): void {
     for (const target of targets) {
-      board.addStatus(target, this.params.status, this.params.stacks);
+      board.addStatus(target, this.params.status, this.params.stacks, source.owner);
     }
   }
 }

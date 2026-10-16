@@ -658,39 +658,112 @@ const MACHINE = 'trait:machine';
 const giveAllies = (status: 'high' | 'overheat' | 'drunk', stacks = 1) =>
   ({ trigger: 'onReveal', target: { type: 'cards' }, effect: { type: 'addStatus', status, stacks } }) as const;
 
-const phase6 = catalogWith([
-  card('p1'),
-  card('p2'),
-  card('dealer', { abilities: [giveAllies('high')] }),
-  card('dealer2', { abilities: [giveAllies('high')] }),
-  card('junkie', { power: 3, statuses: ['high'] }),
-  card('stoner', {
-    power: 1,
-    statuses: ['high'],
-    abilities: [
-      { trigger: 'ongoing', condition: { type: 'status', status: 'high' }, effect: { type: 'addPower', amount: 3 } },
-    ],
-  }),
-  card('tripper', {
-    abilities: [{ trigger: 'onStatusGained', status: 'high', effect: { type: 'addPower', amount: 2 } }],
-  }),
-  card('nightly', {
-    abilities: [
-      { trigger: 'endOfTurn', condition: { type: 'status', status: 'high' }, effect: { type: 'addPower', amount: 1 } },
-    ],
-  }),
-  card('turbine', {
-    tags: [MACHINE],
-    abilities: [
-      { trigger: 'onReveal', effect: { type: 'addStatus', status: 'overheat', stacks: 3 } },
-      {
-        trigger: 'ongoing',
-        condition: { type: 'status', status: 'overheat' },
-        effect: { type: 'addPower', amount: 2 },
-      },
-    ],
-  }),
-]);
+const hitEnemies = (status: 'high' | 'protected', stacks = 1) =>
+  ({
+    trigger: 'onReveal',
+    target: { type: 'cards', side: 'enemy' },
+    effect: { type: 'addStatus', status, stacks },
+  }) as const;
+
+const phase6 = catalogWith(
+  [
+    card('p1'),
+    card('p2'),
+    card('guarded', { power: 4, statuses: ['protected'] }),
+    // Coriace: the Défonce tick does not spend the Protection.
+    card('bunker', { power: 4, statuses: ['tough', 'protected'] }),
+    card('guarded-junkie', { power: 4, statuses: ['tough', 'protected', 'high'] }),
+    card('poisoner', { abilities: [hitEnemies('high', 2)] }),
+    card('enemy-guard', { abilities: [hitEnemies('protected')] }),
+    card('dealer', { abilities: [giveAllies('high')] }),
+    card('dealer2', { abilities: [giveAllies('high')] }),
+    card('junkie', { power: 3, statuses: ['high'] }),
+    card('stoner', {
+      power: 1,
+      statuses: ['high'],
+      abilities: [
+        { trigger: 'ongoing', condition: { type: 'status', status: 'high' }, effect: { type: 'addPower', amount: 3 } },
+      ],
+    }),
+    card('tripper', {
+      abilities: [{ trigger: 'onStatusGained', status: 'high', effect: { type: 'addPower', amount: 2 } }],
+    }),
+    card('nightly', {
+      abilities: [
+        {
+          trigger: 'endOfTurn',
+          condition: { type: 'status', status: 'high' },
+          effect: { type: 'addPower', amount: 1 },
+        },
+      ],
+    }),
+    card('turbine', {
+      tags: [MACHINE],
+      abilities: [
+        { trigger: 'onReveal', effect: { type: 'addStatus', status: 'overheat', stacks: 3 } },
+        {
+          trigger: 'ongoing',
+          condition: { type: 'status', status: 'overheat' },
+          effect: { type: 'addPower', amount: 2 },
+        },
+      ],
+    }),
+  ],
+  [
+    {
+      id: 'loc-haze',
+      name: 'Brume',
+      abilities: [
+        { trigger: 'endOfTurn', target: { type: 'cards', side: 'all' }, effect: { type: 'addStatus', status: 'high' } },
+      ],
+    },
+  ],
+);
+
+const statusesOf = (state: GameState, player: 0 | 1, defId: string): Record<string, number> | undefined =>
+  state.cards[uidOf(state, player, defId)]?.statuses;
+
+describe('Protection against enemy statuses', () => {
+  it('absorbs a status put by an enemy card and spends one stack, whatever the stacks', () => {
+    const state = newGame(phase6, { p0: ['guarded'], p1: ['poisoner'] });
+    const turn1 = playTurn(phase6, state, { p0: [['guarded', 0]] }).state;
+    const { state: turn2, events } = playTurn(phase6, turn1, { p1: [['poisoner', 0]] });
+    expect(statusesOf(turn2, 0, 'guarded')).toEqual({});
+    expect(events).toContainEqual({
+      type: 'statusChanged',
+      card: uidOf(turn2, 0, 'guarded'),
+      status: 'protected',
+      stacks: 0,
+      spent: true,
+    });
+  });
+
+  it('lets its own innate statuses and the ones of allies through', () => {
+    const state = newGame(phase6, { p0: ['guarded-junkie', 'bunker', 'dealer'] });
+    const turn1 = playTurn(phase6, state, {
+      p0: [
+        ['guarded-junkie', 0],
+        ['bunker', 1],
+      ],
+    }).state;
+    expect(statusesOf(turn1, 0, 'guarded-junkie')).toEqual({ tough: 1, protected: 1, high: 1 });
+    const turn2 = playTurn(phase6, turn1, { p0: [['dealer', 1]] }).state;
+    expect(statusesOf(turn2, 0, 'bunker')).toEqual({ tough: 1, protected: 1, high: 1 });
+  });
+
+  it('never blocks a Protection, even from an enemy', () => {
+    const state = newGame(phase6, { p0: ['guarded'], p1: ['enemy-guard'] });
+    const turn1 = playTurn(phase6, state, { p0: [['guarded', 0]] }).state;
+    const turn2 = playTurn(phase6, turn1, { p1: [['enemy-guard', 0]] }).state;
+    expect(statusesOf(turn2, 0, 'guarded')).toEqual({ protected: 2 });
+  });
+
+  it('does not absorb a status put by a terrain, which belongs to nobody', () => {
+    const state = newGame(phase6, { p0: ['bunker'], locations: ['loc-haze', 'loc-a', 'loc-b'] });
+    const next = playTurn(phase6, state, { p0: [['bunker', 0]] }).state;
+    expect(statusesOf(next, 0, 'bunker')).toEqual({ tough: 1, protected: 1, high: 1 });
+  });
+});
 
 describe('per-status abilities (le Trip)', () => {
   it('applies a "status" condition only while the card has the status', () => {

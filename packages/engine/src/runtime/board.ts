@@ -198,8 +198,8 @@ export class GameBoard implements Board {
     hand.addToHand(this.handContext, player, defId, from);
   }
 
-  addStatus(uid: string, status: StatusId, stacks: number): void {
-    statusChanges.addStatus(this, uid, status, stacks);
+  addStatus(uid: string, status: StatusId, stacks: number, by: PlayerIndex | null): void {
+    statusChanges.addStatus(this, uid, { status, stacks, by });
   }
 
   removeStatus(uid: string, status: StatusId | null): void {
