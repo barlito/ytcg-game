@@ -1,5 +1,6 @@
 import type { CompiledAbility, Trigger } from '../abilities/ability.ts';
 import type { AbilitySource } from '../abilities/board.ts';
+import type { StatusId } from '../abilities/statuses.ts';
 import type { GameBoard } from './board.ts';
 import { opponentOf } from '../state.ts';
 import { playedMatches } from './filters.ts';
@@ -16,12 +17,27 @@ export class AbilityRunner {
   }
 
   fireCard(uid: string, trigger: Trigger, played?: string): void {
+    const source = this.boardSource(uid, played);
+    if (source !== null) {
+      this.run(this.board.definitionOf(uid).abilities, source, trigger);
+    }
+  }
+
+  // Only the onStatusGained abilities defined for that status.
+  fireStatusGained(uid: string, status: StatusId): void {
+    const source = this.boardSource(uid);
+    if (source !== null) {
+      const abilities = this.board.definitionOf(uid).abilities.filter((ability) => ability.params.status === status);
+      this.run(abilities, source, 'onStatusGained');
+    }
+  }
+
+  private boardSource(uid: string, played?: string): AbilitySource | null {
     const card = cardAt(this.board.state, uid);
     if (card.zone !== 'board' || card.location === null) {
-      return;
+      return null;
     }
-    const source: AbilitySource = { owner: card.owner, location: card.location, card: uid, ...playedPart(played) };
-    this.run(this.board.definitionOf(uid).abilities, source, trigger);
+    return { owner: card.owner, location: card.location, card: uid, ...playedPart(played) };
   }
 
   // The card has already left the board: its targets are relative to the location it was destroyed at.

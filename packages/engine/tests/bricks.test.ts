@@ -653,6 +653,92 @@ describe('statuses: Surchauffe', () => {
   });
 });
 
+// Phase 6 building blocks, on their own fixture cards.
+const MACHINE = 'trait:machine';
+const giveAllies = (status: 'high' | 'overheat' | 'drunk', stacks = 1) =>
+  ({ trigger: 'onReveal', target: { type: 'cards' }, effect: { type: 'addStatus', status, stacks } }) as const;
+
+const phase6 = catalogWith([
+  card('p1'),
+  card('p2'),
+  card('dealer', { abilities: [giveAllies('high')] }),
+  card('dealer2', { abilities: [giveAllies('high')] }),
+  card('junkie', { power: 3, statuses: ['high'] }),
+  card('stoner', {
+    power: 1,
+    statuses: ['high'],
+    abilities: [
+      { trigger: 'ongoing', condition: { type: 'status', status: 'high' }, effect: { type: 'addPower', amount: 3 } },
+    ],
+  }),
+  card('tripper', {
+    abilities: [{ trigger: 'onStatusGained', status: 'high', effect: { type: 'addPower', amount: 2 } }],
+  }),
+  card('nightly', {
+    abilities: [
+      { trigger: 'endOfTurn', condition: { type: 'status', status: 'high' }, effect: { type: 'addPower', amount: 1 } },
+    ],
+  }),
+  card('turbine', {
+    tags: [MACHINE],
+    abilities: [
+      { trigger: 'onReveal', effect: { type: 'addStatus', status: 'overheat', stacks: 3 } },
+      {
+        trigger: 'ongoing',
+        condition: { type: 'status', status: 'overheat' },
+        effect: { type: 'addPower', amount: 2 },
+      },
+    ],
+  }),
+]);
+
+describe('per-status abilities (le Trip)', () => {
+  it('applies a "status" condition only while the card has the status', () => {
+    const state = newGame(phase6, { p0: ['tripper', 'nightly', 'dealer'] });
+    const sober = playTurn(phase6, state, { p0: [['nightly', 0]] }).state;
+    expect(powerAt(phase6, sober, 0, 'nightly')).toBe(1);
+    const high = playTurn(phase6, sober, { p0: [['dealer', 0]] }).state;
+    // +1 at the end of the turn, and no Défonce decay: the card defines its own effect for it
+    expect(powerAt(phase6, high, 0, 'nightly')).toBe(2);
+    expect(high.cards[uidOf(high, 0, 'nightly')]?.statuses.high).toBe(1);
+  });
+
+  it('replaces the default rule of the status: no Défonce decay for a card that wants it', () => {
+    const state = newGame(phase6, { p0: ['stoner', 'junkie'] });
+    const next = skipToTurn(
+      phase6,
+      playTurn(phase6, state, {
+        p0: [
+          ['stoner', 0],
+          ['junkie', 1],
+        ],
+      }).state,
+      3,
+    );
+    expect(powerAt(phase6, next, 0, 'stoner')).toBe(1 + 3);
+    expect(powerAt(phase6, next, 0, 'junkie')).toBe(3 - 2);
+  });
+
+  it('fires onStatusGained on the first stack only', () => {
+    const state = newGame(phase6, { p0: ['tripper', 'dealer', 'dealer2'] });
+    const turn1 = playTurn(phase6, state, { p0: [['tripper', 0]] }).state;
+    expect(powerAt(phase6, turn1, 0, 'tripper')).toBe(1);
+    const { state: turn2, events } = playTurn(phase6, turn1, { p0: [['dealer', 0]] });
+    expect(powerAt(phase6, turn2, 0, 'tripper')).toBe(1 + 2);
+    expect(events.filter((event) => event.type === 'powerChanged')).toHaveLength(1);
+    const turn3 = playTurn(phase6, turn2, { p0: [['dealer2', 0]] }).state;
+    expect(turn3.cards[uidOf(turn3, 0, 'tripper')]?.statuses.high).toBe(2);
+    expect(powerAt(phase6, turn3, 0, 'tripper')).toBe(1 + 2);
+  });
+
+  it('keeps a machine that defines its own Surchauffe alive at 3 stacks', () => {
+    const state = newGame(phase6, { p0: ['turbine'] });
+    const next = skipToTurn(phase6, playTurn(phase6, state, { p0: [['turbine', 0]] }).state, 3);
+    expect(zoneOf(next, 0, 'turbine')).toBe('board');
+    expect(powerAt(phase6, next, 0, 'turbine')).toBe(1 + 2);
+  });
+});
+
 describe('status registry', () => {
   it('gives Folie no rule of its own: its effects come from the card or from a crisis', () => {
     expect(Object.keys(STATUSES.mad)).toEqual(['name', 'adjective', 'onGained']);

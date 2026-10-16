@@ -6,7 +6,7 @@ import {
   type MoveDestination,
   isOngoingEffect,
 } from '../abilities/board.ts';
-import { STATUS_IDS, type StatusId, statusRule } from '../abilities/statuses.ts';
+import type { StatusId } from '../abilities/statuses.ts';
 import type { CardDefinition, Catalog } from '../catalog.ts';
 import { Rng } from '../rng.ts';
 import { MAX_HAND } from '../rules.ts';
@@ -15,6 +15,7 @@ import { moveCard } from './move.ts';
 import { crisisBonus, runCrisis, startCrisis } from './crises.ts';
 import { inScope, onSide } from './filters.ts';
 import * as hand from './hand.ts';
+import * as statusChanges from './status-changes.ts';
 import { cardAt, locationAt } from './state-access.ts';
 import { absorbingStatus, hasRule, stacksOf } from './statuses.ts';
 
@@ -35,8 +36,8 @@ export class GameBoard implements Board {
   readonly rng: Rng;
   // Set by the Runtime: fires the "destroyed" abilities of a card once it left the board.
   onDestroyed: (uid: string) => void = () => undefined;
-  // Set by the Runtime: fires the onMad abilities of a card that just went mad.
-  onMad: (uid: string) => void = () => undefined;
+  // Set by the Runtime: fires the onStatusGained abilities of a card that just got a status.
+  onStatusGained: (uid: string, status: StatusId) => void = () => undefined;
   // Set by the Runtime: fires the onMoved abilities of a card that just moved.
   onMoved: (uid: string) => void = () => undefined;
   private readonly events: GameEvent[];
@@ -123,11 +124,8 @@ export class GameBoard implements Board {
     return stacksOf(cardAt(this.state, uid), status) > 0;
   }
 
-  becomeMad(uid: string): void {
+  startCrisis(uid: string): void {
     startCrisis(this, uid);
-    if (cardAt(this.state, uid).zone === 'board') {
-      this.onMad(uid);
-    }
   }
 
   runCrisis(uid: string): void {
@@ -146,7 +144,7 @@ export class GameBoard implements Board {
     }
     const shield = delta < 0 ? absorbingStatus(card, 'absorbsPowerLoss') : null;
     if (shield !== null) {
-      this.spendStack(uid, shield);
+      statusChanges.spendStack(this, uid, shield);
       return;
     }
     card.powerModifier += delta;
@@ -174,7 +172,7 @@ export class GameBoard implements Board {
     }
     const shield = absorbingStatus(card, 'absorbsDestroy');
     if (shield !== null) {
-      this.spendStack(uid, shield);
+      statusChanges.spendStack(this, uid, shield);
       return;
     }
     const slot = locationAt(this.state, card.location).cards[card.owner];
@@ -200,46 +198,12 @@ export class GameBoard implements Board {
     hand.addToHand(this.handContext, player, defId, from);
   }
 
-  // A shield status pays one stack to cancel what was about to happen.
-  private spendStack(uid: string, status: StatusId): void {
-    const card = cardAt(this.state, uid);
-    const left = stacksOf(card, status) - 1;
-    if (left > 0) {
-      card.statuses[status] = left;
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- statuses is a plain JSON record
-      delete card.statuses[status];
-    }
-    this.events.push({ type: 'statusChanged', card: uid, status, stacks: left, spent: true });
-  }
-
   addStatus(uid: string, status: StatusId, stacks: number): void {
-    const card = cardAt(this.state, uid);
-    if (card.zone !== 'board' || stacks <= 0) {
-      return;
-    }
-    const previous = stacksOf(card, status);
-    const total = previous + stacks;
-    card.statuses[status] = total;
-    this.events.push({ type: 'statusChanged', card: uid, status, stacks: total });
-    if (previous === 0) {
-      statusRule(status).onGained?.(this, uid);
-    }
-    statusRule(status).onStacksChanged?.(this, uid, total);
+    statusChanges.addStatus(this, uid, status, stacks);
   }
 
   removeStatus(uid: string, status: StatusId | null): void {
-    const card = cardAt(this.state, uid);
-    for (const id of status === null ? STATUS_IDS : [status]) {
-      if (stacksOf(card, id) > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- statuses is a plain JSON record
-        delete card.statuses[id];
-        this.events.push({ type: 'statusChanged', card: uid, status: id, stacks: 0 });
-      }
-      if (id === 'mad') {
-        card.crisis = null;
-      }
-    }
+    statusChanges.removeStatus(this, uid, status);
   }
 
   private matches(uid: string, source: AbilitySource, filter: CardFilter): boolean {

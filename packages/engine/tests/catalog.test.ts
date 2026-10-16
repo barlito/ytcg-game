@@ -74,6 +74,12 @@ describe('catalog validation', () => {
 
   it('refuses invalid trigger combinations', () => {
     const effect = { type: 'addPower', amount: 1 } as const;
+    expect(issuesOf([card('x', { abilities: [{ trigger: 'onStatusGained', effect }] })])[0]).toContain(
+      '"status" goes with the onStatusGained trigger',
+    );
+    expect(issuesOf([card('x', { abilities: [{ trigger: 'onReveal', status: 'high', effect }] })])[0]).toContain(
+      '"status" goes with the onStatusGained trigger',
+    );
     expect(issuesOf([card('x', { abilities: [{ trigger: 'onReveal', played: {}, effect }] })])[0]).toContain(
       'only goes with the onCardPlayedHere trigger',
     );
@@ -87,8 +93,11 @@ describe('catalog validation', () => {
       issuesOf([], [{ id: 'l', name: 'l', abilities: [{ trigger: 'onMoved', effect: { type: 'draw' } }] }])[0],
     ).toContain('a location never moves');
     expect(
-      issuesOf([], [{ id: 'l', name: 'l', abilities: [{ trigger: 'onMad', effect: { type: 'draw' } }] }])[0],
-    ).toContain('a location is never mad');
+      issuesOf(
+        [],
+        [{ id: 'l', name: 'l', abilities: [{ trigger: 'onStatusGained', status: 'mad', effect: { type: 'draw' } }] }],
+      )[0],
+    ).toContain('a location never has a status');
     expect(
       issuesOf(
         [],
@@ -96,11 +105,13 @@ describe('catalog validation', () => {
           {
             id: 'l',
             name: 'l',
-            abilities: [{ trigger: 'onReveal', condition: { type: 'mad' }, effect: { type: 'draw' } }],
+            abilities: [
+              { trigger: 'onReveal', condition: { type: 'status', status: 'high' }, effect: { type: 'draw' } },
+            ],
           },
         ],
       )[0],
-    ).toContain('a location is never mad');
+    ).toContain('a location never has a status');
     expect(
       issuesOf(
         [],

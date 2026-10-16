@@ -69,8 +69,8 @@ export interface Board extends BoardView {
   // Adds a new copy of a catalog card to the hand (nothing when the hand is full).
   // `from`: the card carrying the ability, when there is one (the animation flies the new card from it).
   addToHand(player: PlayerIndex, defId: string, from?: string): void;
-  // A card just went mad: fires its onMad abilities, or draws its crisis when it has no madness effect of its own.
-  becomeMad(card: string): void;
+  // A card following the default rule of Folie just went mad: draws its crisis.
+  startCrisis(card: string): void;
   // Id of the definition of a board card.
   defIdOf(card: string): string;
 }

@@ -1,4 +1,3 @@
-import { isMadnessAbility } from '../abilities/ability.ts';
 import { crisisRule, drawCrisis } from '../abilities/crises.ts';
 import type { GameState } from '../state.ts';
 import type { GameBoard } from './board.ts';
@@ -12,13 +11,10 @@ export function crisisBonus(state: GameState, uid: string, keepsLosses: boolean)
   return bonus > 0 || keepsLosses ? bonus : 0;
 }
 
-// A card without a madness effect of its own (onMad trigger or "mad" condition) draws its crisis, once per Folie.
+// A card following the default rule of Folie draws its crisis, once per Folie.
 export function startCrisis(board: GameBoard, uid: string): void {
   const card = cardAt(board.state, uid);
   if (card.zone !== 'board' || card.crisis !== null) {
-    return;
-  }
-  if (board.definitionOf(uid).abilities.some((ability) => isMadnessAbility(ability.params))) {
     return;
   }
   card.crisis = drawCrisis(board.rng);

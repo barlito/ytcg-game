@@ -24,14 +24,15 @@ export interface StatusRule {
 // Stacks at which a card in overheat is destroyed.
 export const OVERHEAT_LIMIT = 3;
 
-// Folie (`mad`) is a state with no rule of its own: what it does comes from the card (`mad` condition, `onMad`
-// trigger) or from a crisis drawn when the card has nothing defined (`crises.ts`).
+// The hooks below are the default rule of a status: a card defining its own effect for that status (`status`
+// condition, onStatusGained trigger) does not follow them. Immunities and shields always apply.
+// Folie (`mad`) has no rule of its own: its default is a crisis drawn when the card goes mad (`crises.ts`).
 export const STATUSES = {
   mad: {
     name: 'Folie',
     adjective: 'folle',
     onGained(board: Board, card: string): void {
-      board.becomeMad(card);
+      board.startCrisis(card);
     },
   },
   high: {

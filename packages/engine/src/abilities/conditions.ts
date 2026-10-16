@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { type AbilitySource, type BoardView, type Condition, cardFilterShape } from './board.ts';
 import { MAX_TURNS } from '../rules.ts';
+import { statusSchema } from './statuses.ts';
 
 const countSchema = z.object({
   type: z.literal('count'),
@@ -43,21 +44,26 @@ export class TurnCondition implements Condition {
   }
 }
 
-const madSchema = z.object({ type: z.literal('mad') });
+const statusConditionSchema = z.object({ type: z.literal('status'), status: statusSchema });
 
-// This card is mad (never true for a location).
-export class MadCondition implements Condition {
-  static readonly schema = madSchema;
+// This card has the status (never true for a location).
+export class StatusCondition implements Condition {
+  static readonly schema = statusConditionSchema;
+  private readonly params: z.output<typeof statusConditionSchema>;
+
+  constructor(params: z.output<typeof statusConditionSchema>) {
+    this.params = params;
+  }
 
   isMet(board: BoardView, source: AbilitySource): boolean {
-    return source.card !== null && board.hasStatus(source.card, 'mad');
+    return source.card !== null && board.hasStatus(source.card, this.params.status);
   }
 }
 
 export const conditionSchema = z.discriminatedUnion('type', [
   CountCondition.schema,
   TurnCondition.schema,
-  MadCondition.schema,
+  StatusCondition.schema,
 ]);
 
 export type ConditionParams = z.output<typeof conditionSchema>;
@@ -68,7 +74,7 @@ export function createCondition(params: ConditionParams): Condition {
       return new CountCondition(params);
     case 'turn':
       return new TurnCondition(params);
-    case 'mad':
-      return new MadCondition();
+    case 'status':
+      return new StatusCondition(params);
   }
 }

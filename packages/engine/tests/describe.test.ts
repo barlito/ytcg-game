@@ -162,6 +162,27 @@ describe('text of the building blocks', () => {
         ],
       }),
       card('drunkard', { statuses: ['drunk', 'protected', 'overheat'] }),
+      card('tripper', {
+        statuses: ['overheat'],
+        abilities: [
+          {
+            trigger: 'ongoing',
+            condition: { type: 'status', status: 'high' },
+            effect: { type: 'addPower', amount: 3 },
+          },
+          {
+            trigger: 'endOfTurn',
+            condition: { type: 'status', status: 'high' },
+            effect: { type: 'addPower', amount: 1 },
+          },
+          { trigger: 'onStatusGained', status: 'drunk', effect: { type: 'draw' } },
+          {
+            trigger: 'ongoing',
+            condition: { type: 'status', status: 'overheat' },
+            effect: { type: 'addPower', amount: 1 },
+          },
+        ],
+      }),
     ],
     [
       {
@@ -215,6 +236,16 @@ describe('text of the building blocks', () => {
     expect(lines[0]).toContain('Ivresse');
     expect(lines[1]).toContain('Protection');
     expect(lines[2]).toContain('Surchauffe');
+  });
+
+  it('writes per-status abilities, and drops the default rule a card replaces', () => {
+    expect(describeCard(bricks, bricks.card('tripper'))).toEqual([
+      'Surchauffe.',
+      'Défoncée : +3 puissance.',
+      'En fin de tour, si elle est défoncée : +1 puissance.',
+      'Quand elle devient ivre : pioche 1 carte.',
+      'Surchauffée : +1 puissance.',
+    ]);
   });
 
   it('writes location rules and their abilities', () => {

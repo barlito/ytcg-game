@@ -2,17 +2,18 @@ import { z } from 'zod';
 import { type CardFilter, type Condition, type Effect, type TargetSelector, playedFilterSchema } from './board.ts';
 import { conditionSchema, createCondition } from './conditions.ts';
 import { ONGOING_EFFECTS, UNTARGETED_EFFECTS, createEffect, effectSchema } from './effects.ts';
+import { type StatusId, statusSchema } from './statuses.ts';
 import { createTarget, targetSchema } from './targets.ts';
 
 // onCardPlayedHere: another card is revealed on this location after this one. onDestroyed: this card was destroyed.
-// onMad: this card just became mad. onMoved: this card just moved to another location.
+// onStatusGained: this card just got its first stack of `status`. onMoved: this card just moved to another location.
 export const TRIGGERS = [
   'onReveal',
   'ongoing',
   'endOfTurn',
   'onCardPlayedHere',
   'onDestroyed',
-  'onMad',
+  'onStatusGained',
   'onMoved',
 ] as const;
 
@@ -24,6 +25,8 @@ export const abilitySchema = z
     condition: conditionSchema.optional(),
     // Only with onCardPlayedHere: which played cards trigger it (default: any other card, of any side).
     played: playedFilterSchema.optional(),
+    // Only with onStatusGained: the status whose first stack fires it.
+    status: statusSchema.optional(),
     target: targetSchema.default({ type: 'self' }),
     // One effect or a list, all applied in order to the same targets.
     effect: z
@@ -45,6 +48,9 @@ function triggerIssues(ability: AbilityParams): Issue[] {
   const issues: Issue[] = [];
   if (ability.played !== undefined && ability.trigger !== 'onCardPlayedHere') {
     issues.push({ path: ['played'], message: '"played" only goes with the onCardPlayedHere trigger' });
+  }
+  if ((ability.status !== undefined) !== (ability.trigger === 'onStatusGained')) {
+    issues.push({ path: ['status'], message: '"status" goes with the onStatusGained trigger, and only with it' });
   }
   if (ability.trigger === 'onDestroyed' && ability.target.type === 'self' && !isUntargeted(ability)) {
     issues.push({ path: ['target'], message: 'a destroyed card cannot target itself' });
@@ -87,9 +93,17 @@ export function compileAbility(params: AbilityParams): CompiledAbility {
   };
 }
 
-// An ability that only exists while the card is mad: the card then has its own madness, no crisis is drawn.
-export function isMadnessAbility(ability: AbilityParams): boolean {
-  return ability.trigger === 'onMad' || ability.condition?.type === 'mad';
+// The status an ability is defined for (« Défoncée : … », « Quand elle devient folle : … »), if any.
+export function abilityStatus(ability: AbilityParams): StatusId | null {
+  if (ability.trigger === 'onStatusGained') {
+    return ability.status ?? null;
+  }
+  return ability.condition?.type === 'status' ? ability.condition.status : null;
+}
+
+// A card defining its own effect for a status replaces the default rule of that status (no crisis, no decay…).
+export function overridesStatus(abilities: readonly CompiledAbility[], status: StatusId): boolean {
+  return abilities.some((ability) => abilityStatus(ability.params) === status);
 }
 
 export function isUntargeted(ability: AbilityParams): boolean {
@@ -128,8 +142,8 @@ function locationEffectIssues(ability: AbilityParams): string[] {
   if (ability.trigger === 'onMoved') {
     issues.push('a location never moves: no onMoved trigger');
   }
-  if (isMadnessAbility(ability)) {
-    issues.push('a location is never mad: no onMad trigger nor "mad" condition');
+  if (abilityStatus(ability) !== null) {
+    issues.push('a location never has a status: no onStatusGained trigger nor "status" condition');
   }
   if (ability.effect.some((effect) => effect.type === 'addToHand' && effect.card === undefined)) {
     issues.push('a location "addToHand" needs a "card" (there is no card to copy)');

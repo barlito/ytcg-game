@@ -1,4 +1,4 @@
-import type { AbilityParams } from './abilities/ability.ts';
+import { type AbilityParams, overridesStatus } from './abilities/ability.ts';
 import type { ConditionParams } from './abilities/conditions.ts';
 import { statusRule } from './abilities/statuses.ts';
 import type { TargetParams } from './abilities/targets.ts';
@@ -15,14 +15,14 @@ const TRIGGER_TEXT = {
   ongoing: 'En continu',
   endOfTurn: 'En fin de tour',
   onDestroyed: 'Quand cette carte est détruite',
-  onMad: 'Quand elle devient folle',
   onMoved: 'Quand elle se déplace',
 } as const;
 
 export function describeCard(catalog: Catalog, card: CardDefinition): string[] {
   const keywords = card.statuses.map((status) => {
     const { name, rule } = statusRule(status);
-    return rule === undefined ? `${name}.` : `${name} (${rule}).`;
+    // A card defining its own effect for the status does not follow its default rule.
+    return rule === undefined || overridesStatus(card.abilities, status) ? `${name}.` : `${name} (${rule}).`;
   });
   return [...keywords, ...card.abilities.map((ability) => describeAbility(catalog, ability.params, false))];
 }
@@ -52,7 +52,7 @@ function describeLocationRules(rules: LocationRules): string[] {
 export function describeAbility(catalog: Catalog, ability: AbilityParams, onLocation: boolean): string {
   const context: Context = { catalog, onLocation };
   const condition =
-    ability.condition === undefined || ability.condition.type === 'mad'
+    ability.condition === undefined || ability.condition.type === 'status'
       ? ''
       : `${describeCondition(context, ability.condition)}, `;
   const target = describeTarget(context, ability.target);
@@ -66,14 +66,20 @@ export function describeAbility(catalog: Catalog, ability: AbilityParams, onLoca
 }
 
 function describeTrigger(context: Context, ability: AbilityParams): string {
-  if (ability.condition?.type === 'mad') {
-    // « Folle : +1 puissance. » / « En fin de tour, si elle est folle : … »
-    return ability.trigger === 'ongoing' ? 'Folle' : `${triggerText(context, ability)}, si elle est folle`;
+  if (ability.condition?.type === 'status') {
+    // « Folle : +1 puissance. » / « En fin de tour, si elle est défoncée : … »
+    const { adjective } = statusRule(ability.condition.status);
+    return ability.trigger === 'ongoing'
+      ? `${adjective.charAt(0).toUpperCase()}${adjective.slice(1)}`
+      : `${triggerText(context, ability)}, si elle est ${adjective}`;
   }
   return triggerText(context, ability);
 }
 
 function triggerText(context: Context, ability: AbilityParams): string {
+  if (ability.trigger === 'onStatusGained') {
+    return `Quand elle devient ${ability.status === undefined ? '' : statusRule(ability.status).adjective}`;
+  }
   if (ability.trigger !== 'onCardPlayedHere') {
     return TRIGGER_TEXT[ability.trigger];
   }
@@ -90,8 +96,8 @@ export function describeCurveRule(rule: CurveRule): string {
 }
 
 function describeCondition(context: Context, condition: ConditionParams): string {
-  if (condition.type === 'mad') {
-    return 'si elle est folle';
+  if (condition.type === 'status') {
+    return `si elle est ${statusRule(condition.status).adjective}`;
   }
   if (condition.type === 'turn') {
     const { min, max } = condition;
