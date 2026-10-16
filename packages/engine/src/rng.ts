@@ -39,6 +39,22 @@ export class Rng {
     return items[this.int(items.length)] as T;
   }
 
+  // Each item is drawn with a probability proportional to its weight (one draw, like pick).
+  pickWeighted<T>(items: readonly T[], weight: (item: T) => number): T {
+    const total = items.reduce((sum, item) => sum + Math.max(0, weight(item)), 0);
+    if (total <= 0) {
+      throw new RangeError('Cannot pick from a list without weight');
+    }
+    let roll = this.next() * total;
+    for (const item of items) {
+      roll -= Math.max(0, weight(item));
+      if (roll < 0) {
+        return item;
+      }
+    }
+    return items[items.length - 1] as T;
+  }
+
   shuffle<T>(items: T[]): T[] {
     for (let i = items.length - 1; i > 0; i--) {
       const j = this.int(i + 1);

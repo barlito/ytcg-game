@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   CRISES,
   type CrisisId,
+  Rng,
+  drawCrisis,
   type GameState,
   type PlayerIndex,
   describeCard,
@@ -163,6 +165,28 @@ describe('crises', () => {
       expect(rule.name).not.toBe('');
       expect(rule.description).toMatch(/^En (continu|fin de tour) : /);
     }
+  });
+
+  it('draws the crises by weight: Rage 30, Délire 30, Contagion 20, Errance 10, Implosion 10', () => {
+    expect(Object.fromEntries(Object.entries(CRISES).map(([id, rule]) => [id, rule.weight]))).toEqual({
+      rage: 30,
+      delirium: 30,
+      contagion: 20,
+      wandering: 10,
+      implosion: 10,
+    });
+    const rng = new Rng({ s: 1 });
+    const counts = new Map<CrisisId, number>();
+    for (let i = 0; i < 10000; i++) {
+      const crisis = drawCrisis(rng);
+      counts.set(crisis, (counts.get(crisis) ?? 0) + 1);
+    }
+    const share = (crisis: CrisisId): number => (counts.get(crisis) ?? 0) / 10000;
+    expect(share('rage')).toBeCloseTo(0.3, 1);
+    expect(share('delirium')).toBeCloseTo(0.3, 1);
+    expect(share('contagion')).toBeCloseTo(0.2, 1);
+    expect(share('wandering')).toBeCloseTo(0.1, 1);
+    expect(share('implosion')).toBeCloseTo(0.1, 1);
   });
 
   it('Rage gives +2 power, Délire takes 2', () => {

@@ -73,13 +73,15 @@ Texte généré : `Folle : +2 puissance.` ; `En fin de tour, si elle est folle :
 
 **2. Crise tirée au hasard.** Une carte **sans** effet de folie défini tire, quand elle devient folle, UNE crise dans le pool ci-dessous (tirage seedé, rejouable). La crise est stockée sur la carte (`CardInstance.crisis`), publique (`CardView.crisis`, événement `crisisStarted`), affichée « FOLIE · NOM » et expliquée dans l'infobulle. Registre réglable : `packages/engine/src/abilities/crises.ts`.
 
-| Id | Crise | Effet |
-|---|---|---|
-| `rage` | Rage | en continu : +2 puissance |
-| `delirium` | Délire | en continu : −2 puissance (Coriace l'ignore ; Protection ne l'absorbe pas : malus continu) |
-| `wandering` | Errance | en fin de tour : se déplace vers un autre lieu au hasard (brique `move`) |
-| `contagion` | Contagion | en fin de tour : rend folle une autre carte non folle ici au hasard (les deux camps) ; la nouvelle folle tire sa propre crise |
-| `implosion` | Implosion | en fin de tour : se détruit et donne +2 puissance (permanent) aux autres cartes folles ici ; si elle survit (Coriace, Protection) il n'y a pas de bonus |
+| Id | Crise | Poids | Effet |
+|---|---|---|---|
+| `rage` | Rage | 30 | en continu : +2 puissance |
+| `delirium` | Délire | 30 | en continu : −2 puissance (Coriace l'ignore ; Protection ne l'absorbe pas : malus continu) |
+| `contagion` | Contagion | 20 | en fin de tour : rend folle une autre carte non folle ici au hasard (les deux camps) ; la nouvelle folle tire sa propre crise |
+| `wandering` | Errance | 10 | en fin de tour : se déplace vers un autre lieu au hasard (brique `move`) |
+| `implosion` | Implosion | 10 | en fin de tour : se détruit et donne +2 puissance (permanent) aux autres cartes folles ici ; si elle survit (Coriace, Protection) il n'y a pas de bonus |
+
+Le tirage est **pondéré** (`Rng.pickWeighted`) : une crise sort avec une probabilité proportionnelle à son poids (Rage 30 %, Errance 10 %…). Le déplacement et l'auto-destruction sont plus rares.
 
 Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de nouvelle crise) ; une carte qui perd la Folie (`removeStatus`) **perd sa crise** et, si elle redevient folle, en retire une ; Coriace peut devenir folle, mais Délire ne l'affaiblit pas et Implosion ne la détruit pas ; l'effet de fin de tour d'une crise s'exécute après les capacités `endOfTurn` des cartes et les règles des autres états.
 

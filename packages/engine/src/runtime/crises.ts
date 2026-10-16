@@ -1,5 +1,5 @@
 import { isMadnessAbility } from '../abilities/ability.ts';
-import { CRISIS_IDS, crisisRule } from '../abilities/crises.ts';
+import { crisisRule, drawCrisis } from '../abilities/crises.ts';
 import type { GameState } from '../state.ts';
 import type { GameBoard } from './board.ts';
 import { cardAt } from './state-access.ts';
@@ -21,7 +21,7 @@ export function startCrisis(board: GameBoard, uid: string): void {
   if (board.definitionOf(uid).abilities.some((ability) => isMadnessAbility(ability.params))) {
     return;
   }
-  card.crisis = board.rng.pick(CRISIS_IDS);
+  card.crisis = drawCrisis(board.rng);
   board.recordEvent({ type: 'crisisStarted', card: uid, crisis: card.crisis });
 }
 
