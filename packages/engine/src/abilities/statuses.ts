@@ -8,6 +8,8 @@ export interface StatusRule {
   readonly name: string;
   readonly adjective: string;
   readonly rule?: string;
+  // An addStatus effect only puts it on cards with this tag, unless it says `anyCard` (innate statuses always land).
+  readonly onlyTag?: string;
   // Permanent immunities (Coriace).
   readonly preventsDestroy?: boolean;
   readonly preventsPowerLoss?: boolean;
@@ -73,6 +75,7 @@ export const STATUSES = {
   overheat: {
     name: 'Surchauffe',
     adjective: 'surchauffée',
+    onlyTag: 'trait:machine',
     rule: `détruite dès ${OVERHEAT_LIMIT} cumuls`,
     onStacksChanged(board: Board, card: string, stacks: number): void {
       if (stacks >= OVERHEAT_LIMIT) {

@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { type CardFilter, type Condition, type Effect, type TargetSelector, playedFilterSchema } from './board.ts';
 import { conditionSchema, createCondition } from './conditions.ts';
 import { ONGOING_EFFECTS, UNTARGETED_EFFECTS, createEffect, effectSchema } from './effects.ts';
-import { type StatusId, statusSchema } from './statuses.ts';
+import { type StatusId, statusRule, statusSchema } from './statuses.ts';
 import { createTarget, targetSchema } from './targets.ts';
 
 // onCardPlayedHere: another card is revealed on this location after this one. onDestroyed: this card was destroyed.
@@ -108,6 +108,19 @@ export function overridesStatus(abilities: readonly CompiledAbility[], status: S
 
 export function isUntargeted(ability: AbilityParams): boolean {
   return ability.effect.every((effect) => UNTARGETED_EFFECTS.has(effect.type));
+}
+
+// A card putting a tag-restricted status on itself must carry that tag, or lift the restriction.
+export function cardAbilityIssues(tags: readonly string[], ability: AbilityParams): string[] {
+  if (ability.target.type !== 'self') {
+    return [];
+  }
+  return ability.effect.flatMap((effect) => {
+    const tag = effect.type === 'addStatus' && !effect.anyCard ? statusRule(effect.status).onlyTag : undefined;
+    return tag === undefined || tags.includes(tag)
+      ? []
+      : [`only "${tag}" cards get "${effect.type === 'addStatus' ? effect.status : ''}": add the tag or "anyCard"`];
+  });
 }
 
 // A location belongs to nobody: "self", "ally" and "enemy" mean nothing there.

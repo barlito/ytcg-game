@@ -47,7 +47,7 @@ Marqueurs posés sur une carte du plateau pendant la partie, cumulables. Registr
 | `tough` | Coriace | ne peut être ni détruite ni affaiblie (malus continus compris) |
 | `drunk` | Ivresse | à chaque fin de tour, **par cumul**, gagne ou perd 2 puissance au hasard (tirage seedé) |
 | `protected` | Protection | annule la prochaine destruction, le prochain malus de puissance **ou** le prochain état posé par une carte ennemie, puis perd un cumul (disparaît à zéro) |
-| `overheat` | Surchauffe | détruite dès 3 cumuls (à l'instant où elle les atteint, puis réessayé à chaque fin de tour) |
+| `overheat` | Surchauffe | détruite dès 3 cumuls (à l'instant où elle les atteint, puis réessayé à chaque fin de tour). Réservée aux **machines** (`trait:machine`) : un effet `addStatus` ne la pose que sur elles, sauf `anyCard: true` ; un état inné `"statuses": ["overheat"]` reste permis sur toute carte. Une carte non machine qui se la pose elle-même sans `anyCard` est refusée au chargement |
 
 **Interactions** (toutes testées) :
 
@@ -116,7 +116,7 @@ Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de no
 | `addPowerPerCard` | `amount`, `count` (filtre) | `amount` × nombre de cartes qui passent le filtre |
 | `draw` | `count` (1 à 3, défaut 1) | le propriétaire pioche ; sur un lieu, les deux joueurs |
 | `destroy` | — | détruit les cibles |
-| `addStatus` | `status`, `stacks` (1 à 5, défaut 1) | pose un état sur les cibles |
+| `addStatus` | `status`, `stacks` (1 à 5, défaut 1), `anyCard` (défaut `false`) | pose un état sur les cibles ; la Surchauffe ne se pose que sur les machines (`trait:machine`), sauf `anyCard: true` (« rend les cartes ennemies ici surchauffées (machines seulement) ») |
 | `removeStatus` | `status` (absent = tous) | retire un état des cibles |
 | `move` | `destination` : `random` (défaut), `left`, `right` | déplace les cibles vers un autre lieu **de leur camp** qui a une place libre ; sans place, rien ne se passe |
 | `addCost` | `amount` (≠ 0, négatif = moins cher), `cards` : `hand` (défaut) ou `next`, `tag` optionnel | change le coût des cartes en **main** du propriétaire (les deux joueurs sur un terrain) ; coût plancher 0 |

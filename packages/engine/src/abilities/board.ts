@@ -48,6 +48,7 @@ export interface BoardView {
   cardsMatching(source: AbilitySource, filter: CardFilter): string[];
   power(card: string): number;
   hasStatus(card: string, status: StatusId): boolean;
+  hasTag(card: string, tag: string): boolean;
 }
 
 // What effects may do on top of reading.

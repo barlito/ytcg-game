@@ -137,17 +137,21 @@ const catalog = catalogWith(
     card('shield', { power: 5, statuses: ['protected'] }),
     card('tough-shield', { power: 5, statuses: ['tough', 'protected'] }),
     card('boiler', {
+      tags: ['trait:machine'],
       statuses: ['overheat'],
       abilities: [{ trigger: 'endOfTurn', effect: { type: 'addStatus', status: 'overheat' } }],
     }),
     card('tough-boiler', {
+      tags: ['trait:machine'],
       statuses: ['tough', 'overheat'],
       abilities: [{ trigger: 'endOfTurn', effect: { type: 'addStatus', status: 'overheat' } }],
     }),
     card('furnace', {
+      tags: ['trait:machine'],
       abilities: [{ trigger: 'onReveal', effect: { type: 'addStatus', status: 'overheat', stacks: 3 } }],
     }),
     card('shield-furnace', {
+      tags: ['trait:machine'],
       statuses: ['protected'],
       abilities: [{ trigger: 'onReveal', effect: { type: 'addStatus', status: 'overheat', stacks: 3 } }],
     }),
@@ -675,6 +679,26 @@ const phase6 = catalogWith(
     card('guarded-junkie', { power: 4, statuses: ['tough', 'protected', 'high'] }),
     card('poisoner', { abilities: [hitEnemies('high', 2)] }),
     card('enemy-guard', { abilities: [hitEnemies('protected')] }),
+    card('robot', { tags: [MACHINE] }),
+    card('heater', {
+      abilities: [
+        {
+          trigger: 'onReveal',
+          target: { type: 'cards', side: 'enemy' },
+          effect: { type: 'addStatus', status: 'overheat' },
+        },
+      ],
+    }),
+    card('forced-heater', {
+      abilities: [
+        {
+          trigger: 'onReveal',
+          target: { type: 'cards', side: 'enemy' },
+          effect: { type: 'addStatus', status: 'overheat', anyCard: true },
+        },
+      ],
+    }),
+    card('hot-head', { statuses: ['overheat'] }),
     card('dealer', { abilities: [giveAllies('high')] }),
     card('dealer2', { abilities: [giveAllies('high')] }),
     card('junkie', { power: 3, statuses: ['high'] }),
@@ -762,6 +786,30 @@ describe('Protection against enemy statuses', () => {
     const state = newGame(phase6, { p0: ['bunker'], locations: ['loc-haze', 'loc-a', 'loc-b'] });
     const next = playTurn(phase6, state, { p0: [['bunker', 0]] }).state;
     expect(statusesOf(next, 0, 'bunker')).toEqual({ tough: 1, protected: 1, high: 1 });
+  });
+});
+
+describe('Surchauffe: machines only by default', () => {
+  it('only lands on machines, unless the effect forces it', () => {
+    const state = newGame(phase6, { p0: ['robot', 'p1'], p1: ['heater', 'forced-heater'] });
+    const turn1 = playTurn(phase6, state, {
+      p0: [
+        ['robot', 0],
+        ['p1', 0],
+      ],
+    }).state;
+    const turn2 = playTurn(phase6, turn1, { p1: [['heater', 0]] }).state;
+    expect(statusesOf(turn2, 0, 'robot')).toEqual({ overheat: 1 });
+    expect(statusesOf(turn2, 0, 'p1')).toEqual({});
+    const turn3 = playTurn(phase6, turn2, { p1: [['forced-heater', 0]] }).state;
+    expect(statusesOf(turn3, 0, 'robot')).toEqual({ overheat: 2 });
+    expect(statusesOf(turn3, 0, 'p1')).toEqual({ overheat: 1 });
+  });
+
+  it('keeps innate Surchauffe on any card', () => {
+    const state = newGame(phase6, { p0: ['hot-head'] });
+    const next = playTurn(phase6, state, { p0: [['hot-head', 0]] }).state;
+    expect(statusesOf(next, 0, 'hot-head')).toEqual({ overheat: 1 });
   });
 });
 

@@ -15,6 +15,8 @@ import {
 
 type HandEffect = Extract<EffectParams, { type: 'draw' | 'move' | 'addCost' | 'addToHand' }>;
 
+const TAG_PLURAL: Partial<Record<string, string>> = { 'trait:machine': 'machines' };
+
 const DESTINATION_TEXT = {
   random: 'vers un autre lieu au hasard',
   left: 'vers le lieu de gauche',
@@ -30,7 +32,7 @@ type Following<K extends EffectParams['type']> = (
 const FOLLOWING: { [K in EffectParams['type']]: Following<K> | null } = {
   addPower: (effect, plural) => `${plural ? 'leur' : 'lui'} donne ${signed(effect.amount)} puissance`,
   addStatus: (effect, plural) =>
-    `${plural ? 'les' : 'la'} rend ${statusAdjective(effect.status, plural)}${stacksSuffix(effect.stacks)}`,
+    `${plural ? 'les' : 'la'} rend ${statusAdjective(effect.status, plural)}${stacksSuffix(effect.stacks)}${onlyTagSuffix(effect)}`,
   destroy: (_effect, plural) => `${plural ? 'les' : 'la'} détruit`,
   removeStatus: (effect, plural) => `${plural ? 'leur' : 'lui'} retire ${removedStatus(effect.status)}`,
   move: (effect, plural) => `${plural ? 'les' : 'la'} déplace ${DESTINATION_TEXT[effect.destination]}`,
@@ -55,7 +57,7 @@ export function describeEffect(context: Context, effect: EffectParams, target: T
     case 'destroy':
       return `détruit ${target.text}`;
     case 'addStatus':
-      return `${statusVerb(effect.status, target)}${stacksSuffix(effect.stacks)}`;
+      return describeAddStatus(effect, target);
     case 'removeStatus':
       return `retire ${removedStatus(effect.status)} ${of(target.text)}`;
     case 'draw':
@@ -108,6 +110,17 @@ function statusVerb(status: StatusId, target: TargetText): string {
 
 function removedStatus(status: StatusId | undefined): string {
   return status === undefined ? 'tous les états' : `la ${statusRule(status).name}`;
+}
+
+function describeAddStatus(effect: Extract<EffectParams, { type: 'addStatus' }>, target: TargetText): string {
+  const only = target.self ? '' : onlyTagSuffix(effect);
+  return `${statusVerb(effect.status, target)}${stacksSuffix(effect.stacks)}${only}`;
+}
+
+// « (machines seulement) »: the status only lands on the cards of its tag.
+function onlyTagSuffix(effect: Extract<EffectParams, { type: 'addStatus' }>): string {
+  const tag = effect.anyCard ? undefined : statusRule(effect.status).onlyTag;
+  return tag === undefined ? '' : ` (${TAG_PLURAL[tag] ?? tag} seulement)`;
 }
 
 function stacksSuffix(stacks: number): string {

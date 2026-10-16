@@ -72,6 +72,27 @@ describe('catalog validation', () => {
     );
   });
 
+  it('restricts Surchauffe to machines unless the effect says anyCard', () => {
+    const overheat = { type: 'addStatus', status: 'overheat' } as const;
+    expect(issuesOf([card('x', { abilities: [{ trigger: 'onReveal', effect: overheat }] })])[0]).toContain(
+      'only "trait:machine" cards get "overheat"',
+    );
+    expect(() =>
+      catalogWith([
+        card('m', { tags: ['trait:machine'], abilities: [{ trigger: 'onReveal', effect: overheat }] }),
+        card('y', { abilities: [{ trigger: 'onReveal', effect: { ...overheat, anyCard: true } }] }),
+        card('z', { statuses: ['overheat'] }),
+      ]),
+    ).not.toThrow();
+    expect(
+      issuesOf([
+        card('x', {
+          abilities: [{ trigger: 'onReveal', effect: { type: 'addStatus', status: 'high', anyCard: true } }],
+        }),
+      ])[0],
+    ).toContain('"anyCard" only goes with a status restricted to a tag');
+  });
+
   it('refuses invalid trigger combinations', () => {
     const effect = { type: 'addPower', amount: 1 } as const;
     expect(issuesOf([card('x', { abilities: [{ trigger: 'onStatusGained', effect }] })])[0]).toContain(

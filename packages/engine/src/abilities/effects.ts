@@ -8,7 +8,7 @@ import {
   cardFilterSchema,
 } from './board.ts';
 import { AddCostEffect, AddToHandEffect, MoveEffect, owners } from './effects-cards.ts';
-import { statusSchema } from './statuses.ts';
+import { statusRule, statusSchema } from './statuses.ts';
 
 const addPowerSchema = z.object({
   type: z.literal('addPower'),
@@ -102,11 +102,18 @@ export class DestroyEffect implements Effect {
   }
 }
 
-const addStatusSchema = z.object({
-  type: z.literal('addStatus'),
-  status: statusSchema,
-  stacks: z.number().int().min(1).max(5).default(1),
-});
+const addStatusSchema = z
+  .object({
+    type: z.literal('addStatus'),
+    status: statusSchema,
+    stacks: z.number().int().min(1).max(5).default(1),
+    // Lifts the tag restriction of the status (Surchauffe: machines only by default).
+    anyCard: z.boolean().default(false),
+  })
+  .refine(({ status, anyCard }) => !anyCard || statusRule(status).onlyTag !== undefined, {
+    path: ['anyCard'],
+    message: '"anyCard" only goes with a status restricted to a tag (overheat)',
+  });
 
 export class AddStatusEffect implements Effect {
   static readonly schema = addStatusSchema;
@@ -117,8 +124,12 @@ export class AddStatusEffect implements Effect {
   }
 
   apply(board: Board, source: AbilitySource, targets: readonly string[]): void {
+    const { status, stacks, anyCard } = this.params;
+    const tag = anyCard ? undefined : statusRule(status).onlyTag;
     for (const target of targets) {
-      board.addStatus(target, this.params.status, this.params.stacks, source.owner);
+      if (tag === undefined || board.hasTag(target, tag)) {
+        board.addStatus(target, status, stacks, source.owner);
+      }
     }
   }
 }

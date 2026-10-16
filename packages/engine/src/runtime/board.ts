@@ -120,6 +120,10 @@ export class GameBoard implements Board {
     return { owner: card.owner, location: card.location, card: uid };
   }
 
+  hasTag(uid: string, tag: string): boolean {
+    return this.definitionOf(uid).tags.includes(tag);
+  }
+
   hasStatus(uid: string, status: StatusId): boolean {
     return stacksOf(cardAt(this.state, uid), status) > 0;
   }

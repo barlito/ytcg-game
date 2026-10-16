@@ -162,6 +162,28 @@ describe('text of the building blocks', () => {
         ],
       }),
       card('drunkard', { statuses: ['drunk', 'protected', 'overheat'] }),
+      card('stoker', {
+        abilities: [
+          {
+            trigger: 'onReveal',
+            target: { type: 'cards', side: 'enemy' },
+            effect: { type: 'addStatus', status: 'overheat', stacks: 2 },
+          },
+          {
+            trigger: 'onReveal',
+            target: { type: 'cards', side: 'all' },
+            effect: { type: 'addStatus', status: 'overheat', anyCard: true },
+          },
+          {
+            trigger: 'endOfTurn',
+            target: { type: 'cards', pick: 'random' },
+            effect: [
+              { type: 'addPower', amount: 1 },
+              { type: 'addStatus', status: 'overheat' },
+            ],
+          },
+        ],
+      }),
       card('tripper', {
         statuses: ['overheat'],
         abilities: [
@@ -245,6 +267,14 @@ describe('text of the building blocks', () => {
       'En fin de tour, si elle est défoncée : +1 puissance.',
       'Quand elle devient ivre : pioche 1 carte.',
       'Surchauffée : +1 puissance.',
+    ]);
+  });
+
+  it('says that Surchauffe only lands on machines, unless forced', () => {
+    expect(describeCard(bricks, bricks.card('stoker'))).toEqual([
+      'À la révélation : rend les cartes ennemies ici surchauffées (×2) (machines seulement).',
+      'À la révélation : rend les autres cartes ici surchauffées.',
+      'En fin de tour : +1 puissance à une autre carte alliée ici au hasard et la rend surchauffée (machines seulement).',
     ]);
   });
 
