@@ -93,6 +93,16 @@ describe('catalog validation', () => {
     ).toContain('"anyCard" only goes with a status restricted to a tag');
   });
 
+  it('refuses a removeStatus with both "status" and "statuses"', () => {
+    expect(
+      issuesOf([
+        card('x', {
+          abilities: [{ trigger: 'onReveal', effect: { type: 'removeStatus', status: 'high', statuses: ['mad'] } }],
+        }),
+      ]),
+    ).toHaveLength(1);
+  });
+
   it('refuses invalid trigger combinations', () => {
     const effect = { type: 'addPower', amount: 1 } as const;
     expect(issuesOf([card('x', { abilities: [{ trigger: 'onStatusGained', effect }] })])[0]).toContain(

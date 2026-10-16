@@ -699,6 +699,16 @@ const phase6 = catalogWith(
       ],
     }),
     card('hot-head', { statuses: ['overheat'] }),
+    card('mess', { statuses: ['tough', 'high', 'overheat'] }),
+    card('mechanic', {
+      abilities: [
+        {
+          trigger: 'onReveal',
+          target: { type: 'cards' },
+          effect: { type: 'removeStatus', statuses: ['high', 'overheat'] },
+        },
+      ],
+    }),
     card('dealer', { abilities: [giveAllies('high')] }),
     card('dealer2', { abilities: [giveAllies('high')] }),
     card('junkie', { power: 3, statuses: ['high'] }),
@@ -810,6 +820,17 @@ describe('Surchauffe: machines only by default', () => {
     const state = newGame(phase6, { p0: ['hot-head'] });
     const next = playTurn(phase6, state, { p0: [['hot-head', 0]] }).state;
     expect(statusesOf(next, 0, 'hot-head')).toEqual({ overheat: 1 });
+  });
+});
+
+describe('removeStatus with a list', () => {
+  it('removes every listed status and keeps the others', () => {
+    const state = newGame(phase6, { p0: ['mess', 'mechanic'] });
+    const turn1 = playTurn(phase6, state, { p0: [['mess', 0]] }).state;
+    const { state: turn2, events } = playTurn(phase6, turn1, { p0: [['mechanic', 0]] });
+    expect(statusesOf(turn2, 0, 'mess')).toEqual({ tough: 1 });
+    const removed = events.filter((event) => event.type === 'statusChanged' && event.stacks === 0);
+    expect(removed.map((event) => event.type === 'statusChanged' && event.status)).toEqual(['high', 'overheat']);
   });
 });
 

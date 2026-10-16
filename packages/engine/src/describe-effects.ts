@@ -1,4 +1,4 @@
-import type { EffectParams } from './abilities/effects.ts';
+import { type EffectParams, removedStatuses } from './abilities/effects.ts';
 import { type StatusId, statusRule } from './abilities/statuses.ts';
 import {
   type Context,
@@ -10,6 +10,7 @@ import {
   signed,
   statusAdjective,
   tagLabel,
+  the,
   to,
 } from './describe-text.ts';
 
@@ -34,7 +35,7 @@ const FOLLOWING: { [K in EffectParams['type']]: Following<K> | null } = {
   addStatus: (effect, plural) =>
     `${plural ? 'les' : 'la'} rend ${statusAdjective(effect.status, plural)}${stacksSuffix(effect.stacks)}${onlyTagSuffix(effect)}`,
   destroy: (_effect, plural) => `${plural ? 'les' : 'la'} détruit`,
-  removeStatus: (effect, plural) => `${plural ? 'leur' : 'lui'} retire ${removedStatus(effect.status)}`,
+  removeStatus: (effect, plural) => `${plural ? 'leur' : 'lui'} retire ${removedStatus(effect)}`,
   move: (effect, plural) => `${plural ? 'les' : 'la'} déplace ${DESTINATION_TEXT[effect.destination]}`,
   addPowerPerCard: null,
   draw: null,
@@ -59,7 +60,7 @@ export function describeEffect(context: Context, effect: EffectParams, target: T
     case 'addStatus':
       return describeAddStatus(effect, target);
     case 'removeStatus':
-      return `retire ${removedStatus(effect.status)} ${of(target.text)}`;
+      return `retire ${removedStatus(effect)} ${of(target.text)}`;
     case 'draw':
     case 'move':
     case 'addCost':
@@ -108,8 +109,15 @@ function statusVerb(status: StatusId, target: TargetText): string {
     : `rend ${target.text} ${statusAdjective(status, target.plural)}`;
 }
 
-function removedStatus(status: StatusId | undefined): string {
-  return status === undefined ? 'tous les états' : `la ${statusRule(status).name}`;
+// « la Défonce et la Surchauffe » / « l'Ivresse, la Folie et la Défonce »
+function removedStatus(effect: Extract<EffectParams, { type: 'removeStatus' }>): string {
+  const statuses = removedStatuses(effect);
+  if (statuses === null) {
+    return 'tous les états';
+  }
+  const names = statuses.map((status) => the(statusRule(status).name));
+  const last = names.pop() ?? '';
+  return names.length === 0 ? last : `${names.join(', ')} et ${last}`;
 }
 
 function describeAddStatus(effect: Extract<EffectParams, { type: 'addStatus' }>, target: TargetText): string {

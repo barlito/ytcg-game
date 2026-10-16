@@ -117,7 +117,7 @@ Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de no
 | `draw` | `count` (1 à 3, défaut 1) | le propriétaire pioche ; sur un lieu, les deux joueurs |
 | `destroy` | — | détruit les cibles |
 | `addStatus` | `status`, `stacks` (1 à 5, défaut 1), `anyCard` (défaut `false`) | pose un état sur les cibles ; la Surchauffe ne se pose que sur les machines (`trait:machine`), sauf `anyCard: true` (« rend les cartes ennemies ici surchauffées (machines seulement) ») |
-| `removeStatus` | `status` (absent = tous) | retire un état des cibles |
+| `removeStatus` | `status` **ou** `statuses` (liste) ; aucun des deux = tous | retire des états des cibles (« retire la Défonce et la Surchauffe des autres cartes alliées ici ») |
 | `move` | `destination` : `random` (défaut), `left`, `right` | déplace les cibles vers un autre lieu **de leur camp** qui a une place libre ; sans place, rien ne se passe |
 | `addCost` | `amount` (≠ 0, négatif = moins cher), `cards` : `hand` (défaut) ou `next`, `tag` optionnel | change le coût des cartes en **main** du propriétaire (les deux joueurs sur un terrain) ; coût plancher 0 |
 | `addToHand` | `card` (id du catalogue, absent = copie de cette carte), `count` (1 à 3, défaut 1) | ajoute des cartes neuves en main ; rien si la main est pleine (7) |

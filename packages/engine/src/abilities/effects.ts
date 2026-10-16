@@ -8,7 +8,7 @@ import {
   cardFilterSchema,
 } from './board.ts';
 import { AddCostEffect, AddToHandEffect, MoveEffect, owners } from './effects-cards.ts';
-import { statusRule, statusSchema } from './statuses.ts';
+import { type StatusId, statusRule, statusSchema } from './statuses.ts';
 
 const addPowerSchema = z.object({
   type: z.literal('addPower'),
@@ -134,10 +134,25 @@ export class AddStatusEffect implements Effect {
   }
 }
 
-const removeStatusSchema = z.object({
-  type: z.literal('removeStatus'),
-  status: statusSchema.optional(),
-});
+const removeStatusSchema = z
+  .object({
+    type: z.literal('removeStatus'),
+    // One status, a list, or neither (= every status).
+    status: statusSchema.optional(),
+    statuses: z.array(statusSchema).min(1).optional(),
+  })
+  .refine(({ status, statuses }) => status === undefined || statuses === undefined, {
+    path: ['statuses'],
+    message: 'use "status" or "statuses", not both',
+  });
+
+// The statuses an effect removes, null = all of them.
+export function removedStatuses(params: z.output<typeof removeStatusSchema>): readonly StatusId[] | null {
+  if (params.statuses !== undefined) {
+    return [...new Set(params.statuses)];
+  }
+  return params.status === undefined ? null : [params.status];
+}
 
 export class RemoveStatusEffect implements Effect {
   static readonly schema = removeStatusSchema;
@@ -148,8 +163,11 @@ export class RemoveStatusEffect implements Effect {
   }
 
   apply(board: Board, _source: AbilitySource, targets: readonly string[]): void {
+    const statuses = removedStatuses(this.params);
     for (const target of targets) {
-      board.removeStatus(target, this.params.status ?? null);
+      for (const status of statuses ?? [null]) {
+        board.removeStatus(target, status);
+      }
     }
   }
 }

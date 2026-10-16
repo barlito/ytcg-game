@@ -53,7 +53,7 @@ export interface TargetText {
 
 // French elisions and contractions: « la autre » → « l'autre », « à les » → « aux », « de une » → « d'une ».
 export function the(noun: string): string {
-  return /^[aeiouéè]/.test(noun) ? `l'${noun}` : `la ${noun}`;
+  return /^[aeiouéè]/i.test(noun) ? `l'${noun}` : `la ${noun}`;
 }
 
 export function to(target: string): string {

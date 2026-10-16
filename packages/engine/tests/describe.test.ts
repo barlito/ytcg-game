@@ -162,6 +162,24 @@ describe('text of the building blocks', () => {
         ],
       }),
       card('drunkard', { statuses: ['drunk', 'protected', 'overheat'] }),
+      card('medic', {
+        abilities: [
+          {
+            trigger: 'onReveal',
+            target: { type: 'cards' },
+            effect: { type: 'removeStatus', statuses: ['high', 'overheat'] },
+          },
+          { trigger: 'onReveal', effect: { type: 'removeStatus', statuses: ['drunk', 'mad', 'high'] } },
+          {
+            trigger: 'endOfTurn',
+            target: { type: 'cards', pick: 'weakest' },
+            effect: [
+              { type: 'addPower', amount: 1 },
+              { type: 'removeStatus', statuses: ['drunk'] },
+            ],
+          },
+        ],
+      }),
       card('stoker', {
         abilities: [
           {
@@ -275,6 +293,14 @@ describe('text of the building blocks', () => {
       'À la révélation : rend les cartes ennemies ici surchauffées (×2) (machines seulement).',
       'À la révélation : rend les autres cartes ici surchauffées.',
       'En fin de tour : +1 puissance à une autre carte alliée ici au hasard et la rend surchauffée (machines seulement).',
+    ]);
+  });
+
+  it('lists the removed statuses', () => {
+    expect(describeCard(bricks, bricks.card('medic'))).toEqual([
+      'À la révélation : retire la Défonce et la Surchauffe des autres cartes alliées ici.',
+      "À la révélation : retire l'Ivresse, la Folie et la Défonce de cette carte.",
+      "En fin de tour : +1 puissance à l'autre carte alliée la plus faible ici et lui retire l'Ivresse.",
     ]);
   });
 
