@@ -237,6 +237,22 @@ Chaque événement de la phase 5a est une étape de la file de replay (`animatio
 - **Événements ajoutés au moteur** pour savoir qui réagit : `abilityTriggered` (carte ou terrain, public), `contagionSpread` (source et cible), `statusChanged.spent` (Protection payée), `cardAddedToHand.from` (carte source). Aucun ne révèle d'information cachée.
 - **Bac à sable** (`?sandbox`) : un bouton par animation, qui rejoue une résolution fabriquée.
 
+## Briques d'effets 2 (phase 6, décisions du 2026-10-17)
+
+Revue de toutes les briques avant la réécriture des cartes, comparée à Marvel Snap. Gardé tel quel : les déclencheurs, les cibles, les effets de la phase 5a, l'Ivresse, la Folie et ses crises. Pas pour l'instant : capacité « Activate » (déclenchée à la main), échange de cartes, défausse (pas de main défaussée : une carte qui meurt est « détruite »), Saignement (doublon de la Défonce).
+
+- **Quand elle se déplace** (`onMoved`, fait) : déclenché par tout déplacement (effet, crise Errance, carte adverse), jamais pour un terrain ; un déplacement fait par sa propre capacité `onMoved` ne la redéclenche pas.
+- **Folie** : buff pour les Benj (effet défini par la carte), buff ou debuff aléatoire pour les autres ; l'effet défini par une carte prime sur la crise ; le déplacement et l'auto-destruction sont plus rares → **crises pondérées** (Rage 30, Délire 30, Contagion 20, Errance 10, Implosion 10). Rendre fou l'adversaire est rare, donc puissant.
+- **Coriace** inchangée : bloque seulement la destruction et la perte de puissance.
+- **Protection** : cumulable, un cumul par malus annulé (déjà le cas) ; elle absorbe aussi un **état posé par une carte adverse** (Défonce, Folie, Surchauffe… : l'état n'est pas posé, un cumul est dépensé).
+- **États par carte (le « Trip »)** : la condition et le déclencheur de la Folie deviennent valables pour tout état : « Défoncée : … », « En surchauffe : … », « Quand elle devient ivre : … ». Un effet défini par la carte prime sur la règle par défaut de l'état (une machine que la Surchauffe booste au lieu de la détruire). Mécanique signature de Psychedelic : la Défonce comme arme (sur l'adversaire) et carburant (payoffs par carte défoncée).
+- **Pas de classement positif / négatif des états** : un état est négatif pour la plupart des cartes et positif pour certaines. Un soin (Farf, mécano) liste les états qu'il retire (`removeStatus` accepte une liste).
+- **Surchauffe** : par défaut ne se pose que sur les cartes `trait:machine` ; une carte peut le forcer sur n'importe quelle carte.
+- **Vol de puissance**, **copie** (de la révélation de la dernière carte alliée jouée ici), **condition « gagne / perd ce lieu »**, **filtres par coût et puissance** (« les cartes à 1 de coût », « ≥ 9 de puissance ») : validés.
+- **États à coder** : Endormie (capacités coupées N tours), Charmée (capacités coupées tant que la carte qui charme est en jeu), Marquée (prime pour qui la détruit), Enragée (+1 par tour, insensible aux bonus alliés).
+- **Transformation** : une carte se transforme (après N tours ou quand une condition est remplie) en sa **forme évoluée**, qui la remplace sur le plateau. Les formes évoluées sont des cartes ytcg **collectionnables mais non deckables** : un champ dans les données du jeu, respecté par la validation de deck de ytcg.
+- **Règles de terrain** : nouvelles règles ajoutées au fil des terrains (le schéma `rules` et `location-rules.ts` sont prévus pour).
+
 ## Design Violet Arcade (phase 4c)
 
 Décisions du 2026-10-09, à partir du handoff Claude Design (cartes, plateau, révélation, fin de partie, accueil, deck builder, profil/classement, logo) :
@@ -258,8 +274,9 @@ Décisions du 2026-10-09, à partir du handoff Claude Design (cartes, plateau, r
 6. **Phase 3b — decks ytcg dans le jeu** : `YtcgDeckProvider` (deck validé par ytcg au moment de rejoindre, puis règles du jeu), constructeur de decks dans le client (liste, édition, courbe en direct, erreurs ytcg par champ, connexion expirée). Reste : déploiement sur le domaine ytcg et mise en place côté ytcg (voir [Decks ytcg](#decks-ytcg-phase-3b)).
 7. **Phase 4 — polish** : drag & drop, rendu façon ytcg, animation de chaque événement, pause de lecture, infobulles, bonus/malus visibles, bundle découpé. **4b** : pause proportionnelle aux révélations, mise en avant de chaque carte révélée, main plus grande, revue visuelle de 375 à 1920 px.
 8. **Phase 5a — briques d'effets** : déplacement, déclencheurs « jouée ici » et « détruite », coût modifié, ajout en main, règles de terrain, états Ivresse / Protection / Surchauffe (aucune carte réécrite). Puis réécriture des cartes extension par extension.
-9. **Phase 5+** : invitations entre amis, déploiement derrière Traefik, Bankai.
-10. **Phase finale — bots d'équilibrage** : un bot glouton rapide (simule ses poses avant de jouer), puis un bot plus malin (Monte Carlo) ; decks d'archétype et constructeur de decks évolutif ; rapport des combos (gain par paire de cartes, popularité dans les decks gagnants).
+9. **Phase 5b / 5c** : animations des briques, holo par exemplaire. **Phase 6** — briques d'effets 2 ([décisions](#briques-deffets-2-phase-6-décisions-du-2026-10-17)) : **6a** déplacement déclencheur, états par carte, Protection contre les états adverses, Surchauffe des machines, crises pondérées, vol de puissance, condition de lieu, filtres coût / puissance ; **6b** Endormie, Charmée, Marquée, Enragée, copie ; **6c** transformation. Puis réécriture des cartes extension par extension (Psychedelic d'abord).
+10. **Phase 5+** : invitations entre amis, déploiement derrière Traefik, Bankai.
+11. **Phase finale — bots d'équilibrage** : un bot glouton rapide (simule ses poses avant de jouer), puis un bot plus malin (Monte Carlo) ; decks d'archétype et constructeur de decks évolutif ; rapport des combos (gain par paire de cartes, popularité dans les decks gagnants).
 
 ## Questions ouvertes
 

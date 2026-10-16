@@ -12,6 +12,7 @@ La boîte à outils pour décrire les capacités des cartes et des lieux dans `d
 | `onCardPlayedHere` | quand une **autre** carte est révélée sur ce lieu après celle-ci (cartes et terrain) ; filtre optionnel `played` |
 | `onDestroyed` | quand cette carte est détruite (cartes seulement) |
 | `onMad` | quand cette carte **devient** folle (passe de 0 à 1 cumul de Folie ; pas sur un cumul de plus), cartes seulement |
+| `onMoved` | quand cette carte se déplace vers un autre lieu (effet, crise Errance, carte adverse), cartes seulement ; un déplacement fait par sa propre capacité `onMoved` ne la redéclenche pas |
 
 **Ordre de résolution d'une révélation** : la carte est posée sur le plateau, reçoit ses états innés, joue sa capacité `onReveal`, puis les capacités `onCardPlayedHere` des cartes déjà présentes sur ce lieu (le joueur qui révèle d'abord, dans l'ordre où ses cartes sont arrivées, puis l'autre joueur), puis celles du terrain. La carte révélée ne se déclenche jamais elle-même. En fin de tour : terrains, puis cartes (`endOfTurn`), puis règles des états.
 

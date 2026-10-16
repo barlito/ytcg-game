@@ -144,6 +144,9 @@ describe('text of the building blocks', () => {
           { trigger: 'onCardPlayedHere', played: { side: 'enemy', status: 'high' }, effect: { type: 'draw' } },
         ],
       }),
+      card('sprinter', {
+        abilities: [{ trigger: 'onMoved', effect: { type: 'addPower', amount: 2 } }],
+      }),
       card('phoenix', {
         abilities: [
           { trigger: 'onDestroyed', effect: { type: 'addToHand', count: 2 } },
@@ -190,6 +193,7 @@ describe('text of the building blocks', () => {
   });
 
   it('writes destruction triggers and cards added to hand', () => {
+    expect(describeCard(bricks, bricks.card('sprinter'))).toEqual(['Quand elle se déplace : +2 puissance.']);
     expect(describeCard(bricks, bricks.card('phoenix'))).toEqual([
       'Quand cette carte est détruite : ajoute 2 copies de cette carte en main.',
       'Quand cette carte est détruite : pioche 1 carte et ajoute « benj » en main.',

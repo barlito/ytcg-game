@@ -8,6 +8,8 @@ import { cardAt, locationAt } from './state-access.ts';
 // Fires the abilities of a card or a location for one trigger. New triggers only need a new call site.
 export class AbilityRunner {
   private readonly board: GameBoard;
+  // Cards resolving their onMoved abilities: moving one of them again does not re-fire them (no endless loop).
+  private readonly moving = new Set<string>();
 
   constructor(board: GameBoard) {
     this.board = board;
@@ -30,6 +32,15 @@ export class AbilityRunner {
     }
     const source: AbilitySource = { owner: card.owner, location: card.location, card: uid };
     this.run(this.board.definitionOf(uid).abilities, source, 'onDestroyed');
+  }
+
+  fireMoved(uid: string): void {
+    if (this.moving.has(uid)) {
+      return;
+    }
+    this.moving.add(uid);
+    this.fireCard(uid, 'onMoved');
+    this.moving.delete(uid);
   }
 
   fireLocation(index: number, trigger: Trigger, played?: string): void {
@@ -76,7 +87,7 @@ export class AbilityRunner {
 
   // Reactions are announced before their effects so the animation can light up their source.
   private announce(trigger: Trigger, source: AbilitySource): void {
-    if (trigger === 'onCardPlayedHere' || trigger === 'onDestroyed') {
+    if (trigger === 'onCardPlayedHere' || trigger === 'onDestroyed' || trigger === 'onMoved') {
       this.board.recordEvent({ type: 'abilityTriggered', trigger, card: source.card, location: source.location });
     }
   }

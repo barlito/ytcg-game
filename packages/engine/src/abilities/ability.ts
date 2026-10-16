@@ -5,8 +5,16 @@ import { ONGOING_EFFECTS, UNTARGETED_EFFECTS, createEffect, effectSchema } from 
 import { createTarget, targetSchema } from './targets.ts';
 
 // onCardPlayedHere: another card is revealed on this location after this one. onDestroyed: this card was destroyed.
-// onMad: this card just became mad.
-export const TRIGGERS = ['onReveal', 'ongoing', 'endOfTurn', 'onCardPlayedHere', 'onDestroyed', 'onMad'] as const;
+// onMad: this card just became mad. onMoved: this card just moved to another location.
+export const TRIGGERS = [
+  'onReveal',
+  'ongoing',
+  'endOfTurn',
+  'onCardPlayedHere',
+  'onDestroyed',
+  'onMad',
+  'onMoved',
+] as const;
 
 export type Trigger = (typeof TRIGGERS)[number];
 
@@ -116,6 +124,9 @@ function locationEffectIssues(ability: AbilityParams): string[] {
   }
   if (ability.trigger === 'onDestroyed') {
     issues.push('a location is never destroyed: no onDestroyed trigger');
+  }
+  if (ability.trigger === 'onMoved') {
+    issues.push('a location never moves: no onMoved trigger');
   }
   if (isMadnessAbility(ability)) {
     issues.push('a location is never mad: no onMad trigger nor "mad" condition');

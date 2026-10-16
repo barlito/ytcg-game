@@ -16,6 +16,7 @@ const TRIGGER_TEXT = {
   endOfTurn: 'En fin de tour',
   onDestroyed: 'Quand cette carte est détruite',
   onMad: 'Quand elle devient folle',
+  onMoved: 'Quand elle se déplace',
 } as const;
 
 export function describeCard(catalog: Catalog, card: CardDefinition): string[] {

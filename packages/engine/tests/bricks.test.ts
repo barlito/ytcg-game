@@ -50,6 +50,20 @@ const catalog = catalogWith(
         },
       ],
     }),
+    // onMoved
+    card('sprinter', { abilities: [{ trigger: 'onMoved', effect: { type: 'addPower', amount: 2 } }] }),
+    card('restless', {
+      abilities: [
+        { trigger: 'onReveal', effect: { type: 'move', destination: 'right' } },
+        {
+          trigger: 'onMoved',
+          effect: [
+            { type: 'addPower', amount: 1 },
+            { type: 'move', destination: 'right' },
+          ],
+        },
+      ],
+    }),
     // onCardPlayedHere
     card('benj-watcher', {
       abilities: [
@@ -250,6 +264,38 @@ describe('move', () => {
     const next = playTurn(catalog, playTurn(catalog, state, { p1: [['v1', 0]] }).state, { p0: [['pusher', 0]] }).state;
     expect(locationOf(next, 1, 'v1')).toBe(1);
     expect(next.locations[1]?.cards[1]).toEqual([uidOf(next, 1, 'v1')]);
+  });
+});
+
+describe('onMoved', () => {
+  it('fires when the card is moved, by itself or by an enemy', () => {
+    const state = newGame(catalog, { p0: ['pusher'], p1: ['sprinter'] });
+    const turn1 = playTurn(catalog, state, { p1: [['sprinter', 0]] }).state;
+    const { state: turn2, events } = playTurn(catalog, turn1, { p0: [['pusher', 0]] });
+    expect(locationOf(turn2, 1, 'sprinter')).toBe(1);
+    expect(powerAt(catalog, turn2, 1, 'sprinter')).toBe(1 + 2);
+    expect(events).toContainEqual({
+      type: 'abilityTriggered',
+      trigger: 'onMoved',
+      card: uidOf(turn2, 1, 'sprinter'),
+      location: 1,
+    });
+  });
+
+  it('does not fire again for a move made by its own onMoved ability', () => {
+    const state = newGame(catalog, { p0: ['restless'] });
+    const next = playTurn(catalog, state, { p0: [['restless', 0]] }).state;
+    // onReveal: 0 → 1, onMoved: +1 and 1 → 2, which does not fire onMoved again
+    expect(locationOf(next, 0, 'restless')).toBe(2);
+    expect(powerAt(catalog, next, 0, 'restless')).toBe(1 + 1);
+  });
+
+  it('does not fire when the card cannot move', () => {
+    const state = newGame(catalog, { p0: ['pusher'], p1: ['sprinter'] });
+    const turn1 = playTurn(catalog, state, { p1: [['sprinter', 2]] }).state;
+    // nothing on the right of location 2
+    const next = playTurn(catalog, turn1, { p0: [['pusher', 2]] }).state;
+    expect(powerAt(catalog, next, 1, 'sprinter')).toBe(1);
   });
 });
 

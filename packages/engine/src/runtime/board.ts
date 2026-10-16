@@ -37,6 +37,8 @@ export class GameBoard implements Board {
   onDestroyed: (uid: string) => void = () => undefined;
   // Set by the Runtime: fires the onMad abilities of a card that just went mad.
   onMad: (uid: string) => void = () => undefined;
+  // Set by the Runtime: fires the onMoved abilities of a card that just moved.
+  onMoved: (uid: string) => void = () => undefined;
   private readonly events: GameEvent[];
 
   constructor(catalog: Catalog, state: GameState, events: GameEvent[]) {
