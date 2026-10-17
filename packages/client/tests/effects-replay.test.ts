@@ -1,4 +1,4 @@
-import { type CardView, type PlayerEvent } from '@ytcg-game/engine';
+import { type CardView, MAX_HAND, type PlayerEvent } from '@ytcg-game/engine';
 import { describe, expect, it } from 'vitest';
 import { cardFx, costView, explodes, sceneCard } from '../src/animation/fx.ts';
 import { departingAt, rowWithGhosts, trackPlacements } from '../src/animation/placements.ts';
@@ -292,6 +292,12 @@ describe('sandbox scenarios', () => {
     for (const location of game.view.locations) {
       expect(catalog.locations.has(location.defId ?? '')).toBe(true);
     }
+  });
+
+  it.each(['added-card', 'added-deck'] as const)('%s never goes over a full hand', (id) => {
+    const game = buildFixture(catalog, { ...DEFAULT_OPTIONS, handCount: MAX_HAND, scenario: id }, 0);
+    expect(game.view.hand).toHaveLength(MAX_HAND);
+    expect(game.view.hand.at(-1)?.uid).toBe('hNew');
   });
 
   it('plays a scenario as a replay with a final view that already shows the result', () => {
