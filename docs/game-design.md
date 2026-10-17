@@ -266,24 +266,24 @@ Revue de toutes les briques avant la réécriture des cartes, comparée à Marve
 
 ## Psychedelic — le Trip (phase 7a)
 
-Première extension réécrite (décisions du 2026-10-17, validées carte par carte). Signature **le Trip** : la Défonce comme **arme** (rendre défoncées les cartes adverses, qui perdent 1 puissance par cumul à chaque fin de tour) et comme **carburant** (gains par carte défoncée, cartes « Défoncée : … » boostées au lieu d'être affaiblies). Coût, puissance, rareté et tags inchangés. Texte exact : [`cards.md`](cards.md).
+Première extension réécrite (décisions du 2026-10-17, validées carte par carte ; **v2 « bon trip »** revalidée le même jour). Signature **le Trip** : **toutes les cartes Psychedelic sont buffées quand elles sont défoncées et ne perdent jamais de puissance à cause de la Défonce** (chacune définit son effet de Défonce, qui prime sur la règle par défaut). Chaque carte a « Défoncée : +2 puissance. », sauf mention contraire. La Défonce ne touche l'adversaire que par des sources **au hasard** (Warnyx, Farf quand il gagne son lieu) : plus aucune carte ne cible l'ennemi pour le défoncer. Coût, puissance, rareté et tags inchangés. Texte exact : [`cards.md`](cards.md).
 
-| Carte | Effet |
+| Carte | Effet (en plus de « Défoncée : +2 puissance » sauf mention) |
 |---|---|
-| Jean Raoulz (légendaire 5/5, le dealer) | À la révélation : rend défoncées les autres cartes Psychedelic sur le plateau (des deux camps). Le dealer ne consomme pas : il ne se compte pas |
-| Warnyx (légendaire 6/7) | À la révélation : rend défoncée une autre carte non défoncée ici au hasard (des deux camps), puis +2 puissance par autre carte alliée défoncée ici (ponctuel ; la carte qu'il vient de défoncer compte si elle est alliée). Plus de bonus continu ni de comptage des deux camps : trop fort |
-| Benjamen (rare 3/3, Benj) | À la révélation : rend folles les cartes défoncées ici (des deux camps). Folle : +1 puissance par autre carte folle ici (sa version de la règle des Benj) |
-| Farf (rare 4/5) | En fin de tour, si tu perds ce lieu : retire la Défonce et l'Ivresse des autres cartes alliées ici et leur donne +1 puissance |
-| Julieng (peu commune 2/2, Julian) | En continu : +1 puissance par carte Linette défoncée sur le plateau (des deux camps : Julian aime les Linettes, à qui qu'elles soient) |
-| Barlito Waa (peu commune 3/3) | Coriace ; à la révélation : devient défoncé (×3). Coriace bloque la perte : un corps défoncé permanent qui nourrit les gains |
-| Babou Linette (commune 1/1) | En continu : +1 puissance par carte ennemie défoncée ici |
-| Bébou Linette (commune 1/1) | À la révélation : rend la carte ennemie la plus forte ici défoncée (×2) |
-| Bibou Linette (commune 1/1) | Inchangée : +1 puissance par autre carte alliée défoncée sur le plateau |
-| Velo (commune 1/1, Veli en solo) | À la révélation : s'il n'y a aucune autre carte alliée ici, devient défoncé ; Défoncée : +3 puissance (un bon trip qui ne redescend jamais : l'effet défini prime sur la Défonce) |
+| Jean Raoulz (légendaire 5/5, le dealer) | À la révélation : rend défoncées les cartes Psychedelic sur le plateau, **lui compris** (des deux camps, partout) |
+| Warnyx (légendaire 6/7) | À la révélation : rend défoncée une autre carte ici au hasard (des deux camps, déjà défoncée ou non : un cumul de plus), puis +2 puissance par autre carte alliée défoncée ici (ponctuel) |
+| Benjamen (rare 3/3, Benj) | En fin de tour : rend folles les autres cartes défoncées ici (des deux camps). Folle : +1 puissance par autre carte folle ici (sa version de la règle des Benj) |
+| Farf (rare 4/5) | En fin de tour, si tu perds ce lieu : retire l'Ivresse, la Folie et le Sommeil des autres cartes alliées ici et leur donne +1 puissance (il ne retire plus la Défonce : elle est bonne). Si tu gagnes ce lieu : rend défoncée une **autre** carte ici au hasard (des deux camps, lui exclu) |
+| Julieng (peu commune 2/2, Julian) | En continu : +1 puissance par carte Linette défoncée sur le plateau (des deux camps) |
+| Barlito Waa (peu commune 3/3) | Coriace ; à la révélation : devient défoncé (×1) ; **Défoncée : +1 puissance par cumul de Défonce** (au lieu du +2 fixe). Il grandit avec chaque cumul (Jean Raoulz, Warnyx, Farf) |
+| Babou Linette (commune 1/1) | En continu : +1 puissance par autre carte défoncée ici (des deux camps) |
+| Bébou Linette (commune 1/1) | À la révélation : rend défoncée une autre carte alliée ici au hasard (déjà défoncée ou non) |
+| Bibou Linette (commune 1/1) | En continu : +1 puissance par autre carte alliée défoncée sur le plateau |
+| Velo (commune 1/1, Veli en solo) | À la révélation : s'il n'y a aucune autre carte alliée ici, devient défoncé ; Défoncée : **+3** puissance (au lieu de +2) |
 
-Brique ajoutée : filtre `withoutStatus` (« non défoncée ») dans le filtre partagé (cible, condition `count`, `addPowerPerCard`). Règle d'écriture vérifiée par un test sur `data/` (`card-writing.test.ts`) : une ligne d'effet générée n'apparaît que dans une extension ; les doublons hérités des extensions pas encore réécrites sont dans une liste d'exceptions qui ne fait que rétrécir, et aucune ligne d'une extension réécrite n'y entre. Le texte reste au féminin (« devient défoncée ») : convention du moteur, le sujet est la carte.
+Briques ajoutées : filtre `withoutStatus` (« non défoncée ») dans le filtre partagé (plus utilisé par Psychedelic en v2) et effet `addPowerPerStack` (« +1 puissance par cumul de Défonce », cible `self`, permis en continu). Règle d'écriture vérifiée par un test sur `data/` (`card-writing.test.ts`) : une ligne d'effet générée n'apparaît que dans une extension ; les doublons hérités des extensions pas encore réécrites sont dans une liste d'exceptions qui ne fait que rétrécir, et aucune ligne d'une extension réécrite n'y entre (« Défoncée : +2 puissance. » se répète à l'intérieur de Psychedelic, c'est sa signature). Le texte reste au féminin (« devient défoncée ») : convention du moteur, le sujet est la carte.
 
-**Point ouvert, à playtester** : Jean Raoulz ne touche plus les cartes ennemies (« ennemies ici » puis « partout » jugés trop forts) ; il sert son propre camp et ne gêne que l'adversaire qui joue lui aussi du Psychedelic. Les bots aléatoires le voient faible (rendre ses propres cartes défoncées sans jouer les gains) : à juger en vraie partie.
+**Points ouverts, à playtester** : la Défonce adverse posée au hasard (Warnyx, Farf) buffe une carte Psychedelic adverse au lieu de la gêner, et ne fait perdre de la puissance qu'aux cartes des autres extensions ; Barlito Waa (un seul cumul de base) reste le plus faible pour les bots aléatoires.
 
 ## Design Violet Arcade (phase 4c)
 
