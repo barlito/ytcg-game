@@ -1,0 +1,144 @@
+import { describe, expect, it } from 'vitest';
+import { type GameState, type PlayerIndex, describeCard, locationPowers } from '../src/index.ts';
+import { card, catalogWith, newGame, playTurn, powerAt, uidOf } from './support.ts';
+
+const enemiesHere = { type: 'cards', side: 'enemy' } as const;
+
+const catalog = catalogWith([
+  card('v1'),
+  card('v2'),
+  card('grower', { abilities: [{ trigger: 'endOfTurn', effect: { type: 'addPower', amount: 1 } }] }),
+  card('greeter', { abilities: [{ trigger: 'onReveal', effect: { type: 'addPower', amount: 3 } }] }),
+  card('aura', {
+    abilities: [{ trigger: 'ongoing', target: { type: 'cards' }, effect: { type: 'addPower', amount: 2 } }],
+  }),
+  card('sentinel', { abilities: [{ trigger: 'onCardPlayedHere', effect: { type: 'addPower', amount: 1 } }] }),
+  // Endormie
+  card('lullaby', {
+    abilities: [
+      { trigger: 'onReveal', target: enemiesHere, effect: { type: 'addStatus', status: 'asleep', stacks: 2 } },
+    ],
+  }),
+  card('sandman', {
+    abilities: [
+      {
+        trigger: 'onReveal',
+        target: enemiesHere,
+        effect: [{ type: 'addStatus', status: 'asleep' }, { type: 'destroy' }],
+      },
+    ],
+  }),
+  card('tank', { statuses: ['tough'], abilities: [{ trigger: 'endOfTurn', effect: { type: 'addPower', amount: 1 } }] }),
+  card('dreamer', {
+    abilities: [
+      { trigger: 'ongoing', condition: { type: 'status', status: 'asleep' }, effect: { type: 'addPower', amount: 3 } },
+      { trigger: 'endOfTurn', effect: { type: 'addPower', amount: 1 } },
+    ],
+  }),
+  card('sleepy', { statuses: ['asleep'] }),
+  card('avenger', {
+    abilities: [{ trigger: 'onDestroyed', target: enemiesHere, effect: { type: 'addPower', amount: -2 } }],
+  }),
+  card('wake-up', { abilities: [{ trigger: 'onReveal', effect: { type: 'removeStatus', status: 'asleep' } }] }),
+]);
+
+export function stacks(state: GameState, player: PlayerIndex, defId: string, status: 'asleep'): number | undefined {
+  return state.cards[uidOf(state, player, defId)]?.statuses[status];
+}
+
+describe('statuses: Endormie', () => {
+  it('switches the abilities off for one turn per stack, then they come back', () => {
+    const state = newGame(catalog, { p0: ['grower', 'greeter'], p1: ['lullaby'] });
+    const turn1 = playTurn(catalog, state, {
+      p0: [
+        ['grower', 0],
+        ['greeter', 0],
+      ],
+    }).state;
+    expect(powerAt(catalog, turn1, 0, 'grower')).toBe(2);
+    const turn2 = playTurn(catalog, turn1, { p1: [['lullaby', 0]] }).state;
+    // Asleep: no end of turn growth; the resolved onReveal and the printed power stay.
+    expect(powerAt(catalog, turn2, 0, 'grower')).toBe(2);
+    expect(powerAt(catalog, turn2, 0, 'greeter')).toBe(4);
+    expect(stacks(turn2, 0, 'grower', 'asleep')).toBe(1);
+    const turn3 = playTurn(catalog, turn2).state;
+    expect(powerAt(catalog, turn3, 0, 'grower')).toBe(2);
+    expect(stacks(turn3, 0, 'grower', 'asleep')).toBeUndefined();
+    const turn4 = playTurn(catalog, turn3).state;
+    expect(powerAt(catalog, turn4, 0, 'grower')).toBe(3);
+  });
+
+  it('stops the ongoing bonuses the card gives, but its printed power counts', () => {
+    const state = newGame(catalog, { p0: ['aura', 'v1'], p1: ['lullaby'] });
+    const turn1 = playTurn(catalog, state, {
+      p0: [
+        ['aura', 0],
+        ['v1', 0],
+      ],
+    }).state;
+    expect(powerAt(catalog, turn1, 0, 'v1')).toBe(3);
+    const turn2 = playTurn(catalog, turn1, { p1: [['lullaby', 0]] }).state;
+    expect(powerAt(catalog, turn2, 0, 'v1')).toBe(1);
+    expect(locationPowers(catalog, turn2)[0]).toEqual([2, 1]);
+  });
+
+  it('does not react to the cards played here', () => {
+    const state = newGame(catalog, { p0: ['sentinel', 'v1', 'v2'], p1: ['lullaby'] });
+    const turn1 = playTurn(catalog, state, { p0: [['sentinel', 0]] }).state;
+    const turn2 = playTurn(catalog, turn1, { p1: [['lullaby', 0]] }).state;
+    const turn3 = playTurn(catalog, turn2, { p0: [['v1', 0]] }).state;
+    expect(powerAt(catalog, turn3, 0, 'sentinel')).toBe(1);
+    const turn4 = playTurn(catalog, turn3, { p0: [['v2', 0]] }).state;
+    expect(powerAt(catalog, turn4, 0, 'sentinel')).toBe(2);
+  });
+
+  it('keeps the innate statuses working: Coriace still saves a sleeping card', () => {
+    const state = newGame(catalog, { p0: ['tank'], p1: ['sandman'] });
+    const turn1 = playTurn(catalog, state, { p0: [['tank', 0]] }).state;
+    const turn2 = playTurn(catalog, turn1, { p1: [['sandman', 0]] }).state;
+    expect(turn2.cards[uidOf(turn2, 0, 'tank')]?.zone).toBe('board');
+    expect(stacks(turn2, 0, 'tank', 'asleep')).toBeUndefined();
+    expect(powerAt(catalog, turn2, 0, 'tank')).toBe(2);
+  });
+
+  it('does not fire the destruction abilities of a sleeping card', () => {
+    const state = newGame(catalog, { p0: ['avenger'], p1: ['sandman'] });
+    const turn1 = playTurn(catalog, state, { p0: [['avenger', 0]] }).state;
+    const turn2 = playTurn(catalog, turn1, { p1: [['sandman', 0]] }).state;
+    expect(turn2.cards[uidOf(turn2, 0, 'avenger')]?.zone).toBe('destroyed');
+    expect(powerAt(catalog, turn2, 1, 'sandman')).toBe(1);
+  });
+
+  it('lets a crisis of Folie act: it is the madness of the card, not an ability', () => {
+    const state = playTurn(catalog, newGame(catalog, { p0: ['v1'] }), { p0: [['v1', 0]] }).state;
+    const instance = state.cards[uidOf(state, 0, 'v1')];
+    if (instance === undefined) {
+      throw new Error('no v1');
+    }
+    instance.statuses = { mad: 1, asleep: 1 };
+    instance.crisis = 'rage';
+    expect(powerAt(catalog, state, 0, 'v1')).toBe(1 + 2);
+  });
+
+  it('is replaced by the effect a card defines for it: no switch-off, no wear-off', () => {
+    const state = newGame(catalog, { p0: ['dreamer'], p1: ['lullaby'] });
+    const turn1 = playTurn(catalog, state, { p0: [['dreamer', 0]] }).state;
+    const turn2 = playTurn(catalog, turn1, { p1: [['lullaby', 0]] }).state;
+    expect(powerAt(catalog, turn2, 0, 'dreamer')).toBe(1 + 2 + 3);
+    const turn3 = playTurn(catalog, turn2).state;
+    expect(stacks(turn3, 0, 'dreamer', 'asleep')).toBe(2);
+    expect(powerAt(catalog, turn3, 0, 'dreamer')).toBe(1 + 3 + 3);
+  });
+
+  it('is written in French', () => {
+    expect(describeCard(catalog, catalog.card('lullaby'))).toEqual([
+      'À la révélation : rend les cartes ennemies ici endormies (×2).',
+    ]);
+    expect(describeCard(catalog, catalog.card('sleepy'))).toEqual([
+      'Sommeil (ses capacités ne fonctionnent plus ; perd 1 cumul à chaque fin de tour).',
+    ]);
+    expect(describeCard(catalog, catalog.card('wake-up'))).toEqual([
+      'À la révélation : retire le Sommeil de cette carte.',
+    ]);
+  });
+});

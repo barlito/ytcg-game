@@ -9,8 +9,8 @@ import {
   scope,
   signed,
   statusAdjective,
+  statusNoun,
   tagLabel,
-  the,
   to,
 } from './describe-text.ts';
 
@@ -133,7 +133,7 @@ function removedStatus(effect: Extract<EffectParams, { type: 'removeStatus' }>):
   if (statuses === null) {
     return 'tous les états';
   }
-  const names = statuses.map((status) => the(statusRule(status).name));
+  const names = statuses.map(statusNoun);
   const last = names.pop() ?? '';
   return names.length === 0 ? last : `${names.join(', ')} et ${last}`;
 }

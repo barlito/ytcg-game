@@ -70,6 +70,8 @@ export interface Board extends BoardView {
   addStatus(card: string, status: StatusId, stacks: number, by: PlayerIndex | null): void;
   // null removes every status.
   removeStatus(card: string, status: StatusId | null): void;
+  // One stack of the status wears off (gone at zero).
+  loseStack(card: string, status: StatusId): void;
   // Moves a board card to another location of its side that has a free place; nothing happens without one.
   move(card: string, destination: MoveDestination): void;
   // Changes the cost of the cards in hand of a player (tag null = every card), or of the next card played.

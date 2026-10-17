@@ -81,9 +81,13 @@ export class AbilityRunner {
     this.fireLocation(location, 'onCardPlayedHere', played);
   }
 
+  // The one place where abilities fire: a card whose abilities are off (Endormie, Charmée) does nothing.
   private run(abilities: readonly CompiledAbility[], source: AbilitySource, trigger: Trigger): void {
+    if (source.card !== null && this.board.abilitiesOff(source.card)) {
+      return;
+    }
     for (const ability of abilities) {
-      if (ability.trigger !== trigger || !this.playedAllows(ability, source)) {
+      if (!this.matches(ability, source, trigger)) {
         continue;
       }
       // A card destroyed by one of its own abilities stops there (its onDestroyed abilities still run).
@@ -110,6 +114,10 @@ export class AbilityRunner {
 
   private left(source: AbilitySource, trigger: Trigger): boolean {
     return trigger !== 'onDestroyed' && source.card !== null && cardAt(this.board.state, source.card).zone !== 'board';
+  }
+
+  private matches(ability: CompiledAbility, source: AbilitySource, trigger: Trigger): boolean {
+    return ability.trigger === trigger && this.playedAllows(ability, source);
   }
 
   private playedAllows(ability: CompiledAbility, source: AbilitySource): boolean {

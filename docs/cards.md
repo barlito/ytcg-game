@@ -10,6 +10,7 @@
 - **Ivresse** (`drunk`) : gagne ou perd 2 puissance au hasard par cumul à chaque fin de tour
 - **Protection** (`protected`) : annule la prochaine destruction, le prochain malus de puissance ou le prochain état posé par une carte ennemie, puis disparaît (un cumul par protection)
 - **Surchauffe** (`overheat`) : détruite dès 3 cumuls
+- **Sommeil** (`asleep`) : ses capacités ne fonctionnent plus ; perd 1 cumul à chaque fin de tour
 
 ## 40K (`40k`) — 17 cartes, 15 avec effet
 
