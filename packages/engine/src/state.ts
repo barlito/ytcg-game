@@ -28,6 +28,8 @@ export interface CardInstance {
   playOrder: number | null;
   // Location where the card was revealed (kept when it moves or is destroyed): « played here » for the copy.
   revealedAt: number | null;
+  // Turn of the reveal (kept when it moves or transforms): « after N turns in play ».
+  revealedTurn: number | null;
   // Cost change received while in hand (the effective cost never goes below 0).
   costModifier: number;
   // Set while the card is pending: what it cost, and the "next card" discounts it consumed (given back on cancel).
@@ -39,6 +41,8 @@ export interface CardInstance {
   crisis: CrisisId | null;
   // The cards whose charm holds this one (Charmée), forgotten with the status.
   charmedBy: string[];
+  // The definition it was played as, once it has transformed (null = never transformed).
+  transformedFrom: string | null;
   // The player brought a holo copy of this card (cosmetic, public once the card is revealed).
   holo: boolean;
 }
@@ -119,4 +123,6 @@ export type GameEvent =
       location: number;
     }
   | { type: 'crisisStarted'; card: string; crisis: CrisisId }
+  // A board card took its evolved form (public: the card is revealed).
+  | { type: 'cardTransformed'; card: string; from: string; to: string }
   | { type: 'gameEnded'; result: GameResult };

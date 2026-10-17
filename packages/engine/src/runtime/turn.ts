@@ -71,6 +71,7 @@ export class TurnFlow {
     const playedAt = card.location;
     card.zone = 'board';
     card.revealedAt = playedAt;
+    card.revealedTurn = this.board.state.turn;
     locationAt(this.board.state, card.location).cards[card.owner].push(uid);
     this.events.push({
       type: 'cardRevealed',

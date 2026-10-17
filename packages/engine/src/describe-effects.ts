@@ -15,7 +15,8 @@ import {
 } from './describe-text.ts';
 
 type PowerEffect = Extract<EffectParams, { type: 'addPower' | 'addPowerPerCard' | 'stealPower' }>;
-type HandEffect = Extract<EffectParams, { type: 'draw' | 'move' | 'addCost' | 'addToHand' }>;
+// Effects about cards themselves: hands, moves, forms.
+type HandEffect = Extract<EffectParams, { type: 'draw' | 'move' | 'addCost' | 'addToHand' | 'transform' }>;
 
 const TAG_PLURAL: Partial<Record<string, string>> = { 'trait:machine': 'machines' };
 
@@ -44,6 +45,7 @@ const FOLLOWING: { [K in EffectParams['type']]: Following<K> | null } = {
   addCost: null,
   addToHand: null,
   copyReveal: null,
+  transform: null,
 };
 
 export function describeFollowingEffect(effect: EffectParams, plural: boolean): string | null {
@@ -58,9 +60,18 @@ function isPowerEffect(effect: EffectParams): effect is PowerEffect {
   return POWER_EFFECTS.has(effect.type);
 }
 
+const HAND_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['draw', 'move', 'addCost', 'addToHand', 'transform']);
+
+function isHandEffect(effect: EffectParams): effect is HandEffect {
+  return HAND_EFFECTS.has(effect.type);
+}
+
 export function describeEffect(context: Context, effect: EffectParams, target: TargetText): string {
   if (isPowerEffect(effect)) {
     return describePowerEffect(context, effect, target);
+  }
+  if (isHandEffect(effect)) {
+    return describeHandEffect(context, effect, target);
   }
   switch (effect.type) {
     case 'destroy':
@@ -71,11 +82,6 @@ export function describeEffect(context: Context, effect: EffectParams, target: T
       return `retire ${removedStatus(effect)} ${of(target.text)}`;
     case 'copyReveal':
       return "copie l'effet de révélation de la dernière carte alliée jouée ici";
-    case 'draw':
-    case 'move':
-    case 'addCost':
-    case 'addToHand':
-      return describeHandEffect(context, effect, target);
   }
 }
 
@@ -100,6 +106,8 @@ function describeHandEffect(context: Context, effect: HandEffect, target: Target
       return describeCost(context, effect);
     case 'addToHand':
       return describeAddToHand(context, effect);
+    case 'transform':
+      return `se transforme en « ${cardName(context, effect.into)} »`;
   }
 }
 
@@ -112,8 +120,12 @@ function describeCost(context: Context, effect: Extract<EffectParams, { type: 'a
     : `les cartes${tag} en main${owner} coûtent ${change}`;
 }
 
+function cardName(context: Context, id: string): string {
+  return context.catalog.cards.get(id)?.name ?? id;
+}
+
 function describeAddToHand(context: Context, effect: Extract<EffectParams, { type: 'addToHand' }>): string {
-  const name = effect.card === undefined ? null : (context.catalog.cards.get(effect.card)?.name ?? effect.card);
+  const name = effect.card === undefined ? null : cardName(context, effect.card);
   const count = effect.count > 1 ? `${effect.count} ` : '';
   const what =
     name === null ? `${effect.count > 1 ? `${count}copies` : 'une copie'} de cette carte` : `${count}« ${name} »`;

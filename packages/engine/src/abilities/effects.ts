@@ -7,7 +7,14 @@ import {
   type OngoingEffect,
   cardFilterSchema,
 } from './board.ts';
-import { AddCostEffect, AddToHandEffect, CopyRevealEffect, MoveEffect, owners } from './effects-cards.ts';
+import {
+  AddCostEffect,
+  AddToHandEffect,
+  CopyRevealEffect,
+  MoveEffect,
+  TransformEffect,
+  owners,
+} from './effects-cards.ts';
 import { StealPowerEffect } from './effects-power.ts';
 import { type StatusId, statusRule, statusSchema } from './statuses.ts';
 
@@ -185,6 +192,7 @@ export const effectSchema = z.discriminatedUnion('type', [
   AddToHandEffect.schema,
   StealPowerEffect.schema,
   CopyRevealEffect.schema,
+  TransformEffect.schema,
 ]);
 
 export type EffectParams = z.output<typeof effectSchema>;
@@ -201,7 +209,7 @@ export const UNTARGETED_EFFECTS: ReadonlySet<EffectParams['type']> = new Set([
 
 type OtherEffectParams = Extract<
   EffectParams,
-  { type: 'move' | 'addCost' | 'addToHand' | 'stealPower' | 'copyReveal' }
+  { type: 'move' | 'addCost' | 'addToHand' | 'stealPower' | 'copyReveal' | 'transform' }
 >;
 
 const OTHER_EFFECTS: ReadonlySet<EffectParams['type']> = new Set([
@@ -210,6 +218,7 @@ const OTHER_EFFECTS: ReadonlySet<EffectParams['type']> = new Set([
   'addToHand',
   'stealPower',
   'copyReveal',
+  'transform',
 ]);
 
 function isOtherEffect(params: EffectParams): params is OtherEffectParams {
@@ -248,5 +257,7 @@ function createOtherEffect(params: OtherEffectParams): Effect {
       return new StealPowerEffect(params);
     case 'copyReveal':
       return new CopyRevealEffect();
+    case 'transform':
+      return new TransformEffect(params);
   }
 }

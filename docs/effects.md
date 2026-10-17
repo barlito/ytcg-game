@@ -110,6 +110,7 @@ Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de no
 | `count` | filtre + `min` (défaut 1), `max` | « s'il y a un autre Benj ici » : `{ "type": "count", "tag": "character:benj" }` |
 | `turn` | `min`, `max` | « à partir du tour 4 » : `{ "type": "turn", "min": 4 }` |
 | `location` | `result` : `winning`, `losing`, `tied` | « si tu gagnes ce lieu » : `{ "type": "location", "result": "winning" }` : le propriétaire de la carte gagne / perd / est à égalité au lieu de la carte (somme des puissances, au moment où la capacité se résout). Cartes seulement ; **jamais `ongoing`** (elle lit la puissance) |
+| `turnsOnBoard` | `min` (1 à 5) | « après 2 tours en jeu » : `{ "type": "turnsOnBoard", "min": 2 }` : au moins `min` tours ont **commencé** depuis la révélation de la carte (0 pendant son tour de révélation ; révélée au tour 2, `min: 2` est vrai à partir du tour 4, donc dès la fin du tour 4 avec `endOfTurn`). Lit `CardInstance.revealedTurn`, gardé quand la carte se déplace ou se transforme. Cartes seulement (refusée sur un terrain) ; permise en `ongoing` (ni puissance ni hasard) |
 | `status` | `status` | « cette carte est défoncée » : `{ "type": "status", "status": "high" }` (cartes seulement, avec n'importe quel déclencheur ; remplace la règle par défaut de l'état, voir États) |
 
 ## Cibles (`target`, défaut `self`)
@@ -133,9 +134,10 @@ Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de no
 | `move` | `destination` : `random` (défaut), `left`, `right` | déplace les cibles vers un autre lieu **de leur camp** qui a une place libre ; sans place, rien ne se passe |
 | `addCost` | `amount` (≠ 0, négatif = moins cher), `cards` : `hand` (défaut) ou `next`, `tag` optionnel | change le coût des cartes en **main** du propriétaire (les deux joueurs sur un terrain) ; coût plancher 0 |
 | `addToHand` | `card` (id du catalogue, absent = copie de cette carte), `count` (1 à 3, défaut 1) | ajoute des cartes neuves en main ; rien si la main est pleine (7) |
+| `transform` | `into` (id du catalogue) | « se transforme en « Nom » » : la carte prend sa **forme évoluée** (voir Transformation). Cible `self` seulement, jamais `ongoing`, refusé sur un terrain et avec `onDestroyed` |
 | `copyReveal` | — | « copie l'effet de révélation de la dernière carte alliée jouée ici » : rejoue les capacités `onReveal` de la dernière **autre** carte alliée révélée sur ce lieu avant celle-ci (même si elle est partie ou détruite depuis), comme si la carte qui copie les portait (son camp, son lieu, `self` = elle). Rien s'il n'y en a pas. Copier une carte qui copie ne fait rien (pas de boucle). Cartes seulement (refusé sur un terrain), jamais `ongoing` |
 
-`draw`, `addCost`, `addToHand` et `copyReveal` ignorent la cible de la capacité.
+`draw`, `addCost`, `addToHand` et `copyReveal` ignorent la cible de la capacité ; `transform` n'accepte que `self`.
 
 ### Déplacement (`move`)
 
@@ -151,6 +153,23 @@ Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de no
 ### Ajout en main (`addToHand`)
 
 La nouvelle carte est une instance neuve du propriétaire (comme une pioche), sans état ni modificateur. L'adversaire reçoit `cardAddedToHand` sans l'identité de la carte et voit seulement `handCount` grossir. La référence `card` est vérifiée au chargement (id inconnu refusé) ; sur un terrain, `card` est obligatoire et chaque joueur reçoit la carte.
+
+### Transformation (`transform`)
+
+Une carte se transforme, avec n'importe quel déclencheur (`endOfTurn`, `onReveal`, `onCardPlayedHere`, `onMoved`, `onStatusGained`…) et n'importe quelle condition (`turn`, `turnsOnBoard`, `count`, `status`, `location`), en sa **forme évoluée** : une vraie carte ytcg marquée `"deckable": false` dans `data/cards` (collectionnable, jamais dans un deck : `validateDeck`, le serveur et les decks aléatoires la refusent, le deck builder la masque). Une forme évoluée n'entre en jeu que par une transformation.
+
+- **Ce qui reste** : l'instance (même `uid`), son propriétaire, son lieu, ses états (et sa crise de Folie), son modificateur de puissance permanent, son tour de révélation (`turnsOnBoard` continue de compter). **Ce qui change** : sa définition (nom, illustration, coût et puissance imprimés, tags, capacités). Sa puissance = puissance imprimée de la forme évoluée + le modificateur gardé.
+- **La forme évoluée se révèle** : elle reçoit ses états innés qu'elle n'a pas déjà (pas de cumul en plus), puis ses capacités `onReveal` se jouent. Ce n'est **pas** une pose : pas de `onCardPlayedHere` des autres cartes ni du terrain. Les capacités restantes de l'ancienne forme pour ce déclencheur ne se jouent plus (les effets suivants de la même capacité, si). Ses capacités `endOfTurn` attendent la fin de tour suivante si elle s'est transformée en fin de tour.
+- **Pas de boucle** : une carte ne se transforme qu'une fois par résolution (une forme évoluée qui se retransformerait aussitôt reste telle quelle) ; elle peut évoluer encore un tour suivant.
+- **Copie** : « ajoute une copie de cette carte en main » donne la carte **imprimée** (la forme de base), jamais la forme évoluée ; un `addToHand` qui nomme une forme évoluée est refusé au chargement.
+- `into` est vérifié au chargement (id inconnu refusé, une carte ne se transforme pas en elle-même). Événement public `cardTransformed` (`card`, `from`, `to` : ids de définition), la carte étant révélée.
+
+```json
+{ "trigger": "endOfTurn", "condition": { "type": "turn", "min": 5 }, "effect": { "type": "transform", "into": "<id de la forme évoluée>" } }
+{ "trigger": "endOfTurn", "condition": { "type": "turnsOnBoard", "min": 2 }, "effect": { "type": "transform", "into": "<id>" } }
+```
+
+Textes : « En fin de tour : à partir du tour 5, se transforme en « Barlito Bankai ». », « En fin de tour : après 2 tours en jeu, se transforme en « … ». »
 
 ## Règles de terrain (`rules`)
 
@@ -260,4 +279,4 @@ Terrain : « Quand une carte est jouée ici : chaque carte ici gagne +1 ».
 
 ## Ce qui n'existe pas encore
 
-Transformation (Bankai : une version renforcée quand la version de base est en jeu), défausse, sacrifice, condition de pose, Saignement (écarté). Chaque nouvelle brique = une classe, son schéma et ses tests (voir `packages/engine/CLAUDE.md`).
+Défausse, sacrifice, condition de pose, Saignement (écarté). Chaque nouvelle brique = une classe, son schéma et ses tests (voir `packages/engine/CLAUDE.md`).

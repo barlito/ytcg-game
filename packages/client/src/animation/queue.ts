@@ -30,6 +30,7 @@ const DURATIONS: Record<PlayerEvent['type'], number> = {
   statusChanged: 500,
   crisisStarted: 950,
   contagionSpread: 750,
+  cardTransformed: 700,
   abilityTriggered: 450,
   gameEnded: 600,
 };

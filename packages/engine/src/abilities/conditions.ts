@@ -60,6 +60,29 @@ export class StatusCondition implements Condition {
   }
 }
 
+const turnsOnBoardSchema = z.object({
+  type: z.literal('turnsOnBoard'),
+  min: z
+    .number()
+    .int()
+    .min(1)
+    .max(MAX_TURNS - 1),
+});
+
+// This card was revealed at least `min` turns ago (never true for a location).
+export class TurnsOnBoardCondition implements Condition {
+  static readonly schema = turnsOnBoardSchema;
+  private readonly params: z.output<typeof turnsOnBoardSchema>;
+
+  constructor(params: z.output<typeof turnsOnBoardSchema>) {
+    this.params = params;
+  }
+
+  isMet(board: BoardView, source: AbilitySource): boolean {
+    return source.card !== null && board.turnsOnBoard(source.card) >= this.params.min;
+  }
+}
+
 const locationConditionSchema = z.object({
   type: z.literal('location'),
   // The owner of the card, at the location of the card.
@@ -94,6 +117,7 @@ export const conditionSchema = z.discriminatedUnion('type', [
   TurnCondition.schema,
   StatusCondition.schema,
   LocationCondition.schema,
+  TurnsOnBoardCondition.schema,
 ]);
 
 export type ConditionParams = z.output<typeof conditionSchema>;
@@ -108,5 +132,7 @@ export function createCondition(params: ConditionParams): Condition {
       return new StatusCondition(params);
     case 'location':
       return new LocationCondition(params);
+    case 'turnsOnBoard':
+      return new TurnsOnBoardCondition(params);
   }
 }

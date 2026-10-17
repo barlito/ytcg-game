@@ -1,5 +1,6 @@
 import type { CardView, CrisisId, PlayerEvent, PlayerView, StatusId } from '@ytcg-game/engine';
 import { TERRAIN_CLOSED, TERRAIN_OPENS, TERRAIN_THREE } from './terrains.ts';
+import { find, patch, powered, relocate, remove, withStatuses, withTerrain } from './view-edits.ts';
 
 // Each scenario turns the base board into the FINAL view of a fabricated resolution, plus the events the replay plays.
 export interface Outcome {
@@ -10,74 +11,6 @@ export interface Outcome {
 export interface Scenario {
   label: string;
   run: (view: PlayerView) => Outcome;
-}
-
-type Statuses = Partial<Record<StatusId, number>>;
-
-function mapCards(view: PlayerView, change: (card: CardView) => CardView | null): PlayerView {
-  const keep = (cards: CardView[]): CardView[] => cards.flatMap((card) => change(card) ?? []);
-  return {
-    ...view,
-    hand: keep(view.hand),
-    locations: view.locations.map((location) => ({
-      ...location,
-      cards: { you: keep(location.cards.you), opponent: keep(location.cards.opponent) },
-      yourPending: keep(location.yourPending),
-    })),
-  };
-}
-
-function patch(view: PlayerView, uid: string, change: (card: CardView) => CardView): PlayerView {
-  return mapCards(view, (card) => (card.uid === uid ? change(card) : card));
-}
-
-function remove(view: PlayerView, uid: string): PlayerView {
-  return mapCards(view, (card) => (card.uid === uid ? null : card));
-}
-
-function find(view: PlayerView, uid: string): CardView {
-  const all = [...view.hand, ...view.locations.flatMap((l) => [...l.cards.you, ...l.cards.opponent])];
-  const card = all.find((candidate) => candidate.uid === uid);
-  if (card === undefined) {
-    throw new RangeError(`the sandbox board has no card ${uid}`);
-  }
-  return card;
-}
-
-const powered = (delta: number) => (card: CardView) => ({
-  ...card,
-  power: Math.max(0, card.power + delta),
-  breakdown: { ...card.breakdown, modifier: card.breakdown.modifier + delta },
-});
-
-const withStatuses =
-  (statuses: Statuses, crisis: CrisisId | null = null) =>
-  (card: CardView) => ({
-    ...card,
-    statuses: { ...card.statuses, ...statuses },
-    crisis: crisis ?? card.crisis,
-  });
-
-// Moves a card of your side to another location.
-function relocate(view: PlayerView, uid: string, to: number): PlayerView {
-  const card = find(view, uid);
-  const removed = remove(view, uid);
-  return {
-    ...removed,
-    locations: removed.locations.map((location) =>
-      location.index === to
-        ? { ...location, cards: { ...location.cards, you: [...location.cards.you, card] } }
-        : location,
-    ),
-  };
-}
-
-function withTerrain(view: PlayerView, terrains: Record<number, string>, turn: number): PlayerView {
-  return {
-    ...view,
-    turn,
-    locations: view.locations.map((location) => ({ ...location, defId: terrains[location.index] ?? location.defId })),
-  };
 }
 
 const status = (card: string, id: StatusId, stacks: number, spent = false): PlayerEvent =>
@@ -140,6 +73,7 @@ export const SCENARIO_IDS = [
   'charmed',
   'marked',
   'enraged',
+  'transform',
   'trigger-card',
   'trigger-terrain',
   'trigger-destroyed',
@@ -227,6 +161,18 @@ export const SCENARIOS: Record<ScenarioId, Scenario> = {
       view: patch(patch(view, 'y1', withStatuses({ enraged: 1 })), 'y1', powered(1)),
       events: [status('y1', 'enraged', 1), power('y1', 1)],
     }),
+  },
+  transform: {
+    label: 'Transformation',
+    run: (view) => {
+      // Any other real card stands in for the evolved form (no card is one yet).
+      const from = find(view, 'y1').defId;
+      const to = find(view, 'o1').defId;
+      return {
+        view: patch(view, 'y1', (card) => ({ ...card, defId: to })),
+        events: [{ type: 'cardTransformed', card: 'y1', from, to }],
+      };
+    },
   },
   'trigger-card': {
     label: 'Réaction d’une carte',

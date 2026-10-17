@@ -1,4 +1,4 @@
-import { DECK_SIZE } from '@ytcg-game/engine';
+import { Catalog, DECK_SIZE } from '@ytcg-game/engine';
 import { describe, expect, it } from 'vitest';
 import { catalog, randomDeck } from '../src/catalog.ts';
 import { curveBars, curveLines } from '../src/decks/curve.ts';
@@ -234,5 +234,19 @@ describe('editor pool', () => {
       const shown = filterPool(pool.cards, { ...NO_FILTER, universe: universe.value });
       expect(shown.every((card) => card.definition.extension === universe.value)).toBe(true);
     }
+  });
+
+  it('hides the evolved forms: they never go in a deck', () => {
+    const [evolved = ''] = cards;
+    const marked = [...catalog.cards].map(
+      ([id, card]) => [id, id === evolved ? { ...card, deckable: false } : card] as const,
+    );
+    const withEvolved = new Catalog(new Map(marked), catalog.locations, catalog.extensions);
+    const pool = buildPool(
+      withEvolved,
+      cards.map((id) => owned(id)),
+    );
+    expect(pool.cards.map((card) => card.definition.id)).not.toContain(evolved);
+    expect(pool.cards).toHaveLength(DECK_SIZE - 1);
   });
 });

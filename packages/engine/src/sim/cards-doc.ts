@@ -44,7 +44,7 @@ export function renderCardsDoc(catalog: Catalog): string {
     lines.push(`## ${name} (\`${slug}\`) — ${cards.length} cartes, ${withEffect} avec effet`, '');
     lines.push('| Carte | Rareté | Coût | Puiss. | Tags | Effet |', '|---|---|---|---|---|---|');
     for (const card of cards) {
-      const rarity = `${RARITY_LABEL[card.rarity]}${card.unique ? ' ★ 1/1' : ''}`;
+      const rarity = `${RARITY_LABEL[card.rarity]}${card.unique ? ' ★ 1/1' : ''}${card.deckable ? '' : ' · forme évoluée'}`;
       const tags = card.tags
         .filter((tag) => !tag.startsWith('universe:'))
         .map((tag) => tagLabel(catalog, tag))

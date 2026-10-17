@@ -21,6 +21,8 @@ export interface Scene {
   unmoved: ReadonlyMap<string, number>;
   // Cost changes still to come per hand card: the badge keeps the older cost until they play.
   costPending: ReadonlyMap<string, number>;
+  // Cards that transform later in the sequence: still drawn in their older form (uid → that defId).
+  untransformed: ReadonlyMap<string, string>;
   // Cards whose crisis is announced later: the Folie pill does not name it yet.
   crisisPending: ReadonlySet<string>;
   // Cards whose Protection breaks now or later: the shield is drawn until then.
@@ -40,6 +42,7 @@ export const STILL: Scene = {
   dying: new Set(),
   unmoved: new Map(),
   costPending: new Map(),
+  untransformed: new Map(),
   crisisPending: new Set(),
   shielded: new Set(),
   outcomeHeld: false,
@@ -62,6 +65,17 @@ function firstMoves(events: readonly PlayerEvent[]): Map<string, number> {
     }
   }
   return moves;
+}
+
+// The first transformation of each card still to come: the form it still has.
+function firstForms(events: readonly PlayerEvent[]): Map<string, string> {
+  const forms = new Map<string, string>();
+  for (const event of events) {
+    if (event.type === 'cardTransformed' && !forms.has(event.card)) {
+      forms.set(event.card, event.from);
+    }
+  }
+  return forms;
 }
 
 function pendingCosts(events: readonly PlayerEvent[]): Map<string, number> {
@@ -101,6 +115,7 @@ export function sceneOf(queue: Queue): Scene {
     dying: collect(withCurrent, (e) => (e.type === 'cardDestroyed' ? e.card : null)),
     unmoved: firstMoves(upcoming),
     costPending: pendingCosts(upcoming),
+    untransformed: firstForms(upcoming),
     crisisPending: collect(upcoming, (e) => (e.type === 'crisisStarted' ? e.card : null)),
     shielded: collect(withCurrent.filter(isShieldBreak), (e) => (e.type === 'statusChanged' ? e.card : null)),
     outcomeHeld: withCurrent.some((e) => e.type === 'gameEnded'),

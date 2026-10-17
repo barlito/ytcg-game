@@ -1,4 +1,4 @@
-import { DECK_SIZE } from '@ytcg-game/engine';
+import { Catalog, DECK_SIZE } from '@ytcg-game/engine';
 import { describe, expect, it } from 'vitest';
 import { readConfig, readProductionConfig } from '../src/config.ts';
 import { CatalogDeckProvider } from '../src/decks/catalog-deck-provider.ts';
@@ -19,7 +19,10 @@ function json(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 }
 
-function ytcg(answer: (call: Call) => Response | Promise<Response>): { provider: YtcgDeckProvider; calls: Call[] } {
+function ytcg(
+  answer: (call: Call) => Response | Promise<Response>,
+  gameCatalog: Catalog = catalog,
+): { provider: YtcgDeckProvider; calls: Call[] } {
   const calls: Call[] = [];
   const fetchMock = (input: string | URL | Request, init?: RequestInit): Promise<Response> => {
     const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
@@ -27,13 +30,21 @@ function ytcg(answer: (call: Call) => Response | Promise<Response>): { provider:
     calls.push(call);
     return Promise.resolve(answer(call));
   };
-  const provider = new YtcgDeckProvider(catalog, {
+  const provider = new YtcgDeckProvider(gameCatalog, {
     baseUrl: 'http://ytcg.test/',
     token: 'secret',
     fetch: fetchMock, // the mock only implements the (url, init) form the provider uses
     timeoutMs: 30,
   });
   return { provider, calls };
+}
+
+// The real catalog where the given cards are evolved forms (no real card is one yet).
+function withEvolved(ids: readonly string[]): Catalog {
+  const cards = [...catalog.cards].map(
+    ([id, card]) => [id, ids.includes(id) ? { ...card, deckable: false } : card] as const,
+  );
+  return new Catalog(new Map(cards), catalog.locations, catalog.extensions);
 }
 
 function serverDeck(cards: string[], terrainId: string | null): Record<string, unknown> {
@@ -112,6 +123,16 @@ describe('ytcg decks', () => {
     const expensive = [...catalog.cards.values()].filter((card) => card.cost >= 5).map((card) => card.id);
     const curve = ytcg(() => json(200, serverDeck(expensive.slice(0, DECK_SIZE), null)));
     await expect(curve.provider.deckFor(DISCORD, { deckId: 'd' })).rejects.toThrow('Courbe de coûts à revoir');
+  });
+
+  it('refuses an evolved form, which only enters play through a transformation', async () => {
+    const [first = '', second = ''] = cards;
+    const one = ytcg(() => json(200, serverDeck(cards, null)), withEvolved([first]));
+    await expect(one.provider.deckFor(DISCORD, { deckId: 'd' })).rejects.toThrow(
+      `« ${catalog.card(first).name} » ne peut pas être mise dans un deck : c'est une forme évoluée.`,
+    );
+    const two = ytcg(() => json(200, serverDeck(cards, null)), withEvolved([first, second]));
+    await expect(two.provider.deckFor(DISCORD, { deckId: 'd' })).rejects.toThrow('ce sont des formes évoluées');
   });
 });
 

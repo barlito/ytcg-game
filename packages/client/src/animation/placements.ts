@@ -34,6 +34,9 @@ function patchedCard(card: CardView, event: PlayerEvent): CardView {
   if (event.type === 'crisisStarted') {
     return { ...card, crisis: event.crisis };
   }
+  if (event.type === 'cardTransformed') {
+    return { ...card, defId: event.to };
+  }
   return event.type === 'statusChanged' ? { ...card, statuses: statusesAfter(card.statuses, event) } : card;
 }
 
@@ -61,7 +64,7 @@ function applyEvent(next: Map<string, Placement>, view: PlayerView, event: Playe
       card: printedCard(event.card, event.defId, event.holo),
     });
   }
-  if (event.type === 'crisisStarted' || event.type === 'statusChanged') {
+  if (event.type === 'crisisStarted' || event.type === 'statusChanged' || event.type === 'cardTransformed') {
     const known = next.get(event.card);
     if (known !== undefined) {
       next.set(event.card, { ...known, card: patchedCard(known.card, event) });

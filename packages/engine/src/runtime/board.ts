@@ -5,6 +5,7 @@ import { Rng } from '../rng.ts';
 import { MAX_HAND } from '../rules.ts';
 import { type GameEvent, type GameState, PLAYERS, type PlayerIndex } from '../state.ts';
 import { moveCard } from './move.ts';
+import { transformCard } from './transform.ts';
 import { runCrisis, startCrisis } from './crises.ts';
 import { type OngoingBonus, ongoingBonuses } from './ongoing.ts';
 import { cardMatches, inScope, onSide } from './filters.ts';
@@ -26,6 +27,10 @@ export class GameBoard implements Board {
   onMoved: (uid: string) => void = () => undefined;
   // Set by the Runtime: runs the copied onReveal abilities for the copying card.
   copyReveal: (source: AbilitySource) => void = () => undefined;
+  // Set by the Runtime: the evolved form of a card that just transformed reveals.
+  onTransformed: (uid: string) => void = () => undefined;
+  // Cards that transformed during this resolution: they cannot transform again (no loop). Not part of the state.
+  readonly transformed = new Set<string>();
   private readonly events: GameEvent[];
 
   constructor(catalog: Catalog, state: GameState, events: GameEvent[]) {
@@ -47,8 +52,13 @@ export class GameBoard implements Board {
     return cardAt(this.state, uid).owner;
   }
 
-  defIdOf(uid: string): string {
-    return cardAt(this.state, uid).defId;
+  printedDefIdOf(uid: string): string {
+    const card = cardAt(this.state, uid);
+    return card.transformedFrom ?? card.defId;
+  }
+
+  transform(uid: string, into: string): void {
+    transformCard(this, uid, into);
   }
 
   get handContext(): hand.HandContext {
@@ -101,6 +111,11 @@ export class GameBoard implements Board {
 
   hasTag(uid: string, tag: string): boolean {
     return this.definitionOf(uid).tags.includes(tag);
+  }
+
+  turnsOnBoard(uid: string): number {
+    const { revealedTurn } = cardAt(this.state, uid);
+    return revealedTurn === null ? 0 : this.state.turn - revealedTurn;
   }
 
   hasStatus(uid: string, status: StatusId): boolean {

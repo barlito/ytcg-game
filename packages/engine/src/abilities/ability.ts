@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { type Condition, type Effect, type TargetSelector, playedFilterSchema } from './board.ts';
-import { conditionSchema, createCondition } from './conditions.ts';
+import { type ConditionParams, conditionSchema, createCondition } from './conditions.ts';
 import { type EffectParams, ONGOING_EFFECTS, UNTARGETED_EFFECTS, createEffect, effectSchema } from './effects.ts';
 import { type StatusId, statusRule, statusSchema } from './statuses.ts';
 import { abilityFilters, rangeIssues, readsPower } from './filters.ts';
@@ -57,11 +57,21 @@ function triggerIssues(ability: AbilityParams): Issue[] {
   if ((ability.status !== undefined) !== (ability.trigger === 'onStatusGained')) {
     issues.push({ path: ['status'], message: '"status" goes with the onStatusGained trigger, and only with it' });
   }
-  if (ability.trigger === 'onDestroyed' && ability.target.type === 'self' && !isUntargeted(ability)) {
+  return [...issues, ...targetIssues(ability)];
+}
+
+function targetIssues(ability: AbilityParams): Issue[] {
+  const self = ability.target.type === 'self';
+  const has = (type: EffectParams['type']): boolean => ability.effect.some((effect) => effect.type === type);
+  const issues: Issue[] = [];
+  if (ability.trigger === 'onDestroyed' && self && !isUntargeted(ability)) {
     issues.push({ path: ['target'], message: 'a destroyed card cannot target itself' });
   }
-  if (ability.target.type === 'self' && ability.effect.some((effect) => effect.type === 'stealPower')) {
+  if (self && has('stealPower')) {
     issues.push({ path: ['target'], message: 'a card cannot steal power from itself' });
+  }
+  if (!self && has('transform')) {
+    issues.push({ path: ['target'], message: 'a card only transforms itself: "transform" needs target "self"' });
   }
   return issues;
 }
@@ -158,6 +168,13 @@ export function locationAbilityIssues(ability: AbilityParams): string[] {
 const LOCATION_REFUSED: Partial<Record<EffectParams['type'], string>> = {
   stealPower: 'a location has no power: no "stealPower"',
   copyReveal: 'a location plays no card: no "copyReveal"',
+  transform: 'a location never transforms: no "transform"',
+};
+
+// Conditions about the card carrying the ability ("status" is reported with onStatusGained above).
+const LOCATION_REFUSED_CONDITIONS: Partial<Record<ConditionParams['type'], string>> = {
+  location: 'a location has no owner: no "location" condition',
+  turnsOnBoard: 'a location is not played: no "turnsOnBoard" condition',
 };
 
 function locationEffectIssues(ability: AbilityParams): string[] {
@@ -174,8 +191,9 @@ function locationEffectIssues(ability: AbilityParams): string[] {
   if (abilityStatus(ability) !== null) {
     issues.push('a location never has a status: no onStatusGained trigger nor "status" condition');
   }
-  if (ability.condition?.type === 'location') {
-    issues.push('a location has no owner: no "location" condition');
+  const condition = ability.condition === undefined ? undefined : LOCATION_REFUSED_CONDITIONS[ability.condition.type];
+  if (condition !== undefined) {
+    issues.push(condition);
   }
   issues.push(...new Set(ability.effect.flatMap((effect) => LOCATION_REFUSED[effect.type] ?? [])));
   if (ability.effect.some((effect) => effect.type === 'addToHand' && effect.card === undefined)) {

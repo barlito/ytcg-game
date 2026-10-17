@@ -8,7 +8,7 @@ export interface PoolCard {
 }
 
 export interface Pool {
-  // Owned cards the game knows, by cost then name.
+  // Owned cards the game knows and a deck may hold (evolved forms are hidden), by cost then name.
   cards: PoolCard[];
   terrains: LocationDefinition[];
 }
@@ -16,7 +16,7 @@ export interface Pool {
 export function buildPool(catalog: Catalog, collection: readonly OwnedCard[]): Pool {
   const cards = collection.flatMap((owned) => {
     const definition = owned.terrain ? undefined : catalog.cards.get(owned.id);
-    return definition === undefined ? [] : [{ definition, quantity: owned.quantity, holo: owned.holoQuantity }];
+    return definition?.deckable !== true ? [] : [{ definition, quantity: owned.quantity, holo: owned.holoQuantity }];
   });
   cards.sort((a, b) => a.definition.cost - b.definition.cost || a.definition.name.localeCompare(b.definition.name));
   const terrains = collection.flatMap((owned) => {

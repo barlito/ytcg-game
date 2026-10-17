@@ -140,6 +140,37 @@ describe('card as shown by the replay', () => {
   });
 });
 
+describe('transformation replay', () => {
+  const [, evolved = ''] = catalog.cards.keys();
+  const events: PlayerEvent[] = [
+    { type: 'turnStarted', turn: 2 },
+    { type: 'cardTransformed', card: 'a', from: defId, to: evolved },
+  ];
+
+  it('keeps the older form until its step, then flips into the evolved one', () => {
+    const final = card('a', { defId: evolved });
+    expect(sceneCard(sceneAt(events, 0), final).defId).toBe(defId);
+    expect(sceneCard(sceneAt(events, 1), final).defId).toBe(evolved);
+    expect(cardFx(sceneAt(events, 1), 'a')).toMatchObject({ effect: 'transform', float: { text: 'Évolution' } });
+    expect(durationOf({ type: 'cardTransformed', card: 'a', from: defId, to: evolved }, 0)).toBe(700);
+    expect(stepsFor(events, 0, true)).toEqual([]);
+  });
+
+  it('gives a ghost the evolved form it died in', () => {
+    const first = trackPlacements(new Map(), viewWith({ you: [card('a')] }), []);
+    const next = trackPlacements(first, viewWith({ you: [] }), events.slice(1));
+    expect(next.get('a')?.card.defId).toBe(evolved);
+  });
+
+  it('has a sandbox scenario whose final view shows the new form', () => {
+    const game = buildFixture(catalog, { ...DEFAULT_OPTIONS, scenario: 'transform' }, 0);
+    const [event] = game.events;
+    expect(event?.type).toBe('cardTransformed');
+    const shown = game.view.locations.flatMap((location) => location.cards.you).find((c) => c.uid === 'y1');
+    expect(event?.type === 'cardTransformed' && shown?.defId === event.to && event.from !== event.to).toBe(true);
+  });
+});
+
 describe('placements of moves and ghosts', () => {
   it('keeps the last statuses and crisis of a card that dies, and its place in the row', () => {
     const view = viewWith({ you: [card('a'), card('b')] });

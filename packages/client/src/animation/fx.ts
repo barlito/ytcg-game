@@ -16,7 +16,8 @@ export type CardEffect =
   | 'trigger'
   | 'shield-break'
   | 'added'
-  | 'cost';
+  | 'cost'
+  | 'transform';
 
 // A card that travels: from where it stood (a move) or from the card or deck that gave it (added to hand).
 export type Flight = { kind: 'move' } | { kind: 'add'; from: string | null };
@@ -76,6 +77,7 @@ const ABOUT: Handlers = {
     flight: null,
   }),
   abilityTriggered: () => plain('trigger'),
+  cardTransformed: () => ({ effect: 'transform', float: { text: 'Évolution', tone: 'transform' }, flight: null }),
   cardAddedToHand: (event) => ({ effect: 'added', float: null, flight: { kind: 'add', from: event.from ?? null } }),
 };
 
@@ -136,9 +138,10 @@ export function costView(scene: Scene, card: CardView): { shown: number; flow: C
   return { shown, flow: null };
 }
 
-// The card as the replay shows it: the crisis name and the shield appear and go at their own step.
+// The card as the replay shows it: the crisis name, the shield and the evolved form appear at their own step.
 export function sceneCard(scene: Scene, card: CardView): CardView {
   const crisis = scene.crisisPending.has(card.uid) ? null : card.crisis;
   const shield = scene.shielded.has(card.uid) && (card.statuses.protected ?? 0) === 0;
-  return { ...card, crisis, statuses: shield ? { ...card.statuses, protected: 1 } : card.statuses };
+  const defId = scene.untransformed.get(card.uid) ?? card.defId;
+  return { ...card, defId, crisis, statuses: shield ? { ...card.statuses, protected: 1 } : card.statuses };
 }

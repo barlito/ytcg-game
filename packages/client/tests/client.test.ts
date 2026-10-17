@@ -49,6 +49,13 @@ describe('game log', () => {
     );
   });
 
+  it('logs a transformation with both forms', () => {
+    const [, other = ''] = catalog.cards.keys();
+    expect(describeEvent({ type: 'cardTransformed', card: 'p1c3', from: defId, to: other }, known, seats)).toBe(
+      `${name} se transforme en ${catalog.card(other).name}.`,
+    );
+  });
+
   it('logs the crisis drawn by a card gone mad', () => {
     expect(describeEvent({ type: 'crisisStarted', card: 'p1c3', crisis: 'implosion' }, known, seats)).toBe(
       `${name} est prise de folie : Implosion.`,
