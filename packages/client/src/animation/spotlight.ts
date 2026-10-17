@@ -92,6 +92,12 @@ export function spotlightContent(
   return { kind: 'location', defId, owner: terrainOwner(view, event.location, seats), text };
 }
 
+// The turn being resolved: the view already shows the next turn while the replay still plays its turnStarted.
+export function resolvedTurn(viewTurn: number, unplayed: readonly PlayerEvent[]): number {
+  const next = unplayed.find((event) => event.type === 'turnStarted');
+  return next?.type === 'turnStarted' ? next.turn - 1 : viewTurn;
+}
+
 // The board element the enlarged card flies to (data attributes set by CardButton and LocationHeader).
 export function spotlightTarget(event: SpotlightEvent): string {
   return event.type === 'cardRevealed'
