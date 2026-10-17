@@ -1062,6 +1062,31 @@ describe('status registry', () => {
   });
 });
 
+describe('random bots on the phase 6 building blocks', () => {
+  const pool = [...phase6.cards.keys()].filter((id) => !id.startsWith('filler'));
+
+  it('finish games and keep the invariants', () => {
+    for (let game = 0; game < 30; game++) {
+      const rng = new Rng({ s: game + 100 });
+      const decks = [0, 1].map(() => deckOf(rng.shuffle([...pool]).slice(0, 8), phase6));
+      let state = createGame(phase6, {
+        seed: `phase6-${game}`,
+        players: [
+          { id: 'alice', deck: decks[0] ?? [] },
+          { id: 'bob', deck: decks[1] ?? [] },
+        ],
+        locations: ['loc-haze', 'loc-a', 'loc-b'],
+      }).state;
+      while (state.status === 'playing') {
+        state = playRandomTurn(phase6, state, 0, rng);
+        state = playRandomTurn(phase6, state, 1, rng);
+        expect(checkInvariants(state)).toEqual([]);
+      }
+      expect(state.result).not.toBeNull();
+    }
+  });
+});
+
 describe('random bots on the building blocks', () => {
   const pool = [...catalog.cards.keys()].filter((id) => !id.startsWith('filler'));
 
