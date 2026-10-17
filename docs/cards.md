@@ -211,15 +211,15 @@
 
 | Carte | Rareté | Coût | Puiss. | Tags | Effet |
 |---|---|---|---|---|---|
-| Jean Raoulz | légendaire | 5 | 5 | Jean Raoul | À la révélation : rend les autres cartes Psychedelic sur le plateau défoncées. |
-| Warnyx | légendaire | 6 | 7 | Warny | À la révélation : rend une autre carte non défoncée ici au hasard défoncée.<br>À la révélation : +2 puissance par autre carte défoncée alliée ici. |
-| Benjamen | rare | 3 | 3 | Benj | À la révélation : rend les autres cartes défoncées ici folles.<br>Folle : +1 puissance par autre carte folle ici. |
-| Farf | rare | 4 | 5 | Farf | En fin de tour : si tu perds ce lieu, retire la Défonce et l'Ivresse des autres cartes alliées ici et leur donne +1 puissance. |
-| Julieng | peu commune | 2 | 2 | Julian | En continu : +1 puissance par carte Linette défoncée sur le plateau. |
-| Barlito Waa | peu commune | 3 | 3 | Barlito | Coriace (ne peut être ni détruite ni affaiblie).<br>À la révélation : devient défoncée (×3). |
-| Babou Linette | commune | 1 | 1 | Babou Linette, Linette | En continu : +1 puissance par carte défoncée ennemie ici. |
-| Bébou Linette | commune | 1 | 1 | Bebou Linette, Linette | À la révélation : rend la carte ennemie la plus forte ici défoncée (×2). |
-| Bibou Linette | commune | 1 | 1 | Bibou Linette, Linette | En continu : +1 puissance par autre carte défoncée alliée sur le plateau. |
+| Jean Raoulz | légendaire | 5 | 5 | Jean Raoul | À la révélation : rend les cartes Psychedelic sur le plateau défoncées.<br>Défoncée : +2 puissance. |
+| Warnyx | légendaire | 6 | 7 | Warny | À la révélation : rend une autre carte ici au hasard défoncée.<br>À la révélation : +2 puissance par autre carte défoncée alliée ici.<br>Défoncée : +2 puissance. |
+| Benjamen | rare | 3 | 3 | Benj | En fin de tour : rend les autres cartes défoncées ici folles.<br>Folle : +1 puissance par autre carte folle ici.<br>Défoncée : +2 puissance. |
+| Farf | rare | 4 | 5 | Farf | En fin de tour : si tu perds ce lieu, retire l'Ivresse, la Folie et le Sommeil des autres cartes alliées ici et leur donne +1 puissance.<br>En fin de tour : si tu gagnes ce lieu, rend une autre carte ici au hasard défoncée.<br>Défoncée : +2 puissance. |
+| Julieng | peu commune | 2 | 2 | Julian | En continu : +1 puissance par carte Linette défoncée sur le plateau.<br>Défoncée : +2 puissance. |
+| Barlito Waa | peu commune | 3 | 3 | Barlito | Coriace (ne peut être ni détruite ni affaiblie).<br>À la révélation : devient défoncée.<br>Défoncée : +1 puissance par cumul de Défonce. |
+| Babou Linette | commune | 1 | 1 | Babou Linette, Linette | En continu : +1 puissance par autre carte défoncée ici.<br>Défoncée : +2 puissance. |
+| Bébou Linette | commune | 1 | 1 | Bebou Linette, Linette | À la révélation : rend une autre carte alliée ici au hasard défoncée.<br>Défoncée : +2 puissance. |
+| Bibou Linette | commune | 1 | 1 | Bibou Linette, Linette | En continu : +1 puissance par autre carte défoncée alliée sur le plateau.<br>Défoncée : +2 puissance. |
 | Velo | commune | 1 | 1 | Veli | À la révélation : s'il n'y a aucune autre carte alliée ici, devient défoncée.<br>Défoncée : +3 puissance. |
 
 ## Replicant (`replicant`) — 15 cartes, 15 avec effet

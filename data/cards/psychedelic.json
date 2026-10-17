@@ -23,9 +23,20 @@
             "type": "addPowerPerCard",
             "amount": 1,
             "count": {
-              "side": "enemy",
+              "side": "all",
               "status": "high"
             }
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
           }
         }
       ],
@@ -50,8 +61,19 @@
           "trigger": "onReveal",
           "effect": {
             "type": "addStatus",
-            "status": "high",
-            "stacks": 3
+            "status": "high"
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPowerPerStack",
+            "amount": 1,
+            "status": "high"
           }
         }
       ],
@@ -74,13 +96,22 @@
           "trigger": "onReveal",
           "target": {
             "type": "cards",
-            "side": "enemy",
-            "pick": "strongest"
+            "pick": "random"
           },
           "effect": {
             "type": "addStatus",
-            "status": "high",
-            "stacks": 2
+            "status": "high"
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
           }
         }
       ],
@@ -99,7 +130,7 @@
       ],
       "abilities": [
         {
-          "trigger": "onReveal",
+          "trigger": "endOfTurn",
           "target": {
             "type": "cards",
             "side": "all",
@@ -123,6 +154,17 @@
               "side": "all",
               "status": "mad"
             }
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
           }
         }
       ],
@@ -150,6 +192,17 @@
               "scope": "everywhere",
               "status": "high"
             }
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
           }
         }
       ],
@@ -180,8 +233,9 @@
             {
               "type": "removeStatus",
               "statuses": [
-                "high",
-                "drunk"
+                "drunk",
+                "mad",
+                "asleep"
               ]
             },
             {
@@ -189,6 +243,33 @@
               "amount": 1
             }
           ]
+        },
+        {
+          "trigger": "endOfTurn",
+          "condition": {
+            "type": "location",
+            "result": "winning"
+          },
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "pick": "random"
+          },
+          "effect": {
+            "type": "addStatus",
+            "status": "high"
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
         }
       ],
       "mask": "farf-mask-background-6a78a80005905121836309.png"
@@ -211,11 +292,23 @@
             "type": "cards",
             "side": "all",
             "scope": "everywhere",
-            "tag": "universe:psychedelic"
+            "tag": "universe:psychedelic",
+            "includeSelf": true
           },
           "effect": {
             "type": "addStatus",
             "status": "high"
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
           }
         }
       ],
@@ -246,6 +339,17 @@
               "status": "high",
               "includeSelf": true
             }
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
           }
         }
       ],
@@ -306,7 +410,6 @@
           "target": {
             "type": "cards",
             "side": "all",
-            "withoutStatus": "high",
             "pick": "random"
           },
           "effect": {
@@ -322,6 +425,17 @@
             "count": {
               "status": "high"
             }
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
           }
         }
       ],
