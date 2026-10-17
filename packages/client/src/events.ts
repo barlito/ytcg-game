@@ -24,8 +24,8 @@ function statusLine(name: string, event: Extract<PlayerEvent, { type: 'statusCha
 }
 
 function transformLine(event: Extract<PlayerEvent, { type: 'cardTransformed' }>): string {
-  const name = (defId: string): string => catalog.cards.get(defId)?.name ?? 'une carte';
-  return `${name(event.from)} se transforme en ${name(event.to)}.`;
+  const name = (defId: string, fallback: string): string => catalog.cards.get(defId)?.name ?? fallback;
+  return `${name(event.from, 'Une carte')} se transforme en ${name(event.to, 'une autre carte')}.`;
 }
 
 function crisisLine(name: string, event: Extract<PlayerEvent, { type: 'crisisStarted' }>): string {
