@@ -19,8 +19,8 @@ const TRIGGER_TEXT = {
 } as const;
 
 const LOCATION_RESULT_TEXT = {
-  winning: 'si vous gagnez ce lieu',
-  losing: 'si vous perdez ce lieu',
+  winning: 'si tu gagnes ce lieu',
+  losing: 'si tu perds ce lieu',
   tied: 'si ce lieu est à égalité',
 } as const;
 

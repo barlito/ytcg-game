@@ -103,7 +103,7 @@ Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de no
 |---|---|---|
 | `count` | filtre + `min` (défaut 1), `max` | « s'il y a un autre Benj ici » : `{ "type": "count", "tag": "character:benj" }` |
 | `turn` | `min`, `max` | « à partir du tour 4 » : `{ "type": "turn", "min": 4 }` |
-| `location` | `result` : `winning`, `losing`, `tied` | « si vous gagnez ce lieu » : `{ "type": "location", "result": "winning" }` : le propriétaire de la carte gagne / perd / est à égalité au lieu de la carte (somme des puissances, au moment où la capacité se résout). Cartes seulement ; **jamais `ongoing`** (elle lit la puissance) |
+| `location` | `result` : `winning`, `losing`, `tied` | « si tu gagnes ce lieu » : `{ "type": "location", "result": "winning" }` : le propriétaire de la carte gagne / perd / est à égalité au lieu de la carte (somme des puissances, au moment où la capacité se résout). Cartes seulement ; **jamais `ongoing`** (elle lit la puissance) |
 | `status` | `status` | « cette carte est défoncée » : `{ "type": "status", "status": "high" }` (cartes seulement, avec n'importe quel déclencheur ; remplace la règle par défaut de l'état, voir États) |
 
 ## Cibles (`target`, défaut `self`)

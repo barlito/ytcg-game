@@ -360,8 +360,8 @@ describe('text of the building blocks', () => {
 
   it('writes the location result condition', () => {
     expect(describeCard(bricks, bricks.card('judge'))).toEqual([
-      'En fin de tour : si vous gagnez ce lieu, +1 puissance.',
-      'À la révélation : si vous perdez ce lieu, pioche 1 carte.',
+      'En fin de tour : si tu gagnes ce lieu, +1 puissance.',
+      'À la révélation : si tu perds ce lieu, pioche 1 carte.',
       'Quand elle se déplace : si ce lieu est à égalité, +2 puissance.',
     ]);
   });
