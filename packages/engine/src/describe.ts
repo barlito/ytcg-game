@@ -122,7 +122,7 @@ function describeCondition(context: Context, condition: ConditionParams): string
 }
 
 function describeCount(context: Context, condition: Extract<ConditionParams, { type: 'count' }>): string {
-  const { min, max } = condition;
+  const { min = 1, max } = condition;
   if (max === 0) {
     return `s'il n'y a aucune ${cards(context, condition, false)} ${scope(condition)}`;
   }

@@ -8,6 +8,11 @@ const catalog = catalogWith(
     card('v1'),
     card('v2'),
     card('giant', { power: 5 }),
+    card('loner', {
+      abilities: [
+        { trigger: 'ongoing', condition: { type: 'count', max: 0 }, effect: { type: 'addPower', amount: 3 } },
+      ],
+    }),
     card('benj-fan', {
       abilities: [
         {
@@ -171,6 +176,14 @@ describe('ongoing', () => {
     expect(powerAt(catalog, next, 0, 'captain')).toBe(1);
     expect(powerAt(catalog, next, 0, 'v2')).toBe(1);
     expect(powerAt(catalog, next, 1, 'benj')).toBe(1);
+  });
+
+  it('meets a count with max 0 alone (no other ally here)', () => {
+    const state = newGame(catalog, { p0: ['loner', 'v1'] });
+    const alone = playTurn(catalog, state, { p0: [['loner', 0]] }).state;
+    expect(powerAt(catalog, alone, 0, 'loner')).toBe(1 + 3);
+    const crowded = playTurn(catalog, alone, { p0: [['v1', 0]] }).state;
+    expect(powerAt(catalog, crowded, 0, 'loner')).toBe(1);
   });
 
   it('counts tagged cards everywhere, live', () => {
