@@ -3,6 +3,7 @@ import { cardFx, costView, explodes, sceneCard } from '../../animation/fx.ts';
 import { useScene } from '../../animation/useReplay.ts';
 import { catalog } from '../../catalog.ts';
 import type { FanPose } from '../../lib/fan.ts';
+import { handTip } from '../../lib/handTip.ts';
 import { DraggableCard } from '../dnd/DraggableCard.tsx';
 import { CardButton } from './CardButton.tsx';
 import { CardBack, CardFace } from './CardFace.tsx';
@@ -95,7 +96,8 @@ export function HandCard({ card, playable, selected, pose, narrow, onSelect }: H
       className={classes.join(' ')}
       style={{ '--fan': `${String(pose.angle)}deg`, '--fan-y': pose.offset } as React.CSSProperties}
       label={`${labelOf(card)}${playable ? '' : ', pas jouable maintenant'}`}
-      pinned={selected}
+      pinned={selected && narrow}
+      tip={handTip(selected, narrow)}
       disabled={!playable}
       onClick={
         playable

@@ -214,7 +214,8 @@
 
 .tooltip {
   position: fixed;
-  z-index: 60;
+  /* Under the reveal spotlight (45): a card tooltip left open never shows over it. */
+  z-index: 44;
   left: 0;
   top: 0;
   visibility: hidden;
