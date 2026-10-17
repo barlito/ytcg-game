@@ -1,13 +1,27 @@
 import { describe, expect, it } from 'vitest';
 import {
   CatalogError,
+  Rng,
+  checkInvariants,
+  createGame,
   type GameState,
   type PlayerIndex,
   type StatusId,
   describeCard,
   locationPowers,
 } from '../src/index.ts';
-import { type CardInput, type LocationInput, card, catalogWith, newGame, playTurn, powerAt, uidOf } from './support.ts';
+import {
+  type CardInput,
+  type LocationInput,
+  card,
+  catalogWith,
+  deckOf,
+  newGame,
+  playTurn,
+  powerAt,
+  uidOf,
+} from './support.ts';
+import { playRandomTurn } from '../src/sim/bot.ts';
 
 const CHARMER = 'trait:charmeur';
 const enemiesHere = { type: 'cards', side: 'enemy' } as const;
@@ -420,5 +434,30 @@ describe('copyReveal', () => {
     expect(describeCard(catalog, catalog.card('mimic'))).toEqual([
       "À la révélation : copie l'effet de révélation de la dernière carte alliée jouée ici.",
     ]);
+  });
+});
+
+describe('random bots on the phase 6b building blocks', () => {
+  const pool = [...catalog.cards.keys()].filter((id) => !id.startsWith('filler'));
+
+  it('finish games and keep the invariants', () => {
+    for (let game = 0; game < 30; game++) {
+      const rng = new Rng({ s: game + 600 });
+      const decks = [0, 1].map(() => deckOf(rng.shuffle([...pool]).slice(0, 8), catalog));
+      let state = createGame(catalog, {
+        seed: `phase6b-${game}`,
+        players: [
+          { id: 'alice', deck: decks[0] ?? [] },
+          { id: 'bob', deck: decks[1] ?? [] },
+        ],
+        locations: ['loc-a', 'loc-b', 'loc-c'],
+      }).state;
+      while (state.status === 'playing') {
+        state = playRandomTurn(catalog, state, 0, rng);
+        state = playRandomTurn(catalog, state, 1, rng);
+        expect(checkInvariants(state)).toEqual([]);
+      }
+      expect(state.result).not.toBeNull();
+    }
   });
 });
