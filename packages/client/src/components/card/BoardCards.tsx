@@ -27,14 +27,15 @@ export function BoardCard({ card, own, ghost = false }: BoardProps): React.JSX.E
   };
   const hidden = fx.faceDown && !own;
   const classes = ['on-board', ghost ? 'is-ghost' : '', fx.faceDown && own ? 'is-pending' : ''];
+  const shown = sceneCard(scene, card);
   return (
     <CardButton
-      card={card}
+      card={shown}
       fx={{ ...fx, faceDown: hidden }}
       className={classes.join(' ')}
-      label={hidden ? 'Carte face cachée' : labelOf(card)}
+      label={hidden ? 'Carte face cachée' : labelOf(shown)}
     >
-      {hidden ? <CardBack /> : <CardFace card={sceneCard(scene, card)} size="compact" effect={fx.effect} />}
+      {hidden ? <CardBack /> : <CardFace card={shown} size="compact" effect={fx.effect} />}
     </CardButton>
   );
 }

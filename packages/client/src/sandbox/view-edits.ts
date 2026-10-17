@@ -1,4 +1,5 @@
 import type { CardView, CrisisId, PlayerView, StatusId } from '@ytcg-game/engine';
+import { catalog } from '../catalog.ts';
 
 // Pure edits of a fabricated view, for the sandbox scenarios.
 type Statuses = Partial<Record<StatusId, number>>;
@@ -38,6 +39,19 @@ export const powered = (delta: number) => (card: CardView) => ({
   power: Math.max(0, card.power + delta),
   breakdown: { ...card.breakdown, modifier: card.breakdown.modifier + delta },
 });
+
+// The card in another form: printed cost and power of that form, permanent modifier and ongoing bonuses kept.
+export const evolved = (defId: string) => (card: CardView) => {
+  const { cost, power } = catalog.card(defId);
+  const ongoing = card.breakdown.ongoing.reduce((sum, bonus) => sum + bonus.amount, 0);
+  return {
+    ...card,
+    defId,
+    cost,
+    power: power + card.breakdown.modifier + ongoing,
+    breakdown: { ...card.breakdown, printed: power },
+  };
+};
 
 export const withStatuses =
   (statuses: Statuses, crisis: CrisisId | null = null) =>

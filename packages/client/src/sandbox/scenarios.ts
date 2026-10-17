@@ -1,6 +1,6 @@
 import type { CardView, CrisisId, PlayerEvent, PlayerView, StatusId } from '@ytcg-game/engine';
 import { TERRAIN_CLOSED, TERRAIN_OPENS, TERRAIN_THREE } from './terrains.ts';
-import { find, patch, powered, relocate, remove, withStatuses, withTerrain } from './view-edits.ts';
+import { evolved, find, patch, powered, relocate, remove, withStatuses, withTerrain } from './view-edits.ts';
 
 // Each scenario turns the base board into the FINAL view of a fabricated resolution, plus the events the replay plays.
 export interface Outcome {
@@ -169,7 +169,7 @@ export const SCENARIOS: Record<ScenarioId, Scenario> = {
       const from = find(view, 'y1').defId;
       const to = find(view, 'o1').defId;
       return {
-        view: patch(view, 'y1', (card) => ({ ...card, defId: to })),
+        view: patch(view, 'y1', evolved(to)),
         events: [{ type: 'cardTransformed', card: 'y1', from, to }],
       };
     },
