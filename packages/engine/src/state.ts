@@ -107,7 +107,12 @@ export type GameEvent =
   | { type: 'contagionSpread'; from: string; to: string }
   // `spent`: a shield status (Protection) paid a stack to cancel a destruction or a power loss.
   | { type: 'statusChanged'; card: string; status: StatusId; stacks: number; spent?: true }
-  // A reaction ability (onCardPlayedHere, onDestroyed) of a card or a location is about to apply its effects.
-  | { type: 'abilityTriggered'; trigger: 'onCardPlayedHere' | 'onDestroyed'; card: string | null; location: number }
+  // A reaction ability (onCardPlayedHere, onDestroyed, onMoved) of a card or a location is about to apply its effects.
+  | {
+      type: 'abilityTriggered';
+      trigger: 'onCardPlayedHere' | 'onDestroyed' | 'onMoved';
+      card: string | null;
+      location: number;
+    }
   | { type: 'crisisStarted'; card: string; crisis: CrisisId }
   | { type: 'gameEnded'; result: GameResult };

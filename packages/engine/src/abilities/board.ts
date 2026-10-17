@@ -14,6 +14,12 @@ export const cardFilterShape = {
   tag: tagSchema.optional(),
   status: statusSchema.optional(),
   includeSelf: z.boolean().default(false),
+  // Printed cost of the card definition.
+  minCost: z.number().int().min(0).optional(),
+  maxCost: z.number().int().min(0).optional(),
+  // Current power: reads power, so never inside an ongoing ability.
+  minPower: z.number().int().optional(),
+  maxPower: z.number().int().optional(),
 };
 
 export const cardFilterSchema = z.object(cardFilterShape);
@@ -48,6 +54,7 @@ export interface BoardView {
   cardsMatching(source: AbilitySource, filter: CardFilter): string[];
   power(card: string): number;
   hasStatus(card: string, status: StatusId): boolean;
+  hasTag(card: string, tag: string): boolean;
 }
 
 // What effects may do on top of reading.
@@ -55,10 +62,12 @@ export interface Board extends BoardView {
   readonly rng: Rng;
   // Adds an event that is not a state change by itself (announcements for the animation).
   recordEvent(event: GameEvent): void;
-  addPower(card: string, delta: number): void;
+  // Returns the change really applied (0 when Coriace or Protection stopped a loss).
+  addPower(card: string, delta: number): number;
   draw(player: PlayerIndex, count: number): void;
   destroy(card: string): void;
-  addStatus(card: string, status: StatusId, stacks: number): void;
+  // `by`: owner of the card applying it (null for a terrain); a Protection absorbs a status put by the enemy.
+  addStatus(card: string, status: StatusId, stacks: number, by: PlayerIndex | null): void;
   // null removes every status.
   removeStatus(card: string, status: StatusId | null): void;
   // Moves a board card to another location of its side that has a free place; nothing happens without one.
@@ -69,8 +78,8 @@ export interface Board extends BoardView {
   // Adds a new copy of a catalog card to the hand (nothing when the hand is full).
   // `from`: the card carrying the ability, when there is one (the animation flies the new card from it).
   addToHand(player: PlayerIndex, defId: string, from?: string): void;
-  // A card just went mad: fires its onMad abilities, or draws its crisis when it has no madness effect of its own.
-  becomeMad(card: string): void;
+  // A card following the default rule of Folie just went mad: draws its crisis.
+  startCrisis(card: string): void;
   // Id of the definition of a board card.
   defIdOf(card: string): string;
 }

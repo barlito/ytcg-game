@@ -14,6 +14,9 @@ export function hasRule(card: CardInstance, rule: 'preventsDestroy' | 'preventsP
 }
 
 // The status that cancels this loss by spending one of its stacks, if any.
-export function absorbingStatus(card: CardInstance, rule: 'absorbsDestroy' | 'absorbsPowerLoss'): StatusId | null {
+export function absorbingStatus(
+  card: CardInstance,
+  rule: 'absorbsDestroy' | 'absorbsPowerLoss' | 'absorbsEnemyStatus',
+): StatusId | null {
   return activeStatuses(card).find((status) => statusRule(status)[rule] === true) ?? null;
 }

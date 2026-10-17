@@ -144,6 +144,9 @@ describe('text of the building blocks', () => {
           { trigger: 'onCardPlayedHere', played: { side: 'enemy', status: 'high' }, effect: { type: 'draw' } },
         ],
       }),
+      card('sprinter', {
+        abilities: [{ trigger: 'onMoved', effect: { type: 'addPower', amount: 2 } }],
+      }),
       card('phoenix', {
         abilities: [
           { trigger: 'onDestroyed', effect: { type: 'addToHand', count: 2 } },
@@ -159,6 +162,122 @@ describe('text of the building blocks', () => {
         ],
       }),
       card('drunkard', { statuses: ['drunk', 'protected', 'overheat'] }),
+      card('thief', {
+        abilities: [
+          {
+            trigger: 'onReveal',
+            target: { type: 'cards', side: 'enemy', pick: 'strongest' },
+            effect: { type: 'stealPower', amount: 2 },
+          },
+          {
+            trigger: 'endOfTurn',
+            target: { type: 'cards', side: 'enemy' },
+            effect: [
+              { type: 'addStatus', status: 'high' },
+              { type: 'stealPower', amount: 1 },
+            ],
+          },
+        ],
+      }),
+      card('judge', {
+        abilities: [
+          {
+            trigger: 'endOfTurn',
+            condition: { type: 'location', result: 'winning' },
+            effect: { type: 'addPower', amount: 1 },
+          },
+          { trigger: 'onReveal', condition: { type: 'location', result: 'losing' }, effect: { type: 'draw' } },
+          {
+            trigger: 'onMoved',
+            condition: { type: 'location', result: 'tied' },
+            effect: { type: 'addPower', amount: 2 },
+          },
+        ],
+      }),
+      card('picky', {
+        abilities: [
+          {
+            trigger: 'onReveal',
+            target: { type: 'cards', side: 'enemy', maxCost: 1, minCost: 1 },
+            effect: { type: 'destroy' },
+          },
+          {
+            trigger: 'onReveal',
+            condition: { type: 'count', side: 'all', scope: 'everywhere', minPower: 9 },
+            effect: { type: 'addPower', amount: 2 },
+          },
+          {
+            trigger: 'endOfTurn',
+            effect: { type: 'addPowerPerCard', amount: 1, count: { minCost: 2, maxCost: 4, maxPower: 3 } },
+          },
+          {
+            trigger: 'onReveal',
+            target: { type: 'cards', side: 'enemy', minCost: 5, minPower: 2, maxPower: 4 },
+            effect: { type: 'destroy' },
+          },
+        ],
+      }),
+      card('medic', {
+        abilities: [
+          {
+            trigger: 'onReveal',
+            target: { type: 'cards' },
+            effect: { type: 'removeStatus', statuses: ['high', 'overheat'] },
+          },
+          { trigger: 'onReveal', effect: { type: 'removeStatus', statuses: ['drunk', 'mad', 'high'] } },
+          {
+            trigger: 'endOfTurn',
+            target: { type: 'cards', pick: 'weakest' },
+            effect: [
+              { type: 'addPower', amount: 1 },
+              { type: 'removeStatus', statuses: ['drunk'] },
+            ],
+          },
+        ],
+      }),
+      card('stoker', {
+        abilities: [
+          {
+            trigger: 'onReveal',
+            target: { type: 'cards', side: 'enemy' },
+            effect: { type: 'addStatus', status: 'overheat', stacks: 2 },
+          },
+          {
+            trigger: 'onReveal',
+            target: { type: 'cards', side: 'all' },
+            effect: { type: 'addStatus', status: 'overheat', anyCard: true },
+          },
+          {
+            trigger: 'endOfTurn',
+            target: { type: 'cards', pick: 'random' },
+            effect: [
+              { type: 'addPower', amount: 1 },
+              { type: 'addStatus', status: 'overheat' },
+            ],
+          },
+        ],
+      }),
+      card('tripper', {
+        statuses: ['overheat'],
+        abilities: [
+          {
+            trigger: 'ongoing',
+            condition: { type: 'status', status: 'high' },
+            effect: { type: 'addPower', amount: 3 },
+          },
+          {
+            trigger: 'endOfTurn',
+            condition: { type: 'status', status: 'high' },
+            effect: { type: 'addPower', amount: 1 },
+          },
+          { trigger: 'onStatusGained', status: 'drunk', effect: { type: 'draw' } },
+          {
+            trigger: 'ongoing',
+            condition: { type: 'status', status: 'overheat' },
+            effect: { type: 'addPower', amount: 1 },
+          },
+        ],
+      }),
     ],
     [
       {
@@ -190,6 +309,7 @@ describe('text of the building blocks', () => {
   });
 
   it('writes destruction triggers and cards added to hand', () => {
+    expect(describeCard(bricks, bricks.card('sprinter'))).toEqual(['Quand elle se déplace : +2 puissance.']);
     expect(describeCard(bricks, bricks.card('phoenix'))).toEqual([
       'Quand cette carte est détruite : ajoute 2 copies de cette carte en main.',
       'Quand cette carte est détruite : pioche 1 carte et ajoute « benj » en main.',
@@ -211,6 +331,56 @@ describe('text of the building blocks', () => {
     expect(lines[0]).toContain('Ivresse');
     expect(lines[1]).toContain('Protection');
     expect(lines[2]).toContain('Surchauffe');
+  });
+
+  it('writes per-status abilities, and drops the default rule a card replaces', () => {
+    expect(describeCard(bricks, bricks.card('tripper'))).toEqual([
+      'Surchauffe.',
+      'Défoncée : +3 puissance.',
+      'En fin de tour, si elle est défoncée : +1 puissance.',
+      'Quand elle devient ivre : pioche 1 carte.',
+      'Surchauffée : +1 puissance.',
+    ]);
+  });
+
+  it('says that Surchauffe only lands on machines, unless forced', () => {
+    expect(describeCard(bricks, bricks.card('stoker'))).toEqual([
+      'À la révélation : rend les cartes ennemies ici surchauffées (×2) (machines seulement).',
+      'À la révélation : rend les autres cartes ici surchauffées.',
+      'En fin de tour : +1 puissance à une autre carte alliée ici au hasard et la rend surchauffée (machines seulement).',
+    ]);
+  });
+
+  it('writes power steals', () => {
+    expect(describeCard(bricks, bricks.card('thief'))).toEqual([
+      'À la révélation : vole 2 puissance à la carte ennemie la plus forte ici.',
+      'En fin de tour : rend les cartes ennemies ici défoncées et leur vole 1 puissance.',
+    ]);
+  });
+
+  it('writes the location result condition', () => {
+    expect(describeCard(bricks, bricks.card('judge'))).toEqual([
+      'En fin de tour : si tu gagnes ce lieu, +1 puissance.',
+      'À la révélation : si tu perds ce lieu, pioche 1 carte.',
+      'Quand elle se déplace : si ce lieu est à égalité, +2 puissance.',
+    ]);
+  });
+
+  it('writes cost and power filters', () => {
+    expect(describeCard(bricks, bricks.card('picky'))).toEqual([
+      'À la révélation : détruit les cartes ennemies à 1 de coût ici.',
+      "À la révélation : s'il y a une autre carte avec 9 de puissance ou plus sur le plateau, +2 puissance.",
+      'En fin de tour : +1 puissance par autre carte alliée de 2 à 4 de coût avec 3 de puissance ou moins ici.',
+      'À la révélation : détruit les cartes ennemies à 5 de coût ou plus avec 2 à 4 de puissance ici.',
+    ]);
+  });
+
+  it('lists the removed statuses', () => {
+    expect(describeCard(bricks, bricks.card('medic'))).toEqual([
+      'À la révélation : retire la Défonce et la Surchauffe des autres cartes alliées ici.',
+      "À la révélation : retire l'Ivresse, la Folie et la Défonce de cette carte.",
+      "En fin de tour : +1 puissance à l'autre carte alliée la plus faible ici et lui retire l'Ivresse.",
+    ]);
   });
 
   it('writes location rules and their abilities', () => {

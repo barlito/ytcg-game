@@ -6,15 +6,16 @@ import {
   type MoveDestination,
   isOngoingEffect,
 } from '../abilities/board.ts';
-import { STATUS_IDS, type StatusId, statusRule } from '../abilities/statuses.ts';
+import type { StatusId } from '../abilities/statuses.ts';
 import type { CardDefinition, Catalog } from '../catalog.ts';
 import { Rng } from '../rng.ts';
 import { MAX_HAND } from '../rules.ts';
 import { type GameEvent, type GameState, PLAYERS, type PlayerIndex } from '../state.ts';
 import { moveCard } from './move.ts';
 import { crisisBonus, runCrisis, startCrisis } from './crises.ts';
-import { inScope, onSide } from './filters.ts';
+import { cardMatches, inScope, onSide } from './filters.ts';
 import * as hand from './hand.ts';
+import * as statusChanges from './status-changes.ts';
 import { cardAt, locationAt } from './state-access.ts';
 import { absorbingStatus, hasRule, stacksOf } from './statuses.ts';
 
@@ -35,8 +36,10 @@ export class GameBoard implements Board {
   readonly rng: Rng;
   // Set by the Runtime: fires the "destroyed" abilities of a card once it left the board.
   onDestroyed: (uid: string) => void = () => undefined;
-  // Set by the Runtime: fires the onMad abilities of a card that just went mad.
-  onMad: (uid: string) => void = () => undefined;
+  // Set by the Runtime: fires the onStatusGained abilities of a card that just got a status.
+  onStatusGained: (uid: string, status: StatusId) => void = () => undefined;
+  // Set by the Runtime: fires the onMoved abilities of a card that just moved.
+  onMoved: (uid: string) => void = () => undefined;
   private readonly events: GameEvent[];
 
   constructor(catalog: Catalog, state: GameState, events: GameEvent[]) {
@@ -72,7 +75,7 @@ export class GameBoard implements Board {
         return [];
       }
       return PLAYERS.filter((player) => onSide(filter, source, player)).flatMap((player) =>
-        location.cards[player].filter((uid) => this.matches(uid, source, filter)),
+        location.cards[player].filter((uid) => cardMatches(this, uid, source, filter)),
       );
     });
   }
@@ -117,15 +120,16 @@ export class GameBoard implements Board {
     return { owner: card.owner, location: card.location, card: uid };
   }
 
+  hasTag(uid: string, tag: string): boolean {
+    return this.definitionOf(uid).tags.includes(tag);
+  }
+
   hasStatus(uid: string, status: StatusId): boolean {
     return stacksOf(cardAt(this.state, uid), status) > 0;
   }
 
-  becomeMad(uid: string): void {
+  startCrisis(uid: string): void {
     startCrisis(this, uid);
-    if (cardAt(this.state, uid).zone === 'board') {
-      this.onMad(uid);
-    }
   }
 
   runCrisis(uid: string): void {
@@ -137,18 +141,19 @@ export class GameBoard implements Board {
     return this.state.locations.map((location): [number, number] => [sum(location.cards[0]), sum(location.cards[1])]);
   }
 
-  addPower(uid: string, delta: number): void {
+  addPower(uid: string, delta: number): number {
     const card = cardAt(this.state, uid);
     if (card.zone !== 'board' || delta === 0 || (delta < 0 && hasRule(card, 'preventsPowerLoss'))) {
-      return;
+      return 0;
     }
     const shield = delta < 0 ? absorbingStatus(card, 'absorbsPowerLoss') : null;
     if (shield !== null) {
-      this.spendStack(uid, shield);
-      return;
+      statusChanges.spendStack(this, uid, shield);
+      return 0;
     }
     card.powerModifier += delta;
     this.events.push({ type: 'powerChanged', card: uid, delta });
+    return delta;
   }
 
   draw(player: PlayerIndex, count: number): void {
@@ -172,7 +177,7 @@ export class GameBoard implements Board {
     }
     const shield = absorbingStatus(card, 'absorbsDestroy');
     if (shield !== null) {
-      this.spendStack(uid, shield);
+      statusChanges.spendStack(this, uid, shield);
       return;
     }
     const slot = locationAt(this.state, card.location).cards[card.owner];
@@ -198,56 +203,12 @@ export class GameBoard implements Board {
     hand.addToHand(this.handContext, player, defId, from);
   }
 
-  // A shield status pays one stack to cancel what was about to happen.
-  private spendStack(uid: string, status: StatusId): void {
-    const card = cardAt(this.state, uid);
-    const left = stacksOf(card, status) - 1;
-    if (left > 0) {
-      card.statuses[status] = left;
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- statuses is a plain JSON record
-      delete card.statuses[status];
-    }
-    this.events.push({ type: 'statusChanged', card: uid, status, stacks: left, spent: true });
-  }
-
-  addStatus(uid: string, status: StatusId, stacks: number): void {
-    const card = cardAt(this.state, uid);
-    if (card.zone !== 'board' || stacks <= 0) {
-      return;
-    }
-    const previous = stacksOf(card, status);
-    const total = previous + stacks;
-    card.statuses[status] = total;
-    this.events.push({ type: 'statusChanged', card: uid, status, stacks: total });
-    if (previous === 0) {
-      statusRule(status).onGained?.(this, uid);
-    }
-    statusRule(status).onStacksChanged?.(this, uid, total);
+  addStatus(uid: string, status: StatusId, stacks: number, by: PlayerIndex | null): void {
+    statusChanges.addStatus(this, uid, { status, stacks, by });
   }
 
   removeStatus(uid: string, status: StatusId | null): void {
-    const card = cardAt(this.state, uid);
-    for (const id of status === null ? STATUS_IDS : [status]) {
-      if (stacksOf(card, id) > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- statuses is a plain JSON record
-        delete card.statuses[id];
-        this.events.push({ type: 'statusChanged', card: uid, status: id, stacks: 0 });
-      }
-      if (id === 'mad') {
-        card.crisis = null;
-      }
-    }
-  }
-
-  private matches(uid: string, source: AbilitySource, filter: CardFilter): boolean {
-    if (!filter.includeSelf && uid === source.card) {
-      return false;
-    }
-    if (filter.status !== undefined && stacksOf(cardAt(this.state, uid), filter.status) === 0) {
-      return false;
-    }
-    return filter.tag === undefined || this.definitionOf(uid).tags.includes(filter.tag);
+    statusChanges.removeStatus(this, uid, status);
   }
 
   // A card protected from power loss ignores the negative ongoing bonuses.

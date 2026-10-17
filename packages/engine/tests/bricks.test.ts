@@ -50,6 +50,20 @@ const catalog = catalogWith(
         },
       ],
     }),
+    // onMoved
+    card('sprinter', { abilities: [{ trigger: 'onMoved', effect: { type: 'addPower', amount: 2 } }] }),
+    card('restless', {
+      abilities: [
+        { trigger: 'onReveal', effect: { type: 'move', destination: 'right' } },
+        {
+          trigger: 'onMoved',
+          effect: [
+            { type: 'addPower', amount: 1 },
+            { type: 'move', destination: 'right' },
+          ],
+        },
+      ],
+    }),
     // onCardPlayedHere
     card('benj-watcher', {
       abilities: [
@@ -123,17 +137,21 @@ const catalog = catalogWith(
     card('shield', { power: 5, statuses: ['protected'] }),
     card('tough-shield', { power: 5, statuses: ['tough', 'protected'] }),
     card('boiler', {
+      tags: ['trait:machine'],
       statuses: ['overheat'],
       abilities: [{ trigger: 'endOfTurn', effect: { type: 'addStatus', status: 'overheat' } }],
     }),
     card('tough-boiler', {
+      tags: ['trait:machine'],
       statuses: ['tough', 'overheat'],
       abilities: [{ trigger: 'endOfTurn', effect: { type: 'addStatus', status: 'overheat' } }],
     }),
     card('furnace', {
+      tags: ['trait:machine'],
       abilities: [{ trigger: 'onReveal', effect: { type: 'addStatus', status: 'overheat', stacks: 3 } }],
     }),
     card('shield-furnace', {
+      tags: ['trait:machine'],
       statuses: ['protected'],
       abilities: [{ trigger: 'onReveal', effect: { type: 'addStatus', status: 'overheat', stacks: 3 } }],
     }),
@@ -250,6 +268,38 @@ describe('move', () => {
     const next = playTurn(catalog, playTurn(catalog, state, { p1: [['v1', 0]] }).state, { p0: [['pusher', 0]] }).state;
     expect(locationOf(next, 1, 'v1')).toBe(1);
     expect(next.locations[1]?.cards[1]).toEqual([uidOf(next, 1, 'v1')]);
+  });
+});
+
+describe('onMoved', () => {
+  it('fires when the card is moved, by itself or by an enemy', () => {
+    const state = newGame(catalog, { p0: ['pusher'], p1: ['sprinter'] });
+    const turn1 = playTurn(catalog, state, { p1: [['sprinter', 0]] }).state;
+    const { state: turn2, events } = playTurn(catalog, turn1, { p0: [['pusher', 0]] });
+    expect(locationOf(turn2, 1, 'sprinter')).toBe(1);
+    expect(powerAt(catalog, turn2, 1, 'sprinter')).toBe(1 + 2);
+    expect(events).toContainEqual({
+      type: 'abilityTriggered',
+      trigger: 'onMoved',
+      card: uidOf(turn2, 1, 'sprinter'),
+      location: 1,
+    });
+  });
+
+  it('does not fire again for a move made by its own onMoved ability', () => {
+    const state = newGame(catalog, { p0: ['restless'] });
+    const next = playTurn(catalog, state, { p0: [['restless', 0]] }).state;
+    // onReveal: 0 → 1, onMoved: +1 and 1 → 2, which does not fire onMoved again
+    expect(locationOf(next, 0, 'restless')).toBe(2);
+    expect(powerAt(catalog, next, 0, 'restless')).toBe(1 + 1);
+  });
+
+  it('does not fire when the card cannot move', () => {
+    const state = newGame(catalog, { p0: ['pusher'], p1: ['sprinter'] });
+    const turn1 = playTurn(catalog, state, { p1: [['sprinter', 2]] }).state;
+    // nothing on the right of location 2
+    const next = playTurn(catalog, turn1, { p0: [['pusher', 2]] }).state;
+    expect(powerAt(catalog, next, 1, 'sprinter')).toBe(1);
   });
 });
 
@@ -607,9 +657,433 @@ describe('statuses: Surchauffe', () => {
   });
 });
 
+// Phase 6 building blocks, on their own fixture cards.
+const MACHINE = 'trait:machine';
+const giveAllies = (status: 'high' | 'overheat' | 'drunk', stacks = 1) =>
+  ({ trigger: 'onReveal', target: { type: 'cards' }, effect: { type: 'addStatus', status, stacks } }) as const;
+
+const hitEnemies = (status: 'high' | 'protected', stacks = 1) =>
+  ({
+    trigger: 'onReveal',
+    target: { type: 'cards', side: 'enemy' },
+    effect: { type: 'addStatus', status, stacks },
+  }) as const;
+
+const phase6 = catalogWith(
+  [
+    card('p1'),
+    card('p2'),
+    card('guarded', { power: 4, statuses: ['protected'] }),
+    // Coriace: the Défonce tick does not spend the Protection.
+    card('bunker', { power: 4, statuses: ['tough', 'protected'] }),
+    card('guarded-junkie', { power: 4, statuses: ['tough', 'protected', 'high'] }),
+    card('poisoner', { abilities: [hitEnemies('high', 2)] }),
+    card('enemy-guard', { abilities: [hitEnemies('protected')] }),
+    card('robot', { tags: [MACHINE] }),
+    card('heater', {
+      abilities: [
+        {
+          trigger: 'onReveal',
+          target: { type: 'cards', side: 'enemy' },
+          effect: { type: 'addStatus', status: 'overheat' },
+        },
+      ],
+    }),
+    card('forced-heater', {
+      abilities: [
+        {
+          trigger: 'onReveal',
+          target: { type: 'cards', side: 'enemy' },
+          effect: { type: 'addStatus', status: 'overheat', anyCard: true },
+        },
+      ],
+    }),
+    card('hot-head', { statuses: ['overheat'] }),
+    card('thief', {
+      abilities: [
+        {
+          trigger: 'onReveal',
+          target: { type: 'cards', side: 'enemy', pick: 'strongest' },
+          effect: { type: 'stealPower', amount: 2 },
+        },
+      ],
+    }),
+    card('gang', {
+      abilities: [
+        { trigger: 'onReveal', target: { type: 'cards', side: 'enemy' }, effect: { type: 'stealPower', amount: 1 } },
+      ],
+    }),
+    card('closer', {
+      abilities: [
+        {
+          trigger: 'endOfTurn',
+          condition: { type: 'location', result: 'winning' },
+          effect: { type: 'addPower', amount: 1 },
+        },
+      ],
+    }),
+    card('underdog', {
+      abilities: [
+        {
+          trigger: 'onReveal',
+          condition: { type: 'location', result: 'losing' },
+          effect: { type: 'addPower', amount: 3 },
+        },
+      ],
+    }),
+    card('balance', {
+      abilities: [
+        {
+          trigger: 'onReveal',
+          condition: { type: 'location', result: 'tied' },
+          effect: { type: 'addPower', amount: 2 },
+        },
+      ],
+    }),
+    card('pricey', { cost: 3 }),
+    card('brute', { cost: 3, power: 9 }),
+    card('bargain-hunter', {
+      abilities: [
+        { trigger: 'onReveal', target: { type: 'cards', side: 'enemy', maxCost: 1 }, effect: { type: 'destroy' } },
+      ],
+    }),
+    card('giant-slayer', {
+      abilities: [
+        { trigger: 'onReveal', target: { type: 'cards', side: 'enemy', minPower: 4 }, effect: { type: 'destroy' } },
+      ],
+    }),
+    card('patron', {
+      abilities: [
+        {
+          trigger: 'ongoing',
+          effect: { type: 'addPowerPerCard', amount: 2, count: { side: 'all', scope: 'everywhere', minCost: 3 } },
+        },
+      ],
+    }),
+    card('mess', { statuses: ['tough', 'high', 'overheat'] }),
+    card('mechanic', {
+      abilities: [
+        {
+          trigger: 'onReveal',
+          target: { type: 'cards' },
+          effect: { type: 'removeStatus', statuses: ['high', 'overheat'] },
+        },
+      ],
+    }),
+    card('dealer', { abilities: [giveAllies('high')] }),
+    card('dealer2', { abilities: [giveAllies('high')] }),
+    card('junkie', { power: 3, statuses: ['high'] }),
+    card('stoner', {
+      power: 1,
+      statuses: ['high'],
+      abilities: [
+        { trigger: 'ongoing', condition: { type: 'status', status: 'high' }, effect: { type: 'addPower', amount: 3 } },
+      ],
+    }),
+    card('tripper', {
+      abilities: [{ trigger: 'onStatusGained', status: 'high', effect: { type: 'addPower', amount: 2 } }],
+    }),
+    card('nightly', {
+      abilities: [
+        {
+          trigger: 'endOfTurn',
+          condition: { type: 'status', status: 'high' },
+          effect: { type: 'addPower', amount: 1 },
+        },
+      ],
+    }),
+    card('turbine', {
+      tags: [MACHINE],
+      abilities: [
+        { trigger: 'onReveal', effect: { type: 'addStatus', status: 'overheat', stacks: 3 } },
+        {
+          trigger: 'ongoing',
+          condition: { type: 'status', status: 'overheat' },
+          effect: { type: 'addPower', amount: 2 },
+        },
+      ],
+    }),
+  ],
+  [
+    {
+      id: 'loc-haze',
+      name: 'Brume',
+      abilities: [
+        { trigger: 'endOfTurn', target: { type: 'cards', side: 'all' }, effect: { type: 'addStatus', status: 'high' } },
+      ],
+    },
+  ],
+);
+
+const statusesOf = (state: GameState, player: 0 | 1, defId: string): Record<string, number> | undefined =>
+  state.cards[uidOf(state, player, defId)]?.statuses;
+
+describe('Protection against enemy statuses', () => {
+  it('absorbs a status put by an enemy card and spends one stack, whatever the stacks', () => {
+    const state = newGame(phase6, { p0: ['guarded'], p1: ['poisoner'] });
+    const turn1 = playTurn(phase6, state, { p0: [['guarded', 0]] }).state;
+    const { state: turn2, events } = playTurn(phase6, turn1, { p1: [['poisoner', 0]] });
+    expect(statusesOf(turn2, 0, 'guarded')).toEqual({});
+    expect(events).toContainEqual({
+      type: 'statusChanged',
+      card: uidOf(turn2, 0, 'guarded'),
+      status: 'protected',
+      stacks: 0,
+      spent: true,
+    });
+  });
+
+  it('lets its own innate statuses and the ones of allies through', () => {
+    const state = newGame(phase6, { p0: ['guarded-junkie', 'bunker', 'dealer'] });
+    const turn1 = playTurn(phase6, state, {
+      p0: [
+        ['guarded-junkie', 0],
+        ['bunker', 1],
+      ],
+    }).state;
+    expect(statusesOf(turn1, 0, 'guarded-junkie')).toEqual({ tough: 1, protected: 1, high: 1 });
+    const turn2 = playTurn(phase6, turn1, { p0: [['dealer', 1]] }).state;
+    expect(statusesOf(turn2, 0, 'bunker')).toEqual({ tough: 1, protected: 1, high: 1 });
+  });
+
+  it('never blocks a Protection, even from an enemy', () => {
+    const state = newGame(phase6, { p0: ['guarded'], p1: ['enemy-guard'] });
+    const turn1 = playTurn(phase6, state, { p0: [['guarded', 0]] }).state;
+    const turn2 = playTurn(phase6, turn1, { p1: [['enemy-guard', 0]] }).state;
+    expect(statusesOf(turn2, 0, 'guarded')).toEqual({ protected: 2 });
+  });
+
+  it('does not absorb a status put by a terrain, which belongs to nobody', () => {
+    const state = newGame(phase6, { p0: ['bunker'], locations: ['loc-haze', 'loc-a', 'loc-b'] });
+    const next = playTurn(phase6, state, { p0: [['bunker', 0]] }).state;
+    expect(statusesOf(next, 0, 'bunker')).toEqual({ tough: 1, protected: 1, high: 1 });
+  });
+});
+
+describe('Surchauffe: machines only by default', () => {
+  it('only lands on machines, unless the effect forces it', () => {
+    const state = newGame(phase6, { p0: ['robot', 'p1'], p1: ['heater', 'forced-heater'] });
+    const turn1 = playTurn(phase6, state, {
+      p0: [
+        ['robot', 0],
+        ['p1', 0],
+      ],
+    }).state;
+    const turn2 = playTurn(phase6, turn1, { p1: [['heater', 0]] }).state;
+    expect(statusesOf(turn2, 0, 'robot')).toEqual({ overheat: 1 });
+    expect(statusesOf(turn2, 0, 'p1')).toEqual({});
+    const turn3 = playTurn(phase6, turn2, { p1: [['forced-heater', 0]] }).state;
+    expect(statusesOf(turn3, 0, 'robot')).toEqual({ overheat: 2 });
+    expect(statusesOf(turn3, 0, 'p1')).toEqual({ overheat: 1 });
+  });
+
+  it('keeps innate Surchauffe on any card', () => {
+    const state = newGame(phase6, { p0: ['hot-head'] });
+    const next = playTurn(phase6, state, { p0: [['hot-head', 0]] }).state;
+    expect(statusesOf(next, 0, 'hot-head')).toEqual({ overheat: 1 });
+  });
+});
+
+describe('removeStatus with a list', () => {
+  it('removes every listed status and keeps the others', () => {
+    const state = newGame(phase6, { p0: ['mess', 'mechanic'] });
+    const turn1 = playTurn(phase6, state, { p0: [['mess', 0]] }).state;
+    const { state: turn2, events } = playTurn(phase6, turn1, { p0: [['mechanic', 0]] });
+    expect(statusesOf(turn2, 0, 'mess')).toEqual({ tough: 1 });
+    const removed = events.filter((event) => event.type === 'statusChanged' && event.stacks === 0);
+    expect(removed.map((event) => event.type === 'statusChanged' && event.status)).toEqual(['high', 'overheat']);
+  });
+});
+
+describe('stealPower', () => {
+  it('takes power from the targets and gives the source what was lost', () => {
+    const state = newGame(phase6, { p0: ['junkie', 'p1'], p1: ['thief', 'gang'] });
+    const turn1 = playTurn(phase6, state, {
+      p0: [
+        ['junkie', 0],
+        ['p1', 0],
+      ],
+    }).state;
+    const turn2 = playTurn(phase6, turn1, { p1: [['thief', 0]] }).state;
+    // junkie: 3 − 2 stolen − 1 (Défonce, end of turn 1) − 1 (end of turn 2)
+    expect(powerAt(phase6, turn2, 0, 'junkie')).toBe(3 - 1 - 2 - 1);
+    expect(powerAt(phase6, turn2, 1, 'thief')).toBe(1 + 2);
+    const turn3 = playTurn(phase6, turn2, { p1: [['gang', 0]] }).state;
+    expect(powerAt(phase6, turn3, 1, 'gang')).toBe(1 + 2);
+    expect(powerAt(phase6, turn3, 0, 'p1')).toBe(1 - 1);
+  });
+
+  it('gains nothing from a Coriace or protected target, and spends the Protection', () => {
+    const state = newGame(phase6, { p0: ['bunker', 'guarded'], p1: ['thief', 'gang'] });
+    const turn1 = playTurn(phase6, state, {
+      p0: [
+        ['bunker', 0],
+        ['guarded', 1],
+      ],
+    }).state;
+    const turn2 = playTurn(phase6, turn1, {
+      p1: [
+        ['thief', 0],
+        ['gang', 1],
+      ],
+    }).state;
+    expect(powerAt(phase6, turn2, 1, 'thief')).toBe(1);
+    expect(powerAt(phase6, turn2, 0, 'bunker')).toBe(4);
+    expect(statusesOf(turn2, 0, 'bunker')).toEqual({ tough: 1, protected: 1 });
+    expect(powerAt(phase6, turn2, 1, 'gang')).toBe(1);
+    expect(powerAt(phase6, turn2, 0, 'guarded')).toBe(4);
+    expect(statusesOf(turn2, 0, 'guarded')).toEqual({});
+  });
+});
+
+describe('location result condition', () => {
+  it('reads whether the owner wins, loses or ties the location of the card', () => {
+    const state = newGame(phase6, { p0: ['closer', 'underdog', 'balance'], p1: ['junkie', 'p2'] });
+    const turn1 = playTurn(phase6, state, {
+      p0: [['closer', 0]],
+      p1: [
+        ['junkie', 1],
+        ['p2', 2],
+      ],
+    }).state;
+    // 1 against 0: winning at the end of the turn
+    expect(powerAt(phase6, turn1, 0, 'closer')).toBe(2);
+    const turn2 = playTurn(phase6, turn1, {
+      p0: [
+        ['underdog', 1],
+        ['balance', 2],
+      ],
+    }).state;
+    // underdog: 1 against junkie (3 − 1); balance: 1 against 1
+    expect(powerAt(phase6, turn2, 0, 'underdog')).toBe(1 + 3);
+    expect(powerAt(phase6, turn2, 0, 'balance')).toBe(1 + 2);
+    expect(powerAt(phase6, turn2, 0, 'closer')).toBe(3);
+  });
+
+  it('is not met when the comparison says otherwise', () => {
+    const state = newGame(phase6, { p0: ['underdog', 'balance'] });
+    const next = playTurn(phase6, state, {
+      p0: [
+        ['underdog', 0],
+        ['balance', 1],
+      ],
+    }).state;
+    expect(powerAt(phase6, next, 0, 'underdog')).toBe(1);
+    expect(powerAt(phase6, next, 0, 'balance')).toBe(1);
+  });
+});
+
+describe('cost and power filters', () => {
+  it('filters targets by printed cost and by current power', () => {
+    const state = newGame(phase6, { p0: ['p2', 'pricey', 'brute', 'junkie'], p1: ['bargain-hunter', 'giant-slayer'] });
+    const turn1 = playTurn(phase6, state, {
+      p0: [
+        ['p2', 0],
+        ['pricey', 0],
+        ['brute', 1],
+        ['junkie', 1],
+      ],
+    }).state;
+    const turn2 = playTurn(phase6, turn1, {
+      p1: [
+        ['bargain-hunter', 0],
+        ['giant-slayer', 1],
+      ],
+    }).state;
+    expect(zoneOf(turn2, 0, 'p2')).toBe('destroyed');
+    expect(zoneOf(turn2, 0, 'pricey')).toBe('board');
+    expect(zoneOf(turn2, 0, 'brute')).toBe('destroyed');
+    expect(zoneOf(turn2, 0, 'junkie')).toBe('board');
+  });
+
+  it('counts cards by cost in an ongoing ability', () => {
+    const state = newGame(phase6, { p0: ['patron', 'pricey'], p1: ['brute'] });
+    const next = playTurn(phase6, state, {
+      p0: [
+        ['patron', 0],
+        ['pricey', 1],
+      ],
+      p1: [['brute', 2]],
+    }).state;
+    expect(powerAt(phase6, next, 0, 'patron')).toBe(1 + 2 * 2);
+  });
+});
+
+describe('per-status abilities (le Trip)', () => {
+  it('applies a "status" condition only while the card has the status', () => {
+    const state = newGame(phase6, { p0: ['tripper', 'nightly', 'dealer'] });
+    const sober = playTurn(phase6, state, { p0: [['nightly', 0]] }).state;
+    expect(powerAt(phase6, sober, 0, 'nightly')).toBe(1);
+    const high = playTurn(phase6, sober, { p0: [['dealer', 0]] }).state;
+    // +1 at the end of the turn, and no Défonce decay: the card defines its own effect for it
+    expect(powerAt(phase6, high, 0, 'nightly')).toBe(2);
+    expect(high.cards[uidOf(high, 0, 'nightly')]?.statuses.high).toBe(1);
+  });
+
+  it('replaces the default rule of the status: no Défonce decay for a card that wants it', () => {
+    const state = newGame(phase6, { p0: ['stoner', 'junkie'] });
+    const next = skipToTurn(
+      phase6,
+      playTurn(phase6, state, {
+        p0: [
+          ['stoner', 0],
+          ['junkie', 1],
+        ],
+      }).state,
+      3,
+    );
+    expect(powerAt(phase6, next, 0, 'stoner')).toBe(1 + 3);
+    expect(powerAt(phase6, next, 0, 'junkie')).toBe(3 - 2);
+  });
+
+  it('fires onStatusGained on the first stack only', () => {
+    const state = newGame(phase6, { p0: ['tripper', 'dealer', 'dealer2'] });
+    const turn1 = playTurn(phase6, state, { p0: [['tripper', 0]] }).state;
+    expect(powerAt(phase6, turn1, 0, 'tripper')).toBe(1);
+    const { state: turn2, events } = playTurn(phase6, turn1, { p0: [['dealer', 0]] });
+    expect(powerAt(phase6, turn2, 0, 'tripper')).toBe(1 + 2);
+    expect(events.filter((event) => event.type === 'powerChanged')).toHaveLength(1);
+    const turn3 = playTurn(phase6, turn2, { p0: [['dealer2', 0]] }).state;
+    expect(turn3.cards[uidOf(turn3, 0, 'tripper')]?.statuses.high).toBe(2);
+    expect(powerAt(phase6, turn3, 0, 'tripper')).toBe(1 + 2);
+  });
+
+  it('keeps a machine that defines its own Surchauffe alive at 3 stacks', () => {
+    const state = newGame(phase6, { p0: ['turbine'] });
+    const next = skipToTurn(phase6, playTurn(phase6, state, { p0: [['turbine', 0]] }).state, 3);
+    expect(zoneOf(next, 0, 'turbine')).toBe('board');
+    expect(powerAt(phase6, next, 0, 'turbine')).toBe(1 + 2);
+  });
+});
+
 describe('status registry', () => {
   it('gives Folie no rule of its own: its effects come from the card or from a crisis', () => {
     expect(Object.keys(STATUSES.mad)).toEqual(['name', 'adjective', 'onGained']);
+  });
+});
+
+describe('random bots on the phase 6 building blocks', () => {
+  const pool = [...phase6.cards.keys()].filter((id) => !id.startsWith('filler'));
+
+  it('finish games and keep the invariants', () => {
+    for (let game = 0; game < 30; game++) {
+      const rng = new Rng({ s: game + 100 });
+      const decks = [0, 1].map(() => deckOf(rng.shuffle([...pool]).slice(0, 8), phase6));
+      let state = createGame(phase6, {
+        seed: `phase6-${game}`,
+        players: [
+          { id: 'alice', deck: decks[0] ?? [] },
+          { id: 'bob', deck: decks[1] ?? [] },
+        ],
+        locations: ['loc-haze', 'loc-a', 'loc-b'],
+      }).state;
+      while (state.status === 'playing') {
+        state = playRandomTurn(phase6, state, 0, rng);
+        state = playRandomTurn(phase6, state, 1, rng);
+        expect(checkInvariants(state)).toEqual([]);
+      }
+      expect(state.result).not.toBeNull();
+    }
   });
 });
 

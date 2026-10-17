@@ -11,7 +11,8 @@ La boîte à outils pour décrire les capacités des cartes et des lieux dans `d
 | `endOfTurn` | à la fin de chaque tour, après les révélations |
 | `onCardPlayedHere` | quand une **autre** carte est révélée sur ce lieu après celle-ci (cartes et terrain) ; filtre optionnel `played` |
 | `onDestroyed` | quand cette carte est détruite (cartes seulement) |
-| `onMad` | quand cette carte **devient** folle (passe de 0 à 1 cumul de Folie ; pas sur un cumul de plus), cartes seulement |
+| `onStatusGained` | avec `status` (obligatoire, seulement ici) : quand cette carte **gagne** cet état (passe de 0 à 1 cumul ; pas sur un cumul de plus), cartes seulement. « Quand elle devient folle / défoncée / ivre : … » |
+| `onMoved` | quand cette carte se déplace vers un autre lieu (effet, crise Errance, carte adverse), cartes seulement ; un déplacement fait par sa propre capacité `onMoved` ne la redéclenche pas |
 
 **Ordre de résolution d'une révélation** : la carte est posée sur le plateau, reçoit ses états innés, joue sa capacité `onReveal`, puis les capacités `onCardPlayedHere` des cartes déjà présentes sur ce lieu (le joueur qui révèle d'abord, dans l'ordre où ses cartes sont arrivées, puis l'autre joueur), puis celles du terrain. La carte révélée ne se déclenche jamais elle-même. En fin de tour : terrains, puis cartes (`endOfTurn`), puis règles des états.
 
@@ -19,7 +20,7 @@ La boîte à outils pour décrire les capacités des cartes et des lieux dans `d
 
 **`onDestroyed`** : la carte a déjà quitté le plateau, ses cibles sont relatives au lieu où elle était (`scope: "here"` = ce lieu). Une cible `self` n'a plus de sens (refusé), sauf pour les effets sans cible (`draw`, `addCost`, `addToHand` : « ajoute une copie de cette carte en main » fait revenir la carte). Une carte qui survit à la destruction (Coriace, Protection) ne déclenche rien.
 
-Une capacité `ongoing` ne peut que **donner de la puissance** (`addPower`, `addPowerPerCard`) à des cibles `self` ou `cards` avec `pick: "all"` : elle est recalculée à chaque lecture, elle ne doit donc dépendre ni de la puissance ni du hasard.
+Une capacité `ongoing` ne peut que **donner de la puissance** (`addPower`, `addPowerPerCard`) à des cibles `self` ou `cards` avec `pick: "all"` : elle est recalculée à chaque lecture, elle ne doit donc dépendre ni de la puissance ni du hasard (refusés au chargement : condition `location`, filtres `minPower` / `maxPower`).
 
 ## Filtre de cartes
 
@@ -32,6 +33,10 @@ Partagé par la condition `count`, la cible `cards` et l'effet `addPowerPerCard`
 | `tag` | `universe:kda`, `character:benj`, `family:linette`, `trait:machine`, `trait:epee`… | aucun |
 | `status` | `mad`, `high`, `tough`, `drunk`, `protected`, `overheat` (voir États) | aucun |
 | `includeSelf` | la carte elle-même compte-t-elle ? | `false` |
+| `minCost`, `maxCost` | coût **imprimé** de la carte (0 à 10) : « les cartes ennemies à 1 de coût ici », « de 2 à 4 de coût » | aucun |
+| `minPower`, `maxPower` | puissance **actuelle** : « avec 9 de puissance ou plus ». Lit la puissance : **refusé dans une capacité `ongoing`** | aucun |
+
+Un intervalle vide (`minCost` > `maxCost`, `minPower` > `maxPower`) est refusé au chargement.
 
 Sur un **lieu** (terrain), seul `side: "all"` a du sens (un terrain n'appartient à personne) et `self` n'existe pas.
 
@@ -41,20 +46,28 @@ Marqueurs posés sur une carte du plateau pendant la partie, cumulables. Registr
 
 | Id | Nom | Règle |
 |---|---|---|
-| `mad` | Folie | pas de règle fixe : l'effet vient de la carte (condition `mad`, déclencheur `onMad`) ou d'une **crise** tirée au hasard (voir Folie) |
+| `mad` | Folie | pas de règle fixe : l'effet vient de la carte (condition `status`, déclencheur `onStatusGained`) ou d'une **crise** tirée au hasard (voir Folie) |
 | `high` | Défonce | perd 1 puissance par cumul à chaque fin de tour |
 | `tough` | Coriace | ne peut être ni détruite ni affaiblie (malus continus compris) |
 | `drunk` | Ivresse | à chaque fin de tour, **par cumul**, gagne ou perd 2 puissance au hasard (tirage seedé) |
-| `protected` | Protection | annule la prochaine destruction **ou** le prochain malus de puissance, puis perd un cumul (disparaît à zéro) |
-| `overheat` | Surchauffe | détruite dès 3 cumuls (à l'instant où elle les atteint, puis réessayé à chaque fin de tour) |
+| `protected` | Protection | annule la prochaine destruction, le prochain malus de puissance **ou** le prochain état posé par une carte ennemie, puis perd un cumul (disparaît à zéro) |
+| `overheat` | Surchauffe | détruite dès 3 cumuls (à l'instant où elle les atteint, puis réessayé à chaque fin de tour). Réservée aux **machines** (`trait:machine`) : un effet `addStatus` ne la pose que sur elles, sauf `anyCard: true` ; un état inné `"statuses": ["overheat"]` reste permis sur toute carte. Une carte non machine qui se la pose elle-même sans `anyCard` est refusée au chargement |
 
 **Interactions** (toutes testées) :
 
 - Coriace passe avant Protection : une carte coriace et protégée n'est pas détruite ni affaiblie, **sans** consommer sa Protection.
 - Protection absorbe tout malus de puissance **ponctuel** (`addPower` négatif d'une carte ou d'un terrain, ticks de Défonce et d'Ivresse), un par cumul, et la destruction (y compris celle de la Surchauffe). Elle n'absorbe **pas** les malus **continus** (`ongoing`) : ils sont recalculés à chaque lecture, ce ne sont pas des événements.
+- Protection contre les **états** : un état posé par une carte **ennemie** (effet `addStatus`, crise Contagion d'une carte ennemie) n'est pas posé et un cumul de Protection est dépensé (événement `statusChanged` avec `spent: true`), quel que soit le nombre de cumuls de l'effet. Ne sont **pas** absorbés : la Protection elle-même, les états innés de la carte, ceux posés par une carte alliée, ceux posés par un **terrain** (il n'appartient à personne). Coriace ne bloque pas les états.
 - Ivresse tire toujours son nombre au hasard, même si le −2 est ignoré (Coriace) ou absorbé (Protection) : le rejeu reste identique.
 - Surchauffe + Coriace : la carte n'est jamais détruite, ses cumuls continuent de monter ; si la Coriace disparaît, elle est détruite à la fin du tour. Surchauffe + Protection : la Protection retarde la destruction d'une fois (le cumul de Protection est dépensé, la carte reste à 3+), la fin de tour la détruit.
 - Un état s'ajoute au registre `statuses.ts` : texte, `rule`, puis les crochets `preventsDestroy` / `preventsPowerLoss` (immunités), `absorbsDestroy` / `absorbsPowerLoss` (boucliers à cumuls), `endOfTurn`, `onStacksChanged` et `onGained` (premier cumul).
+
+**États par carte (le « Trip »).** Une carte peut définir ses propres effets pour un état : condition `{ "type": "status", "status": "high" }` (« Défoncée : +3 puissance. », « En fin de tour, si elle est défoncée : … ») et déclencheur `onStatusGained` + `status` (« Quand elle devient ivre : … »). **L'effet défini par la carte prime sur la règle par défaut de l'état** : une telle carte ne subit plus les crochets d'action de cet état (`onGained`, `onStacksChanged`, `endOfTurn`) : pas de crise de Folie, pas de perte de la Défonce, pas de tirage d'Ivresse, pas de destruction par la Surchauffe (une machine que la Surchauffe booste). Les immunités et boucliers (Coriace, Protection) s'appliquent toujours. Le mot-clé d'un état inné ainsi remplacé s'affiche sans sa règle.
+
+```json
+{ "trigger": "ongoing", "condition": { "type": "status", "status": "high" }, "effect": { "type": "addPower", "amount": 3 } }
+{ "trigger": "onStatusGained", "status": "drunk", "effect": { "type": "draw" } }
+```
 
 Une carte peut porter un état **inné**, posé dès sa révélation : `"statuses": ["tough"]` (Barlito).
 
@@ -62,23 +75,25 @@ Une carte peut porter un état **inné**, posé dès sa révélation : `"statuse
 
 La Folie est un état sans règle fixe, très versatile : buff, debuff, déplacement, auto-destruction, propagation.
 
-**1. Effet défini par la carte.** Les capacités qui ne valent que lorsque la carte est folle : condition `{ "type": "mad" }` avec `ongoing` ou `endOfTurn` (ou tout autre déclencheur), et le déclencheur `onMad` (une fois, quand elle devient folle). Une carte qui a au moins une capacité `mad` / `onMad` **ne tire pas de crise**.
+**1. Effet défini par la carte.** Les capacités qui ne valent que lorsque la carte est folle : condition `{ "type": "status", "status": "mad" }` avec `ongoing` ou `endOfTurn` (ou tout autre déclencheur), et le déclencheur `onStatusGained` + `"status": "mad"` (une fois, quand elle devient folle). Une carte qui a au moins une telle capacité **ne tire pas de crise** (cas particulier de la règle des états par carte).
 
 ```json
-{ "trigger": "ongoing", "condition": { "type": "mad" }, "effect": { "type": "addPower", "amount": 2 } }
+{ "trigger": "ongoing", "condition": { "type": "status", "status": "mad" }, "effect": { "type": "addPower", "amount": 2 } }
 ```
 
 Texte généré : `Folle : +2 puissance.` ; `En fin de tour, si elle est folle : …` ; `Quand elle devient folle : …`. Les Benj ont tous « Folle : +1 puissance » (coût 3 ou moins) ou « +2 » (au-delà) : la Folie buff les Benj, par la donnée.
 
 **2. Crise tirée au hasard.** Une carte **sans** effet de folie défini tire, quand elle devient folle, UNE crise dans le pool ci-dessous (tirage seedé, rejouable). La crise est stockée sur la carte (`CardInstance.crisis`), publique (`CardView.crisis`, événement `crisisStarted`), affichée « FOLIE · NOM » et expliquée dans l'infobulle. Registre réglable : `packages/engine/src/abilities/crises.ts`.
 
-| Id | Crise | Effet |
-|---|---|---|
-| `rage` | Rage | en continu : +2 puissance |
-| `delirium` | Délire | en continu : −2 puissance (Coriace l'ignore ; Protection ne l'absorbe pas : malus continu) |
-| `wandering` | Errance | en fin de tour : se déplace vers un autre lieu au hasard (brique `move`) |
-| `contagion` | Contagion | en fin de tour : rend folle une autre carte non folle ici au hasard (les deux camps) ; la nouvelle folle tire sa propre crise |
-| `implosion` | Implosion | en fin de tour : se détruit et donne +2 puissance (permanent) aux autres cartes folles ici ; si elle survit (Coriace, Protection) il n'y a pas de bonus |
+| Id | Crise | Poids | Effet |
+|---|---|---|---|
+| `rage` | Rage | 30 | en continu : +2 puissance |
+| `delirium` | Délire | 30 | en continu : −2 puissance (Coriace l'ignore ; Protection ne l'absorbe pas : malus continu) |
+| `contagion` | Contagion | 20 | en fin de tour : rend folle une autre carte non folle ici au hasard (les deux camps) ; la nouvelle folle tire sa propre crise |
+| `wandering` | Errance | 10 | en fin de tour : se déplace vers un autre lieu au hasard (brique `move`) |
+| `implosion` | Implosion | 10 | en fin de tour : se détruit et donne +2 puissance (permanent) aux autres cartes folles ici ; si elle survit (Coriace, Protection) il n'y a pas de bonus |
+
+Le tirage est **pondéré** (`Rng.pickWeighted`) : une crise sort avec une probabilité proportionnelle à son poids (Rage 30 %, Errance 10 %…). Le déplacement et l'auto-destruction sont plus rares.
 
 Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de nouvelle crise) ; une carte qui perd la Folie (`removeStatus`) **perd sa crise** et, si elle redevient folle, en retire une ; Coriace peut devenir folle, mais Délire ne l'affaiblit pas et Implosion ne la détruit pas ; l'effet de fin de tour d'une crise s'exécute après les capacités `endOfTurn` des cartes et les règles des autres états.
 
@@ -88,7 +103,8 @@ Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de no
 |---|---|---|
 | `count` | filtre + `min` (défaut 1), `max` | « s'il y a un autre Benj ici » : `{ "type": "count", "tag": "character:benj" }` |
 | `turn` | `min`, `max` | « à partir du tour 4 » : `{ "type": "turn", "min": 4 }` |
-| `mad` | aucun | « cette carte est folle » : `{ "type": "mad" }` (cartes seulement, avec n'importe quel déclencheur) |
+| `location` | `result` : `winning`, `losing`, `tied` | « si tu gagnes ce lieu » : `{ "type": "location", "result": "winning" }` : le propriétaire de la carte gagne / perd / est à égalité au lieu de la carte (somme des puissances, au moment où la capacité se résout). Cartes seulement ; **jamais `ongoing`** (elle lit la puissance) |
+| `status` | `status` | « cette carte est défoncée » : `{ "type": "status", "status": "high" }` (cartes seulement, avec n'importe quel déclencheur ; remplace la règle par défaut de l'état, voir États) |
 
 ## Cibles (`target`, défaut `self`)
 
@@ -103,10 +119,11 @@ Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de no
 |---|---|---|
 | `addPower` | `amount` (≠ 0, négatif possible) | ajoute de la puissance aux cibles |
 | `addPowerPerCard` | `amount`, `count` (filtre) | `amount` × nombre de cartes qui passent le filtre |
+| `stealPower` | `amount` (≥ 1) | les cibles perdent `amount` et la carte gagne ce qui a **vraiment** été perdu (Coriace : rien ; Protection : le cumul est dépensé, rien n'est gagné). Cartes seulement (refusé sur un terrain), jamais sur `self`, jamais `ongoing`. « vole 2 puissance à la carte ennemie la plus forte ici » |
 | `draw` | `count` (1 à 3, défaut 1) | le propriétaire pioche ; sur un lieu, les deux joueurs |
 | `destroy` | — | détruit les cibles |
-| `addStatus` | `status`, `stacks` (1 à 5, défaut 1) | pose un état sur les cibles |
-| `removeStatus` | `status` (absent = tous) | retire un état des cibles |
+| `addStatus` | `status`, `stacks` (1 à 5, défaut 1), `anyCard` (défaut `false`) | pose un état sur les cibles ; la Surchauffe ne se pose que sur les machines (`trait:machine`), sauf `anyCard: true` (« rend les cartes ennemies ici surchauffées (machines seulement) ») |
+| `removeStatus` | `status` **ou** `statuses` (liste) ; aucun des deux = tous | retire des états des cibles (« retire la Défonce et la Surchauffe des autres cartes alliées ici ») |
 | `move` | `destination` : `random` (défaut), `left`, `right` | déplace les cibles vers un autre lieu **de leur camp** qui a une place libre ; sans place, rien ne se passe |
 | `addCost` | `amount` (≠ 0, négatif = moins cher), `cards` : `hand` (défaut) ou `next`, `tag` optionnel | change le coût des cartes en **main** du propriétaire (les deux joueurs sur un terrain) ; coût plancher 0 |
 | `addToHand` | `card` (id du catalogue, absent = copie de cette carte), `count` (1 à 3, défaut 1) | ajoute des cartes neuves en main ; rien si la main est pleine (7) |

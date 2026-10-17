@@ -1,9 +1,9 @@
-import { statusRule } from '../abilities/statuses.ts';
 import { LOCATION_COUNT, MAX_TURNS } from '../rules.ts';
 import { type GameEvent, type GameResult, PLAYERS, type PlayerIndex, opponentOf } from '../state.ts';
 import type { AbilityRunner } from './abilities.ts';
 import type { GameBoard } from './board.ts';
 import { cardAt, locationAt } from './state-access.ts';
+import { ruleFor } from './status-changes.ts';
 import { activeStatuses, stacksOf } from './statuses.ts';
 
 // Turn lifecycle: start (energy, draw, location reveal), resolution (reveals, end of turn), end of game.
@@ -80,7 +80,7 @@ export class TurnFlow {
       holo: card.holo,
     });
     for (const status of this.board.definitionOf(uid).statuses) {
-      this.board.addStatus(uid, status, 1);
+      this.board.addStatus(uid, status, 1, card.owner);
     }
     this.abilities.fireCard(uid, 'onReveal');
     this.abilities.fireCardPlayed(uid, playedAt);
@@ -107,7 +107,7 @@ export class TurnFlow {
     const card = cardAt(this.board.state, uid);
     for (const status of activeStatuses(card)) {
       if (card.zone === 'board') {
-        statusRule(status).endOfTurn?.(this.board, uid, stacksOf(card, status));
+        ruleFor(this.board, uid, status)?.endOfTurn?.(this.board, uid, stacksOf(card, status));
       }
     }
     this.board.runCrisis(uid);

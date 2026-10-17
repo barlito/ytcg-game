@@ -72,8 +72,113 @@ describe('catalog validation', () => {
     );
   });
 
+  it('restricts Surchauffe to machines unless the effect says anyCard', () => {
+    const overheat = { type: 'addStatus', status: 'overheat' } as const;
+    expect(issuesOf([card('x', { abilities: [{ trigger: 'onReveal', effect: overheat }] })])[0]).toContain(
+      'only "trait:machine" cards get "overheat"',
+    );
+    expect(() =>
+      catalogWith([
+        card('m', { tags: ['trait:machine'], abilities: [{ trigger: 'onReveal', effect: overheat }] }),
+        card('y', { abilities: [{ trigger: 'onReveal', effect: { ...overheat, anyCard: true } }] }),
+        card('z', { statuses: ['overheat'] }),
+      ]),
+    ).not.toThrow();
+    expect(
+      issuesOf([
+        card('x', {
+          abilities: [{ trigger: 'onReveal', effect: { type: 'addStatus', status: 'high', anyCard: true } }],
+        }),
+      ])[0],
+    ).toContain('"anyCard" only goes with a status restricted to a tag');
+  });
+
+  it('refuses a removeStatus with both "status" and "statuses"', () => {
+    expect(
+      issuesOf([
+        card('x', {
+          abilities: [{ trigger: 'onReveal', effect: { type: 'removeStatus', status: 'high', statuses: ['mad'] } }],
+        }),
+      ]),
+    ).toHaveLength(1);
+  });
+
+  it('keeps stealPower on cards, never on itself nor ongoing', () => {
+    const steal = { type: 'stealPower', amount: 1 } as const;
+    expect(issuesOf([card('x', { abilities: [{ trigger: 'onReveal', effect: steal }] })])[0]).toContain(
+      'cannot steal power from itself',
+    );
+    const enemies = { type: 'cards', side: 'enemy' } as const;
+    expect(issuesOf([card('x', { abilities: [{ trigger: 'ongoing', target: enemies, effect: steal }] })])[0]).toContain(
+      'cannot be ongoing',
+    );
+    expect(
+      issuesOf(
+        [],
+        [
+          {
+            id: 'l',
+            name: 'l',
+            abilities: [{ trigger: 'onReveal', target: { type: 'cards', side: 'all' }, effect: steal }],
+          },
+        ],
+      )[0],
+    ).toContain('no "stealPower"');
+  });
+
+  it('keeps the location result condition off ongoing abilities and terrains', () => {
+    const winning = { type: 'location', result: 'winning' } as const;
+    const buff = { type: 'addPower', amount: 1 } as const;
+    expect(
+      issuesOf([card('x', { abilities: [{ trigger: 'ongoing', condition: winning, effect: buff }] })])[0],
+    ).toContain('cannot read power');
+    expect(() =>
+      catalogWith([card('y', { abilities: [{ trigger: 'endOfTurn', condition: winning, effect: buff }] })]),
+    ).not.toThrow();
+    expect(
+      issuesOf(
+        [],
+        [{ id: 'l', name: 'l', abilities: [{ trigger: 'onReveal', condition: winning, effect: { type: 'draw' } }] }],
+      )[0],
+    ).toContain('no "location" condition');
+  });
+
+  it('keeps power filters off ongoing abilities and refuses empty ranges', () => {
+    const buff = { type: 'addPower', amount: 1 } as const;
+    const strong = { type: 'cards', minPower: 5 } as const;
+    expect(issuesOf([card('x', { abilities: [{ trigger: 'ongoing', target: strong, effect: buff }] })])[0]).toContain(
+      'cannot filter cards by power',
+    );
+    expect(
+      issuesOf([
+        card('x', {
+          abilities: [{ trigger: 'ongoing', effect: { type: 'addPowerPerCard', amount: 1, count: { maxPower: 2 } } }],
+        }),
+      ])[0],
+    ).toContain('cannot filter cards by power');
+    expect(() =>
+      catalogWith([
+        card('y', { abilities: [{ trigger: 'onReveal', target: strong, effect: buff }] }),
+        card('z', { abilities: [{ trigger: 'ongoing', target: { type: 'cards', maxCost: 2 }, effect: buff }] }),
+      ]),
+    ).not.toThrow();
+    expect(
+      issuesOf([
+        card('x', {
+          abilities: [{ trigger: 'onReveal', condition: { type: 'count', minCost: 4, maxCost: 2 }, effect: buff }],
+        }),
+      ])[0],
+    ).toContain('"minCost" must not exceed "maxCost"');
+  });
+
   it('refuses invalid trigger combinations', () => {
     const effect = { type: 'addPower', amount: 1 } as const;
+    expect(issuesOf([card('x', { abilities: [{ trigger: 'onStatusGained', effect }] })])[0]).toContain(
+      '"status" goes with the onStatusGained trigger',
+    );
+    expect(issuesOf([card('x', { abilities: [{ trigger: 'onReveal', status: 'high', effect }] })])[0]).toContain(
+      '"status" goes with the onStatusGained trigger',
+    );
     expect(issuesOf([card('x', { abilities: [{ trigger: 'onReveal', played: {}, effect }] })])[0]).toContain(
       'only goes with the onCardPlayedHere trigger',
     );
@@ -84,8 +189,14 @@ describe('catalog validation', () => {
       issuesOf([], [{ id: 'l', name: 'l', abilities: [{ trigger: 'onDestroyed', effect: { type: 'draw' } }] }])[0],
     ).toContain('no onDestroyed trigger');
     expect(
-      issuesOf([], [{ id: 'l', name: 'l', abilities: [{ trigger: 'onMad', effect: { type: 'draw' } }] }])[0],
-    ).toContain('a location is never mad');
+      issuesOf([], [{ id: 'l', name: 'l', abilities: [{ trigger: 'onMoved', effect: { type: 'draw' } }] }])[0],
+    ).toContain('a location never moves');
+    expect(
+      issuesOf(
+        [],
+        [{ id: 'l', name: 'l', abilities: [{ trigger: 'onStatusGained', status: 'mad', effect: { type: 'draw' } }] }],
+      )[0],
+    ).toContain('a location never has a status');
     expect(
       issuesOf(
         [],
@@ -93,11 +204,13 @@ describe('catalog validation', () => {
           {
             id: 'l',
             name: 'l',
-            abilities: [{ trigger: 'onReveal', condition: { type: 'mad' }, effect: { type: 'draw' } }],
+            abilities: [
+              { trigger: 'onReveal', condition: { type: 'status', status: 'high' }, effect: { type: 'draw' } },
+            ],
           },
         ],
       )[0],
-    ).toContain('a location is never mad');
+    ).toContain('a location never has a status');
     expect(
       issuesOf(
         [],

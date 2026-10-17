@@ -10,6 +10,8 @@ describe('rng', () => {
     expect([a.next(), a.next(), a.next()]).toEqual([b.next(), b.next(), b.next()]);
     expect(new Rng({ s: 7 }).shuffle([1, 2, 3, 4, 5]).sort()).toEqual([1, 2, 3, 4, 5]);
     expect(() => a.pick([])).toThrow(RangeError);
+    expect(() => a.pickWeighted([1, 2], () => 0)).toThrow(RangeError);
+    expect(new Rng({ s: 3 }).pickWeighted(['never', 'always'], (item) => (item === 'always' ? 1 : 0))).toBe('always');
   });
 });
 

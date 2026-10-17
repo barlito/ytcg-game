@@ -30,4 +30,5 @@ export function moveCard(board: GameBoard, uid: string, destination: MoveDestina
   locationAt(board.state, to).cards[card.owner].push(uid);
   card.location = to;
   board.recordEvent({ type: 'cardMoved', card: uid, from, to });
+  board.onMoved(uid);
 }

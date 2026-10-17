@@ -1,10 +1,13 @@
 import { z } from 'zod';
+import type { Rng } from '../rng.ts';
 import type { AbilitySource, Board, BoardView, CardFilter } from './board.ts';
 
 // A crisis is the madness of a card that has no madness effect of its own: drawn once when the card goes mad
 // (seeded RNG), stored on the card, visible to both players. Tuning the pool = editing this table.
 export interface CrisisRule {
   readonly name: string;
+  // Relative chance of being drawn (moving and self-destruction are rarer).
+  readonly weight: number;
   // French rule text shown in the tooltip.
   readonly description: string;
   // Permanent ongoing power while the card is mad (negative = a malus: Coriace blocks it).
@@ -24,10 +27,11 @@ function neighbours(board: BoardView, source: AbilitySource): { mad: string[]; s
 }
 
 export const CRISES = {
-  rage: { name: 'Rage', description: 'En continu : +2 puissance.', ongoing: 2 },
-  delirium: { name: 'Délire', description: 'En continu : −2 puissance.', ongoing: -2 },
+  rage: { name: 'Rage', weight: 30, description: 'En continu : +2 puissance.', ongoing: 2 },
+  delirium: { name: 'Délire', weight: 30, description: 'En continu : −2 puissance.', ongoing: -2 },
   wandering: {
     name: 'Errance',
+    weight: 10,
     description: 'En fin de tour : se déplace vers un autre lieu au hasard.',
     endOfTurn(board: Board, source: AbilitySource): void {
       if (source.card !== null) {
@@ -37,18 +41,20 @@ export const CRISES = {
   },
   contagion: {
     name: 'Contagion',
+    weight: 20,
     description: 'En fin de tour : rend folle une autre carte non folle ici au hasard.',
     endOfTurn(board: Board, source: AbilitySource): void {
       const { sane } = neighbours(board, source);
       if (sane.length > 0 && source.card !== null) {
         const target = board.rng.pick(sane);
         board.recordEvent({ type: 'contagionSpread', from: source.card, to: target });
-        board.addStatus(target, 'mad', 1);
+        board.addStatus(target, 'mad', 1, source.owner);
       }
     },
   },
   implosion: {
     name: 'Implosion',
+    weight: 10,
     description: `En fin de tour : se détruit et donne +${IMPLOSION_BONUS} puissance aux autres cartes folles ici.`,
     endOfTurn(board: Board, source: AbilitySource): void {
       const { card } = source;
@@ -76,4 +82,9 @@ export const crisisSchema = z.enum(CRISIS_IDS);
 
 export function crisisRule(crisis: CrisisId): CrisisRule {
   return CRISES[crisis];
+}
+
+// Draws one crisis of the pool according to the weights.
+export function drawCrisis(rng: Rng): CrisisId {
+  return rng.pickWeighted(CRISIS_IDS, (crisis) => CRISES[crisis].weight);
 }

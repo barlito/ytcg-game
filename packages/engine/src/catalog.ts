@@ -1,5 +1,11 @@
 import { z } from 'zod';
-import { type CompiledAbility, abilitySchema, compileAbility, locationAbilityIssues } from './abilities/ability.ts';
+import {
+  type CompiledAbility,
+  abilitySchema,
+  cardAbilityIssues,
+  compileAbility,
+  locationAbilityIssues,
+} from './abilities/ability.ts';
 import { tagSchema } from './abilities/board.ts';
 import { type StatusId, statusSchema } from './abilities/statuses.ts';
 import { CatalogError } from './errors.ts';
@@ -181,6 +187,11 @@ function loadCardFile(
   for (const card of parsed.data.cards) {
     if (cards.has(card.id)) {
       issues.push(`${file.name}: duplicate card id ${card.id}`);
+      continue;
+    }
+    const abilityIssues = card.abilities.flatMap((ability) => cardAbilityIssues(card.tags, ability));
+    if (abilityIssues.length > 0) {
+      issues.push(...abilityIssues.map((issue) => `${file.name}: card ${card.id}: ${issue}`));
       continue;
     }
     cards.set(card.id, {

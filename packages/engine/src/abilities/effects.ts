@@ -8,7 +8,8 @@ import {
   cardFilterSchema,
 } from './board.ts';
 import { AddCostEffect, AddToHandEffect, MoveEffect, owners } from './effects-cards.ts';
-import { statusSchema } from './statuses.ts';
+import { StealPowerEffect } from './effects-power.ts';
+import { type StatusId, statusRule, statusSchema } from './statuses.ts';
 
 const addPowerSchema = z.object({
   type: z.literal('addPower'),
@@ -102,11 +103,18 @@ export class DestroyEffect implements Effect {
   }
 }
 
-const addStatusSchema = z.object({
-  type: z.literal('addStatus'),
-  status: statusSchema,
-  stacks: z.number().int().min(1).max(5).default(1),
-});
+const addStatusSchema = z
+  .object({
+    type: z.literal('addStatus'),
+    status: statusSchema,
+    stacks: z.number().int().min(1).max(5).default(1),
+    // Lifts the tag restriction of the status (Surchauffe: machines only by default).
+    anyCard: z.boolean().default(false),
+  })
+  .refine(({ status, anyCard }) => !anyCard || statusRule(status).onlyTag !== undefined, {
+    path: ['anyCard'],
+    message: '"anyCard" only goes with a status restricted to a tag (overheat)',
+  });
 
 export class AddStatusEffect implements Effect {
   static readonly schema = addStatusSchema;
@@ -116,17 +124,36 @@ export class AddStatusEffect implements Effect {
     this.params = params;
   }
 
-  apply(board: Board, _source: AbilitySource, targets: readonly string[]): void {
+  apply(board: Board, source: AbilitySource, targets: readonly string[]): void {
+    const { status, stacks, anyCard } = this.params;
+    const tag = anyCard ? undefined : statusRule(status).onlyTag;
     for (const target of targets) {
-      board.addStatus(target, this.params.status, this.params.stacks);
+      if (tag === undefined || board.hasTag(target, tag)) {
+        board.addStatus(target, status, stacks, source.owner);
+      }
     }
   }
 }
 
-const removeStatusSchema = z.object({
-  type: z.literal('removeStatus'),
-  status: statusSchema.optional(),
-});
+const removeStatusSchema = z
+  .object({
+    type: z.literal('removeStatus'),
+    // One status, a list, or neither (= every status).
+    status: statusSchema.optional(),
+    statuses: z.array(statusSchema).min(1).optional(),
+  })
+  .refine(({ status, statuses }) => status === undefined || statuses === undefined, {
+    path: ['statuses'],
+    message: 'use "status" or "statuses", not both',
+  });
+
+// The statuses an effect removes, null = all of them.
+export function removedStatuses(params: z.output<typeof removeStatusSchema>): readonly StatusId[] | null {
+  if (params.statuses !== undefined) {
+    return [...new Set(params.statuses)];
+  }
+  return params.status === undefined ? null : [params.status];
+}
 
 export class RemoveStatusEffect implements Effect {
   static readonly schema = removeStatusSchema;
@@ -137,8 +164,11 @@ export class RemoveStatusEffect implements Effect {
   }
 
   apply(board: Board, _source: AbilitySource, targets: readonly string[]): void {
+    const statuses = removedStatuses(this.params);
     for (const target of targets) {
-      board.removeStatus(target, this.params.status ?? null);
+      for (const status of statuses ?? [null]) {
+        board.removeStatus(target, status);
+      }
     }
   }
 }
@@ -153,6 +183,7 @@ export const effectSchema = z.discriminatedUnion('type', [
   MoveEffect.schema,
   AddCostEffect.schema,
   AddToHandEffect.schema,
+  StealPowerEffect.schema,
 ]);
 
 export type EffectParams = z.output<typeof effectSchema>;
@@ -162,7 +193,18 @@ export const ONGOING_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['addP
 // Effects that ignore the target of their ability.
 export const UNTARGETED_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['draw', 'addCost', 'addToHand']);
 
+type OtherEffectParams = Extract<EffectParams, { type: 'move' | 'addCost' | 'addToHand' | 'stealPower' }>;
+
+const OTHER_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['move', 'addCost', 'addToHand', 'stealPower']);
+
+function isOtherEffect(params: EffectParams): params is OtherEffectParams {
+  return OTHER_EFFECTS.has(params.type);
+}
+
 export function createEffect(params: EffectParams): Effect {
+  if (isOtherEffect(params)) {
+    return createOtherEffect(params);
+  }
   switch (params.type) {
     case 'addPower':
       return new AddPowerEffect(params);
@@ -176,11 +218,18 @@ export function createEffect(params: EffectParams): Effect {
       return new AddStatusEffect(params);
     case 'removeStatus':
       return new RemoveStatusEffect(params);
+  }
+}
+
+function createOtherEffect(params: OtherEffectParams): Effect {
+  switch (params.type) {
     case 'move':
       return new MoveEffect(params);
     case 'addCost':
       return new AddCostEffect(params);
     case 'addToHand':
       return new AddToHandEffect(params);
+    case 'stealPower':
+      return new StealPowerEffect(params);
   }
 }

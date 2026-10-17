@@ -146,7 +146,8 @@
         {
           "trigger": "ongoing",
           "condition": {
-            "type": "mad"
+            "type": "status",
+            "status": "mad"
           },
           "effect": {
             "type": "addPower",

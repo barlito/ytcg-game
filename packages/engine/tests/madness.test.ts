@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   CRISES,
   type CrisisId,
+  Rng,
+  drawCrisis,
   type GameState,
   type PlayerIndex,
   describeCard,
@@ -27,20 +29,26 @@ const catalog = catalogWith([
   card('benj', {
     power: 2,
     statuses: ['mad'],
-    abilities: [{ trigger: 'ongoing', condition: { type: 'mad' }, effect: { type: 'addPower', amount: 2 } }],
+    abilities: [
+      { trigger: 'ongoing', condition: { type: 'status', status: 'mad' }, effect: { type: 'addPower', amount: 2 } },
+    ],
   }),
   card('plain-benj', {
     power: 2,
-    abilities: [{ trigger: 'ongoing', condition: { type: 'mad' }, effect: { type: 'addPower', amount: 2 } }],
+    abilities: [
+      { trigger: 'ongoing', condition: { type: 'status', status: 'mad' }, effect: { type: 'addPower', amount: 2 } },
+    ],
   }),
   card('twitchy', {
     power: 2,
     statuses: ['mad'],
-    abilities: [{ trigger: 'onMad', effect: { type: 'addPower', amount: 3 } }],
+    abilities: [{ trigger: 'onStatusGained', status: 'mad', effect: { type: 'addPower', amount: 3 } }],
   }),
   card('prone', {
     power: 2,
-    abilities: [{ trigger: 'endOfTurn', condition: { type: 'mad' }, effect: { type: 'addPower', amount: 1 } }],
+    abilities: [
+      { trigger: 'endOfTurn', condition: { type: 'status', status: 'mad' }, effect: { type: 'addPower', amount: 1 } },
+    ],
   }),
   card('sober', {
     abilities: [{ trigger: 'onReveal', target: { type: 'cards', side: 'all' }, effect: { type: 'removeStatus' } }],
@@ -135,7 +143,7 @@ describe('card-defined madness', () => {
     expect(crisisOf(mad, 'plain-benj')).toBeNull();
   });
 
-  it('fires onMad when the card becomes mad, without a crisis', () => {
+  it('fires onStatusGained (mad) when the card becomes mad, without a crisis', () => {
     const next = playTurn(catalog, newGame(catalog, { p0: ['twitchy'] }), { p0: [['twitchy', 0]] }).state;
     expect(powerAt(catalog, next, 0, 'twitchy')).toBe(5);
     expect(crisisOf(next, 'twitchy')).toBeNull();
@@ -163,6 +171,28 @@ describe('crises', () => {
       expect(rule.name).not.toBe('');
       expect(rule.description).toMatch(/^En (continu|fin de tour) : /);
     }
+  });
+
+  it('draws the crises by weight: Rage 30, Délire 30, Contagion 20, Errance 10, Implosion 10', () => {
+    expect(Object.fromEntries(Object.entries(CRISES).map(([id, rule]) => [id, rule.weight]))).toEqual({
+      rage: 30,
+      delirium: 30,
+      contagion: 20,
+      wandering: 10,
+      implosion: 10,
+    });
+    const rng = new Rng({ s: 1 });
+    const counts = new Map<CrisisId, number>();
+    for (let i = 0; i < 10000; i++) {
+      const crisis = drawCrisis(rng);
+      counts.set(crisis, (counts.get(crisis) ?? 0) + 1);
+    }
+    const share = (crisis: CrisisId): number => (counts.get(crisis) ?? 0) / 10000;
+    expect(share('rage')).toBeCloseTo(0.3, 1);
+    expect(share('delirium')).toBeCloseTo(0.3, 1);
+    expect(share('contagion')).toBeCloseTo(0.2, 1);
+    expect(share('wandering')).toBeCloseTo(0.1, 1);
+    expect(share('implosion')).toBeCloseTo(0.1, 1);
   });
 
   it('Rage gives +2 power, Délire takes 2', () => {
@@ -265,7 +295,9 @@ describe('Benj (data)', () => {
     expect(benjs.length).toBeGreaterThan(10);
     for (const definition of benjs) {
       const amount = definition.cost <= 3 ? 1 : 2;
-      const own = definition.abilities.filter((ability) => ability.params.condition?.type === 'mad');
+      const own = definition.abilities.filter(
+        (ability) => ability.params.condition?.type === 'status' && ability.params.condition.status === 'mad',
+      );
       expect(own.map((ability) => ability.params.effect)).toEqual([[{ type: 'addPower', amount }]]);
       expect(describeCard(loadDataDir(), definition)).toContain(`Folle : +${amount} puissance.`);
     }

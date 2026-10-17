@@ -8,12 +8,16 @@ export interface StatusRule {
   readonly name: string;
   readonly adjective: string;
   readonly rule?: string;
+  // An addStatus effect only puts it on cards with this tag, unless it says `anyCard` (innate statuses always land).
+  readonly onlyTag?: string;
   // Permanent immunities (Coriace).
   readonly preventsDestroy?: boolean;
   readonly preventsPowerLoss?: boolean;
   // One-shot shields: each stack cancels one destruction / one power loss, then goes away (Protégée).
   readonly absorbsDestroy?: boolean;
   readonly absorbsPowerLoss?: boolean;
+  // ... or one status put by an enemy card (the status is not put).
+  readonly absorbsEnemyStatus?: boolean;
   endOfTurn?(board: Board, card: string, stacks: number): void;
   // Right after the card got this status while it had none.
   onGained?(board: Board, card: string): void;
@@ -24,14 +28,15 @@ export interface StatusRule {
 // Stacks at which a card in overheat is destroyed.
 export const OVERHEAT_LIMIT = 3;
 
-// Folie (`mad`) is a state with no rule of its own: what it does comes from the card (`mad` condition, `onMad`
-// trigger) or from a crisis drawn when the card has nothing defined (`crises.ts`).
+// The hooks below are the default rule of a status: a card defining its own effect for that status (`status`
+// condition, onStatusGained trigger) does not follow them. Immunities and shields always apply.
+// Folie (`mad`) has no rule of its own: its default is a crisis drawn when the card goes mad (`crises.ts`).
 export const STATUSES = {
   mad: {
     name: 'Folie',
     adjective: 'folle',
     onGained(board: Board, card: string): void {
-      board.becomeMad(card);
+      board.startCrisis(card);
     },
   },
   high: {
@@ -62,13 +67,15 @@ export const STATUSES = {
   protected: {
     name: 'Protection',
     adjective: 'protégée',
-    rule: 'annule la prochaine destruction ou le prochain malus de puissance, puis disparaît (un cumul par protection)',
+    rule: 'annule la prochaine destruction, le prochain malus de puissance ou le prochain état posé par une carte ennemie, puis disparaît (un cumul par protection)',
     absorbsDestroy: true,
     absorbsPowerLoss: true,
+    absorbsEnemyStatus: true,
   },
   overheat: {
     name: 'Surchauffe',
     adjective: 'surchauffée',
+    onlyTag: 'trait:machine',
     rule: `détruite dès ${OVERHEAT_LIMIT} cumuls`,
     onStacksChanged(board: Board, card: string, stacks: number): void {
       if (stacks >= OVERHEAT_LIMIT) {
