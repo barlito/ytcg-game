@@ -264,6 +264,27 @@ Revue de toutes les briques avant la réécriture des cartes, comparée à Marve
   - Client : ligne de journal « X se transforme en Y. », animation de 0,7 s en deux temps (la carte garde son ancienne forme jusqu'à son étape, se met de profil sous son ancienne forme dans un éclat doré, puis revient sous sa forme évoluée avec « Évolution » sous le nom), rien sous `prefers-reduced-motion` (pas de rejeu), bouton « Transformation » du bac à sable. L'infobulle d'une carte qui se transforme nomme déjà sa forme évoluée par le texte.
 - **Règles de terrain** : nouvelles règles ajoutées au fil des terrains (le schéma `rules` et `location-rules.ts` sont prévus pour).
 
+## Psychedelic — le Trip (phase 7a)
+
+Première extension réécrite (décisions du 2026-10-17, validées carte par carte). Signature **le Trip** : la Défonce comme **arme** (rendre défoncées les cartes adverses, qui perdent 1 puissance par cumul à chaque fin de tour) et comme **carburant** (gains par carte défoncée, cartes « Défoncée : … » boostées au lieu d'être affaiblies). Coût, puissance, rareté et tags inchangés. Texte exact : [`cards.md`](cards.md).
+
+| Carte | Effet |
+|---|---|
+| Jean Raoulz (légendaire 5/5, le dealer) | À la révélation : rend défoncées les autres cartes Psychedelic sur le plateau (des deux camps). Le dealer ne consomme pas : il ne se compte pas |
+| Warnyx (légendaire 6/7) | À la révélation : rend défoncée une autre carte non défoncée ici au hasard (des deux camps), puis +2 puissance par autre carte alliée défoncée ici (ponctuel ; la carte qu'il vient de défoncer compte si elle est alliée). Plus de bonus continu ni de comptage des deux camps : trop fort |
+| Benjamen (rare 3/3, Benj) | À la révélation : rend folles les cartes défoncées ici (des deux camps). Folle : +1 puissance par autre carte folle ici (sa version de la règle des Benj) |
+| Farf (rare 4/5) | En fin de tour, si tu perds ce lieu : retire la Défonce et l'Ivresse des autres cartes alliées ici et leur donne +1 puissance |
+| Julieng (peu commune 2/2, Julian) | En continu : +1 puissance par carte Linette défoncée sur le plateau (des deux camps : Julian aime les Linettes, à qui qu'elles soient) |
+| Barlito Waa (peu commune 3/3) | Coriace ; à la révélation : devient défoncé (×3). Coriace bloque la perte : un corps défoncé permanent qui nourrit les gains |
+| Babou Linette (commune 1/1) | En continu : +1 puissance par carte ennemie défoncée ici |
+| Bébou Linette (commune 1/1) | À la révélation : rend la carte ennemie la plus forte ici défoncée (×2) |
+| Bibou Linette (commune 1/1) | Inchangée : +1 puissance par autre carte alliée défoncée sur le plateau |
+| Velo (commune 1/1, Veli en solo) | À la révélation : s'il n'y a aucune autre carte alliée ici, devient défoncé ; Défoncée : +3 puissance (un bon trip qui ne redescend jamais : l'effet défini prime sur la Défonce) |
+
+Brique ajoutée : filtre `withoutStatus` (« non défoncée ») dans le filtre partagé (cible, condition `count`, `addPowerPerCard`). Règle d'écriture vérifiée par un test sur `data/` (`card-writing.test.ts`) : une ligne d'effet générée n'apparaît que dans une extension ; les doublons hérités des extensions pas encore réécrites sont dans une liste d'exceptions qui ne fait que rétrécir, et aucune ligne d'une extension réécrite n'y entre. Le texte reste au féminin (« devient défoncée ») : convention du moteur, le sujet est la carte.
+
+**Point ouvert, à playtester** : Jean Raoulz ne touche plus les cartes ennemies (« ennemies ici » puis « partout » jugés trop forts) ; il sert son propre camp et ne gêne que l'adversaire qui joue lui aussi du Psychedelic. Les bots aléatoires le voient faible (rendre ses propres cartes défoncées sans jouer les gains) : à juger en vraie partie.
+
 ## Design Violet Arcade (phase 4c)
 
 Décisions du 2026-10-09, à partir du handoff Claude Design (cartes, plateau, révélation, fin de partie, accueil, deck builder, profil/classement, logo) :
@@ -285,7 +306,7 @@ Décisions du 2026-10-09, à partir du handoff Claude Design (cartes, plateau, r
 6. **Phase 3b — decks ytcg dans le jeu** : `YtcgDeckProvider` (deck validé par ytcg au moment de rejoindre, puis règles du jeu), constructeur de decks dans le client (liste, édition, courbe en direct, erreurs ytcg par champ, connexion expirée). Reste : déploiement sur le domaine ytcg et mise en place côté ytcg (voir [Decks ytcg](#decks-ytcg-phase-3b)).
 7. **Phase 4 — polish** : drag & drop, rendu façon ytcg, animation de chaque événement, pause de lecture, infobulles, bonus/malus visibles, bundle découpé. **4b** : pause proportionnelle aux révélations, mise en avant de chaque carte révélée, main plus grande, revue visuelle de 375 à 1920 px.
 8. **Phase 5a — briques d'effets** : déplacement, déclencheurs « jouée ici » et « détruite », coût modifié, ajout en main, règles de terrain, états Ivresse / Protection / Surchauffe (aucune carte réécrite). Puis réécriture des cartes extension par extension.
-9. **Phase 5b / 5c** : animations des briques, holo par exemplaire. **Phase 6** — briques d'effets 2 ([décisions](#briques-deffets-2-phase-6-décisions-du-2026-10-17)) : **6a** (fait) déplacement déclencheur, états par carte, Protection contre les états adverses, Surchauffe des machines, crises pondérées, vol de puissance, condition de lieu, filtres coût / puissance, `removeStatus` en liste ; **6b** (fait) Endormie, Charmée, Marquée, Enragée, copie ; **6c** (fait) transformation, formes évoluées non deckables, condition « après N tours en jeu ». **6d** : corrections d'un playtest Playwright (tour affiché dans la mise en avant, puissance retenue jusqu'à son flottant, mise en page téléphone et 1280 px, texte complet des terrains sur téléphone, bac à sable). Puis réécriture des cartes extension par extension (Psychedelic d'abord).
+9. **Phase 5b / 5c** : animations des briques, holo par exemplaire. **Phase 6** — briques d'effets 2 ([décisions](#briques-deffets-2-phase-6-décisions-du-2026-10-17)) : **6a** (fait) déplacement déclencheur, états par carte, Protection contre les états adverses, Surchauffe des machines, crises pondérées, vol de puissance, condition de lieu, filtres coût / puissance, `removeStatus` en liste ; **6b** (fait) Endormie, Charmée, Marquée, Enragée, copie ; **6c** (fait) transformation, formes évoluées non deckables, condition « après N tours en jeu ». **6d** : corrections d'un playtest Playwright (tour affiché dans la mise en avant, puissance retenue jusqu'à son flottant, mise en page téléphone et 1280 px, texte complet des terrains sur téléphone, bac à sable). Puis réécriture des cartes extension par extension : **7a** Psychedelic ([le Trip](#psychedelic--le-trip-phase-7a)).
 10. **Phase 5+** : invitations entre amis, déploiement derrière Traefik, cartes Bankai (brique `transform` prête).
 11. **Phase finale — bots d'équilibrage** : un bot glouton rapide (simule ses poses avant de jouer), puis un bot plus malin (Monte Carlo) ; decks d'archétype et constructeur de decks évolutif ; rapport des combos (gain par paire de cartes, popularité dans les decks gagnants).
 
