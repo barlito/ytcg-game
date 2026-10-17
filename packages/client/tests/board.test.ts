@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { catalog } from '../src/catalog.ts';
 import { toLocalClock, turnClock } from '../src/clock.ts';
-import { bannerText } from '../src/components/ReplayBanner.tsx';
+import { bannerText, skipPlacement } from '../src/components/ReplayBanner.tsx';
 import { placeDocked, placeTooltip } from '../src/components/Tooltip.tsx';
 import { handTip } from '../src/lib/handTip.ts';
 import { canDrop, dropActions, parseDropId } from '../src/dnd.ts';
@@ -138,6 +138,10 @@ describe('tooltip placement', () => {
     });
     expect(placeTooltip({ top: 20, bottom: 120, left: 0, width: 40 }, tip, viewport)).toEqual({ left: 8, top: 128 });
     expect(placeTooltip({ top: 300, bottom: 400, left: 380, width: 20 }, tip, viewport).left).toBe(192);
+  });
+
+  it('puts the skip button right above the turn actions', () => {
+    expect(skipPlacement({ top: 600, right: 1264 }, { width: 1280, height: 800 })).toEqual({ bottom: 212, right: 16 });
   });
 
   it('docks a selected hand card tooltip away from the drop targets, or hides it when the card prints its text', () => {
