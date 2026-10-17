@@ -1,4 +1,5 @@
 import { STATUS_IDS, type StatusId, statusRule } from '../abilities/statuses.ts';
+import type { Origin } from '../abilities/board.ts';
 import type { CardInstance } from '../state.ts';
 
 export function stacksOf(card: CardInstance, status: StatusId): number {
@@ -9,7 +10,10 @@ export function activeStatuses(card: CardInstance): StatusId[] {
   return STATUS_IDS.filter((status) => stacksOf(card, status) > 0);
 }
 
-export function hasRule(card: CardInstance, rule: 'preventsDestroy' | 'preventsPowerLoss'): boolean {
+export function hasRule(
+  card: CardInstance,
+  rule: 'preventsDestroy' | 'preventsPowerLoss' | 'refusesAllyBoosts',
+): boolean {
   return activeStatuses(card).some((status) => statusRule(status)[rule] === true);
 }
 
@@ -19,4 +23,17 @@ export function absorbingStatus(
   rule: 'absorbsDestroy' | 'absorbsPowerLoss' | 'absorbsEnemyStatus',
 ): StatusId | null {
   return activeStatuses(card).find((status) => statusRule(status)[rule] === true) ?? null;
+}
+
+// Enragée: a gain from another allied card is refused (its own abilities, enemies and terrains still count).
+export function refusesBoost(card: CardInstance, by: Origin): boolean {
+  return by.owner === card.owner && by.card !== card.uid && hasRule(card, 'refusesAllyBoosts');
+}
+
+// A one-shot power change the card's immunities let through (Coriace: no loss; Enragée: no ally gain).
+export function acceptsChange(card: CardInstance, delta: number, by: Origin | undefined): boolean {
+  if (delta < 0) {
+    return !hasRule(card, 'preventsPowerLoss');
+  }
+  return by === undefined || !refusesBoost(card, by);
 }

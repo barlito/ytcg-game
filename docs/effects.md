@@ -31,7 +31,7 @@ Partagé par la condition `count`, la cible `cards` et l'effet `addPowerPerCard`
 | `side` | `ally`, `enemy`, `all` | `ally` |
 | `scope` | `here` (ce lieu), `elsewhere` (les deux autres), `everywhere` | `here` |
 | `tag` | `universe:kda`, `character:benj`, `family:linette`, `trait:machine`, `trait:epee`… | aucun |
-| `status` | `mad`, `high`, `tough`, `drunk`, `protected`, `overheat` (voir États) | aucun |
+| `status` | `mad`, `high`, `tough`, `drunk`, `protected`, `overheat`, `asleep`, `charmed`, `marked`, `enraged` (voir États) | aucun |
 | `includeSelf` | la carte elle-même compte-t-elle ? | `false` |
 | `minCost`, `maxCost` | coût **imprimé** de la carte (0 à 10) : « les cartes ennemies à 1 de coût ici », « de 2 à 4 de coût » | aucun |
 | `minPower`, `maxPower` | puissance **actuelle** : « avec 9 de puissance ou plus ». Lit la puissance : **refusé dans une capacité `ongoing`** | aucun |
@@ -51,6 +51,10 @@ Marqueurs posés sur une carte du plateau pendant la partie, cumulables. Registr
 | `tough` | Coriace | ne peut être ni détruite ni affaiblie (malus continus compris) |
 | `drunk` | Ivresse | à chaque fin de tour, **par cumul**, gagne ou perd 2 puissance au hasard (tirage seedé) |
 | `protected` | Protection | annule la prochaine destruction, le prochain malus de puissance **ou** le prochain état posé par une carte ennemie, puis perd un cumul (disparaît à zéro) |
+| `asleep` | Sommeil (endormie) | ses **capacités sont coupées** tant qu'elle a un cumul (voir Capacités coupées) ; perd 1 cumul à chaque fin de tour, donc « endormie (×2) » = ce tour et le suivant |
+| `charmed` | Charme (charmée) | ses **capacités sont coupées** tant que la carte qui l'a charmée est sur le plateau (révélée, pas détruite, n'importe où) ; quand elle part, le charme prend fin (`statusChanged` à 0). Plusieurs charmeurs : le charme tient tant qu'il en reste un. Un charme posé par un terrain ou inné n'a pas de charmeur : il dure jusqu'à ce qu'un effet le retire |
+| `marked` | Marque (marquée) | une prime : quand elle est **détruite**, l'adversaire de son propriétaire pioche 1 carte par cumul (quel que soit le destructeur, même son propre camp ; rien si elle survit : Coriace, Protection ; main pleine : rien). Résolue juste après la destruction, avant les capacités `onDestroyed` de la carte |
+| `enraged` | Fureur (enragée) | gagne 1 puissance par cumul à chaque fin de tour ; **ignore les bonus de puissance des autres cartes alliées** : `addPower` / `addPowerPerCard` positifs d'une carte alliée, bonus `ongoing` positifs d'une source alliée, Implosion d'une folle alliée. Ses propres capacités, les cartes ennemies et les terrains la boostent normalement ; les malus passent (Coriace / Protection les arrêtent comme d'habitude). Immunité toujours active, même pour une carte qui définit son effet de Fureur (seul le gain de fin de tour est remplacé) |
 | `overheat` | Surchauffe | détruite dès 3 cumuls (à l'instant où elle les atteint, puis réessayé à chaque fin de tour). Réservée aux **machines** (`trait:machine`) : un effet `addStatus` ne la pose que sur elles, sauf `anyCard: true` ; un état inné `"statuses": ["overheat"]` reste permis sur toute carte. Une carte non machine qui se la pose elle-même sans `anyCard` est refusée au chargement |
 
 **Interactions** (toutes testées) :
@@ -60,7 +64,9 @@ Marqueurs posés sur une carte du plateau pendant la partie, cumulables. Registr
 - Protection contre les **états** : un état posé par une carte **ennemie** (effet `addStatus`, crise Contagion d'une carte ennemie) n'est pas posé et un cumul de Protection est dépensé (événement `statusChanged` avec `spent: true`), quel que soit le nombre de cumuls de l'effet. Ne sont **pas** absorbés : la Protection elle-même, les états innés de la carte, ceux posés par une carte alliée, ceux posés par un **terrain** (il n'appartient à personne). Coriace ne bloque pas les états.
 - Ivresse tire toujours son nombre au hasard, même si le −2 est ignoré (Coriace) ou absorbé (Protection) : le rejeu reste identique.
 - Surchauffe + Coriace : la carte n'est jamais détruite, ses cumuls continuent de monter ; si la Coriace disparaît, elle est détruite à la fin du tour. Surchauffe + Protection : la Protection retarde la destruction d'une fois (le cumul de Protection est dépensé, la carte reste à 3+), la fin de tour la détruit.
-- Un état s'ajoute au registre `statuses.ts` : texte, `rule`, puis les crochets `preventsDestroy` / `preventsPowerLoss` (immunités), `absorbsDestroy` / `absorbsPowerLoss` (boucliers à cumuls), `endOfTurn`, `onStacksChanged` et `onGained` (premier cumul).
+- Un état s'ajoute au registre `statuses.ts` : texte, `rule`, puis les crochets `preventsDestroy` / `preventsPowerLoss` / `refusesAllyBoosts` (immunités), `absorbsDestroy` / `absorbsPowerLoss` (boucliers à cumuls), `disablesAbilities` (capacités coupées), `endOfTurn`, `onStacksChanged`, `onGained` (premier cumul) et `onDestroyed` (la carte vient d'être détruite).
+
+**Capacités coupées (Endormie, Charmée).** Tant qu'une carte a un état qui coupe ses capacités (`disablesAbilities` dans le registre), **aucune** de ses capacités ne se déclenche (`endOfTurn`, `onCardPlayedHere`, `onMoved`, `onDestroyed`, `onStatusGained`…) et ses bonus `ongoing` ne comptent plus, pour les autres comme pour elle. Ce qui est déjà résolu le reste (un `onReveal` passé, une puissance gagnée). Sa **puissance imprimée** et ses modificateurs comptent toujours ; ses **états** fonctionnent toujours (Coriace la protège, Protection absorbe, Défonce la ronge) ; une **crise** de Folie continue d'agir (c'est sa folie, pas une capacité). Un seul point de contrôle dans le moteur (`AbilityRunner.run`, `ongoingBonuses`). Une carte qui définit son propre effet pour cet état (« Endormie : +3 puissance ») suit la règle générale : ses capacités restent actives et l'état ne s'use pas.
 
 **États par carte (le « Trip »).** Une carte peut définir ses propres effets pour un état : condition `{ "type": "status", "status": "high" }` (« Défoncée : +3 puissance. », « En fin de tour, si elle est défoncée : … ») et déclencheur `onStatusGained` + `status` (« Quand elle devient ivre : … »). **L'effet défini par la carte prime sur la règle par défaut de l'état** : une telle carte ne subit plus les crochets d'action de cet état (`onGained`, `onStacksChanged`, `endOfTurn`) : pas de crise de Folie, pas de perte de la Défonce, pas de tirage d'Ivresse, pas de destruction par la Surchauffe (une machine que la Surchauffe booste). Les immunités et boucliers (Coriace, Protection) s'appliquent toujours. Le mot-clé d'un état inné ainsi remplacé s'affiche sans sa règle.
 
@@ -127,8 +133,9 @@ Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de no
 | `move` | `destination` : `random` (défaut), `left`, `right` | déplace les cibles vers un autre lieu **de leur camp** qui a une place libre ; sans place, rien ne se passe |
 | `addCost` | `amount` (≠ 0, négatif = moins cher), `cards` : `hand` (défaut) ou `next`, `tag` optionnel | change le coût des cartes en **main** du propriétaire (les deux joueurs sur un terrain) ; coût plancher 0 |
 | `addToHand` | `card` (id du catalogue, absent = copie de cette carte), `count` (1 à 3, défaut 1) | ajoute des cartes neuves en main ; rien si la main est pleine (7) |
+| `copyReveal` | — | « copie l'effet de révélation de la dernière carte alliée jouée ici » : rejoue les capacités `onReveal` de la dernière **autre** carte alliée révélée sur ce lieu avant celle-ci (même si elle est partie ou détruite depuis), comme si la carte qui copie les portait (son camp, son lieu, `self` = elle). Rien s'il n'y en a pas. Copier une carte qui copie ne fait rien (pas de boucle). Cartes seulement (refusé sur un terrain), jamais `ongoing` |
 
-`draw`, `addCost` et `addToHand` ignorent la cible de la capacité.
+`draw`, `addCost`, `addToHand` et `copyReveal` ignorent la cible de la capacité.
 
 ### Déplacement (`move`)
 
@@ -240,6 +247,11 @@ Terrain : « Quand une carte est jouée ici : chaque carte ici gagne +1 ».
 { "trigger": "onReveal", "effect": { "type": "addToHand", "card": "<id d'une carte du catalogue>" } }
 ```
 
+« À la révélation : copie l'effet de révélation de la dernière carte alliée jouée ici. »
+```json
+{ "trigger": "onReveal", "effect": { "type": "copyReveal" } }
+```
+
 États : « devient ivre (×2) », « rend la carte alliée la plus faible protégée ».
 ```json
 { "trigger": "onReveal", "effect": { "type": "addStatus", "status": "drunk", "stacks": 2 } }
@@ -248,4 +260,4 @@ Terrain : « Quand une carte est jouée ici : chaque carte ici gagne +1 ».
 
 ## Ce qui n'existe pas encore
 
-Transformation (Bankai : une version renforcée quand la version de base est en jeu), défausse, sacrifice, condition de pose, états Endormie, Charmée, Saignement, Marquée, Enragée (voir le game design), Chaque nouvelle brique = une classe, son schéma et ses tests (voir `packages/engine/CLAUDE.md`).
+Transformation (Bankai : une version renforcée quand la version de base est en jeu), défausse, sacrifice, condition de pose, Saignement (écarté). Chaque nouvelle brique = une classe, son schéma et ses tests (voir `packages/engine/CLAUDE.md`).

@@ -7,7 +7,7 @@ import {
   type OngoingEffect,
   cardFilterSchema,
 } from './board.ts';
-import { AddCostEffect, AddToHandEffect, MoveEffect, owners } from './effects-cards.ts';
+import { AddCostEffect, AddToHandEffect, CopyRevealEffect, MoveEffect, owners } from './effects-cards.ts';
 import { StealPowerEffect } from './effects-power.ts';
 import { type StatusId, statusRule, statusSchema } from './statuses.ts';
 
@@ -27,9 +27,9 @@ export class AddPowerEffect implements OngoingEffect {
     this.params = params;
   }
 
-  apply(board: Board, _source: AbilitySource, targets: readonly string[]): void {
+  apply(board: Board, source: AbilitySource, targets: readonly string[]): void {
     for (const target of targets) {
-      board.addPower(target, this.params.amount);
+      board.addPower(target, this.params.amount, source);
     }
   }
 
@@ -61,7 +61,7 @@ export class AddPowerPerCardEffect implements OngoingEffect {
       return;
     }
     for (const target of targets) {
-      board.addPower(target, bonus);
+      board.addPower(target, bonus, source);
     }
   }
 
@@ -129,7 +129,7 @@ export class AddStatusEffect implements Effect {
     const tag = anyCard ? undefined : statusRule(status).onlyTag;
     for (const target of targets) {
       if (tag === undefined || board.hasTag(target, tag)) {
-        board.addStatus(target, status, stacks, source.owner);
+        board.addStatus(target, status, stacks, source);
       }
     }
   }
@@ -184,6 +184,7 @@ export const effectSchema = z.discriminatedUnion('type', [
   AddCostEffect.schema,
   AddToHandEffect.schema,
   StealPowerEffect.schema,
+  CopyRevealEffect.schema,
 ]);
 
 export type EffectParams = z.output<typeof effectSchema>;
@@ -191,11 +192,25 @@ export type EffectParams = z.output<typeof effectSchema>;
 export const ONGOING_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['addPower', 'addPowerPerCard']);
 
 // Effects that ignore the target of their ability.
-export const UNTARGETED_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['draw', 'addCost', 'addToHand']);
+export const UNTARGETED_EFFECTS: ReadonlySet<EffectParams['type']> = new Set([
+  'draw',
+  'addCost',
+  'addToHand',
+  'copyReveal',
+]);
 
-type OtherEffectParams = Extract<EffectParams, { type: 'move' | 'addCost' | 'addToHand' | 'stealPower' }>;
+type OtherEffectParams = Extract<
+  EffectParams,
+  { type: 'move' | 'addCost' | 'addToHand' | 'stealPower' | 'copyReveal' }
+>;
 
-const OTHER_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['move', 'addCost', 'addToHand', 'stealPower']);
+const OTHER_EFFECTS: ReadonlySet<EffectParams['type']> = new Set([
+  'move',
+  'addCost',
+  'addToHand',
+  'stealPower',
+  'copyReveal',
+]);
 
 function isOtherEffect(params: EffectParams): params is OtherEffectParams {
   return OTHER_EFFECTS.has(params.type);
@@ -231,5 +246,7 @@ function createOtherEffect(params: OtherEffectParams): Effect {
       return new AddToHandEffect(params);
     case 'stealPower':
       return new StealPowerEffect(params);
+    case 'copyReveal':
+      return new CopyRevealEffect();
   }
 }

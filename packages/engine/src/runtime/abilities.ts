@@ -3,6 +3,7 @@ import type { AbilitySource } from '../abilities/board.ts';
 import type { StatusId } from '../abilities/statuses.ts';
 import type { GameBoard } from './board.ts';
 import { opponentOf } from '../state.ts';
+import { lastAllyPlayedHere } from './copy.ts';
 import { playedMatches } from './filters.ts';
 import { cardAt, locationAt } from './state-access.ts';
 
@@ -11,6 +12,8 @@ export class AbilityRunner {
   private readonly board: GameBoard;
   // Cards resolving their onMoved abilities: moving one of them again does not re-fire them (no endless loop).
   private readonly moving = new Set<string>();
+  // While a copied onReveal runs, another copy does nothing (a copier copying a copier: no loop).
+  private copying = false;
 
   constructor(board: GameBoard) {
     this.board = board;
@@ -59,6 +62,17 @@ export class AbilityRunner {
     this.moving.delete(uid);
   }
 
+  fireCopy(source: AbilitySource): void {
+    const model =
+      source.card === null || this.copying ? null : lastAllyPlayedHere(this.board.state, source.card, source.location);
+    if (model === null) {
+      return;
+    }
+    this.copying = true;
+    this.run(this.board.definitionOf(model).abilities, sourceWithout(source), 'onReveal');
+    this.copying = false;
+  }
+
   fireLocation(index: number, trigger: Trigger, played?: string): void {
     const location = locationAt(this.board.state, index);
     if (!location.revealed) {
@@ -81,9 +95,13 @@ export class AbilityRunner {
     this.fireLocation(location, 'onCardPlayedHere', played);
   }
 
+  // The one place where abilities fire: a card whose abilities are off (Endormie, Charmée) does nothing.
   private run(abilities: readonly CompiledAbility[], source: AbilitySource, trigger: Trigger): void {
+    if (source.card !== null && this.board.abilitiesOff(source.card)) {
+      return;
+    }
     for (const ability of abilities) {
-      if (ability.trigger !== trigger || !this.playedAllows(ability, source)) {
+      if (!this.matches(ability, source, trigger)) {
         continue;
       }
       // A card destroyed by one of its own abilities stops there (its onDestroyed abilities still run).
@@ -112,12 +130,21 @@ export class AbilityRunner {
     return trigger !== 'onDestroyed' && source.card !== null && cardAt(this.board.state, source.card).zone !== 'board';
   }
 
+  private matches(ability: CompiledAbility, source: AbilitySource, trigger: Trigger): boolean {
+    return ability.trigger === trigger && this.playedAllows(ability, source);
+  }
+
   private playedAllows(ability: CompiledAbility, source: AbilitySource): boolean {
     if (source.played === undefined) {
       return true;
     }
     return playedMatches(this.board, source, source.played, ability.params.played ?? { side: 'all' });
   }
+}
+
+// The copied abilities resolve as an onReveal of the copier: no `played` card.
+function sourceWithout({ owner, location, card }: AbilitySource): AbilitySource {
+  return { owner, location, card };
 }
 
 function playedPart(played: string | undefined): { played?: string } {

@@ -48,7 +48,7 @@ export const CRISES = {
       if (sane.length > 0 && source.card !== null) {
         const target = board.rng.pick(sane);
         board.recordEvent({ type: 'contagionSpread', from: source.card, to: target });
-        board.addStatus(target, 'mad', 1, source.owner);
+        board.addStatus(target, 'mad', 1, source);
       }
     },
   },
@@ -68,7 +68,7 @@ export const CRISES = {
         return;
       }
       for (const uid of mad) {
-        board.addPower(uid, IMPLOSION_BONUS);
+        board.addPower(uid, IMPLOSION_BONUS, source);
       }
     },
   },

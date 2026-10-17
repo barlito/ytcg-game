@@ -23,7 +23,7 @@ export class StealPowerEffect implements Effect {
       .filter((target) => target !== source.card)
       .reduce((sum, target) => sum - board.addPower(target, -this.params.amount), 0);
     if (stolen > 0) {
-      board.addPower(source.card, stolen);
+      board.addPower(source.card, stolen, source);
     }
   }
 }

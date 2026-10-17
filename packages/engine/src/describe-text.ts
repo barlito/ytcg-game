@@ -75,6 +75,12 @@ export function the(noun: string): string {
   return /^[aeiouéè]/i.test(noun) ? `l'${noun}` : `la ${noun}`;
 }
 
+// « la Défonce », « l'Ivresse », « le Sommeil ».
+export function statusNoun(status: StatusId): string {
+  const { name, masculine = false } = statusRule(status);
+  return masculine && !/^[aeiouéè]/i.test(name) ? `le ${name}` : the(name);
+}
+
 export function to(target: string): string {
   return target.startsWith('les ') ? `aux ${target.slice(4)}` : `à ${target}`;
 }

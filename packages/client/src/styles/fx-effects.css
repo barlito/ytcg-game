@@ -334,6 +334,23 @@
   color: var(--soon);
 }
 
+/* Endormie, Charmée: the abilities are off, the card is dimmed. */
+.is-dormant .tcard__body {
+  filter: saturate(0.45) brightness(0.8);
+}
+.fx-float.tone-status-asleep {
+  color: #8fa8ff;
+}
+.fx-float.tone-status-charmed {
+  color: #ff7ac8;
+}
+.fx-float.tone-status-marked {
+  color: #ff4d5e;
+}
+.fx-float.tone-status-enraged {
+  color: #ff8a2a;
+}
+
 /* Protection: a translucent cyan shield; it shatters when it absorbs. */
 .tcard__shield {
   position: absolute;

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { type Condition, type Effect, type TargetSelector, playedFilterSchema } from './board.ts';
 import { conditionSchema, createCondition } from './conditions.ts';
-import { ONGOING_EFFECTS, UNTARGETED_EFFECTS, createEffect, effectSchema } from './effects.ts';
+import { type EffectParams, ONGOING_EFFECTS, UNTARGETED_EFFECTS, createEffect, effectSchema } from './effects.ts';
 import { type StatusId, statusRule, statusSchema } from './statuses.ts';
 import { abilityFilters, rangeIssues, readsPower } from './filters.ts';
 import { createTarget, targetSchema } from './targets.ts';
@@ -155,6 +155,11 @@ export function locationAbilityIssues(ability: AbilityParams): string[] {
   return issues;
 }
 
+const LOCATION_REFUSED: Partial<Record<EffectParams['type'], string>> = {
+  stealPower: 'a location has no power: no "stealPower"',
+  copyReveal: 'a location plays no card: no "copyReveal"',
+};
+
 function locationEffectIssues(ability: AbilityParams): string[] {
   const issues: string[] = [];
   if (ability.target.type === 'self' && !isUntargeted(ability)) {
@@ -172,9 +177,7 @@ function locationEffectIssues(ability: AbilityParams): string[] {
   if (ability.condition?.type === 'location') {
     issues.push('a location has no owner: no "location" condition');
   }
-  if (ability.effect.some((effect) => effect.type === 'stealPower')) {
-    issues.push('a location has no power: no "stealPower"');
-  }
+  issues.push(...new Set(ability.effect.flatMap((effect) => LOCATION_REFUSED[effect.type] ?? [])));
   if (ability.effect.some((effect) => effect.type === 'addToHand' && effect.card === undefined)) {
     issues.push('a location "addToHand" needs a "card" (there is no card to copy)');
   }

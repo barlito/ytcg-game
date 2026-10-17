@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { opponentOf } from '../state.ts';
 import type { Board } from './board.ts';
 
 // A status is a marker put on a board card during the game, with optional rules of its own.
@@ -8,17 +9,25 @@ export interface StatusRule {
   readonly name: string;
   readonly adjective: string;
   readonly rule?: string;
+  // The noun takes « le » (« le Sommeil »); feminine by default.
+  readonly masculine?: boolean;
   // An addStatus effect only puts it on cards with this tag, unless it says `anyCard` (innate statuses always land).
   readonly onlyTag?: string;
   // Permanent immunities (Coriace).
   readonly preventsDestroy?: boolean;
   readonly preventsPowerLoss?: boolean;
+  // Refuses power gains from other allied cards, one-shot or ongoing (Enragée).
+  readonly refusesAllyBoosts?: boolean;
   // One-shot shields: each stack cancels one destruction / one power loss, then goes away (Protégée).
   readonly absorbsDestroy?: boolean;
   readonly absorbsPowerLoss?: boolean;
   // ... or one status put by an enemy card (the status is not put).
   readonly absorbsEnemyStatus?: boolean;
+  // Default rule: the card's abilities do not fire and its ongoing bonuses stop counting (its statuses still work).
+  readonly disablesAbilities?: boolean;
   endOfTurn?(board: Board, card: string, stacks: number): void;
+  // Right after the card was destroyed with this status (it has left the board).
+  onDestroyed?(board: Board, card: string, stacks: number): void;
   // Right after the card got this status while it had none.
   onGained?(board: Board, card: string): void;
   // Right after the stacks of this status increased.
@@ -87,6 +96,40 @@ export const STATUSES = {
       if (stacks >= OVERHEAT_LIMIT) {
         board.destroy(card);
       }
+    },
+  },
+  asleep: {
+    name: 'Sommeil',
+    masculine: true,
+    adjective: 'endormie',
+    rule: 'ses capacités ne fonctionnent plus ; perd 1 cumul à chaque fin de tour',
+    disablesAbilities: true,
+    endOfTurn(board: Board, card: string): void {
+      board.loseStack(card, 'asleep');
+    },
+  },
+  charmed: {
+    name: 'Charme',
+    masculine: true,
+    adjective: 'charmée',
+    rule: "ses capacités ne fonctionnent plus tant que la carte qui l'a charmée est en jeu",
+    disablesAbilities: true,
+  },
+  marked: {
+    name: 'Marque',
+    adjective: 'marquée',
+    rule: "quand elle est détruite, l'adversaire de son propriétaire pioche 1 carte par cumul",
+    onDestroyed(board: Board, card: string, stacks: number): void {
+      board.draw(opponentOf(board.ownerOf(card)), stacks);
+    },
+  },
+  enraged: {
+    name: 'Fureur',
+    adjective: 'enragée',
+    rule: 'gagne 1 puissance par cumul à chaque fin de tour ; ignore les bonus de puissance des autres cartes alliées',
+    refusesAllyBoosts: true,
+    endOfTurn(board: Board, card: string, stacks: number): void {
+      board.addPower(card, stacks);
     },
   },
 } as const satisfies Record<string, StatusRule>;

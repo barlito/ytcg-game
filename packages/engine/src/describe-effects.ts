@@ -9,8 +9,8 @@ import {
   scope,
   signed,
   statusAdjective,
+  statusNoun,
   tagLabel,
-  the,
   to,
 } from './describe-text.ts';
 
@@ -43,6 +43,7 @@ const FOLLOWING: { [K in EffectParams['type']]: Following<K> | null } = {
   draw: null,
   addCost: null,
   addToHand: null,
+  copyReveal: null,
 };
 
 export function describeFollowingEffect(effect: EffectParams, plural: boolean): string | null {
@@ -68,6 +69,8 @@ export function describeEffect(context: Context, effect: EffectParams, target: T
       return describeAddStatus(effect, target);
     case 'removeStatus':
       return `retire ${removedStatus(effect)} ${of(target.text)}`;
+    case 'copyReveal':
+      return "copie l'effet de révélation de la dernière carte alliée jouée ici";
     case 'draw':
     case 'move':
     case 'addCost':
@@ -133,7 +136,7 @@ function removedStatus(effect: Extract<EffectParams, { type: 'removeStatus' }>):
   if (statuses === null) {
     return 'tous les états';
   }
-  const names = statuses.map((status) => the(statusRule(status).name));
+  const names = statuses.map(statusNoun);
   const last = names.pop() ?? '';
   return names.length === 0 ? last : `${names.join(', ')} et ${last}`;
 }

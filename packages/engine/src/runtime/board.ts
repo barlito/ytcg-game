@@ -1,33 +1,17 @@
-import type { CompiledAbility } from '../abilities/ability.ts';
-import {
-  type AbilitySource,
-  type Board,
-  type CardFilter,
-  type MoveDestination,
-  isOngoingEffect,
-} from '../abilities/board.ts';
+import type { AbilitySource, Board, CardFilter, MoveDestination, Origin } from '../abilities/board.ts';
 import type { StatusId } from '../abilities/statuses.ts';
 import type { CardDefinition, Catalog } from '../catalog.ts';
 import { Rng } from '../rng.ts';
 import { MAX_HAND } from '../rules.ts';
 import { type GameEvent, type GameState, PLAYERS, type PlayerIndex } from '../state.ts';
 import { moveCard } from './move.ts';
-import { crisisBonus, runCrisis, startCrisis } from './crises.ts';
+import { runCrisis, startCrisis } from './crises.ts';
+import { type OngoingBonus, ongoingBonuses } from './ongoing.ts';
 import { cardMatches, inScope, onSide } from './filters.ts';
 import * as hand from './hand.ts';
 import * as statusChanges from './status-changes.ts';
 import { cardAt, locationAt } from './state-access.ts';
-import { absorbingStatus, hasRule, stacksOf } from './statuses.ts';
-
-export interface OngoingBonus {
-  source: AbilitySource;
-  amount: number;
-}
-
-interface AbilityHolder {
-  abilities: readonly CompiledAbility[];
-  source: AbilitySource;
-}
+import { absorbingStatus, acceptsChange, hasRule, stacksOf } from './statuses.ts';
 
 // The board as abilities see it: queries on revealed cards and the elementary mutations.
 export class GameBoard implements Board {
@@ -40,6 +24,8 @@ export class GameBoard implements Board {
   onStatusGained: (uid: string, status: StatusId) => void = () => undefined;
   // Set by the Runtime: fires the onMoved abilities of a card that just moved.
   onMoved: (uid: string) => void = () => undefined;
+  // Set by the Runtime: runs the copied onReveal abilities for the copying card.
+  copyReveal: (source: AbilitySource) => void = () => undefined;
   private readonly events: GameEvent[];
 
   constructor(catalog: Catalog, state: GameState, events: GameEvent[]) {
@@ -55,6 +41,10 @@ export class GameBoard implements Board {
 
   recordEvent(event: GameEvent): void {
     this.events.push(event);
+  }
+
+  ownerOf(uid: string): PlayerIndex {
+    return cardAt(this.state, uid).owner;
   }
 
   defIdOf(uid: string): string {
@@ -92,23 +82,12 @@ export class GameBoard implements Board {
 
   // Non-zero ongoing bonuses received by a board card, one entry per source.
   ongoingBonuses(uid: string): OngoingBonus[] {
-    const card = cardAt(this.state, uid);
-    if (card.zone !== 'board') {
-      return [];
-    }
-    const keepsLosses = !hasRule(card, 'preventsPowerLoss');
-    const bonuses: OngoingBonus[] = [];
-    for (const { abilities, source } of this.ongoingHolders()) {
-      const amount = abilities.reduce(
-        (sum, ability) => sum + this.ongoingBonusFor(uid, ability, source, keepsLosses),
-        0,
-      );
-      if (amount !== 0) {
-        bonuses.push({ source, amount });
-      }
-    }
-    const crisis = crisisBonus(this.state, uid, keepsLosses);
-    return crisis === 0 ? bonuses : [...bonuses, { source: this.sourceOf(uid), amount: crisis }];
+    return ongoingBonuses(this, uid);
+  }
+
+  // Endormie, Charmée: the card's abilities do not fire and its ongoing bonuses stop counting.
+  abilitiesOff(uid: string): boolean {
+    return statusChanges.abilitiesOff(this, uid);
   }
 
   // The card as the source of its own abilities (it must be on the board).
@@ -141,14 +120,14 @@ export class GameBoard implements Board {
     return this.state.locations.map((location): [number, number] => [sum(location.cards[0]), sum(location.cards[1])]);
   }
 
-  addPower(uid: string, delta: number): number {
+  addPower(uid: string, delta: number, by?: Origin): number {
     const card = cardAt(this.state, uid);
-    if (card.zone !== 'board' || delta === 0 || (delta < 0 && hasRule(card, 'preventsPowerLoss'))) {
+    if (card.zone !== 'board' || delta === 0 || !acceptsChange(card, delta, by)) {
       return 0;
     }
     const shield = delta < 0 ? absorbingStatus(card, 'absorbsPowerLoss') : null;
     if (shield !== null) {
-      statusChanges.spendStack(this, uid, shield);
+      statusChanges.dropStack(this, uid, shield, true);
       return 0;
     }
     card.powerModifier += delta;
@@ -177,13 +156,15 @@ export class GameBoard implements Board {
     }
     const shield = absorbingStatus(card, 'absorbsDestroy');
     if (shield !== null) {
-      statusChanges.spendStack(this, uid, shield);
+      statusChanges.dropStack(this, uid, shield, true);
       return;
     }
     const slot = locationAt(this.state, card.location).cards[card.owner];
     slot.splice(slot.indexOf(uid), 1);
     card.zone = 'destroyed';
     this.events.push({ type: 'cardDestroyed', card: uid });
+    statusChanges.releaseCharms(this, uid);
+    statusChanges.statusesOnDestroyed(this, uid);
     this.onDestroyed(uid);
   }
 
@@ -203,7 +184,7 @@ export class GameBoard implements Board {
     hand.addToHand(this.handContext, player, defId, from);
   }
 
-  addStatus(uid: string, status: StatusId, stacks: number, by: PlayerIndex | null): void {
+  addStatus(uid: string, status: StatusId, stacks: number, by: Origin): void {
     statusChanges.addStatus(this, uid, { status, stacks, by });
   }
 
@@ -211,32 +192,7 @@ export class GameBoard implements Board {
     statusChanges.removeStatus(this, uid, status);
   }
 
-  // A card protected from power loss ignores the negative ongoing bonuses.
-  private ongoingBonusFor(uid: string, ability: CompiledAbility, source: AbilitySource, keepsLosses: boolean): number {
-    if (ability.trigger !== 'ongoing' || !(ability.condition?.isMet(this, source) ?? true)) {
-      return 0;
-    }
-    if (!ability.target.select(this, source).includes(uid)) {
-      return 0;
-    }
-    return ability.effects
-      .filter(isOngoingEffect)
-      .map((effect) => effect.ongoingBonus(this, source))
-      .filter((bonus) => bonus > 0 || keepsLosses)
-      .reduce((sum, bonus) => sum + bonus, 0);
-  }
-
-  private *ongoingHolders(): Generator<AbilityHolder> {
-    for (const [index, location] of this.state.locations.entries()) {
-      if (location.revealed) {
-        const { abilities } = this.catalog.location(location.defId);
-        yield { abilities, source: { owner: null, location: index, card: null } };
-      }
-      for (const player of PLAYERS) {
-        for (const uid of location.cards[player]) {
-          yield { abilities: this.definitionOf(uid).abilities, source: { owner: player, location: index, card: uid } };
-        }
-      }
-    }
+  loseStack(uid: string, status: StatusId): void {
+    statusChanges.dropStack(this, uid, status, false);
   }
 }

@@ -4,6 +4,7 @@ import { effectLines, effectTier } from '../src/components/card/effectText.ts';
 import { rarityGlyph, rarityKey } from '../src/components/card/rarity.ts';
 import { catalog } from '../src/catalog.ts';
 import { statusBadge } from '../src/components/card/statusBadge.ts';
+import { stateClasses } from '../src/components/card/cardStates.ts';
 import { holoPreset } from '../src/components/card/Holo.tsx';
 import { holoPose } from '../src/lib/holoPose.ts';
 
@@ -90,6 +91,21 @@ describe('statusBadge', () => {
     });
     expect(statusBadge('Folie', { mad: 1 })?.crisis).toBeNull();
     expect(statusBadge('Inconnu', {})).toBeNull();
+  });
+
+  it('knows the phase 6b statuses, each with its own icon', () => {
+    expect(statusBadge('Sommeil ×2', { asleep: 2 })).toMatchObject({ id: 'asleep', stacks: 2 });
+    expect(statusBadge('Charme', { charmed: 1 })).toMatchObject({ id: 'charmed', stacks: 1 });
+    expect(statusBadge('Marque', { marked: 1 })).toMatchObject({ id: 'marked' });
+    expect(statusBadge('Fureur ×3', { enraged: 3 })).toMatchObject({ id: 'enraged', stacks: 3 });
+  });
+});
+
+describe('stateClasses', () => {
+  it('dims a card whose abilities are off (Endormie, Charmée)', () => {
+    expect(stateClasses({ asleep: 1 })).toContain('is-dormant');
+    expect(stateClasses({ charmed: 1 })).toContain('is-dormant');
+    expect(stateClasses({ marked: 1 })).not.toContain('is-dormant');
   });
 });
 

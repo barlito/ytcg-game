@@ -44,6 +44,9 @@ export interface AbilitySource {
   readonly played?: string;
 }
 
+// Who applies a change: a card and its owner, or a terrain (both null).
+export type Origin = Pick<AbilitySource, 'owner' | 'card'>;
+
 export const MOVE_DESTINATIONS = ['random', 'left', 'right'] as const;
 
 export type MoveDestination = (typeof MOVE_DESTINATIONS)[number];
@@ -62,14 +65,18 @@ export interface Board extends BoardView {
   readonly rng: Rng;
   // Adds an event that is not a state change by itself (announcements for the animation).
   recordEvent(event: GameEvent): void;
-  // Returns the change really applied (0 when Coriace or Protection stopped a loss).
-  addPower(card: string, delta: number): number;
+  // Returns the change really applied (0 when Coriace or Protection stopped a loss, or Enragée an ally gain).
+  // `by`: the card giving it, when an ability does (absent: the card's own status or madness).
+  addPower(card: string, delta: number, by?: Origin): number;
   draw(player: PlayerIndex, count: number): void;
   destroy(card: string): void;
-  // `by`: owner of the card applying it (null for a terrain); a Protection absorbs a status put by the enemy.
-  addStatus(card: string, status: StatusId, stacks: number, by: PlayerIndex | null): void;
+  // `by`: the card applying it and its owner (both null for a terrain); a Protection absorbs a status put by the
+  // enemy, a charm lasts while its card is on the board.
+  addStatus(card: string, status: StatusId, stacks: number, by: Origin): void;
   // null removes every status.
   removeStatus(card: string, status: StatusId | null): void;
+  // One stack of the status wears off (gone at zero).
+  loseStack(card: string, status: StatusId): void;
   // Moves a board card to another location of its side that has a free place; nothing happens without one.
   move(card: string, destination: MoveDestination): void;
   // Changes the cost of the cards in hand of a player (tag null = every card), or of the next card played.
@@ -78,8 +85,11 @@ export interface Board extends BoardView {
   // Adds a new copy of a catalog card to the hand (nothing when the hand is full).
   // `from`: the card carrying the ability, when there is one (the animation flies the new card from it).
   addToHand(player: PlayerIndex, defId: string, from?: string): void;
+  // The onReveal abilities of the last other allied card revealed at the source's location run for the source.
+  copyReveal(source: AbilitySource): void;
   // A card following the default rule of Folie just went mad: draws its crisis.
   startCrisis(card: string): void;
+  ownerOf(card: string): PlayerIndex;
   // Id of the definition of a board card.
   defIdOf(card: string): string;
 }
