@@ -5,9 +5,10 @@
   z-index: 200;
   display: grid;
   gap: 0.5rem;
-  max-width: 14rem;
+  box-sizing: border-box;
+  width: min(14rem, calc(100vw - 1rem));
   max-height: calc(100vh - 6rem);
-  overflow-y: auto;
+  overflow: hidden auto;
   padding: 0.5rem 0.75rem;
   background: rgb(10 5 30 / 92%);
   border: 1px solid #ff3ea5;
@@ -24,8 +25,31 @@
   gap: 0.15rem;
 }
 
+.sandbox input,
+.sandbox select,
+.sandbox button {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Phones: below the top bar, the closed toggle off the turn tracker; open, half the screen at most. */
+@media (max-width: 900px) {
+  .sandbox {
+    top: 7.75rem;
+    right: 0.25rem;
+    max-height: 50vh;
+  }
+  .sandbox:not([open]) {
+    width: auto;
+    padding: 0.3rem 0.5rem;
+    opacity: 0.85;
+  }
+}
+
 .sandbox__scenarios {
   display: grid;
+  min-width: 0;
   gap: 0.25rem;
   margin: 0;
   padding: 0.4rem;

@@ -72,8 +72,10 @@ function ScenarioButtons({
 }
 
 function Controls({ options, onChange, onReplay, onScenario }: PanelProps): React.JSX.Element {
+  // Collapsed on phones: open, it would cover the board.
+  const [startOpen] = useState(() => !window.matchMedia('(max-width: 900px)').matches);
   return (
-    <details className="sandbox" open>
+    <details className="sandbox" open={startOpen}>
       <summary>Bac à sable</summary>
       <Range
         label="Cartes en main"
