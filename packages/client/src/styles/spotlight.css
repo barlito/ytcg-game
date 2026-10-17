@@ -15,6 +15,7 @@
     radial-gradient(ellipse 50% 60% at 40% 50%, color-mix(in srgb, var(--halo) 18%, transparent), transparent 70%),
     rgb(6 3 12 / 86%);
   backdrop-filter: blur(4px);
+  overflow: hidden;
   animation: spot-backdrop var(--spot-ms) ease-out forwards;
 }
 .spotlight[data-rarity='uncommon'] {
@@ -53,6 +54,22 @@
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--cyan);
+  animation: spot-label var(--spot-ms) ease both;
+}
+/* Shown only while the backdrop is opaque: never over a readable top bar. */
+@keyframes spot-label {
+  from,
+  8% {
+    opacity: 0;
+  }
+  14%,
+  78% {
+    opacity: 1;
+  }
+  84%,
+  to {
+    opacity: 0;
+  }
 }
 .spotlight__panel {
   display: grid;
@@ -250,6 +267,22 @@
   object-fit: cover;
 }
 
+@keyframes spot-info-up {
+  from,
+  25% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  36%,
+  82% {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 /* Phones and short windows: the card above its panel. */
 @media (max-width: 700px), (max-height: 520px) {
   .spotlight__panel {
@@ -263,9 +296,11 @@
   .spotlight__terrain {
     width: min(86vw, 360px);
   }
+  /* Rises from below: sliding in from the right would leave the screen. */
   .spotlight__info {
     gap: 0.7rem;
     text-align: center;
+    animation-name: spot-info-up;
   }
   .spotlight__effect {
     padding: 0.7rem 0.9rem;
