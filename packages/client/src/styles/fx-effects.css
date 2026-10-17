@@ -541,11 +541,8 @@
   }
 }
 
-/* Phones: the pills replace the tile text so the tile keeps its height. */
+/* Phones: the pills stack under the tile text. */
 @media (max-width: 700px) {
-  .tile-text:has(.tile-rules) .location-text {
-    display: none;
-  }
   .tile-rules {
     flex-direction: column;
     flex-wrap: nowrap;

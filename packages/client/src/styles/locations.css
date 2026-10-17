@@ -109,10 +109,6 @@
 .location-tile.tone-hidden {
   opacity: 0.6;
 }
-.location-tile:focus-visible {
-  outline: 2px solid var(--magenta);
-  outline-offset: 3px;
-}
 .location-art {
   position: absolute;
   inset: 0;
@@ -148,11 +144,9 @@
   font-size: 1.35rem;
   line-height: 1.1;
 }
+/* Never cut: the tile is the only place the terrain text is shown. */
 .location-text {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  overflow-wrap: anywhere;
   font-size: 0.8rem;
   line-height: 1.35;
   color: var(--text-muted);
@@ -241,18 +235,22 @@
     grid-template-areas: 'text text' 'opp you';
     align-content: center;
     min-height: 6.25rem;
-    gap: 0.25rem 0.6rem;
-    padding: 0.4rem 0.4rem;
+    gap: 0.15rem 0.6rem;
+    padding: 0.3rem 0.35rem;
+  }
+  .tile-text {
+    gap: 0.15rem;
   }
   .tile-owner {
     display: none;
   }
   .location-name {
     font-size: 0.85rem;
+    line-height: 1.05;
   }
   .location-text {
-    -webkit-line-clamp: 2;
-    font-size: 0.62rem;
+    font-size: 0.56rem;
+    line-height: 1.2;
   }
   .score-hex {
     width: auto;
