@@ -382,9 +382,10 @@
     grid-template-areas: 'fan' 'text';
     gap: 0.5rem;
   }
+  /* The centre card floats up to 3rem above its place: keep it off the header logo. */
   .fan {
     min-height: 13.5rem;
-    padding-top: 0;
+    padding-top: 3.25rem;
   }
   .fan__card {
     width: 7.5rem;
