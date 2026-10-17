@@ -8,6 +8,7 @@ import {
 } from './abilities/ability.ts';
 import { tagSchema } from './abilities/board.ts';
 import { type StatusId, statusSchema } from './abilities/statuses.ts';
+import { referenceIssues } from './catalog-references.ts';
 import { CatalogError } from './errors.ts';
 import { LOCATION_CAPACITY, MAX_TURNS } from './rules.ts';
 import type { LocationRules } from './state.ts';
@@ -234,24 +235,4 @@ function loadLocationFile(file: DataFile, locations: Map<string, LocationDefinit
     }
     locations.set(location.id, { ...location, abilities: location.abilities.map(compileAbility) });
   }
-}
-
-// addToHand names a card of the catalog: a typo must fail at load time, and a terrain is never a card.
-function referenceIssues(
-  cards: ReadonlyMap<string, CardDefinition>,
-  locations: ReadonlyMap<string, LocationDefinition>,
-): string[] {
-  const holders = [
-    ...[...cards.values()].map((card) => ({ label: `card ${card.id}`, abilities: card.abilities })),
-    ...[...locations.values()].map((location) => ({ label: `location ${location.id}`, abilities: location.abilities })),
-  ];
-  return holders.flatMap(({ label, abilities }) =>
-    abilities.flatMap(({ params }) =>
-      params.effect.flatMap((effect) =>
-        effect.type === 'addToHand' && effect.card !== undefined && !cards.has(effect.card)
-          ? [`${label}: addToHand refers to unknown card "${effect.card}"`]
-          : [],
-      ),
-    ),
-  );
 }

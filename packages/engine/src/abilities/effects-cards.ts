@@ -76,7 +76,7 @@ export class AddToHandEffect implements Effect {
   }
 
   apply(board: Board, source: AbilitySource): void {
-    const defId = this.params.card ?? (source.card === null ? null : board.defIdOf(source.card));
+    const defId = this.params.card ?? (source.card === null ? null : board.printedDefIdOf(source.card));
     if (defId === null) {
       return;
     }
@@ -84,6 +84,28 @@ export class AddToHandEffect implements Effect {
       for (let i = 0; i < this.params.count; i++) {
         board.addToHand(player, defId, ...(source.card === null ? [] : [source.card]));
       }
+    }
+  }
+}
+
+const transformSchema = z.object({
+  type: z.literal('transform'),
+  // Catalog card id of the evolved form (checked at load).
+  into: z.string().min(1),
+});
+
+// The card carrying the ability becomes its evolved form (target "self" only, checked at load).
+export class TransformEffect implements Effect {
+  static readonly schema = transformSchema;
+  private readonly params: z.output<typeof transformSchema>;
+
+  constructor(params: z.output<typeof transformSchema>) {
+    this.params = params;
+  }
+
+  apply(board: Board, _source: AbilitySource, targets: readonly string[]): void {
+    for (const target of targets) {
+      board.transform(target, this.params.into);
     }
   }
 }

@@ -91,9 +91,11 @@ export interface Board extends BoardView {
   copyReveal(source: AbilitySource): void;
   // A card following the default rule of Folie just went mad: draws its crisis.
   startCrisis(card: string): void;
+  // The card takes the definition `into` (its evolved form), at most once per resolution.
+  transform(card: string, into: string): void;
   ownerOf(card: string): PlayerIndex;
-  // Id of the definition of a board card.
-  defIdOf(card: string): string;
+  // Id of the definition the card was played as (before any transformation): what a copy of it is.
+  printedDefIdOf(card: string): string;
 }
 
 export interface Condition {

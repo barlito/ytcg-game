@@ -100,12 +100,14 @@ export class AbilityRunner {
     if (source.card !== null && this.board.abilitiesOff(source.card)) {
       return;
     }
+    const form = this.formOf(source);
     for (const ability of abilities) {
       if (!this.matches(ability, source, trigger)) {
         continue;
       }
-      // A card destroyed by one of its own abilities stops there (its onDestroyed abilities still run).
-      if (this.left(source, trigger)) {
+      // A card destroyed by one of its own abilities stops there (its onDestroyed abilities still run); a card that
+      // transformed too (its new form has revealed).
+      if (this.stops(source, trigger, form)) {
         return;
       }
       if (!(ability.condition?.isMet(this.board, source) ?? true)) {
@@ -124,6 +126,15 @@ export class AbilityRunner {
     if (trigger === 'onCardPlayedHere' || trigger === 'onDestroyed' || trigger === 'onMoved') {
       this.board.recordEvent({ type: 'abilityTriggered', trigger, card: source.card, location: source.location });
     }
+  }
+
+  // The current definition of the source card (null for a location).
+  private formOf(source: AbilitySource): string | null {
+    return source.card === null ? null : cardAt(this.board.state, source.card).defId;
+  }
+
+  private stops(source: AbilitySource, trigger: Trigger, form: string | null): boolean {
+    return this.left(source, trigger) || this.formOf(source) !== form;
   }
 
   private left(source: AbilitySource, trigger: Trigger): boolean {

@@ -27,6 +27,7 @@ export function newInstance(uid: string, defId: string, owner: PlayerIndex, holo
     statuses: {},
     crisis: null,
     charmedBy: [],
+    transformedFrom: null,
     holo,
   };
 }

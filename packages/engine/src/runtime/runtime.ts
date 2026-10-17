@@ -27,6 +27,9 @@ export class Runtime {
     this.board.copyReveal = (source) => {
       abilities.fireCopy(source);
     };
+    this.board.onTransformed = (uid) => {
+      abilities.fireCard(uid, 'onReveal');
+    };
     this.turns = new TurnFlow(this.board, abilities, this.events);
     this.actions = new ActionHandler(this.board, this.turns);
   }

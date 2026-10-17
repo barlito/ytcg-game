@@ -23,6 +23,11 @@ function statusLine(name: string, event: Extract<PlayerEvent, { type: 'statusCha
   return event.stacks === 0 ? `${name} n'est plus ${adjective}.` : `${name} devient ${adjective}.`;
 }
 
+function transformLine(event: Extract<PlayerEvent, { type: 'cardTransformed' }>): string {
+  const name = (defId: string): string => catalog.cards.get(defId)?.name ?? 'une carte';
+  return `${name(event.from)} se transforme en ${name(event.to)}.`;
+}
+
 function crisisLine(name: string, event: Extract<PlayerEvent, { type: 'crisisStarted' }>): string {
   return `${name} est prise de folie : ${crisisRule(event.crisis).name}.`;
 }
@@ -57,6 +62,7 @@ const FORMATTERS: { [K in PlayerEvent['type']]: Formatter<Extract<PlayerEvent, {
     `${cardName(known, event.card)} passe du lieu ${event.from + 1} au lieu ${event.to + 1}.`,
   costChanged: (event, known) => costLine(event, known),
   cardAddedToHand: (event, _known, seats) => addedLine(event, seats),
+  cardTransformed: (event) => transformLine(event),
   contagionSpread: (event, known) => `${cardName(known, event.from)} contamine ${cardName(known, event.to)}.`,
   abilityTriggered: () => null,
   cardDrawn: () => null,
