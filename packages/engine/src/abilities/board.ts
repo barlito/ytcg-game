@@ -85,6 +85,8 @@ export interface Board extends BoardView {
   // Adds a new copy of a catalog card to the hand (nothing when the hand is full).
   // `from`: the card carrying the ability, when there is one (the animation flies the new card from it).
   addToHand(player: PlayerIndex, defId: string, from?: string): void;
+  // The onReveal abilities of the last other allied card revealed at the source's location run for the source.
+  copyReveal(source: AbilitySource): void;
   // A card following the default rule of Folie just went mad: draws its crisis.
   startCrisis(card: string): void;
   ownerOf(card: string): PlayerIndex;

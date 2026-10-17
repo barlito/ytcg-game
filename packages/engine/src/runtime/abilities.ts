@@ -3,6 +3,7 @@ import type { AbilitySource } from '../abilities/board.ts';
 import type { StatusId } from '../abilities/statuses.ts';
 import type { GameBoard } from './board.ts';
 import { opponentOf } from '../state.ts';
+import { lastAllyPlayedHere } from './copy.ts';
 import { playedMatches } from './filters.ts';
 import { cardAt, locationAt } from './state-access.ts';
 
@@ -11,6 +12,8 @@ export class AbilityRunner {
   private readonly board: GameBoard;
   // Cards resolving their onMoved abilities: moving one of them again does not re-fire them (no endless loop).
   private readonly moving = new Set<string>();
+  // While a copied onReveal runs, another copy does nothing (a copier copying a copier: no loop).
+  private copying = false;
 
   constructor(board: GameBoard) {
     this.board = board;
@@ -57,6 +60,17 @@ export class AbilityRunner {
     this.moving.add(uid);
     this.fireCard(uid, 'onMoved');
     this.moving.delete(uid);
+  }
+
+  fireCopy(source: AbilitySource): void {
+    const model =
+      source.card === null || this.copying ? null : lastAllyPlayedHere(this.board.state, source.card, source.location);
+    if (model === null) {
+      return;
+    }
+    this.copying = true;
+    this.run(this.board.definitionOf(model).abilities, sourceWithout(source), 'onReveal');
+    this.copying = false;
   }
 
   fireLocation(index: number, trigger: Trigger, played?: string): void {
@@ -126,6 +140,11 @@ export class AbilityRunner {
     }
     return playedMatches(this.board, source, source.played, ability.params.played ?? { side: 'all' });
   }
+}
+
+// The copied abilities resolve as an onReveal of the copier: no `played` card.
+function sourceWithout({ owner, location, card }: AbilitySource): AbilitySource {
+  return { owner, location, card };
 }
 
 function playedPart(played: string | undefined): { played?: string } {

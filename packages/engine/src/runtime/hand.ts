@@ -22,6 +22,7 @@ export function newInstance(uid: string, defId: string, owner: PlayerIndex, holo
     paidCost: null,
     usedNextCosts: [],
     playOrder: null,
+    revealedAt: null,
     statuses: {},
     crisis: null,
     charmedBy: [],

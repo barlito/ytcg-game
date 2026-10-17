@@ -26,6 +26,8 @@ export interface CardInstance {
   location: number | null;
   powerModifier: number;
   playOrder: number | null;
+  // Location where the card was revealed (kept when it moves or is destroyed): « played here » for the copy.
+  revealedAt: number | null;
   // Cost change received while in hand (the effective cost never goes below 0).
   costModifier: number;
   // Set while the card is pending: what it cost, and the "next card" discounts it consumed (given back on cancel).

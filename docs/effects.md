@@ -133,8 +133,9 @@ Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de no
 | `move` | `destination` : `random` (défaut), `left`, `right` | déplace les cibles vers un autre lieu **de leur camp** qui a une place libre ; sans place, rien ne se passe |
 | `addCost` | `amount` (≠ 0, négatif = moins cher), `cards` : `hand` (défaut) ou `next`, `tag` optionnel | change le coût des cartes en **main** du propriétaire (les deux joueurs sur un terrain) ; coût plancher 0 |
 | `addToHand` | `card` (id du catalogue, absent = copie de cette carte), `count` (1 à 3, défaut 1) | ajoute des cartes neuves en main ; rien si la main est pleine (7) |
+| `copyReveal` | — | « copie l'effet de révélation de la dernière carte alliée jouée ici » : rejoue les capacités `onReveal` de la dernière **autre** carte alliée révélée sur ce lieu avant celle-ci (même si elle est partie ou détruite depuis), comme si la carte qui copie les portait (son camp, son lieu, `self` = elle). Rien s'il n'y en a pas. Copier une carte qui copie ne fait rien (pas de boucle). Cartes seulement (refusé sur un terrain), jamais `ongoing` |
 
-`draw`, `addCost` et `addToHand` ignorent la cible de la capacité.
+`draw`, `addCost`, `addToHand` et `copyReveal` ignorent la cible de la capacité.
 
 ### Déplacement (`move`)
 
@@ -246,6 +247,11 @@ Terrain : « Quand une carte est jouée ici : chaque carte ici gagne +1 ».
 { "trigger": "onReveal", "effect": { "type": "addToHand", "card": "<id d'une carte du catalogue>" } }
 ```
 
+« À la révélation : copie l'effet de révélation de la dernière carte alliée jouée ici. »
+```json
+{ "trigger": "onReveal", "effect": { "type": "copyReveal" } }
+```
+
 États : « devient ivre (×2) », « rend la carte alliée la plus faible protégée ».
 ```json
 { "trigger": "onReveal", "effect": { "type": "addStatus", "status": "drunk", "stacks": 2 } }
@@ -254,4 +260,4 @@ Terrain : « Quand une carte est jouée ici : chaque carte ici gagne +1 ».
 
 ## Ce qui n'existe pas encore
 
-Transformation (Bankai : une version renforcée quand la version de base est en jeu), défausse, sacrifice, condition de pose, copie de révélation (voir le game design), Saignement (écarté). Chaque nouvelle brique = une classe, son schéma et ses tests (voir `packages/engine/CLAUDE.md`).
+Transformation (Bankai : une version renforcée quand la version de base est en jeu), défausse, sacrifice, condition de pose, Saignement (écarté). Chaque nouvelle brique = une classe, son schéma et ses tests (voir `packages/engine/CLAUDE.md`).

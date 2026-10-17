@@ -87,3 +87,14 @@ export class AddToHandEffect implements Effect {
     }
   }
 }
+
+const copyRevealSchema = z.object({ type: z.literal('copyReveal') });
+
+// Runs the onReveal abilities of the last other allied card revealed here, as if this card carried them.
+export class CopyRevealEffect implements Effect {
+  static readonly schema = copyRevealSchema;
+
+  apply(board: Board, source: AbilitySource): void {
+    board.copyReveal(source);
+  }
+}

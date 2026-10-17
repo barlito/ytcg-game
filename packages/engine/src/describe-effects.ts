@@ -43,6 +43,7 @@ const FOLLOWING: { [K in EffectParams['type']]: Following<K> | null } = {
   draw: null,
   addCost: null,
   addToHand: null,
+  copyReveal: null,
 };
 
 export function describeFollowingEffect(effect: EffectParams, plural: boolean): string | null {
@@ -68,6 +69,8 @@ export function describeEffect(context: Context, effect: EffectParams, target: T
       return describeAddStatus(effect, target);
     case 'removeStatus':
       return `retire ${removedStatus(effect)} ${of(target.text)}`;
+    case 'copyReveal':
+      return "copie l'effet de révélation de la dernière carte alliée jouée ici";
     case 'draw':
     case 'move':
     case 'addCost':

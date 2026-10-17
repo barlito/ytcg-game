@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { type GameState, type PlayerIndex, type StatusId, describeCard, locationPowers } from '../src/index.ts';
-import { card, catalogWith, newGame, playTurn, powerAt, uidOf } from './support.ts';
+import {
+  CatalogError,
+  type GameState,
+  type PlayerIndex,
+  type StatusId,
+  describeCard,
+  locationPowers,
+} from '../src/index.ts';
+import { type CardInput, type LocationInput, card, catalogWith, newGame, playTurn, powerAt, uidOf } from './support.ts';
 
 const CHARMER = 'trait:charmeur';
 const enemiesHere = { type: 'cards', side: 'enemy' } as const;
@@ -90,6 +97,9 @@ const catalog = catalogWith([
     statuses: ['enraged'],
     abilities: [{ trigger: 'onReveal', effect: { type: 'addPower', amount: 3 } }],
   }),
+  // Copy
+  card('mimic', { abilities: [{ trigger: 'onReveal', effect: { type: 'copyReveal' } }] }),
+  card('mimic2', { abilities: [{ trigger: 'onReveal', effect: { type: 'copyReveal' } }] }),
 ]);
 
 export function stacks(state: GameState, player: PlayerIndex, defId: string, status: StatusId): number | undefined {
@@ -337,5 +347,78 @@ describe('statuses: Enragée', () => {
     expect(describeCard(catalog, catalog.card('berserk'))[0]).toBe(
       'Fureur (gagne 1 puissance par cumul à chaque fin de tour ; ignore les bonus de puissance des autres cartes alliées).',
     );
+  });
+});
+
+function issuesOf(cards: CardInput[], locations: LocationInput[] = []): readonly string[] {
+  try {
+    catalogWith(cards, locations);
+  } catch (error) {
+    expect(error).toBeInstanceOf(CatalogError);
+    return (error as CatalogError).issues;
+  }
+  throw new Error('expected a CatalogError');
+}
+
+describe('copyReveal', () => {
+  it('runs the onReveal abilities of the last allied card played here, for the copier', () => {
+    const state = newGame(catalog, { p0: ['greeter', 'mimic'] });
+    const turn1 = playTurn(catalog, state, { p0: [['greeter', 0]] }).state;
+    const turn2 = playTurn(catalog, turn1, { p0: [['mimic', 0]] }).state;
+    expect(powerAt(catalog, turn2, 0, 'mimic')).toBe(1 + 3);
+    expect(powerAt(catalog, turn2, 0, 'greeter')).toBe(1 + 3);
+  });
+
+  it('resolves targets from the copier: « the other allies here » are the copier’s', () => {
+    const state = newGame(catalog, { p0: ['v1', 'buffer', 'mimic'] });
+    const turn1 = playTurn(catalog, state, {
+      p0: [
+        ['v1', 0],
+        ['buffer', 0],
+        ['mimic', 0],
+      ],
+    }).state;
+    expect(powerAt(catalog, turn1, 0, 'v1')).toBe(1 + 2 + 2);
+    expect(powerAt(catalog, turn1, 0, 'buffer')).toBe(1 + 2);
+    // The buffer revealed before the mimic: nothing buffs the mimic.
+    expect(powerAt(catalog, turn1, 0, 'mimic')).toBe(1);
+  });
+
+  it('copies nothing without an allied card played here before it', () => {
+    const state = newGame(catalog, { p0: ['greeter', 'mimic'], p1: ['greeter'] });
+    const turn1 = playTurn(catalog, state, { p0: [['greeter', 1]], p1: [['greeter', 0]] }).state;
+    const turn2 = playTurn(catalog, turn1, { p0: [['mimic', 0]] }).state;
+    expect(powerAt(catalog, turn2, 0, 'mimic')).toBe(1);
+  });
+
+  it('does nothing when the last card is itself a copier (no loop)', () => {
+    const state = newGame(catalog, { p0: ['greeter', 'mimic', 'mimic2'] });
+    const turn1 = playTurn(catalog, state, {
+      p0: [
+        ['greeter', 0],
+        ['mimic', 0],
+        ['mimic2', 0],
+      ],
+    }).state;
+    expect(powerAt(catalog, turn1, 0, 'mimic')).toBe(1 + 3);
+    expect(powerAt(catalog, turn1, 0, 'mimic2')).toBe(1);
+  });
+
+  it('is refused on a terrain and on an ongoing ability', () => {
+    expect(
+      issuesOf(
+        [],
+        [{ id: 'loc-copy', name: 'x', abilities: [{ trigger: 'onReveal', effect: { type: 'copyReveal' } }] }],
+      ).join(),
+    ).toContain('copyReveal');
+    expect(
+      issuesOf([card('bad', { abilities: [{ trigger: 'ongoing', effect: { type: 'copyReveal' } }] })]).join(),
+    ).toContain('copyReveal');
+  });
+
+  it('is written in French', () => {
+    expect(describeCard(catalog, catalog.card('mimic'))).toEqual([
+      "À la révélation : copie l'effet de révélation de la dernière carte alliée jouée ici.",
+    ]);
   });
 });

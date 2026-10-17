@@ -24,6 +24,8 @@ export class GameBoard implements Board {
   onStatusGained: (uid: string, status: StatusId) => void = () => undefined;
   // Set by the Runtime: fires the onMoved abilities of a card that just moved.
   onMoved: (uid: string) => void = () => undefined;
+  // Set by the Runtime: runs the copied onReveal abilities for the copying card.
+  copyReveal: (source: AbilitySource) => void = () => undefined;
   private readonly events: GameEvent[];
 
   constructor(catalog: Catalog, state: GameState, events: GameEvent[]) {
