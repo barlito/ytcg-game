@@ -136,6 +136,10 @@ export const SCENARIO_IDS = [
   'shield-break',
   'overheat',
   'overheat-blast',
+  'asleep',
+  'charmed',
+  'marked',
+  'enraged',
   'trigger-card',
   'trigger-terrain',
   'trigger-destroyed',
@@ -147,6 +151,12 @@ export type ScenarioId = (typeof SCENARIO_IDS)[number];
 
 const move = (uid: string, from: number, to: number): PlayerEvent => ({ type: 'cardMoved', card: uid, from, to });
 const power = (card: string, delta: number): PlayerEvent => ({ type: 'powerChanged', card, delta });
+
+// A card gets a status, nothing else happens.
+const gained = (label: string, uid: string, id: StatusId, stacks: number): Scenario => ({
+  label,
+  run: (view) => ({ view: patch(view, uid, withStatuses({ [id]: stacks })), events: [status(uid, id, stacks)] }),
+});
 
 export const SCENARIOS: Record<ScenarioId, Scenario> = {
   move: { label: 'Déplacement', run: (view) => ({ view: relocate(view, 'y5', 2), events: [move('y5', 1, 2)] }) },
@@ -189,13 +199,7 @@ export const SCENARIOS: Record<ScenarioId, Scenario> = {
       events: [status('y1', 'drunk', 1), power('y1', 2)],
     }),
   },
-  shield: {
-    label: 'Protection',
-    run: (view) => ({
-      view: patch(view, 'y1', withStatuses({ protected: 1 })),
-      events: [status('y1', 'protected', 1)],
-    }),
-  },
+  shield: gained('Protection', 'y1', 'protected', 1),
   'shield-break': {
     label: 'Protection brisée',
     run: (view) => ({ view, events: [status('y1', 'protected', 0, true)] }),
@@ -212,6 +216,16 @@ export const SCENARIOS: Record<ScenarioId, Scenario> = {
     run: (view) => ({
       view: remove(view, 'y1'),
       events: [status('y1', 'overheat', 3), { type: 'cardDestroyed', card: 'y1' }],
+    }),
+  },
+  asleep: gained('Endormie ×2', 'y1', 'asleep', 2),
+  charmed: gained('Charmée', 'y1', 'charmed', 1),
+  marked: gained('Marquée', 'o1', 'marked', 1),
+  enraged: {
+    label: 'Enragée',
+    run: (view) => ({
+      view: patch(patch(view, 'y1', withStatuses({ enraged: 1 })), 'y1', powered(1)),
+      events: [status('y1', 'enraged', 1), power('y1', 1)],
     }),
   },
   'trigger-card': {

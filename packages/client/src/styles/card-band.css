@@ -323,6 +323,18 @@
 .sbadge[data-status='protected'] {
   --c: var(--cyan);
 }
+.sbadge[data-status='asleep'] {
+  --c: #8fa8ff;
+}
+.sbadge[data-status='charmed'] {
+  --c: #ff7ac8;
+}
+.sbadge[data-status='marked'] {
+  --c: #ff4d5e;
+}
+.sbadge[data-status='enraged'] {
+  --c: #ff8a2a;
+}
 .sbadge[data-status='overheat'] {
   --c: color-mix(in srgb, #ff4a1a calc(var(--stacks, 1) * 33%), #ffb03a);
 }
