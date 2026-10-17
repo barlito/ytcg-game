@@ -18,6 +18,12 @@ const TRIGGER_TEXT = {
   onMoved: 'Quand elle se déplace',
 } as const;
 
+const LOCATION_RESULT_TEXT = {
+  winning: 'si vous gagnez ce lieu',
+  losing: 'si vous perdez ce lieu',
+  tied: 'si ce lieu est à égalité',
+} as const;
+
 export function describeCard(catalog: Catalog, card: CardDefinition): string[] {
   const keywords = card.statuses.map((status) => {
     const { name, rule } = statusRule(status);
@@ -98,6 +104,9 @@ export function describeCurveRule(rule: CurveRule): string {
 function describeCondition(context: Context, condition: ConditionParams): string {
   if (condition.type === 'status') {
     return `si elle est ${statusRule(condition.status).adjective}`;
+  }
+  if (condition.type === 'location') {
+    return LOCATION_RESULT_TEXT[condition.result];
   }
   if (condition.type === 'turn') {
     const { min, max } = condition;

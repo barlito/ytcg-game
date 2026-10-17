@@ -20,7 +20,7 @@ La boîte à outils pour décrire les capacités des cartes et des lieux dans `d
 
 **`onDestroyed`** : la carte a déjà quitté le plateau, ses cibles sont relatives au lieu où elle était (`scope: "here"` = ce lieu). Une cible `self` n'a plus de sens (refusé), sauf pour les effets sans cible (`draw`, `addCost`, `addToHand` : « ajoute une copie de cette carte en main » fait revenir la carte). Une carte qui survit à la destruction (Coriace, Protection) ne déclenche rien.
 
-Une capacité `ongoing` ne peut que **donner de la puissance** (`addPower`, `addPowerPerCard`) à des cibles `self` ou `cards` avec `pick: "all"` : elle est recalculée à chaque lecture, elle ne doit donc dépendre ni de la puissance ni du hasard.
+Une capacité `ongoing` ne peut que **donner de la puissance** (`addPower`, `addPowerPerCard`) à des cibles `self` ou `cards` avec `pick: "all"` : elle est recalculée à chaque lecture, elle ne doit donc dépendre ni de la puissance ni du hasard (refusés au chargement : condition `location`, filtres `minPower` / `maxPower`).
 
 ## Filtre de cartes
 
@@ -99,6 +99,7 @@ Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de no
 |---|---|---|
 | `count` | filtre + `min` (défaut 1), `max` | « s'il y a un autre Benj ici » : `{ "type": "count", "tag": "character:benj" }` |
 | `turn` | `min`, `max` | « à partir du tour 4 » : `{ "type": "turn", "min": 4 }` |
+| `location` | `result` : `winning`, `losing`, `tied` | « si vous gagnez ce lieu » : `{ "type": "location", "result": "winning" }` : le propriétaire de la carte gagne / perd / est à égalité au lieu de la carte (somme des puissances, au moment où la capacité se résout). Cartes seulement ; **jamais `ongoing`** (elle lit la puissance) |
 | `status` | `status` | « cette carte est défoncée » : `{ "type": "status", "status": "high" }` (cartes seulement, avec n'importe quel déclencheur ; remplace la règle par défaut de l'état, voir États) |
 
 ## Cibles (`target`, défaut `self`)

@@ -126,6 +126,23 @@ describe('catalog validation', () => {
     ).toContain('no "stealPower"');
   });
 
+  it('keeps the location result condition off ongoing abilities and terrains', () => {
+    const winning = { type: 'location', result: 'winning' } as const;
+    const buff = { type: 'addPower', amount: 1 } as const;
+    expect(
+      issuesOf([card('x', { abilities: [{ trigger: 'ongoing', condition: winning, effect: buff }] })])[0],
+    ).toContain('cannot read power');
+    expect(() =>
+      catalogWith([card('y', { abilities: [{ trigger: 'endOfTurn', condition: winning, effect: buff }] })]),
+    ).not.toThrow();
+    expect(
+      issuesOf(
+        [],
+        [{ id: 'l', name: 'l', abilities: [{ trigger: 'onReveal', condition: winning, effect: { type: 'draw' } }] }],
+      )[0],
+    ).toContain('no "location" condition');
+  });
+
   it('refuses invalid trigger combinations', () => {
     const effect = { type: 'addPower', amount: 1 } as const;
     expect(issuesOf([card('x', { abilities: [{ trigger: 'onStatusGained', effect }] })])[0]).toContain(

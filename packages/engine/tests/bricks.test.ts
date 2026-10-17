@@ -713,6 +713,33 @@ const phase6 = catalogWith(
         { trigger: 'onReveal', target: { type: 'cards', side: 'enemy' }, effect: { type: 'stealPower', amount: 1 } },
       ],
     }),
+    card('closer', {
+      abilities: [
+        {
+          trigger: 'endOfTurn',
+          condition: { type: 'location', result: 'winning' },
+          effect: { type: 'addPower', amount: 1 },
+        },
+      ],
+    }),
+    card('underdog', {
+      abilities: [
+        {
+          trigger: 'onReveal',
+          condition: { type: 'location', result: 'losing' },
+          effect: { type: 'addPower', amount: 3 },
+        },
+      ],
+    }),
+    card('balance', {
+      abilities: [
+        {
+          trigger: 'onReveal',
+          condition: { type: 'location', result: 'tied' },
+          effect: { type: 'addPower', amount: 2 },
+        },
+      ],
+    }),
     card('mess', { statuses: ['tough', 'high', 'overheat'] }),
     card('mechanic', {
       abilities: [
@@ -886,6 +913,43 @@ describe('stealPower', () => {
     expect(powerAt(phase6, turn2, 1, 'gang')).toBe(1);
     expect(powerAt(phase6, turn2, 0, 'guarded')).toBe(4);
     expect(statusesOf(turn2, 0, 'guarded')).toEqual({});
+  });
+});
+
+describe('location result condition', () => {
+  it('reads whether the owner wins, loses or ties the location of the card', () => {
+    const state = newGame(phase6, { p0: ['closer', 'underdog', 'balance'], p1: ['junkie', 'p2'] });
+    const turn1 = playTurn(phase6, state, {
+      p0: [['closer', 0]],
+      p1: [
+        ['junkie', 1],
+        ['p2', 2],
+      ],
+    }).state;
+    // 1 against 0: winning at the end of the turn
+    expect(powerAt(phase6, turn1, 0, 'closer')).toBe(2);
+    const turn2 = playTurn(phase6, turn1, {
+      p0: [
+        ['underdog', 1],
+        ['balance', 2],
+      ],
+    }).state;
+    // underdog: 1 against junkie (3 − 1); balance: 1 against 1
+    expect(powerAt(phase6, turn2, 0, 'underdog')).toBe(1 + 3);
+    expect(powerAt(phase6, turn2, 0, 'balance')).toBe(1 + 2);
+    expect(powerAt(phase6, turn2, 0, 'closer')).toBe(3);
+  });
+
+  it('is not met when the comparison says otherwise', () => {
+    const state = newGame(phase6, { p0: ['underdog', 'balance'] });
+    const next = playTurn(phase6, state, {
+      p0: [
+        ['underdog', 0],
+        ['balance', 1],
+      ],
+    }).state;
+    expect(powerAt(phase6, next, 0, 'underdog')).toBe(1);
+    expect(powerAt(phase6, next, 0, 'balance')).toBe(1);
   });
 });
 

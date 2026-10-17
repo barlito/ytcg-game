@@ -76,6 +76,9 @@ function ongoingIssues(ability: AbilityParams): Issue[] {
   if (ability.target.type === 'cards' && ability.target.pick !== 'all') {
     issues.push({ path: ['target', 'pick'], message: 'an ongoing target must pick "all"' });
   }
+  if (ability.condition?.type === 'location') {
+    issues.push({ path: ['condition'], message: 'an ongoing condition cannot read power ("location")' });
+  }
   return issues;
 }
 
@@ -164,6 +167,9 @@ function locationEffectIssues(ability: AbilityParams): string[] {
   }
   if (abilityStatus(ability) !== null) {
     issues.push('a location never has a status: no onStatusGained trigger nor "status" condition');
+  }
+  if (ability.condition?.type === 'location') {
+    issues.push('a location has no owner: no "location" condition');
   }
   if (ability.effect.some((effect) => effect.type === 'stealPower')) {
     issues.push('a location has no power: no "stealPower"');

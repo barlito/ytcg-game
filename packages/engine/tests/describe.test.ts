@@ -179,6 +179,21 @@ describe('text of the building blocks', () => {
           },
         ],
       }),
+      card('judge', {
+        abilities: [
+          {
+            trigger: 'endOfTurn',
+            condition: { type: 'location', result: 'winning' },
+            effect: { type: 'addPower', amount: 1 },
+          },
+          { trigger: 'onReveal', condition: { type: 'location', result: 'losing' }, effect: { type: 'draw' } },
+          {
+            trigger: 'onMoved',
+            condition: { type: 'location', result: 'tied' },
+            effect: { type: 'addPower', amount: 2 },
+          },
+        ],
+      }),
       card('medic', {
         abilities: [
           {
@@ -317,6 +332,14 @@ describe('text of the building blocks', () => {
     expect(describeCard(bricks, bricks.card('thief'))).toEqual([
       'À la révélation : vole 2 puissance à la carte ennemie la plus forte ici.',
       'En fin de tour : rend les cartes ennemies ici défoncées et leur vole 1 puissance.',
+    ]);
+  });
+
+  it('writes the location result condition', () => {
+    expect(describeCard(bricks, bricks.card('judge'))).toEqual([
+      'En fin de tour : si vous gagnez ce lieu, +1 puissance.',
+      'À la révélation : si vous perdez ce lieu, pioche 1 carte.',
+      'Quand elle se déplace : si ce lieu est à égalité, +2 puissance.',
     ]);
   });
 
