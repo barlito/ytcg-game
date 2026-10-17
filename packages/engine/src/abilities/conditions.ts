@@ -6,7 +6,8 @@ import { statusSchema } from './statuses.ts';
 const countSchema = z.object({
   type: z.literal('count'),
   ...cardFilterShape,
-  min: z.number().int().min(0).default(1),
+  // Default 1 (« s'il y a une … »), but 0 with `max: 0` (« s'il n'y a aucune … »).
+  min: z.number().int().min(0).optional(),
   max: z.number().int().min(0).optional(),
 });
 
@@ -19,8 +20,9 @@ export class CountCondition implements Condition {
   }
 
   isMet(board: BoardView, source: AbilitySource): boolean {
+    const { min = this.params.max === 0 ? 0 : 1, max } = this.params;
     const count = board.cardsMatching(source, this.params).length;
-    return count >= this.params.min && (this.params.max === undefined || count <= this.params.max);
+    return count >= min && (max === undefined || count <= max);
   }
 }
 

@@ -119,7 +119,11 @@ export class GameBoard implements Board {
   }
 
   hasStatus(uid: string, status: StatusId): boolean {
-    return stacksOf(cardAt(this.state, uid), status) > 0;
+    return this.stacksOf(uid, status) > 0;
+  }
+
+  stacksOf(uid: string, status: StatusId): number {
+    return stacksOf(cardAt(this.state, uid), status);
   }
 
   startCrisis(uid: string): void {

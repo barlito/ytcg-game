@@ -29,9 +29,14 @@ export function cards(context: Context, filter: CardFilter, plural: boolean): st
       ? `autre${s} `
       : '';
   const tag = filter.tag === undefined ? '' : ` ${tagLabel(context.catalog, filter.tag)}`;
-  const status = filter.status === undefined ? '' : ` ${statusRule(filter.status).adjective}${s}`;
   const side = filter.side === 'all' ? '' : ` ${filter.side === 'ally' ? 'alliée' : 'ennemie'}${s}`;
-  return `${other}carte${s}${tag}${status}${side}${rangeText(filter)}`;
+  return `${other}carte${s}${tag}${statusText(filter, plural)}${side}${rangeText(filter)}`;
+}
+
+// « défoncées », « non défoncée »
+function statusText(filter: CardFilter, plural: boolean): string {
+  const status = filter.status === undefined ? '' : ` ${statusAdjective(filter.status, plural)}`;
+  return filter.withoutStatus === undefined ? status : `${status} non ${statusAdjective(filter.withoutStatus, plural)}`;
 }
 
 // « à 1 de coût », « de 2 à 4 de coût », « avec 9 de puissance ou plus », « avec 2 à 4 de puissance »

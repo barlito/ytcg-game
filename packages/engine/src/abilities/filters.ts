@@ -31,5 +31,8 @@ export function rangeIssues(filter: CardFilter): string[] {
   if (filter.minPower !== undefined && filter.maxPower !== undefined && filter.minPower > filter.maxPower) {
     issues.push('"minPower" must not exceed "maxPower"');
   }
+  if (filter.status !== undefined && filter.status === filter.withoutStatus) {
+    issues.push('"status" and "withoutStatus" must differ');
+  }
   return issues;
 }

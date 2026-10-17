@@ -23,9 +23,20 @@
             "type": "addPowerPerCard",
             "amount": 1,
             "count": {
-              "scope": "everywhere",
-              "tag": "family:linette"
+              "side": "all",
+              "status": "high"
             }
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
           }
         }
       ],
@@ -48,16 +59,23 @@
       "abilities": [
         {
           "trigger": "onReveal",
-          "effect": [
-            {
-              "type": "addPower",
-              "amount": 3
-            },
-            {
-              "type": "addStatus",
-              "status": "high"
-            }
-          ]
+          "effect": {
+            "type": "addStatus",
+            "status": "high",
+            "stacks": 2
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPowerPerStack",
+            "amount": 1,
+            "status": "high"
+          }
         }
       ],
       "mask": "barlito-waa-mask-background-6a78a7e37fef3661333528.png"
@@ -77,16 +95,25 @@
       "abilities": [
         {
           "trigger": "onReveal",
-          "effect": [
-            {
-              "type": "addPower",
-              "amount": 2
-            },
-            {
-              "type": "addStatus",
-              "status": "high"
-            }
-          ]
+          "target": {
+            "type": "cards",
+            "pick": "random"
+          },
+          "effect": {
+            "type": "addStatus",
+            "status": "high"
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
         }
       ],
       "mask": "bebou-linette-mask-background-6a78a7ec3a493150793285.png"
@@ -104,26 +131,15 @@
       ],
       "abilities": [
         {
-          "trigger": "onReveal",
+          "trigger": "endOfTurn",
           "target": {
             "type": "cards",
-            "side": "all"
+            "side": "all",
+            "status": "high"
           },
           "effect": {
             "type": "addStatus",
             "status": "mad"
-          }
-        },
-        {
-          "trigger": "ongoing",
-          "effect": {
-            "type": "addPowerPerCard",
-            "amount": 1,
-            "count": {
-              "side": "all",
-              "scope": "everywhere",
-              "status": "mad"
-            }
           }
         },
         {
@@ -133,8 +149,23 @@
             "status": "mad"
           },
           "effect": {
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "side": "all",
+              "status": "mad"
+            }
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
             "type": "addPower",
-            "amount": 1
+            "amount": 2
           }
         }
       ],
@@ -163,6 +194,17 @@
               "status": "high"
             }
           }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
         }
       ],
       "mask": "bibou-linette-mask-background-6a78a7b17478d063772413.png"
@@ -180,22 +222,55 @@
       ],
       "abilities": [
         {
-          "trigger": "onReveal",
+          "trigger": "endOfTurn",
+          "condition": {
+            "type": "location",
+            "result": "losing"
+          },
           "target": {
-            "type": "cards",
-            "scope": "everywhere",
-            "status": "high"
+            "type": "cards"
           },
           "effect": [
             {
               "type": "removeStatus",
-              "status": "high"
+              "statuses": [
+                "drunk",
+                "mad",
+                "asleep"
+              ]
             },
             {
               "type": "addPower",
-              "amount": 2
+              "amount": 1
             }
           ]
+        },
+        {
+          "trigger": "endOfTurn",
+          "condition": {
+            "type": "location",
+            "result": "winning"
+          },
+          "target": {
+            "type": "cards",
+            "side": "all",
+            "pick": "random"
+          },
+          "effect": {
+            "type": "addStatus",
+            "status": "high"
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
+          }
         }
       ],
       "mask": "farf-mask-background-6a78a80005905121836309.png"
@@ -216,12 +291,25 @@
           "trigger": "onReveal",
           "target": {
             "type": "cards",
-            "side": "enemy"
+            "side": "all",
+            "scope": "everywhere",
+            "tag": "universe:psychedelic",
+            "includeSelf": true
           },
           "effect": {
             "type": "addStatus",
-            "status": "high",
-            "stacks": 2
+            "status": "high"
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
           }
         }
       ],
@@ -244,10 +332,25 @@
           "trigger": "ongoing",
           "effect": {
             "type": "addPowerPerCard",
-            "amount": 2,
+            "amount": 1,
             "count": {
-              "tag": "family:linette"
+              "side": "all",
+              "scope": "everywhere",
+              "tag": "family:linette",
+              "status": "high",
+              "includeSelf": true
             }
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
           }
         }
       ],
@@ -267,16 +370,26 @@
       "abilities": [
         {
           "trigger": "onReveal",
-          "effect": [
-            {
-              "type": "addPower",
-              "amount": 3
-            },
-            {
-              "type": "addStatus",
-              "status": "high"
-            }
-          ]
+          "condition": {
+            "type": "count",
+            "min": 0,
+            "max": 0
+          },
+          "effect": {
+            "type": "addStatus",
+            "status": "high"
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 3
+          }
         }
       ],
       "mask": "velo-mask-background-6a78a813759a7473959950.png"
@@ -297,7 +410,8 @@
           "trigger": "onReveal",
           "target": {
             "type": "cards",
-            "side": "all"
+            "side": "all",
+            "pick": "random"
           },
           "effect": {
             "type": "addStatus",
@@ -305,15 +419,24 @@
           }
         },
         {
-          "trigger": "ongoing",
+          "trigger": "onReveal",
           "effect": {
             "type": "addPowerPerCard",
             "amount": 2,
             "count": {
-              "side": "all",
-              "scope": "everywhere",
               "status": "high"
             }
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 2
           }
         }
       ],

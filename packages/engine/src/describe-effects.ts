@@ -14,7 +14,7 @@ import {
   to,
 } from './describe-text.ts';
 
-type PowerEffect = Extract<EffectParams, { type: 'addPower' | 'addPowerPerCard' | 'stealPower' }>;
+type PowerEffect = Extract<EffectParams, { type: 'addPower' | 'addPowerPerCard' | 'addPowerPerStack' | 'stealPower' }>;
 // Effects about cards themselves: hands, moves, forms.
 type HandEffect = Extract<EffectParams, { type: 'draw' | 'move' | 'addCost' | 'addToHand' | 'transform' }>;
 
@@ -41,6 +41,7 @@ const FOLLOWING: { [K in EffectParams['type']]: Following<K> | null } = {
   stealPower: (effect, plural) => `${plural ? 'leur' : 'lui'} vole ${effect.amount} puissance`,
   move: (effect, plural) => `${plural ? 'les' : 'la'} déplace ${DESTINATION_TEXT[effect.destination]}`,
   addPowerPerCard: null,
+  addPowerPerStack: null,
   draw: null,
   addCost: null,
   addToHand: null,
@@ -54,7 +55,12 @@ export function describeFollowingEffect(effect: EffectParams, plural: boolean): 
   return describe === null ? null : describe(effect, plural);
 }
 
-const POWER_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['addPower', 'addPowerPerCard', 'stealPower']);
+const POWER_EFFECTS: ReadonlySet<EffectParams['type']> = new Set([
+  'addPower',
+  'addPowerPerCard',
+  'addPowerPerStack',
+  'stealPower',
+]);
 
 function isPowerEffect(effect: EffectParams): effect is PowerEffect {
   return POWER_EFFECTS.has(effect.type);
@@ -91,6 +97,8 @@ function describePowerEffect(context: Context, effect: PowerEffect, target: Targ
       return withTarget(`${signed(effect.amount)} puissance`, target);
     case 'addPowerPerCard':
       return `${withTarget(`${signed(effect.amount)} puissance`, target)} par ${cards(context, effect.count, false)} ${scope(effect.count)}`;
+    case 'addPowerPerStack':
+      return `${withTarget(`${signed(effect.amount)} puissance`, target)} par cumul de ${statusRule(effect.status).name}`;
     case 'stealPower':
       return `vole ${effect.amount} puissance ${to(target.text)}`;
   }

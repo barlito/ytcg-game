@@ -13,6 +13,8 @@ export const cardFilterShape = {
   scope: scopeSchema.default('here'),
   tag: tagSchema.optional(),
   status: statusSchema.optional(),
+  // Cards that do NOT have this status (« non défoncée »).
+  withoutStatus: statusSchema.optional(),
   includeSelf: z.boolean().default(false),
   // Printed cost of the card definition.
   minCost: z.number().int().min(0).optional(),
@@ -57,6 +59,7 @@ export interface BoardView {
   cardsMatching(source: AbilitySource, filter: CardFilter): string[];
   power(card: string): number;
   hasStatus(card: string, status: StatusId): boolean;
+  stacksOf(card: string, status: StatusId): number;
   hasTag(card: string, tag: string): boolean;
   // Turns started since the card was revealed (0 on its reveal turn).
   turnsOnBoard(card: string): number;
