@@ -141,18 +141,19 @@ export class GameBoard implements Board {
     return this.state.locations.map((location): [number, number] => [sum(location.cards[0]), sum(location.cards[1])]);
   }
 
-  addPower(uid: string, delta: number): void {
+  addPower(uid: string, delta: number): number {
     const card = cardAt(this.state, uid);
     if (card.zone !== 'board' || delta === 0 || (delta < 0 && hasRule(card, 'preventsPowerLoss'))) {
-      return;
+      return 0;
     }
     const shield = delta < 0 ? absorbingStatus(card, 'absorbsPowerLoss') : null;
     if (shield !== null) {
       statusChanges.spendStack(this, uid, shield);
-      return;
+      return 0;
     }
     card.powerModifier += delta;
     this.events.push({ type: 'powerChanged', card: uid, delta });
+    return delta;
   }
 
   draw(player: PlayerIndex, count: number): void {

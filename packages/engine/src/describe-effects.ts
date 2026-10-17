@@ -14,6 +14,7 @@ import {
   to,
 } from './describe-text.ts';
 
+type PowerEffect = Extract<EffectParams, { type: 'addPower' | 'addPowerPerCard' | 'stealPower' }>;
 type HandEffect = Extract<EffectParams, { type: 'draw' | 'move' | 'addCost' | 'addToHand' }>;
 
 const TAG_PLURAL: Partial<Record<string, string>> = { 'trait:machine': 'machines' };
@@ -36,6 +37,7 @@ const FOLLOWING: { [K in EffectParams['type']]: Following<K> | null } = {
     `${plural ? 'les' : 'la'} rend ${statusAdjective(effect.status, plural)}${stacksSuffix(effect.stacks)}${onlyTagSuffix(effect)}`,
   destroy: (_effect, plural) => `${plural ? 'les' : 'la'} détruit`,
   removeStatus: (effect, plural) => `${plural ? 'leur' : 'lui'} retire ${removedStatus(effect)}`,
+  stealPower: (effect, plural) => `${plural ? 'leur' : 'lui'} vole ${effect.amount} puissance`,
   move: (effect, plural) => `${plural ? 'les' : 'la'} déplace ${DESTINATION_TEXT[effect.destination]}`,
   addPowerPerCard: null,
   draw: null,
@@ -49,12 +51,17 @@ export function describeFollowingEffect(effect: EffectParams, plural: boolean): 
   return describe === null ? null : describe(effect, plural);
 }
 
+const POWER_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['addPower', 'addPowerPerCard', 'stealPower']);
+
+function isPowerEffect(effect: EffectParams): effect is PowerEffect {
+  return POWER_EFFECTS.has(effect.type);
+}
+
 export function describeEffect(context: Context, effect: EffectParams, target: TargetText): string {
+  if (isPowerEffect(effect)) {
+    return describePowerEffect(context, effect, target);
+  }
   switch (effect.type) {
-    case 'addPower':
-      return withTarget(`${signed(effect.amount)} puissance`, target);
-    case 'addPowerPerCard':
-      return `${withTarget(`${signed(effect.amount)} puissance`, target)} par ${cards(context, effect.count, false)} ${scope(effect.count)}`;
     case 'destroy':
       return `détruit ${target.text}`;
     case 'addStatus':
@@ -66,6 +73,17 @@ export function describeEffect(context: Context, effect: EffectParams, target: T
     case 'addCost':
     case 'addToHand':
       return describeHandEffect(context, effect, target);
+  }
+}
+
+function describePowerEffect(context: Context, effect: PowerEffect, target: TargetText): string {
+  switch (effect.type) {
+    case 'addPower':
+      return withTarget(`${signed(effect.amount)} puissance`, target);
+    case 'addPowerPerCard':
+      return `${withTarget(`${signed(effect.amount)} puissance`, target)} par ${cards(context, effect.count, false)} ${scope(effect.count)}`;
+    case 'stealPower':
+      return `vole ${effect.amount} puissance ${to(target.text)}`;
   }
 }
 

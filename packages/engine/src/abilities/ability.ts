@@ -33,11 +33,15 @@ export const abilitySchema = z
       .union([effectSchema, z.array(effectSchema).min(1)])
       .transform((effect) => (Array.isArray(effect) ? effect : [effect])),
   })
-  .superRefine((ability, ctx) => {
-    for (const issue of [...triggerIssues(ability), ...ongoingIssues(ability)]) {
-      ctx.addIssue({ code: 'custom', ...issue });
-    }
-  });
+  .superRefine(
+    (ability, ctx) => {
+      for (const issue of [...triggerIssues(ability), ...ongoingIssues(ability)]) {
+        ctx.addIssue({ code: 'custom', ...issue });
+      }
+    },
+    // Cross-field checks only make sense on well-formed parts.
+    { when: (payload) => payload.issues.length === 0 },
+  );
 
 interface Issue {
   path: string[];
@@ -54,6 +58,9 @@ function triggerIssues(ability: AbilityParams): Issue[] {
   }
   if (ability.trigger === 'onDestroyed' && ability.target.type === 'self' && !isUntargeted(ability)) {
     issues.push({ path: ['target'], message: 'a destroyed card cannot target itself' });
+  }
+  if (ability.target.type === 'self' && ability.effect.some((effect) => effect.type === 'stealPower')) {
+    issues.push({ path: ['target'], message: 'a card cannot steal power from itself' });
   }
   return issues;
 }
@@ -157,6 +164,9 @@ function locationEffectIssues(ability: AbilityParams): string[] {
   }
   if (abilityStatus(ability) !== null) {
     issues.push('a location never has a status: no onStatusGained trigger nor "status" condition');
+  }
+  if (ability.effect.some((effect) => effect.type === 'stealPower')) {
+    issues.push('a location has no power: no "stealPower"');
   }
   if (ability.effect.some((effect) => effect.type === 'addToHand' && effect.card === undefined)) {
     issues.push('a location "addToHand" needs a "card" (there is no card to copy)');

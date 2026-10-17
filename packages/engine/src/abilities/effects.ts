@@ -8,6 +8,7 @@ import {
   cardFilterSchema,
 } from './board.ts';
 import { AddCostEffect, AddToHandEffect, MoveEffect, owners } from './effects-cards.ts';
+import { StealPowerEffect } from './effects-power.ts';
 import { type StatusId, statusRule, statusSchema } from './statuses.ts';
 
 const addPowerSchema = z.object({
@@ -182,6 +183,7 @@ export const effectSchema = z.discriminatedUnion('type', [
   MoveEffect.schema,
   AddCostEffect.schema,
   AddToHandEffect.schema,
+  StealPowerEffect.schema,
 ]);
 
 export type EffectParams = z.output<typeof effectSchema>;
@@ -191,7 +193,18 @@ export const ONGOING_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['addP
 // Effects that ignore the target of their ability.
 export const UNTARGETED_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['draw', 'addCost', 'addToHand']);
 
+type OtherEffectParams = Extract<EffectParams, { type: 'move' | 'addCost' | 'addToHand' | 'stealPower' }>;
+
+const OTHER_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['move', 'addCost', 'addToHand', 'stealPower']);
+
+function isOtherEffect(params: EffectParams): params is OtherEffectParams {
+  return OTHER_EFFECTS.has(params.type);
+}
+
 export function createEffect(params: EffectParams): Effect {
+  if (isOtherEffect(params)) {
+    return createOtherEffect(params);
+  }
   switch (params.type) {
     case 'addPower':
       return new AddPowerEffect(params);
@@ -205,11 +218,18 @@ export function createEffect(params: EffectParams): Effect {
       return new AddStatusEffect(params);
     case 'removeStatus':
       return new RemoveStatusEffect(params);
+  }
+}
+
+function createOtherEffect(params: OtherEffectParams): Effect {
+  switch (params.type) {
     case 'move':
       return new MoveEffect(params);
     case 'addCost':
       return new AddCostEffect(params);
     case 'addToHand':
       return new AddToHandEffect(params);
+    case 'stealPower':
+      return new StealPowerEffect(params);
   }
 }

@@ -114,6 +114,7 @@ Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de no
 |---|---|---|
 | `addPower` | `amount` (≠ 0, négatif possible) | ajoute de la puissance aux cibles |
 | `addPowerPerCard` | `amount`, `count` (filtre) | `amount` × nombre de cartes qui passent le filtre |
+| `stealPower` | `amount` (≥ 1) | les cibles perdent `amount` et la carte gagne ce qui a **vraiment** été perdu (Coriace : rien ; Protection : le cumul est dépensé, rien n'est gagné). Cartes seulement (refusé sur un terrain), jamais sur `self`, jamais `ongoing`. « vole 2 puissance à la carte ennemie la plus forte ici » |
 | `draw` | `count` (1 à 3, défaut 1) | le propriétaire pioche ; sur un lieu, les deux joueurs |
 | `destroy` | — | détruit les cibles |
 | `addStatus` | `status`, `stacks` (1 à 5, défaut 1), `anyCard` (défaut `false`) | pose un état sur les cibles ; la Surchauffe ne se pose que sur les machines (`trait:machine`), sauf `anyCard: true` (« rend les cartes ennemies ici surchauffées (machines seulement) ») |

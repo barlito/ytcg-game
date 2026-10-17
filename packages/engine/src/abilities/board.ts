@@ -56,7 +56,8 @@ export interface Board extends BoardView {
   readonly rng: Rng;
   // Adds an event that is not a state change by itself (announcements for the animation).
   recordEvent(event: GameEvent): void;
-  addPower(card: string, delta: number): void;
+  // Returns the change really applied (0 when Coriace or Protection stopped a loss).
+  addPower(card: string, delta: number): number;
   draw(player: PlayerIndex, count: number): void;
   destroy(card: string): void;
   // `by`: owner of the card applying it (null for a terrain); a Protection absorbs a status put by the enemy.

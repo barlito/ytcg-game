@@ -103,6 +103,29 @@ describe('catalog validation', () => {
     ).toHaveLength(1);
   });
 
+  it('keeps stealPower on cards, never on itself nor ongoing', () => {
+    const steal = { type: 'stealPower', amount: 1 } as const;
+    expect(issuesOf([card('x', { abilities: [{ trigger: 'onReveal', effect: steal }] })])[0]).toContain(
+      'cannot steal power from itself',
+    );
+    const enemies = { type: 'cards', side: 'enemy' } as const;
+    expect(issuesOf([card('x', { abilities: [{ trigger: 'ongoing', target: enemies, effect: steal }] })])[0]).toContain(
+      'cannot be ongoing',
+    );
+    expect(
+      issuesOf(
+        [],
+        [
+          {
+            id: 'l',
+            name: 'l',
+            abilities: [{ trigger: 'onReveal', target: { type: 'cards', side: 'all' }, effect: steal }],
+          },
+        ],
+      )[0],
+    ).toContain('no "stealPower"');
+  });
+
   it('refuses invalid trigger combinations', () => {
     const effect = { type: 'addPower', amount: 1 } as const;
     expect(issuesOf([card('x', { abilities: [{ trigger: 'onStatusGained', effect }] })])[0]).toContain(

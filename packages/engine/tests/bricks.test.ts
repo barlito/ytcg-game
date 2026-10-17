@@ -699,6 +699,20 @@ const phase6 = catalogWith(
       ],
     }),
     card('hot-head', { statuses: ['overheat'] }),
+    card('thief', {
+      abilities: [
+        {
+          trigger: 'onReveal',
+          target: { type: 'cards', side: 'enemy', pick: 'strongest' },
+          effect: { type: 'stealPower', amount: 2 },
+        },
+      ],
+    }),
+    card('gang', {
+      abilities: [
+        { trigger: 'onReveal', target: { type: 'cards', side: 'enemy' }, effect: { type: 'stealPower', amount: 1 } },
+      ],
+    }),
     card('mess', { statuses: ['tough', 'high', 'overheat'] }),
     card('mechanic', {
       abilities: [
@@ -831,6 +845,47 @@ describe('removeStatus with a list', () => {
     expect(statusesOf(turn2, 0, 'mess')).toEqual({ tough: 1 });
     const removed = events.filter((event) => event.type === 'statusChanged' && event.stacks === 0);
     expect(removed.map((event) => event.type === 'statusChanged' && event.status)).toEqual(['high', 'overheat']);
+  });
+});
+
+describe('stealPower', () => {
+  it('takes power from the targets and gives the source what was lost', () => {
+    const state = newGame(phase6, { p0: ['junkie', 'p1'], p1: ['thief', 'gang'] });
+    const turn1 = playTurn(phase6, state, {
+      p0: [
+        ['junkie', 0],
+        ['p1', 0],
+      ],
+    }).state;
+    const turn2 = playTurn(phase6, turn1, { p1: [['thief', 0]] }).state;
+    // junkie: 3 − 2 stolen − 1 (Défonce, end of turn 1) − 1 (end of turn 2)
+    expect(powerAt(phase6, turn2, 0, 'junkie')).toBe(3 - 1 - 2 - 1);
+    expect(powerAt(phase6, turn2, 1, 'thief')).toBe(1 + 2);
+    const turn3 = playTurn(phase6, turn2, { p1: [['gang', 0]] }).state;
+    expect(powerAt(phase6, turn3, 1, 'gang')).toBe(1 + 2);
+    expect(powerAt(phase6, turn3, 0, 'p1')).toBe(1 - 1);
+  });
+
+  it('gains nothing from a Coriace or protected target, and spends the Protection', () => {
+    const state = newGame(phase6, { p0: ['bunker', 'guarded'], p1: ['thief', 'gang'] });
+    const turn1 = playTurn(phase6, state, {
+      p0: [
+        ['bunker', 0],
+        ['guarded', 1],
+      ],
+    }).state;
+    const turn2 = playTurn(phase6, turn1, {
+      p1: [
+        ['thief', 0],
+        ['gang', 1],
+      ],
+    }).state;
+    expect(powerAt(phase6, turn2, 1, 'thief')).toBe(1);
+    expect(powerAt(phase6, turn2, 0, 'bunker')).toBe(4);
+    expect(statusesOf(turn2, 0, 'bunker')).toEqual({ tough: 1, protected: 1 });
+    expect(powerAt(phase6, turn2, 1, 'gang')).toBe(1);
+    expect(powerAt(phase6, turn2, 0, 'guarded')).toBe(4);
+    expect(statusesOf(turn2, 0, 'guarded')).toEqual({});
   });
 });
 

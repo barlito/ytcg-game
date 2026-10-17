@@ -162,6 +162,23 @@ describe('text of the building blocks', () => {
         ],
       }),
       card('drunkard', { statuses: ['drunk', 'protected', 'overheat'] }),
+      card('thief', {
+        abilities: [
+          {
+            trigger: 'onReveal',
+            target: { type: 'cards', side: 'enemy', pick: 'strongest' },
+            effect: { type: 'stealPower', amount: 2 },
+          },
+          {
+            trigger: 'endOfTurn',
+            target: { type: 'cards', side: 'enemy' },
+            effect: [
+              { type: 'addStatus', status: 'high' },
+              { type: 'stealPower', amount: 1 },
+            ],
+          },
+        ],
+      }),
       card('medic', {
         abilities: [
           {
@@ -293,6 +310,13 @@ describe('text of the building blocks', () => {
       'À la révélation : rend les cartes ennemies ici surchauffées (×2) (machines seulement).',
       'À la révélation : rend les autres cartes ici surchauffées.',
       'En fin de tour : +1 puissance à une autre carte alliée ici au hasard et la rend surchauffée (machines seulement).',
+    ]);
+  });
+
+  it('writes power steals', () => {
+    expect(describeCard(bricks, bricks.card('thief'))).toEqual([
+      'À la révélation : vole 2 puissance à la carte ennemie la plus forte ici.',
+      'En fin de tour : rend les cartes ennemies ici défoncées et leur vole 1 puissance.',
     ]);
   });
 
