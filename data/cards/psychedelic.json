@@ -61,7 +61,8 @@
           "trigger": "onReveal",
           "effect": {
             "type": "addStatus",
-            "status": "high"
+            "status": "high",
+            "stacks": 2
           }
         },
         {

@@ -216,7 +216,7 @@
 | Benjamen | rare | 3 | 3 | Benj | En fin de tour : rend les autres cartes défoncées ici folles.<br>Folle : +1 puissance par autre carte folle ici.<br>Défoncée : +2 puissance. |
 | Farf | rare | 4 | 5 | Farf | En fin de tour : si tu perds ce lieu, retire l'Ivresse, la Folie et le Sommeil des autres cartes alliées ici et leur donne +1 puissance.<br>En fin de tour : si tu gagnes ce lieu, rend une autre carte ici au hasard défoncée.<br>Défoncée : +2 puissance. |
 | Julieng | peu commune | 2 | 2 | Julian | En continu : +1 puissance par carte Linette défoncée sur le plateau.<br>Défoncée : +2 puissance. |
-| Barlito Waa | peu commune | 3 | 3 | Barlito | Coriace (ne peut être ni détruite ni affaiblie).<br>À la révélation : devient défoncée.<br>Défoncée : +1 puissance par cumul de Défonce. |
+| Barlito Waa | peu commune | 3 | 3 | Barlito | Coriace (ne peut être ni détruite ni affaiblie).<br>À la révélation : devient défoncée (×2).<br>Défoncée : +1 puissance par cumul de Défonce. |
 | Babou Linette | commune | 1 | 1 | Babou Linette, Linette | En continu : +1 puissance par autre carte défoncée ici.<br>Défoncée : +2 puissance. |
 | Bébou Linette | commune | 1 | 1 | Bebou Linette, Linette | À la révélation : rend une autre carte alliée ici au hasard défoncée.<br>Défoncée : +2 puissance. |
 | Bibou Linette | commune | 1 | 1 | Bibou Linette, Linette | En continu : +1 puissance par autre carte défoncée alliée sur le plateau.<br>Défoncée : +2 puissance. |
