@@ -129,7 +129,7 @@ export class AddStatusEffect implements Effect {
     const tag = anyCard ? undefined : statusRule(status).onlyTag;
     for (const target of targets) {
       if (tag === undefined || board.hasTag(target, tag)) {
-        board.addStatus(target, status, stacks, source.owner);
+        board.addStatus(target, status, stacks, source);
       }
     }
   }

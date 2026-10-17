@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { type GameState, type PlayerIndex, describeCard, locationPowers } from '../src/index.ts';
+import { type GameState, type PlayerIndex, type StatusId, describeCard, locationPowers } from '../src/index.ts';
 import { card, catalogWith, newGame, playTurn, powerAt, uidOf } from './support.ts';
 
+const CHARMER = 'trait:charmeur';
 const enemiesHere = { type: 'cards', side: 'enemy' } as const;
 
 const catalog = catalogWith([
@@ -40,9 +41,31 @@ const catalog = catalogWith([
     abilities: [{ trigger: 'onDestroyed', target: enemiesHere, effect: { type: 'addPower', amount: -2 } }],
   }),
   card('wake-up', { abilities: [{ trigger: 'onReveal', effect: { type: 'removeStatus', status: 'asleep' } }] }),
+  // Charmée
+  card('charmer', {
+    tags: [CHARMER],
+    abilities: [{ trigger: 'onReveal', target: enemiesHere, effect: { type: 'addStatus', status: 'charmed' } }],
+  }),
+  card('charmer2', {
+    tags: [CHARMER],
+    abilities: [{ trigger: 'onReveal', target: enemiesHere, effect: { type: 'addStatus', status: 'charmed' } }],
+  }),
+  card('assassin', {
+    abilities: [
+      {
+        trigger: 'onReveal',
+        target: { type: 'cards', side: 'enemy', scope: 'everywhere', tag: CHARMER, pick: 'random' },
+        effect: { type: 'destroy' },
+      },
+    ],
+  }),
+  card('guardian', {
+    statuses: ['protected'],
+    abilities: [{ trigger: 'endOfTurn', effect: { type: 'addPower', amount: 1 } }],
+  }),
 ]);
 
-export function stacks(state: GameState, player: PlayerIndex, defId: string, status: 'asleep'): number | undefined {
+export function stacks(state: GameState, player: PlayerIndex, defId: string, status: StatusId): number | undefined {
   return state.cards[uidOf(state, player, defId)]?.statuses[status];
 }
 
@@ -139,6 +162,60 @@ describe('statuses: Endormie', () => {
     ]);
     expect(describeCard(catalog, catalog.card('wake-up'))).toEqual([
       'À la révélation : retire le Sommeil de cette carte.',
+    ]);
+  });
+});
+
+describe('statuses: Charmée', () => {
+  it('switches the abilities off while the charmer is on the board, and ends when it leaves', () => {
+    const state = newGame(catalog, { p0: ['grower', 'assassin'], p1: ['charmer'] });
+    const turn1 = playTurn(catalog, state, { p0: [['grower', 0]] }).state;
+    const turn2 = playTurn(catalog, turn1, { p1: [['charmer', 0]] }).state;
+    const turn3 = playTurn(catalog, turn2).state;
+    expect(powerAt(catalog, turn3, 0, 'grower')).toBe(2);
+    expect(stacks(turn3, 0, 'grower', 'charmed')).toBe(1);
+    const { state: turn4, events } = playTurn(catalog, turn3, { p0: [['assassin', 1]] });
+    expect(turn4.cards[uidOf(turn4, 1, 'charmer')]?.zone).toBe('destroyed');
+    expect(stacks(turn4, 0, 'grower', 'charmed')).toBeUndefined();
+    expect(turn4.cards[uidOf(turn4, 0, 'grower')]?.charmedBy).toEqual([]);
+    expect(events).toContainEqual({
+      type: 'statusChanged',
+      card: uidOf(turn4, 0, 'grower'),
+      status: 'charmed',
+      stacks: 0,
+    });
+    expect(powerAt(catalog, turn4, 0, 'grower')).toBe(3);
+  });
+
+  it('holds as long as one of its charmers is on the board', () => {
+    const state = newGame(catalog, { p0: ['grower', 'assassin'], p1: ['charmer', 'charmer2'] });
+    const turn1 = playTurn(catalog, state, { p0: [['grower', 0]] }).state;
+    const turn2 = playTurn(catalog, turn1, {
+      p1: [
+        ['charmer', 0],
+        ['charmer2', 0],
+      ],
+    }).state;
+    expect(stacks(turn2, 0, 'grower', 'charmed')).toBe(2);
+    const turn3 = playTurn(catalog, turn2, { p0: [['assassin', 1]] }).state;
+    expect(stacks(turn3, 0, 'grower', 'charmed')).toBe(2);
+    expect(turn3.cards[uidOf(turn3, 0, 'grower')]?.charmedBy).toHaveLength(1);
+    expect(powerAt(catalog, turn3, 0, 'grower')).toBe(2);
+  });
+
+  it('is absorbed by a Protection, like any enemy status', () => {
+    const state = newGame(catalog, { p0: ['guardian'], p1: ['charmer'] });
+    const turn1 = playTurn(catalog, state, { p0: [['guardian', 0]] }).state;
+    const turn2 = playTurn(catalog, turn1, { p1: [['charmer', 0]] }).state;
+    expect(stacks(turn2, 0, 'guardian', 'charmed')).toBeUndefined();
+    expect(stacks(turn2, 0, 'guardian', 'protected')).toBeUndefined();
+    expect(turn2.cards[uidOf(turn2, 0, 'guardian')]?.charmedBy).toEqual([]);
+    expect(powerAt(catalog, turn2, 0, 'guardian')).toBe(3);
+  });
+
+  it('is written in French', () => {
+    expect(describeCard(catalog, catalog.card('charmer'))).toEqual([
+      'À la révélation : rend les cartes ennemies ici charmées.',
     ]);
   });
 });

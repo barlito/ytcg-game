@@ -11,6 +11,7 @@
 - **Protection** (`protected`) : annule la prochaine destruction, le prochain malus de puissance ou le prochain état posé par une carte ennemie, puis disparaît (un cumul par protection)
 - **Surchauffe** (`overheat`) : détruite dès 3 cumuls
 - **Sommeil** (`asleep`) : ses capacités ne fonctionnent plus ; perd 1 cumul à chaque fin de tour
+- **Charme** (`charmed`) : ses capacités ne fonctionnent plus tant que la carte qui l'a charmée est en jeu
 
 ## 40K (`40k`) — 17 cartes, 15 avec effet
 

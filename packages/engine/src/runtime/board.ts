@@ -1,4 +1,4 @@
-import type { AbilitySource, Board, CardFilter, MoveDestination } from '../abilities/board.ts';
+import type { AbilitySource, Board, CardFilter, MoveDestination, Origin } from '../abilities/board.ts';
 import type { StatusId } from '../abilities/statuses.ts';
 import type { CardDefinition, Catalog } from '../catalog.ts';
 import { Rng } from '../rng.ts';
@@ -157,6 +157,7 @@ export class GameBoard implements Board {
     slot.splice(slot.indexOf(uid), 1);
     card.zone = 'destroyed';
     this.events.push({ type: 'cardDestroyed', card: uid });
+    statusChanges.releaseCharms(this, uid);
     this.onDestroyed(uid);
   }
 
@@ -176,7 +177,7 @@ export class GameBoard implements Board {
     hand.addToHand(this.handContext, player, defId, from);
   }
 
-  addStatus(uid: string, status: StatusId, stacks: number, by: PlayerIndex | null): void {
+  addStatus(uid: string, status: StatusId, stacks: number, by: Origin): void {
     statusChanges.addStatus(this, uid, { status, stacks, by });
   }
 

@@ -44,6 +44,9 @@ export interface AbilitySource {
   readonly played?: string;
 }
 
+// Who applies a change: a card and its owner, or a terrain (both null).
+export type Origin = Pick<AbilitySource, 'owner' | 'card'>;
+
 export const MOVE_DESTINATIONS = ['random', 'left', 'right'] as const;
 
 export type MoveDestination = (typeof MOVE_DESTINATIONS)[number];
@@ -66,8 +69,9 @@ export interface Board extends BoardView {
   addPower(card: string, delta: number): number;
   draw(player: PlayerIndex, count: number): void;
   destroy(card: string): void;
-  // `by`: owner of the card applying it (null for a terrain); a Protection absorbs a status put by the enemy.
-  addStatus(card: string, status: StatusId, stacks: number, by: PlayerIndex | null): void;
+  // `by`: the card applying it and its owner (both null for a terrain); a Protection absorbs a status put by the
+  // enemy, a charm lasts while its card is on the board.
+  addStatus(card: string, status: StatusId, stacks: number, by: Origin): void;
   // null removes every status.
   removeStatus(card: string, status: StatusId | null): void;
   // One stack of the status wears off (gone at zero).

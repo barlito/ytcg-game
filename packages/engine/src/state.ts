@@ -35,6 +35,8 @@ export interface CardInstance {
   statuses: Partial<Record<StatusId, number>>;
   // Drawn when the card goes mad without a madness effect of its own, forgotten with the Folie.
   crisis: CrisisId | null;
+  // The cards whose charm holds this one (Charmée), forgotten with the status.
+  charmedBy: string[];
   // The player brought a holo copy of this card (cosmetic, public once the card is revealed).
   holo: boolean;
 }

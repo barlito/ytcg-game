@@ -103,6 +103,13 @@ export const STATUSES = {
       board.loseStack(card, 'asleep');
     },
   },
+  charmed: {
+    name: 'Charme',
+    masculine: true,
+    adjective: 'charmée',
+    rule: "ses capacités ne fonctionnent plus tant que la carte qui l'a charmée est en jeu",
+    disablesAbilities: true,
+  },
 } as const satisfies Record<string, StatusRule>;
 
 export type StatusId = keyof typeof STATUSES;
