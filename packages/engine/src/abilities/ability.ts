@@ -70,6 +70,9 @@ function targetIssues(ability: AbilityParams): Issue[] {
   if (self && has('stealPower')) {
     issues.push({ path: ['target'], message: 'a card cannot steal power from itself' });
   }
+  if (!self && has('addPowerPerStack')) {
+    issues.push({ path: ['target'], message: '"addPowerPerStack" reads the stacks of the card itself: target "self"' });
+  }
   if (!self && has('transform')) {
     issues.push({ path: ['target'], message: 'a card only transforms itself: "transform" needs target "self"' });
   }

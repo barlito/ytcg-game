@@ -20,7 +20,7 @@ La boîte à outils pour décrire les capacités des cartes et des lieux dans `d
 
 **`onDestroyed`** : la carte a déjà quitté le plateau, ses cibles sont relatives au lieu où elle était (`scope: "here"` = ce lieu). Une cible `self` n'a plus de sens (refusé), sauf pour les effets sans cible (`draw`, `addCost`, `addToHand` : « ajoute une copie de cette carte en main » fait revenir la carte). Une carte qui survit à la destruction (Coriace, Protection) ne déclenche rien.
 
-Une capacité `ongoing` ne peut que **donner de la puissance** (`addPower`, `addPowerPerCard`) à des cibles `self` ou `cards` avec `pick: "all"` : elle est recalculée à chaque lecture, elle ne doit donc dépendre ni de la puissance ni du hasard (refusés au chargement : condition `location`, filtres `minPower` / `maxPower`).
+Une capacité `ongoing` ne peut que **donner de la puissance** (`addPower`, `addPowerPerCard`, `addPowerPerStack`) à des cibles `self` ou `cards` avec `pick: "all"` : elle est recalculée à chaque lecture, elle ne doit donc dépendre ni de la puissance ni du hasard (refusés au chargement : condition `location`, filtres `minPower` / `maxPower`).
 
 ## Filtre de cartes
 
@@ -39,7 +39,7 @@ Partagé par la condition `count`, la cible `cards` et l'effet `addPowerPerCard`
 
 Un intervalle vide (`minCost` > `maxCost`, `minPower` > `maxPower`) est refusé au chargement, comme `status` égal à `withoutStatus`.
 
-« rend défoncée une autre carte non défoncée ici au hasard » (Warnyx) :
+« rend défoncée une autre carte non défoncée ici au hasard » :
 ```json
 { "trigger": "onReveal", "target": { "type": "cards", "side": "all", "withoutStatus": "high", "pick": "random" }, "effect": { "type": "addStatus", "status": "high" } }
 ```
@@ -132,6 +132,7 @@ Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de no
 |---|---|---|
 | `addPower` | `amount` (≠ 0, négatif possible) | ajoute de la puissance aux cibles |
 | `addPowerPerCard` | `amount`, `count` (filtre) | `amount` × nombre de cartes qui passent le filtre |
+| `addPowerPerStack` | `amount` (≠ 0), `status` | `amount` × nombre de cumuls de `status` sur **la carte elle-même** (cible `self` seulement). Lit un état, ni puissance ni hasard : permis en `ongoing`. Avec la condition `status` : « Défoncée : +1 puissance par cumul de Défonce. » (Barlito Waa) |
 | `stealPower` | `amount` (≥ 1) | les cibles perdent `amount` et la carte gagne ce qui a **vraiment** été perdu (Coriace : rien ; Protection : le cumul est dépensé, rien n'est gagné). Cartes seulement (refusé sur un terrain), jamais sur `self`, jamais `ongoing`. « vole 2 puissance à la carte ennemie la plus forte ici » |
 | `draw` | `count` (1 à 3, défaut 1) | le propriétaire pioche ; sur un lieu, les deux joueurs |
 | `destroy` | — | détruit les cibles |

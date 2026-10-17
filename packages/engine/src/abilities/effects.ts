@@ -15,7 +15,7 @@ import {
   TransformEffect,
   owners,
 } from './effects-cards.ts';
-import { StealPowerEffect } from './effects-power.ts';
+import { AddPowerPerStackEffect, StealPowerEffect } from './effects-power.ts';
 import { type StatusId, statusRule, statusSchema } from './statuses.ts';
 
 const addPowerSchema = z.object({
@@ -183,6 +183,7 @@ export class RemoveStatusEffect implements Effect {
 export const effectSchema = z.discriminatedUnion('type', [
   AddPowerEffect.schema,
   AddPowerPerCardEffect.schema,
+  AddPowerPerStackEffect.schema,
   DrawEffect.schema,
   DestroyEffect.schema,
   AddStatusEffect.schema,
@@ -197,7 +198,11 @@ export const effectSchema = z.discriminatedUnion('type', [
 
 export type EffectParams = z.output<typeof effectSchema>;
 
-export const ONGOING_EFFECTS: ReadonlySet<EffectParams['type']> = new Set(['addPower', 'addPowerPerCard']);
+export const ONGOING_EFFECTS: ReadonlySet<EffectParams['type']> = new Set([
+  'addPower',
+  'addPowerPerCard',
+  'addPowerPerStack',
+]);
 
 // Effects that ignore the target of their ability.
 export const UNTARGETED_EFFECTS: ReadonlySet<EffectParams['type']> = new Set([
@@ -234,6 +239,8 @@ export function createEffect(params: EffectParams): Effect {
       return new AddPowerEffect(params);
     case 'addPowerPerCard':
       return new AddPowerPerCardEffect(params);
+    case 'addPowerPerStack':
+      return new AddPowerPerStackEffect(params);
     case 'draw':
       return new DrawEffect(params);
     case 'destroy':

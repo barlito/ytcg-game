@@ -59,6 +59,7 @@ export interface BoardView {
   cardsMatching(source: AbilitySource, filter: CardFilter): string[];
   power(card: string): number;
   hasStatus(card: string, status: StatusId): boolean;
+  stacksOf(card: string, status: StatusId): number;
   hasTag(card: string, tag: string): boolean;
   // Turns started since the card was revealed (0 on its reveal turn).
   turnsOnBoard(card: string): number;
