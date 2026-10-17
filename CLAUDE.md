@@ -12,7 +12,7 @@ Two-player duel game (Marvel Snap-like: 3 locations, 6 turns, simultaneous revea
 - `packages/server` — authoritative Colyseus server wrapping the engine. See its CLAUDE.md.
 - `packages/client` — React + Vite client. See its CLAUDE.md.
 - Dev: `make deploy` starts the dev server (:2567, players pick a name) and the client (http://localhost:5173); `make undeploy`, `make logs`. Board test page without a game or server (dev only): http://localhost:5173/?sandbox.
-- `data/cards`, `data/locations` — versioned game data (JSON), keyed by the ytcg card uuid. `data/locations/<universe>.json` holds the terrains: the ytcg « place » cards, never playable (an id is never both a card and a terrain). Universes without a place card have no terrain. `image` = the ytcg `imageName` of the artwork.
+- `data/cards`, `data/locations` — versioned game data (JSON), keyed by the ytcg card uuid. `data/locations/<universe>.json` holds the terrains: the ytcg « place » cards, never playable (an id is never both a card and a terrain). Universes without a place card have no terrain. `image` = the ytcg `imageName` of the artwork. `deckable: false` marks an evolved form (collectible, never in a deck, only put in play by a `transform` effect).
 
 ## Boundaries with ytcg
 

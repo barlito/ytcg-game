@@ -33,7 +33,16 @@ function workspace(): { root: string; cards: string; locations: string; dump: st
       { name: 'A place', rarity: 'common', prodId: 'place' },
     ],
   });
-  const tuned = { id: 'tuned', name: 'Tuned', rarity: 'common', unique: false, cost: 5, power: 1, tags: ['trait:x'] };
+  const tuned = {
+    id: 'tuned',
+    name: 'Tuned',
+    rarity: 'common',
+    unique: false,
+    cost: 5,
+    power: 1,
+    tags: ['trait:x'],
+    deckable: false,
+  };
   writeJson(join(cards, 'test.json'), {
     extension: { slug: 'test', name: 'Test' },
     cards: [{ ...tuned, abilities: [] }],
@@ -61,6 +70,7 @@ describe('tools/import-youlz-assets.ts', () => {
           cost: 5,
           power: 1,
           tags: ['trait:x'],
+          deckable: false,
           image: 'tuned-6a76.png',
         }),
         expect.objectContaining({ id: 'fresh', name: 'Fresh', image: 'fresh-6a76.png' }),

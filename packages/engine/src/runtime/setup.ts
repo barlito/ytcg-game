@@ -33,6 +33,8 @@ export function validateDeck(catalog: Catalog, deck: readonly string[]): string[
   }
   const unknown = deck.filter((id) => !catalog.cards.has(id));
   issues.push(...unknown.map((id) => `unknown card ${id}`));
+  const evolved = deck.filter((id) => catalog.cards.get(id)?.deckable === false);
+  issues.push(...evolved.map((id) => `card ${id} cannot be put in a deck (evolved form)`));
   return unknown.length === 0 ? [...issues, ...deckCurveIssues(catalog, deck)] : issues;
 }
 

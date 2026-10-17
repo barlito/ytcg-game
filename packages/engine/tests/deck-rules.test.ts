@@ -55,6 +55,37 @@ describe('deck curve', () => {
   });
 });
 
+describe('evolved forms (deckable: false)', () => {
+  const catalog = catalogWith([card('base'), card('evolved', { deckable: false, cost: 2 })]);
+
+  it('defaults to deckable and keeps the flag', () => {
+    expect(catalog.card('base').deckable).toBe(true);
+    expect(catalog.card('evolved').deckable).toBe(false);
+  });
+
+  it('are refused in a deck', () => {
+    const deck = ['evolved', ...deckOf().slice(1)];
+    expect(validateDeck(catalog, deck)).toContain('card evolved cannot be put in a deck (evolved form)');
+    expect(() =>
+      createGame(catalog, {
+        seed: 's',
+        players: [
+          { id: 'a', deck },
+          { id: 'b', deck: deckOf() },
+        ],
+        locations: ['loc-a', 'loc-b', 'loc-c'],
+      }),
+    ).toThrow('evolved form');
+  });
+
+  it('are never drawn into a random deck', () => {
+    for (let seed = 1; seed <= 50; seed++) {
+      expect(buildRandomDeck(catalog, new Rng({ s: seed }))).not.toContain('evolved');
+      expect(buildRandomDeck(catalog, new Rng({ s: seed }), [...catalog.cards.keys()])).not.toContain('evolved');
+    }
+  });
+});
+
 describe('random legal decks', () => {
   it('always respects the curve on the real catalog', () => {
     for (let seed = 1; seed <= 100; seed++) {

@@ -1,5 +1,5 @@
 // Seeds data/cards/<universe>.json from the YoulzAssets manifests (cards already in prod only).
-// Re-running it never touches the game values of a known card (cost, power, tags, abilities).
+// Re-running it never touches the game values of a known card (cost, power, tags, abilities, deckable).
 // Terrains (data/locations/*.json) are never re-added as playable cards.
 // Optional ytcg prod dump: fills/refreshes the `image` of cards and terrains, matched by uuid.
 // Inputs are trusted local files (manifests, dump, data/): their shape is cast, not validated.
@@ -27,6 +27,8 @@ interface GameCard {
   name: string;
   rarity: Rarity;
   unique: boolean;
+  // false = an evolved form (only played through a transformation), set by hand.
+  deckable?: boolean;
   image?: string;
   mask?: string;
   holo?: string;

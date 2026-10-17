@@ -1,4 +1,4 @@
-import { type Catalog, DECK_SIZE, deckCurveChecks, describeCurveRule } from '@ytcg-game/engine';
+import { type Catalog, DECK_SIZE, deckCurveChecks, describeCurveRule, isDeckable } from '@ytcg-game/engine';
 import type { DeckChoice } from '../protocol.ts';
 import { DeckError } from './deck-provider.ts';
 
@@ -9,6 +9,10 @@ export function gameRuleRefusal(catalog: Catalog, deck: DeckChoice): string | nu
     return unknown === 1
       ? 'Ce deck contient 1 carte pas encore jouable dans le duel : remplace-la.'
       : `Ce deck contient ${unknown} cartes pas encore jouables dans le duel : remplace-les.`;
+  }
+  const evolved = evolvedRefusal(catalog, deck.cards);
+  if (evolved !== null) {
+    return evolved;
   }
   if (deck.cards.length !== DECK_SIZE || new Set(deck.cards).size !== deck.cards.length) {
     return `Un deck contient exactement ${DECK_SIZE} cartes différentes.`;
@@ -22,6 +26,17 @@ export function gameRuleRefusal(catalog: Catalog, deck: DeckChoice): string | nu
     return `Courbe de coûts à revoir : ${rules.join(' ; ')}.`;
   }
   return null;
+}
+
+// Evolved forms are collectible but only ever enter play through a transformation.
+function evolvedRefusal(catalog: Catalog, cards: readonly string[]): string | null {
+  const names = cards.filter((id) => !isDeckable(catalog, id)).map((id) => `« ${catalog.card(id).name} »`);
+  if (names.length === 0) {
+    return null;
+  }
+  return names.length === 1
+    ? `${names.join('')} ne peut pas être mise dans un deck : c'est une forme évoluée.`
+    : `${names.join(', ')} ne peuvent pas être mises dans un deck : ce sont des formes évoluées.`;
 }
 
 export function assertGameRules(catalog: Catalog, deck: DeckChoice): DeckChoice {

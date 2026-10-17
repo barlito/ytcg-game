@@ -176,6 +176,7 @@ Décisions du 2026-10-08 :
 
 - **Déploiement** sur le domaine ytcg derrière Traefik (client et serveur sous un préfixe, voir [Architecture](#architecture)) : le cookie `jwt` doit atteindre l'API joueur (même origine, `VITE_YTCG_URL` vide) et le handshake websocket.
 - **Côté ytcg** : définir le secret partagé `DUEL_SERVER_TOKEN` (même valeur des deux côtés), importer les tags et terrains du jeu (`bin/console app:duel:import-game-data <ytcg-game/data>`, d'abord avec `--dry-run`), puis activer le feature flag `duel` (admin « Fonctionnalités »).
+- **Formes évoluées (phase 6c)** : ytcg doit importer le champ `deckable` des données du jeu (`deckable: false` = forme évoluée, collectionnable mais jamais dans un deck) avec `app:duel:import-game-data`, et le faire respecter dans **sa** validation de deck (écriture du deck, API `/api/duel/server/decks/{id}`) et dans son deck builder. En attendant, le serveur de jeu refuse un tel deck par ses propres règles (« « Nom » ne peut pas être mise dans un deck : c'est une forme évoluée. ») et le deck builder du jeu masque ces cartes.
 - **Côté serveur de jeu** : `YTCG_API_URL` (ytcg vu depuis le serveur, réseau Traefik partagé), `DUEL_SERVER_TOKEN`, `YTCG_JWT_PUBLIC_KEY_PATH` (le serveur refuse de démarrer sans eux).
 
 ## Polish du jeu (phase 4)

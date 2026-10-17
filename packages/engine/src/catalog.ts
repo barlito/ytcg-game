@@ -35,6 +35,8 @@ const cardSchema = z.object({
   name: z.string().min(1),
   rarity: z.enum(RARITIES),
   unique: z.boolean().default(false),
+  // false: an evolved form, collectible but only ever put in play by a transformation.
+  deckable: z.boolean().default(true),
   image: imageSchema,
   // ytcg mask (/uploads/masks/) clipping the holo to the lit area, and the holo recipe (null = a plain card).
   mask: imageSchema,
@@ -86,6 +88,7 @@ export interface CardDefinition {
   readonly extension: string;
   readonly rarity: Rarity;
   readonly unique: boolean;
+  readonly deckable: boolean;
   readonly image: string | null;
   readonly mask: string | null;
   readonly holo: HoloPreset | null;
@@ -200,6 +203,7 @@ function loadCardFile(
       extension: extension.slug,
       rarity: card.rarity,
       unique: card.unique,
+      deckable: card.deckable,
       image: card.image,
       mask: card.mask,
       holo: card.holo,

@@ -37,13 +37,18 @@ export function deckCurveIssues(catalog: Catalog, deck: readonly string[]): stri
     );
 }
 
-// A random deck that respects the curve, drawn from the pool (default: every card), or null when impossible.
+// Cards a deck may hold: evolved forms (deckable false) only enter play through a transformation.
+export function isDeckable(catalog: Catalog, id: string): boolean {
+  return catalog.cards.get(id)?.deckable === true;
+}
+
+// A random deck that respects the curve, drawn from the deckable cards of the pool (default: every card), or null.
 export function buildRandomDeck(
   catalog: Catalog,
   rng: Rng,
   pool: readonly string[] = [...catalog.cards.keys()],
 ): string[] | null {
-  const shuffled = rng.shuffle([...new Set(pool)]);
+  const shuffled = rng.shuffle([...new Set(pool)].filter((id) => isDeckable(catalog, id)));
   const costOf = (id: string): number => catalog.card(id).cost;
   const deck = DECK_MINIMUM_BY_COST.flatMap(({ cost, count }) =>
     shuffled.filter((id) => costOf(id) === cost).slice(0, count),
