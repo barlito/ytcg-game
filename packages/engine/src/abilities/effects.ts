@@ -27,9 +27,9 @@ export class AddPowerEffect implements OngoingEffect {
     this.params = params;
   }
 
-  apply(board: Board, _source: AbilitySource, targets: readonly string[]): void {
+  apply(board: Board, source: AbilitySource, targets: readonly string[]): void {
     for (const target of targets) {
-      board.addPower(target, this.params.amount);
+      board.addPower(target, this.params.amount, source);
     }
   }
 
@@ -61,7 +61,7 @@ export class AddPowerPerCardEffect implements OngoingEffect {
       return;
     }
     for (const target of targets) {
-      board.addPower(target, bonus);
+      board.addPower(target, bonus, source);
     }
   }
 

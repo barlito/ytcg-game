@@ -4,7 +4,7 @@ import { PLAYERS } from '../state.ts';
 import type { GameBoard } from './board.ts';
 import { crisisBonus } from './crises.ts';
 import { cardAt } from './state-access.ts';
-import { hasRule } from './statuses.ts';
+import { hasRule, refusesBoost } from './statuses.ts';
 
 export interface OngoingBonus {
   source: AbilitySource;
@@ -32,7 +32,7 @@ export function ongoingBonuses(board: GameBoard, uid: string): OngoingBonus[] {
   const losses = !hasRule(card, 'preventsPowerLoss');
   const bonuses: OngoingBonus[] = [];
   for (const { abilities, source } of ongoingHolders(board)) {
-    const receiver = { uid, gains: true, losses };
+    const receiver = { uid, gains: !refusesBoost(card, source), losses };
     const amount = abilities.reduce((sum, ability) => sum + bonusFor(board, receiver, ability, source), 0);
     if (amount !== 0) {
       bonuses.push({ source, amount });

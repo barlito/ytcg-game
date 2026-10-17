@@ -16,6 +16,8 @@ export interface StatusRule {
   // Permanent immunities (Coriace).
   readonly preventsDestroy?: boolean;
   readonly preventsPowerLoss?: boolean;
+  // Refuses power gains from other allied cards, one-shot or ongoing (Enragée).
+  readonly refusesAllyBoosts?: boolean;
   // One-shot shields: each stack cancels one destruction / one power loss, then goes away (Protégée).
   readonly absorbsDestroy?: boolean;
   readonly absorbsPowerLoss?: boolean;
@@ -119,6 +121,15 @@ export const STATUSES = {
     rule: "quand elle est détruite, l'adversaire de son propriétaire pioche 1 carte par cumul",
     onDestroyed(board: Board, card: string, stacks: number): void {
       board.draw(opponentOf(board.ownerOf(card)), stacks);
+    },
+  },
+  enraged: {
+    name: 'Fureur',
+    adjective: 'enragée',
+    rule: 'gagne 1 puissance par cumul à chaque fin de tour ; ignore les bonus de puissance des autres cartes alliées',
+    refusesAllyBoosts: true,
+    endOfTurn(board: Board, card: string, stacks: number): void {
+      board.addPower(card, stacks);
     },
   },
 } as const satisfies Record<string, StatusRule>;

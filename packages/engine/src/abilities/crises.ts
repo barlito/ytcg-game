@@ -68,7 +68,7 @@ export const CRISES = {
         return;
       }
       for (const uid of mad) {
-        board.addPower(uid, IMPLOSION_BONUS);
+        board.addPower(uid, IMPLOSION_BONUS, source);
       }
     },
   },

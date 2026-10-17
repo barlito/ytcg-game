@@ -11,7 +11,7 @@ import { cardMatches, inScope, onSide } from './filters.ts';
 import * as hand from './hand.ts';
 import * as statusChanges from './status-changes.ts';
 import { cardAt, locationAt } from './state-access.ts';
-import { absorbingStatus, hasRule, stacksOf } from './statuses.ts';
+import { absorbingStatus, acceptsChange, hasRule, stacksOf } from './statuses.ts';
 
 // The board as abilities see it: queries on revealed cards and the elementary mutations.
 export class GameBoard implements Board {
@@ -118,9 +118,9 @@ export class GameBoard implements Board {
     return this.state.locations.map((location): [number, number] => [sum(location.cards[0]), sum(location.cards[1])]);
   }
 
-  addPower(uid: string, delta: number): number {
+  addPower(uid: string, delta: number, by?: Origin): number {
     const card = cardAt(this.state, uid);
-    if (card.zone !== 'board' || delta === 0 || (delta < 0 && hasRule(card, 'preventsPowerLoss'))) {
+    if (card.zone !== 'board' || delta === 0 || !acceptsChange(card, delta, by)) {
       return 0;
     }
     const shield = delta < 0 ? absorbingStatus(card, 'absorbsPowerLoss') : null;

@@ -78,6 +78,18 @@ const catalog = catalogWith([
       { trigger: 'ongoing', condition: { type: 'status', status: 'marked' }, effect: { type: 'addPower', amount: 2 } },
     ],
   }),
+  // Enragée
+  card('rager', { abilities: [{ trigger: 'onReveal', effect: { type: 'addStatus', status: 'enraged' } }] }),
+  card('buffer', {
+    abilities: [{ trigger: 'onReveal', target: { type: 'cards' }, effect: { type: 'addPower', amount: 2 } }],
+  }),
+  card('gifter', {
+    abilities: [{ trigger: 'onReveal', target: enemiesHere, effect: { type: 'addPower', amount: 2 } }],
+  }),
+  card('berserk', {
+    statuses: ['enraged'],
+    abilities: [{ trigger: 'onReveal', effect: { type: 'addPower', amount: 3 } }],
+  }),
 ]);
 
 export function stacks(state: GameState, player: PlayerIndex, defId: string, status: StatusId): number | undefined {
@@ -287,5 +299,43 @@ describe('statuses: Marquée', () => {
       'À la révélation : rend les cartes ennemies ici marquées (×2).',
     ]);
     expect(describeCard(catalog, catalog.card('outlaw'))).toEqual(['Marquée : +2 puissance.']);
+  });
+});
+
+describe('statuses: Enragée', () => {
+  it('gains 1 power per stack at every end of turn', () => {
+    const state = newGame(catalog, { p0: ['rager'] });
+    const turn1 = playTurn(catalog, state, { p0: [['rager', 0]] }).state;
+    expect(powerAt(catalog, turn1, 0, 'rager')).toBe(2);
+    expect(powerAt(catalog, playTurn(catalog, turn1).state, 0, 'rager')).toBe(3);
+  });
+
+  it('refuses the power bonuses of its allies, one-shot or ongoing, but not the enemy ones', () => {
+    const state = newGame(catalog, { p0: ['rager', 'aura', 'buffer'], p1: ['gifter'] });
+    const turn1 = playTurn(catalog, state, {
+      p0: [
+        ['rager', 0],
+        ['aura', 0],
+        ['buffer', 0],
+      ],
+    }).state;
+    expect(powerAt(catalog, turn1, 0, 'rager')).toBe(1 + 1);
+    expect(powerAt(catalog, turn1, 0, 'aura')).toBe(1 + 2);
+    expect(powerAt(catalog, turn1, 0, 'buffer')).toBe(1 + 2);
+    const turn2 = playTurn(catalog, turn1, { p1: [['gifter', 0]] }).state;
+    expect(powerAt(catalog, turn2, 0, 'rager')).toBe(2 + 2 + 1);
+  });
+
+  it('keeps the bonuses of its own abilities', () => {
+    const state = newGame(catalog, { p0: ['berserk'] });
+    const turn1 = playTurn(catalog, state, { p0: [['berserk', 0]] }).state;
+    expect(powerAt(catalog, turn1, 0, 'berserk')).toBe(1 + 3 + 1);
+  });
+
+  it('is written in French', () => {
+    expect(describeCard(catalog, catalog.card('rager'))).toEqual(['À la révélation : devient enragée.']);
+    expect(describeCard(catalog, catalog.card('berserk'))[0]).toBe(
+      'Fureur (gagne 1 puissance par cumul à chaque fin de tour ; ignore les bonus de puissance des autres cartes alliées).',
+    );
   });
 });
