@@ -211,16 +211,16 @@
 
 | Carte | Rareté | Coût | Puiss. | Tags | Effet |
 |---|---|---|---|---|---|
-| Jean Raoulz | légendaire | 5 | 5 | Jean Raoul | À la révélation : rend les cartes ennemies ici défoncées (×2). |
-| Warnyx | légendaire | 6 | 7 | Warny | À la révélation : rend les autres cartes ici défoncées.<br>En continu : +2 puissance par autre carte défoncée sur le plateau. |
-| Benjamen | rare | 3 | 3 | Benj | À la révélation : rend les autres cartes ici folles.<br>En continu : +1 puissance par autre carte folle sur le plateau.<br>Folle : +1 puissance. |
-| Farf | rare | 4 | 5 | Farf | À la révélation : retire la Défonce des autres cartes défoncées alliées sur le plateau et leur donne +2 puissance. |
-| Julieng | peu commune | 2 | 2 | Julian | En continu : +2 puissance par autre carte Linette alliée ici. |
-| Barlito Waa | peu commune | 3 | 3 | Barlito | Coriace (ne peut être ni détruite ni affaiblie).<br>À la révélation : +3 puissance et devient défoncée. |
-| Babou Linette | commune | 1 | 1 | Babou Linette, Linette | En continu : +1 puissance par autre carte Linette alliée sur le plateau. |
-| Bébou Linette | commune | 1 | 1 | Bebou Linette, Linette | À la révélation : +2 puissance et devient défoncée. |
+| Jean Raoulz | légendaire | 5 | 5 | Jean Raoul | À la révélation : rend les autres cartes Psychedelic sur le plateau défoncées. |
+| Warnyx | légendaire | 6 | 7 | Warny | À la révélation : rend une autre carte non défoncée ici au hasard défoncée.<br>À la révélation : +2 puissance par autre carte défoncée alliée ici. |
+| Benjamen | rare | 3 | 3 | Benj | À la révélation : rend les autres cartes défoncées ici folles.<br>Folle : +1 puissance par autre carte folle ici. |
+| Farf | rare | 4 | 5 | Farf | En fin de tour : si tu perds ce lieu, retire la Défonce et l'Ivresse des autres cartes alliées ici et leur donne +1 puissance. |
+| Julieng | peu commune | 2 | 2 | Julian | En continu : +1 puissance par carte Linette défoncée sur le plateau. |
+| Barlito Waa | peu commune | 3 | 3 | Barlito | Coriace (ne peut être ni détruite ni affaiblie).<br>À la révélation : devient défoncée (×3). |
+| Babou Linette | commune | 1 | 1 | Babou Linette, Linette | En continu : +1 puissance par carte défoncée ennemie ici. |
+| Bébou Linette | commune | 1 | 1 | Bebou Linette, Linette | À la révélation : rend la carte ennemie la plus forte ici défoncée (×2). |
 | Bibou Linette | commune | 1 | 1 | Bibou Linette, Linette | En continu : +1 puissance par autre carte défoncée alliée sur le plateau. |
-| Velo | commune | 1 | 1 | Veli | À la révélation : +3 puissance et devient défoncée. |
+| Velo | commune | 1 | 1 | Veli | À la révélation : s'il n'y a aucune autre carte alliée ici, devient défoncée.<br>Défoncée : +3 puissance. |
 
 ## Replicant (`replicant`) — 15 cartes, 15 avec effet
 

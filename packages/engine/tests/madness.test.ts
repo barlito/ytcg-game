@@ -290,6 +290,7 @@ describe('crises', () => {
 });
 
 describe('Benj (data)', () => {
+  // A rewritten extension may give its Benj a scaling madness bonus (Psychedelic: « Folle : +1 puissance par … »).
   it('every Benj has a "Folle : +N puissance" ability (1 up to cost 3, 2 above) and no random crisis', () => {
     const benjs = [...loadDataDir().cards.values()].filter((definition) => definition.tags.includes('character:benj'));
     expect(benjs.length).toBeGreaterThan(10);
@@ -298,8 +299,9 @@ describe('Benj (data)', () => {
       const own = definition.abilities.filter(
         (ability) => ability.params.condition?.type === 'status' && ability.params.condition.status === 'mad',
       );
-      expect(own.map((ability) => ability.params.effect)).toEqual([[{ type: 'addPower', amount }]]);
-      expect(describeCard(loadDataDir(), definition)).toContain(`Folle : +${amount} puissance.`);
+      expect(own).toHaveLength(1);
+      expect(own[0]?.params.effect).toEqual([expect.objectContaining({ amount })]);
+      expect(describeCard(loadDataDir(), definition).join('\n')).toContain(`Folle : +${amount} puissance`);
     }
   });
 });

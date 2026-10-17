@@ -23,8 +23,8 @@
             "type": "addPowerPerCard",
             "amount": 1,
             "count": {
-              "scope": "everywhere",
-              "tag": "family:linette"
+              "side": "enemy",
+              "status": "high"
             }
           }
         }
@@ -48,16 +48,11 @@
       "abilities": [
         {
           "trigger": "onReveal",
-          "effect": [
-            {
-              "type": "addPower",
-              "amount": 3
-            },
-            {
-              "type": "addStatus",
-              "status": "high"
-            }
-          ]
+          "effect": {
+            "type": "addStatus",
+            "status": "high",
+            "stacks": 3
+          }
         }
       ],
       "mask": "barlito-waa-mask-background-6a78a7e37fef3661333528.png"
@@ -77,16 +72,16 @@
       "abilities": [
         {
           "trigger": "onReveal",
-          "effect": [
-            {
-              "type": "addPower",
-              "amount": 2
-            },
-            {
-              "type": "addStatus",
-              "status": "high"
-            }
-          ]
+          "target": {
+            "type": "cards",
+            "side": "enemy",
+            "pick": "strongest"
+          },
+          "effect": {
+            "type": "addStatus",
+            "status": "high",
+            "stacks": 2
+          }
         }
       ],
       "mask": "bebou-linette-mask-background-6a78a7ec3a493150793285.png"
@@ -107,23 +102,12 @@
           "trigger": "onReveal",
           "target": {
             "type": "cards",
-            "side": "all"
+            "side": "all",
+            "status": "high"
           },
           "effect": {
             "type": "addStatus",
             "status": "mad"
-          }
-        },
-        {
-          "trigger": "ongoing",
-          "effect": {
-            "type": "addPowerPerCard",
-            "amount": 1,
-            "count": {
-              "side": "all",
-              "scope": "everywhere",
-              "status": "mad"
-            }
           }
         },
         {
@@ -133,8 +117,12 @@
             "status": "mad"
           },
           "effect": {
-            "type": "addPower",
-            "amount": 1
+            "type": "addPowerPerCard",
+            "amount": 1,
+            "count": {
+              "side": "all",
+              "status": "mad"
+            }
           }
         }
       ],
@@ -180,20 +168,25 @@
       ],
       "abilities": [
         {
-          "trigger": "onReveal",
+          "trigger": "endOfTurn",
+          "condition": {
+            "type": "location",
+            "result": "losing"
+          },
           "target": {
-            "type": "cards",
-            "scope": "everywhere",
-            "status": "high"
+            "type": "cards"
           },
           "effect": [
             {
               "type": "removeStatus",
-              "status": "high"
+              "statuses": [
+                "high",
+                "drunk"
+              ]
             },
             {
               "type": "addPower",
-              "amount": 2
+              "amount": 1
             }
           ]
         }
@@ -216,12 +209,13 @@
           "trigger": "onReveal",
           "target": {
             "type": "cards",
-            "side": "enemy"
+            "side": "all",
+            "scope": "everywhere",
+            "tag": "universe:psychedelic"
           },
           "effect": {
             "type": "addStatus",
-            "status": "high",
-            "stacks": 2
+            "status": "high"
           }
         }
       ],
@@ -244,9 +238,13 @@
           "trigger": "ongoing",
           "effect": {
             "type": "addPowerPerCard",
-            "amount": 2,
+            "amount": 1,
             "count": {
-              "tag": "family:linette"
+              "side": "all",
+              "scope": "everywhere",
+              "tag": "family:linette",
+              "status": "high",
+              "includeSelf": true
             }
           }
         }
@@ -267,16 +265,26 @@
       "abilities": [
         {
           "trigger": "onReveal",
-          "effect": [
-            {
-              "type": "addPower",
-              "amount": 3
-            },
-            {
-              "type": "addStatus",
-              "status": "high"
-            }
-          ]
+          "condition": {
+            "type": "count",
+            "min": 0,
+            "max": 0
+          },
+          "effect": {
+            "type": "addStatus",
+            "status": "high"
+          }
+        },
+        {
+          "trigger": "ongoing",
+          "condition": {
+            "type": "status",
+            "status": "high"
+          },
+          "effect": {
+            "type": "addPower",
+            "amount": 3
+          }
         }
       ],
       "mask": "velo-mask-background-6a78a813759a7473959950.png"
@@ -297,7 +305,9 @@
           "trigger": "onReveal",
           "target": {
             "type": "cards",
-            "side": "all"
+            "side": "all",
+            "withoutStatus": "high",
+            "pick": "random"
           },
           "effect": {
             "type": "addStatus",
@@ -305,13 +315,11 @@
           }
         },
         {
-          "trigger": "ongoing",
+          "trigger": "onReveal",
           "effect": {
             "type": "addPowerPerCard",
             "amount": 2,
             "count": {
-              "side": "all",
-              "scope": "everywhere",
               "status": "high"
             }
           }
