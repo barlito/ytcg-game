@@ -103,6 +103,11 @@ export class GameBoard implements Board {
     return this.definitionOf(uid).tags.includes(tag);
   }
 
+  turnsOnBoard(uid: string): number {
+    const { revealedTurn } = cardAt(this.state, uid);
+    return revealedTurn === null ? 0 : this.state.turn - revealedTurn;
+  }
+
   hasStatus(uid: string, status: StatusId): boolean {
     return stacksOf(cardAt(this.state, uid), status) > 0;
   }

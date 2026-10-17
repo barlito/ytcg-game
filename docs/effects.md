@@ -110,6 +110,7 @@ Règles : **une seule crise par carte** (les cumuls de Folie ne tirent pas de no
 | `count` | filtre + `min` (défaut 1), `max` | « s'il y a un autre Benj ici » : `{ "type": "count", "tag": "character:benj" }` |
 | `turn` | `min`, `max` | « à partir du tour 4 » : `{ "type": "turn", "min": 4 }` |
 | `location` | `result` : `winning`, `losing`, `tied` | « si tu gagnes ce lieu » : `{ "type": "location", "result": "winning" }` : le propriétaire de la carte gagne / perd / est à égalité au lieu de la carte (somme des puissances, au moment où la capacité se résout). Cartes seulement ; **jamais `ongoing`** (elle lit la puissance) |
+| `turnsOnBoard` | `min` (1 à 5) | « après 2 tours en jeu » : `{ "type": "turnsOnBoard", "min": 2 }` : au moins `min` tours ont **commencé** depuis la révélation de la carte (0 pendant son tour de révélation ; révélée au tour 2, `min: 2` est vrai à partir du tour 4, donc dès la fin du tour 4 avec `endOfTurn`). Lit `CardInstance.revealedTurn`, gardé quand la carte se déplace ou se transforme. Cartes seulement (refusée sur un terrain) ; permise en `ongoing` (ni puissance ni hasard) |
 | `status` | `status` | « cette carte est défoncée » : `{ "type": "status", "status": "high" }` (cartes seulement, avec n'importe quel déclencheur ; remplace la règle par défaut de l'état, voir États) |
 
 ## Cibles (`target`, défaut `self`)

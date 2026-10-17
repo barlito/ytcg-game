@@ -108,6 +108,9 @@ function describeCondition(context: Context, condition: ConditionParams): string
   if (condition.type === 'location') {
     return LOCATION_RESULT_TEXT[condition.result];
   }
+  if (condition.type === 'turnsOnBoard') {
+    return `après ${plural(condition.min, 'tour')} en jeu`;
+  }
   if (condition.type === 'turn') {
     const { min, max } = condition;
     if (min !== undefined && max !== undefined) {

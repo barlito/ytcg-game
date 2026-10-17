@@ -58,6 +58,8 @@ export interface BoardView {
   power(card: string): number;
   hasStatus(card: string, status: StatusId): boolean;
   hasTag(card: string, tag: string): boolean;
+  // Turns started since the card was revealed (0 on its reveal turn).
+  turnsOnBoard(card: string): number;
 }
 
 // What effects may do on top of reading.

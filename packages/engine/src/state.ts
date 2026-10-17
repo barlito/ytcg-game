@@ -28,6 +28,8 @@ export interface CardInstance {
   playOrder: number | null;
   // Location where the card was revealed (kept when it moves or is destroyed): « played here » for the copy.
   revealedAt: number | null;
+  // Turn of the reveal (kept when it moves or transforms): « after N turns in play ».
+  revealedTurn: number | null;
   // Cost change received while in hand (the effective cost never goes below 0).
   costModifier: number;
   // Set while the card is pending: what it cost, and the "next card" discounts it consumed (given back on cancel).
