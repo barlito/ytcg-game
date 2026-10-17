@@ -92,6 +92,14 @@ export function releaseCharms(board: GameBoard, charmer: string): void {
   }
 }
 
+// The destroyed card's statuses act once more (Marquée: the bounty), before its own onDestroyed abilities.
+export function statusesOnDestroyed(board: GameBoard, uid: string): void {
+  const card = cardAt(board.state, uid);
+  for (const status of activeStatuses(card)) {
+    ruleFor(board, uid, status)?.onDestroyed?.(board, uid, stacksOf(card, status));
+  }
+}
+
 // One stack goes away: a shield paying to cancel something (`spent`), or a status wearing off (Endormie).
 export function dropStack(board: GameBoard, uid: string, status: StatusId, spent: boolean): void {
   const card = cardAt(board.state, uid);

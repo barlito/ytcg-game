@@ -12,6 +12,7 @@
 - **Surchauffe** (`overheat`) : détruite dès 3 cumuls
 - **Sommeil** (`asleep`) : ses capacités ne fonctionnent plus ; perd 1 cumul à chaque fin de tour
 - **Charme** (`charmed`) : ses capacités ne fonctionnent plus tant que la carte qui l'a charmée est en jeu
+- **Marque** (`marked`) : quand elle est détruite, l'adversaire de son propriétaire pioche 1 carte par cumul
 
 ## 40K (`40k`) — 17 cartes, 15 avec effet
 

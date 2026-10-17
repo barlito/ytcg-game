@@ -86,6 +86,7 @@ export interface Board extends BoardView {
   addToHand(player: PlayerIndex, defId: string, from?: string): void;
   // A card following the default rule of Folie just went mad: draws its crisis.
   startCrisis(card: string): void;
+  ownerOf(card: string): PlayerIndex;
   // Id of the definition of a board card.
   defIdOf(card: string): string;
 }

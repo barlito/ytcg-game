@@ -31,7 +31,7 @@ Partagé par la condition `count`, la cible `cards` et l'effet `addPowerPerCard`
 | `side` | `ally`, `enemy`, `all` | `ally` |
 | `scope` | `here` (ce lieu), `elsewhere` (les deux autres), `everywhere` | `here` |
 | `tag` | `universe:kda`, `character:benj`, `family:linette`, `trait:machine`, `trait:epee`… | aucun |
-| `status` | `mad`, `high`, `tough`, `drunk`, `protected`, `overheat`, `asleep`, `charmed` (voir États) | aucun |
+| `status` | `mad`, `high`, `tough`, `drunk`, `protected`, `overheat`, `asleep`, `charmed`, `marked` (voir États) | aucun |
 | `includeSelf` | la carte elle-même compte-t-elle ? | `false` |
 | `minCost`, `maxCost` | coût **imprimé** de la carte (0 à 10) : « les cartes ennemies à 1 de coût ici », « de 2 à 4 de coût » | aucun |
 | `minPower`, `maxPower` | puissance **actuelle** : « avec 9 de puissance ou plus ». Lit la puissance : **refusé dans une capacité `ongoing`** | aucun |
@@ -53,6 +53,7 @@ Marqueurs posés sur une carte du plateau pendant la partie, cumulables. Registr
 | `protected` | Protection | annule la prochaine destruction, le prochain malus de puissance **ou** le prochain état posé par une carte ennemie, puis perd un cumul (disparaît à zéro) |
 | `asleep` | Sommeil (endormie) | ses **capacités sont coupées** tant qu'elle a un cumul (voir Capacités coupées) ; perd 1 cumul à chaque fin de tour, donc « endormie (×2) » = ce tour et le suivant |
 | `charmed` | Charme (charmée) | ses **capacités sont coupées** tant que la carte qui l'a charmée est sur le plateau (révélée, pas détruite, n'importe où) ; quand elle part, le charme prend fin (`statusChanged` à 0). Plusieurs charmeurs : le charme tient tant qu'il en reste un. Un charme posé par un terrain ou inné n'a pas de charmeur : il dure jusqu'à ce qu'un effet le retire |
+| `marked` | Marque (marquée) | une prime : quand elle est **détruite**, l'adversaire de son propriétaire pioche 1 carte par cumul (quel que soit le destructeur, même son propre camp ; rien si elle survit : Coriace, Protection ; main pleine : rien). Résolue juste après la destruction, avant les capacités `onDestroyed` de la carte |
 | `overheat` | Surchauffe | détruite dès 3 cumuls (à l'instant où elle les atteint, puis réessayé à chaque fin de tour). Réservée aux **machines** (`trait:machine`) : un effet `addStatus` ne la pose que sur elles, sauf `anyCard: true` ; un état inné `"statuses": ["overheat"]` reste permis sur toute carte. Une carte non machine qui se la pose elle-même sans `anyCard` est refusée au chargement |
 
 **Interactions** (toutes testées) :
@@ -62,7 +63,7 @@ Marqueurs posés sur une carte du plateau pendant la partie, cumulables. Registr
 - Protection contre les **états** : un état posé par une carte **ennemie** (effet `addStatus`, crise Contagion d'une carte ennemie) n'est pas posé et un cumul de Protection est dépensé (événement `statusChanged` avec `spent: true`), quel que soit le nombre de cumuls de l'effet. Ne sont **pas** absorbés : la Protection elle-même, les états innés de la carte, ceux posés par une carte alliée, ceux posés par un **terrain** (il n'appartient à personne). Coriace ne bloque pas les états.
 - Ivresse tire toujours son nombre au hasard, même si le −2 est ignoré (Coriace) ou absorbé (Protection) : le rejeu reste identique.
 - Surchauffe + Coriace : la carte n'est jamais détruite, ses cumuls continuent de monter ; si la Coriace disparaît, elle est détruite à la fin du tour. Surchauffe + Protection : la Protection retarde la destruction d'une fois (le cumul de Protection est dépensé, la carte reste à 3+), la fin de tour la détruit.
-- Un état s'ajoute au registre `statuses.ts` : texte, `rule`, puis les crochets `preventsDestroy` / `preventsPowerLoss` (immunités), `absorbsDestroy` / `absorbsPowerLoss` (boucliers à cumuls), `endOfTurn`, `onStacksChanged` et `onGained` (premier cumul).
+- Un état s'ajoute au registre `statuses.ts` : texte, `rule`, puis les crochets `preventsDestroy` / `preventsPowerLoss` (immunités), `absorbsDestroy` / `absorbsPowerLoss` (boucliers à cumuls), `disablesAbilities` (capacités coupées), `endOfTurn`, `onStacksChanged`, `onGained` (premier cumul) et `onDestroyed` (la carte vient d'être détruite).
 
 **Capacités coupées (Endormie, Charmée).** Tant qu'une carte a un état qui coupe ses capacités (`disablesAbilities` dans le registre), **aucune** de ses capacités ne se déclenche (`endOfTurn`, `onCardPlayedHere`, `onMoved`, `onDestroyed`, `onStatusGained`…) et ses bonus `ongoing` ne comptent plus, pour les autres comme pour elle. Ce qui est déjà résolu le reste (un `onReveal` passé, une puissance gagnée). Sa **puissance imprimée** et ses modificateurs comptent toujours ; ses **états** fonctionnent toujours (Coriace la protège, Protection absorbe, Défonce la ronge) ; une **crise** de Folie continue d'agir (c'est sa folie, pas une capacité). Un seul point de contrôle dans le moteur (`AbilityRunner.run`, `ongoingBonuses`). Une carte qui définit son propre effet pour cet état (« Endormie : +3 puissance ») suit la règle générale : ses capacités restent actives et l'état ne s'use pas.
 
@@ -252,4 +253,4 @@ Terrain : « Quand une carte est jouée ici : chaque carte ici gagne +1 ».
 
 ## Ce qui n'existe pas encore
 
-Transformation (Bankai : une version renforcée quand la version de base est en jeu), défausse, sacrifice, condition de pose, états Marquée, Enragée, copie de révélation (voir le game design), Saignement (écarté). Chaque nouvelle brique = une classe, son schéma et ses tests (voir `packages/engine/CLAUDE.md`).
+Transformation (Bankai : une version renforcée quand la version de base est en jeu), défausse, sacrifice, condition de pose, état Enragée, copie de révélation (voir le game design), Saignement (écarté). Chaque nouvelle brique = une classe, son schéma et ses tests (voir `packages/engine/CLAUDE.md`).

@@ -63,6 +63,21 @@ const catalog = catalogWith([
     statuses: ['protected'],
     abilities: [{ trigger: 'endOfTurn', effect: { type: 'addPower', amount: 1 } }],
   }),
+  // Marquée
+  card('hunter', {
+    abilities: [
+      { trigger: 'onReveal', target: enemiesHere, effect: { type: 'addStatus', status: 'marked', stacks: 2 } },
+    ],
+  }),
+  card('killer', {
+    abilities: [{ trigger: 'onReveal', target: { type: 'cards', side: 'all' }, effect: { type: 'destroy' } }],
+  }),
+  card('tough-target', { statuses: ['tough'] }),
+  card('outlaw', {
+    abilities: [
+      { trigger: 'ongoing', condition: { type: 'status', status: 'marked' }, effect: { type: 'addPower', amount: 2 } },
+    ],
+  }),
 ]);
 
 export function stacks(state: GameState, player: PlayerIndex, defId: string, status: StatusId): number | undefined {
@@ -217,5 +232,60 @@ describe('statuses: Charmée', () => {
     expect(describeCard(catalog, catalog.card('charmer'))).toEqual([
       'À la révélation : rend les cartes ennemies ici charmées.',
     ]);
+  });
+});
+
+// Puts the hand back in the deck so that draws are not stopped by a full hand.
+function emptyHand(state: GameState, player: PlayerIndex): void {
+  const playerState = state.players[player];
+  for (const uid of playerState.hand) {
+    const instance = state.cards[uid];
+    if (instance !== undefined) {
+      instance.zone = 'deck';
+    }
+  }
+  playerState.deck.push(...playerState.hand);
+  playerState.hand = [];
+}
+
+describe('statuses: Marquée', () => {
+  it('makes the opponent of its owner draw one card per stack when it is destroyed, whoever destroys it', () => {
+    const state = newGame(catalog, { p0: ['v1', 'killer'], p1: ['hunter'] });
+    const turn1 = playTurn(catalog, state, { p0: [['v1', 0]] }).state;
+    const turn2 = playTurn(catalog, turn1, { p1: [['hunter', 0]] }).state;
+    expect(stacks(turn2, 0, 'v1', 'marked')).toBe(2);
+    emptyHand(turn2, 1);
+    // p0 destroys its own marked card (and the hunter): p1 cashes the bounty.
+    const { events } = playTurn(catalog, turn2, { p0: [['killer', 0]] });
+    const drawn = events.filter((event) => event.type === 'cardDrawn');
+    // Turn start draws one card each, the bounty two more for p1.
+    expect(drawn.filter((event) => event.player === 1)).toHaveLength(1 + 2);
+    expect(drawn.filter((event) => event.player === 0)).toHaveLength(1);
+  });
+
+  it('pays nothing while the card survives (Coriace)', () => {
+    const state = newGame(catalog, { p0: ['tough-target', 'killer'], p1: ['hunter'] });
+    const turn1 = playTurn(catalog, state, { p0: [['tough-target', 0]] }).state;
+    const turn2 = playTurn(catalog, turn1, { p1: [['hunter', 0]] }).state;
+    emptyHand(turn2, 1);
+    const { events } = playTurn(catalog, turn2, { p0: [['killer', 0]] });
+    expect(events.filter((event) => event.type === 'cardDrawn' && event.player === 1)).toHaveLength(1);
+  });
+
+  it('pays no bounty for a card that defines its own effect for it', () => {
+    const state = newGame(catalog, { p0: ['outlaw', 'killer'], p1: ['hunter'] });
+    const turn1 = playTurn(catalog, state, { p0: [['outlaw', 0]] }).state;
+    const turn2 = playTurn(catalog, turn1, { p1: [['hunter', 0]] }).state;
+    expect(powerAt(catalog, turn2, 0, 'outlaw')).toBe(3);
+    emptyHand(turn2, 1);
+    const { events } = playTurn(catalog, turn2, { p0: [['killer', 0]] });
+    expect(events.filter((event) => event.type === 'cardDrawn' && event.player === 1)).toHaveLength(1);
+  });
+
+  it('is written in French', () => {
+    expect(describeCard(catalog, catalog.card('hunter'))).toEqual([
+      'À la révélation : rend les cartes ennemies ici marquées (×2).',
+    ]);
+    expect(describeCard(catalog, catalog.card('outlaw'))).toEqual(['Marquée : +2 puissance.']);
   });
 });

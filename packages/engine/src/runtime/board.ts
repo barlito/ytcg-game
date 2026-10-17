@@ -41,6 +41,10 @@ export class GameBoard implements Board {
     this.events.push(event);
   }
 
+  ownerOf(uid: string): PlayerIndex {
+    return cardAt(this.state, uid).owner;
+  }
+
   defIdOf(uid: string): string {
     return cardAt(this.state, uid).defId;
   }
@@ -158,6 +162,7 @@ export class GameBoard implements Board {
     card.zone = 'destroyed';
     this.events.push({ type: 'cardDestroyed', card: uid });
     statusChanges.releaseCharms(this, uid);
+    statusChanges.statusesOnDestroyed(this, uid);
     this.onDestroyed(uid);
   }
 
