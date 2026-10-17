@@ -32,11 +32,17 @@ Partagé par la condition `count`, la cible `cards` et l'effet `addPowerPerCard`
 | `scope` | `here` (ce lieu), `elsewhere` (les deux autres), `everywhere` | `here` |
 | `tag` | `universe:kda`, `character:benj`, `family:linette`, `trait:machine`, `trait:epee`… | aucun |
 | `status` | `mad`, `high`, `tough`, `drunk`, `protected`, `overheat`, `asleep`, `charmed`, `marked`, `enraged` (voir États) | aucun |
+| `withoutStatus` | un id d'état : seulement les cartes qui **n'ont pas** cet état (« non défoncée ») ; différent de `status` | aucun |
 | `includeSelf` | la carte elle-même compte-t-elle ? | `false` |
 | `minCost`, `maxCost` | coût **imprimé** de la carte (0 à 10) : « les cartes ennemies à 1 de coût ici », « de 2 à 4 de coût » | aucun |
 | `minPower`, `maxPower` | puissance **actuelle** : « avec 9 de puissance ou plus ». Lit la puissance : **refusé dans une capacité `ongoing`** | aucun |
 
-Un intervalle vide (`minCost` > `maxCost`, `minPower` > `maxPower`) est refusé au chargement.
+Un intervalle vide (`minCost` > `maxCost`, `minPower` > `maxPower`) est refusé au chargement, comme `status` égal à `withoutStatus`.
+
+« rend défoncée une autre carte non défoncée ici au hasard » (Warnyx) :
+```json
+{ "trigger": "onReveal", "target": { "type": "cards", "side": "all", "withoutStatus": "high", "pick": "random" }, "effect": { "type": "addStatus", "status": "high" } }
+```
 
 Sur un **lieu** (terrain), seul `side: "all"` a du sens (un terrain n'appartient à personne) et `self` n'existe pas.
 
@@ -87,7 +93,7 @@ La Folie est un état sans règle fixe, très versatile : buff, debuff, déplace
 { "trigger": "ongoing", "condition": { "type": "status", "status": "mad" }, "effect": { "type": "addPower", "amount": 2 } }
 ```
 
-Texte généré : `Folle : +2 puissance.` ; `En fin de tour, si elle est folle : …` ; `Quand elle devient folle : …`. Les Benj ont tous « Folle : +1 puissance » (coût 3 ou moins) ou « +2 » (au-delà) : la Folie buff les Benj, par la donnée.
+Texte généré : `Folle : +2 puissance.` ; `En fin de tour, si elle est folle : …` ; `Quand elle devient folle : …`. Les Benj ont tous « Folle : +1 puissance » (coût 3 ou moins) ou « +2 » (au-delà) : la Folie buff les Benj, par la donnée (Benjamen, Psychedelic : « Folle : +1 puissance par autre carte folle ici »).
 
 **2. Crise tirée au hasard.** Une carte **sans** effet de folie défini tire, quand elle devient folle, UNE crise dans le pool ci-dessous (tirage seedé, rejouable). La crise est stockée sur la carte (`CardInstance.crisis`), publique (`CardView.crisis`, événement `crisisStarted`), affichée « FOLIE · NOM » et expliquée dans l'infobulle. Registre réglable : `packages/engine/src/abilities/crises.ts`.
 

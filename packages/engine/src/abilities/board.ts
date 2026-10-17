@@ -13,6 +13,8 @@ export const cardFilterShape = {
   scope: scopeSchema.default('here'),
   tag: tagSchema.optional(),
   status: statusSchema.optional(),
+  // Cards that do NOT have this status (« non défoncée »).
+  withoutStatus: statusSchema.optional(),
   includeSelf: z.boolean().default(false),
   // Printed cost of the card definition.
   minCost: z.number().int().min(0).optional(),

@@ -1,5 +1,5 @@
 import type { AbilitySource, CardFilter, PlayedFilter } from '../abilities/board.ts';
-import { type PlayerIndex, opponentOf } from '../state.ts';
+import { type CardInstance, type PlayerIndex, opponentOf } from '../state.ts';
 import type { GameBoard } from './board.ts';
 import { cardAt } from './state-access.ts';
 import { stacksOf } from './statuses.ts';
@@ -24,7 +24,7 @@ export function cardMatches(board: GameBoard, uid: string, source: AbilitySource
   if (!filter.includeSelf && uid === source.card) {
     return false;
   }
-  if (filter.status !== undefined && stacksOf(cardAt(board.state, uid), filter.status) === 0) {
+  if (!statusMatches(cardAt(board.state, uid), filter)) {
     return false;
   }
   const definition = board.definitionOf(uid);
@@ -32,6 +32,13 @@ export function cardMatches(board: GameBoard, uid: string, source: AbilitySource
     return false;
   }
   return inRange(definition.cost, filter.minCost, filter.maxCost) && powerInRange(board, uid, filter);
+}
+
+function statusMatches(card: CardInstance, filter: CardFilter): boolean {
+  return (
+    (filter.status === undefined || stacksOf(card, filter.status) > 0) &&
+    (filter.withoutStatus === undefined || stacksOf(card, filter.withoutStatus) === 0)
+  );
 }
 
 function powerInRange(board: GameBoard, uid: string, filter: CardFilter): boolean {
