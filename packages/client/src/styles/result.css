@@ -1,5 +1,6 @@
 /* End of game: tilted ticker, title with chromatic aberration, location rows in cascade, decisive card.
-   Sequence: title 0, card 700 ms, rows 1000 / 1300 / 1600 ms, stats 2000 ms. */
+   Sequence (short: the score is what the player waits for): title 0, total counts up 400-1200 ms, card 500 ms,
+   rows 600 / 800 / 1000 ms, actions 1200 ms. */
 @property --n {
   syntax: '<integer>';
   inherits: false;
@@ -91,7 +92,7 @@
 }
 .result-row {
   animation: result-row 0.5s ease both;
-  animation-delay: calc(1000ms + var(--step) * 300ms);
+  animation-delay: calc(600ms + var(--step) * 200ms);
 }
 .result-row__panel {
   display: grid;
@@ -162,7 +163,7 @@
 .result-total {
   display: grid;
   gap: 0.25rem;
-  animation: result-fade 0.5s ease 2s both;
+  animation: result-fade 0.4s ease 0.4s both;
 }
 .result-total__label {
   font-family: var(--font-mono);
@@ -178,7 +179,7 @@
 /* Counts up from 0 (integer custom property, no JS); under reduced motion it shows the final value. */
 .result-count {
   counter-reset: n var(--n);
-  animation: result-count 1.2s ease-out 2s both;
+  animation: result-count 0.8s ease-out 0.4s both;
 }
 .result-count::after {
   content: counter(n);
@@ -187,7 +188,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  animation: result-fade 0.5s ease 2.2s both;
+  animation: result-fade 0.5s ease 1.2s both;
 }
 
 /* Decisive card, tilted 4°. */
@@ -204,18 +205,18 @@
   letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--magenta);
-  animation: result-fade 0.5s ease 0.7s both;
+  animation: result-fade 0.5s ease 0.5s both;
 }
 .result-decisive__card {
   width: min(22.5rem, 100%);
   transform: rotate(4deg);
-  animation: result-card 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.7s both;
+  animation: result-card 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.5s both;
 }
 .result-decisive__caption {
   margin: 0;
   text-align: center;
   color: var(--text-muted);
-  animation: result-fade 0.5s ease 0.7s both;
+  animation: result-fade 0.5s ease 0.5s both;
 }
 .result-decisive__caption strong {
   color: var(--text);
@@ -255,21 +256,20 @@
 }
 
 /* Folded: only a bar, the board stays visible and playable to read. */
+/* Folded result: bottom right, over the turn actions column, never over the hand. */
 .result-bar {
   position: fixed;
-  left: 50%;
+  right: max(1rem, (100vw - 120rem) / 2 + 1rem);
   bottom: 1rem;
   z-index: 50;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.7rem 1.2rem;
-  transform: translateX(-50%);
+  display: grid;
+  gap: 0.6rem;
+  width: 15rem;
+  padding: 0.8rem 1rem;
   background: var(--surface);
   box-shadow:
     inset 0 0 0 1px var(--cyan),
     0 0.6rem 1.8rem rgb(0 0 0 / 60%);
-  white-space: nowrap;
 }
 .result-bar.is-loss {
   box-shadow:
@@ -374,10 +374,14 @@
     font-size: 1.8rem;
   }
   .result-bar {
+    right: 0.5rem;
+    display: flex;
+    align-items: center;
     width: calc(100vw - 1rem);
     justify-content: space-between;
     gap: 0.5rem;
     padding: 0.5rem 0.7rem;
+    white-space: nowrap;
   }
 }
 

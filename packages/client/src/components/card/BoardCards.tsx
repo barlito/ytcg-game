@@ -3,6 +3,7 @@ import { cardFx, costView, explodes, sceneCard } from '../../animation/fx.ts';
 import { useScene } from '../../animation/useReplay.ts';
 import { catalog } from '../../catalog.ts';
 import type { FanPose } from '../../lib/fan.ts';
+import { handTip } from '../../lib/handTip.ts';
 import { DraggableCard } from '../dnd/DraggableCard.tsx';
 import { CardButton } from './CardButton.tsx';
 import { CardBack, CardFace } from './CardFace.tsx';
@@ -27,14 +28,15 @@ export function BoardCard({ card, own, ghost = false }: BoardProps): React.JSX.E
   };
   const hidden = fx.faceDown && !own;
   const classes = ['on-board', ghost ? 'is-ghost' : '', fx.faceDown && own ? 'is-pending' : ''];
+  const shown = sceneCard(scene, card);
   return (
     <CardButton
-      card={card}
+      card={shown}
       fx={{ ...fx, faceDown: hidden }}
       className={classes.join(' ')}
-      label={hidden ? 'Carte face cachée' : labelOf(card)}
+      label={hidden ? 'Carte face cachée' : labelOf(shown)}
     >
-      {hidden ? <CardBack /> : <CardFace card={sceneCard(scene, card)} size="compact" effect={fx.effect} />}
+      {hidden ? <CardBack /> : <CardFace card={shown} size="compact" effect={fx.effect} />}
     </CardButton>
   );
 }
@@ -94,7 +96,8 @@ export function HandCard({ card, playable, selected, pose, narrow, onSelect }: H
       className={classes.join(' ')}
       style={{ '--fan': `${String(pose.angle)}deg`, '--fan-y': pose.offset } as React.CSSProperties}
       label={`${labelOf(card)}${playable ? '' : ', pas jouable maintenant'}`}
-      pinned={selected}
+      pinned={selected && narrow}
+      tip={handTip(selected, narrow)}
       disabled={!playable}
       onClick={
         playable

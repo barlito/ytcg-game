@@ -1,5 +1,6 @@
 import { type CardView, describeCard } from '@ytcg-game/engine';
 import { catalog } from '../../catalog.ts';
+import { StatusIcon } from './StatusIcon.tsx';
 import { TagList } from './TagList.tsx';
 import { powerLines, signedAmount, statusLines } from '../../power.ts';
 
@@ -29,11 +30,20 @@ function Statuses({ card }: { card: CardView }): React.JSX.Element | null {
     <ul className="tip-statuses">
       {lines.map((line) => (
         <li key={line.id}>
-          <strong className={`status-${line.id}`}>
-            {line.name}
-            {line.stacks > 1 ? ` ×${line.stacks}` : ''}
-          </strong>{' '}
-          {line.rule}
+          <StatusIcon
+            id={line.id}
+            stacks={line.stacks}
+            crisis={line.id === 'mad' ? card.crisis : null}
+            showStacks={false}
+            className="tip-status-icon"
+          />
+          <span>
+            <strong className={`status-${line.id}`}>
+              {line.name}
+              {line.stacks > 1 ? ` ×${line.stacks}` : ''}
+            </strong>{' '}
+            {line.rule}
+          </span>
         </li>
       ))}
     </ul>

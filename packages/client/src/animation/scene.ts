@@ -21,6 +21,8 @@ export interface Scene {
   unmoved: ReadonlyMap<string, number>;
   // Cost changes still to come per hand card: the badge keeps the older cost until they play.
   costPending: ReadonlyMap<string, number>;
+  // Power changes still to come per card: the badge keeps the older power until their float plays.
+  powerPending: ReadonlyMap<string, number>;
   // Cards that transform later in the sequence: still drawn in their older form (uid → that defId).
   untransformed: ReadonlyMap<string, string>;
   // Cards whose crisis is announced later: the Folie pill does not name it yet.
@@ -42,6 +44,7 @@ export const STILL: Scene = {
   dying: new Set(),
   unmoved: new Map(),
   costPending: new Map(),
+  powerPending: new Map(),
   untransformed: new Map(),
   crisisPending: new Set(),
   shielded: new Set(),
@@ -88,6 +91,16 @@ function pendingCosts(events: readonly PlayerEvent[]): Map<string, number> {
   return costs;
 }
 
+function pendingPower(events: readonly PlayerEvent[]): Map<string, number> {
+  const deltas = new Map<string, number>();
+  for (const event of events) {
+    if (event.type === 'powerChanged') {
+      deltas.set(event.card, (deltas.get(event.card) ?? 0) + event.delta);
+    }
+  }
+  return deltas;
+}
+
 function isShieldBreak(event: PlayerEvent): boolean {
   return event.type === 'statusChanged' && event.status === 'protected' && event.stacks === 0 && event.spent === true;
 }
@@ -115,7 +128,8 @@ export function sceneOf(queue: Queue): Scene {
     dying: collect(withCurrent, (e) => (e.type === 'cardDestroyed' ? e.card : null)),
     unmoved: firstMoves(upcoming),
     costPending: pendingCosts(upcoming),
-    untransformed: firstForms(upcoming),
+    powerPending: pendingPower(upcoming),
+    untransformed: firstForms(step.lead === true ? withCurrent : upcoming),
     crisisPending: collect(upcoming, (e) => (e.type === 'crisisStarted' ? e.card : null)),
     shielded: collect(withCurrent.filter(isShieldBreak), (e) => (e.type === 'statusChanged' ? e.card : null)),
     outcomeHeld: withCurrent.some((e) => e.type === 'gameEnded'),

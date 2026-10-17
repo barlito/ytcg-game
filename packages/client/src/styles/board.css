@@ -430,15 +430,21 @@
     font-size: 0.65rem;
     letter-spacing: 0.14em;
   }
+  /* Tight: with « Repiocher ma main » the footer must still fit a 812 px high phone. */
   .turn-actions {
     grid-area: actions;
+    gap: 0.4rem;
     padding: 0;
   }
   .turn-actions__toast {
     display: none;
   }
+  .turn-actions .btn-ghost {
+    padding: 0.55rem 1rem;
+    font-size: 0.7rem;
+  }
   .end-turn {
-    padding: 1rem 1.75rem;
+    padding: 0.85rem 1.75rem;
     font-size: 0.85rem;
   }
   .event-log {

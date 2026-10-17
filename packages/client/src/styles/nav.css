@@ -124,6 +124,15 @@
     width: 1.125rem;
     height: 3px;
   }
+  .tabbar__tab small {
+    margin-top: -0.25rem;
+    color: var(--soon);
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 0.5rem;
+    letter-spacing: 0.06em;
+    text-transform: none;
+  }
   .tabbar__tab.is-active .tabbar__mark {
     background: var(--magenta);
     box-shadow: 0 0 8px var(--magenta);

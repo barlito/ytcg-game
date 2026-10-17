@@ -1,6 +1,6 @@
 import type { PlayerView } from '@ytcg-game/engine';
 import type { SeatInfo } from '@ytcg-game/server/protocol';
-import { spotlightContent, spotlightTarget } from '../animation/spotlight.ts';
+import { resolvedTurn, spotlightContent, spotlightTarget } from '../animation/spotlight.ts';
 import { useScene } from '../animation/useReplay.ts';
 import { CardSpotlight } from './spotlight/CardSpotlight.tsx';
 import { TerrainSpotlight } from './spotlight/TerrainSpotlight.tsx';
@@ -27,7 +27,7 @@ export function Spotlight({ view, seats }: Props): React.JSX.Element | null {
       role="status"
       aria-live="polite"
     >
-      <p className="spotlight__label">Révélations · Tour {view.turn}</p>
+      <p className="spotlight__label">Révélations · Tour {resolvedTurn(view.turn, unplayed)}</p>
       {content.kind === 'card' ? (
         <CardSpotlight content={content} target={target} />
       ) : (

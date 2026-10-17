@@ -88,7 +88,7 @@ export function DevHome({ error, ...handlers }: PlayHandlers & { error: string |
   };
   const definitions = cards.flatMap((id) => catalog.cards.get(id) ?? []);
   return (
-    <HomeShell active="arena" onArena={stay} player={name}>
+    <HomeShell active="arena" onArena={stay} player={name} decksHint="sans Youl TCG en dev">
       <main className="home">
         <Hero fan={dailyFan(definitions, [], dayKey(new Date()))}>
           <NameField name={name} onChange={setName} />

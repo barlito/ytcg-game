@@ -17,7 +17,8 @@ export type CardEffect =
   | 'shield-break'
   | 'added'
   | 'cost'
-  | 'transform';
+  | 'transform'
+  | 'transform-out';
 
 // A card that travels: from where it stood (a move) or from the card or deck that gave it (added to hand).
 export type Flight = { kind: 'move' } | { kind: 'add'; from: string | null };
@@ -104,9 +105,21 @@ function effectOn(event: PlayerEvent, uid: string): Effect | null {
   return cardOf(event) === uid ? aboutCard(event) : null;
 }
 
+function playingOn(scene: Scene, uid: string): Effect | null {
+  const { current } = scene;
+  if (current === null) {
+    return null;
+  }
+  // Lead step of a transformation: the older form turns edge-on, the float comes with the evolved one.
+  if (current.type === 'cardTransformed' && current.card === uid && scene.untransformed.has(uid)) {
+    return plain('transform-out');
+  }
+  return effectOn(current, uid);
+}
+
 // How one card looks at this point of the replay.
 export function cardFx(scene: Scene, uid: string): CardFx {
-  const playing = scene.current === null ? null : effectOn(scene.current, uid);
+  const playing = playingOn(scene, uid);
   return { ...NONE, faceDown: scene.faceDown.has(uid), ...playing };
 }
 
@@ -138,10 +151,24 @@ export function costView(scene: Scene, card: CardView): { shown: number; flow: C
   return { shown, flow: null };
 }
 
-// The card as the replay shows it: the crisis name, the shield and the evolved form appear at their own step.
+// Power and breakdown before the power changes still to come, in the form the card still has.
+function scenePower(scene: Scene, card: CardView, defId: string): Pick<CardView, 'power' | 'breakdown'> {
+  const pending = scene.powerPending.get(card.uid) ?? 0;
+  const printed = defId === card.defId ? card.breakdown.printed : catalog.card(defId).power;
+  const shift = printed - card.breakdown.printed - pending;
+  if (shift === 0 && pending === 0) {
+    return card;
+  }
+  const breakdown = { ...card.breakdown, printed, modifier: card.breakdown.modifier - pending };
+  return { power: card.power + shift, breakdown };
+}
+
+// The card as the replay shows it: the crisis name, the shield, the evolved form and each power change appear at
+// their own step.
 export function sceneCard(scene: Scene, card: CardView): CardView {
   const crisis = scene.crisisPending.has(card.uid) ? null : card.crisis;
   const shield = scene.shielded.has(card.uid) && (card.statuses.protected ?? 0) === 0;
   const defId = scene.untransformed.get(card.uid) ?? card.defId;
-  return { ...card, defId, crisis, statuses: shield ? { ...card.statuses, protected: 1 } : card.statuses };
+  const statuses = shield ? { ...card.statuses, protected: 1 } : card.statuses;
+  return { ...card, ...scenePower(scene, card, defId), defId, crisis, statuses };
 }

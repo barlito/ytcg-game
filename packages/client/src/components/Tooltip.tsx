@@ -4,6 +4,8 @@ import { createPortal } from 'react-dom';
 interface Props {
   anchor: HTMLElement | null;
   id: string;
+  // Centred at the top of the screen instead of next to the anchor.
+  docked?: boolean;
   children: ReactNode;
 }
 
@@ -23,14 +25,21 @@ export function placeTooltip(
   return { left, top: Math.max(MARGIN, top) };
 }
 
+export function placeDocked(tip: Pick<DOMRect, 'width'>, viewport: { width: number }): { left: number; top: number } {
+  return { left: Math.max(MARGIN, (viewport.width - tip.width) / 2), top: MARGIN };
+}
+
 // Rendered in <body>: never clipped by the board and never tilted with the card.
-export function Tooltip({ anchor, id, children }: Props): React.JSX.Element {
+export function Tooltip({ anchor, id, docked = false, children }: Props): React.JSX.Element {
   const measure = (tip: HTMLDivElement | null): void => {
     if (tip === null || anchor === null) {
       return;
     }
     const viewport = { width: window.innerWidth, height: window.innerHeight };
-    const { left, top } = placeTooltip(anchor.getBoundingClientRect(), tip.getBoundingClientRect(), viewport);
+    const box = tip.getBoundingClientRect();
+    const { left, top } = docked
+      ? placeDocked(box, viewport)
+      : placeTooltip(anchor.getBoundingClientRect(), box, viewport);
     tip.style.left = `${left}px`;
     tip.style.top = `${top}px`;
     tip.style.visibility = 'visible';

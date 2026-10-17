@@ -33,6 +33,28 @@ export function bannerText(event: PlayerEvent, you: PlayerIndex, seats: readonly
   return ANNOUNCES[event.type]?.(event, you, seats) ?? null;
 }
 
+const SKIP_GAP = 12;
+
+// Right above the turn actions (the toast is hidden during the replay): never over the hand nor the end of turn.
+export function skipPlacement(
+  actions: Pick<DOMRect, 'top' | 'right'>,
+  viewport: { width: number; height: number },
+): { bottom: number; right: number } {
+  return { bottom: viewport.height - actions.top + SKIP_GAP, right: viewport.width - actions.right };
+}
+
+// Wide layouts only: on phones the CSS puts it over the energy, bottom left.
+function placeSkip(skip: HTMLDivElement | null): void {
+  const actions = document.querySelector('.turn-actions');
+  if (skip === null || actions === null || window.matchMedia('(max-width: 900px)').matches) {
+    return;
+  }
+  const viewport = { width: window.innerWidth, height: window.innerHeight };
+  const { bottom, right } = skipPlacement(actions.getBoundingClientRect(), viewport);
+  skip.style.bottom = `${String(bottom)}px`;
+  skip.style.right = `${String(right)}px`;
+}
+
 export function ReplayBanner({ you, seats, onSkip }: Props): React.JSX.Element | null {
   const scene = useScene();
   const { current } = scene;
@@ -47,7 +69,7 @@ export function ReplayBanner({ you, seats, onSkip }: Props): React.JSX.Element |
           {text}
         </p>
       )}
-      <div className="replay-skip">
+      <div ref={placeSkip} className="replay-skip">
         <span>Les effets se jouent après chaque révélation</span>
         <button type="button" className="btn-ghost" onClick={onSkip}>
           Passer l’animation

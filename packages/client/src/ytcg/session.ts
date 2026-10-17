@@ -14,7 +14,17 @@ export function sessionFromFailure(failure: ApiFailure): YtcgSession {
     : { status: 'offline', message: failure.message };
 }
 
+// The Vite dev server answers no /api: without VITE_YTCG_URL there is no ytcg to call (and no 404 to log).
+export function ytcgConfigured(dev: boolean, url: unknown): boolean {
+  return !dev || (typeof url === 'string' && url !== '');
+}
+
+const NOT_CONFIGURED: YtcgSession = { status: 'offline', message: 'Youl TCG n’est pas branché (VITE_YTCG_URL).' };
+
 export async function loadSession(): Promise<YtcgSession> {
+  if (!ytcgConfigured(import.meta.env.DEV, import.meta.env.VITE_YTCG_URL)) {
+    return NOT_CONFIGURED;
+  }
   const collection = await fetchCollection();
   if (!collection.ok) {
     return sessionFromFailure(collection.failure);

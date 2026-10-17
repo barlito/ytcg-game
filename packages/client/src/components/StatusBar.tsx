@@ -119,7 +119,8 @@ function OpponentInfo({ view, seats }: { view: PlayerView; seats: SeatInfo[] }):
         <span className="status-badges">
           {view.opponent.pendingCount > 0 && (
             <span className="badge-pending">
-              {view.opponent.pendingCount} posée(s)<span className="badge-extra"> face cachée</span>
+              {view.opponent.pendingCount} {view.opponent.pendingCount > 1 ? 'posées' : 'posée'}
+              <span className="badge-extra"> face cachée</span>
             </span>
           )}
           {opponent?.connected === false && <span className="badge-warning">déconnecté</span>}

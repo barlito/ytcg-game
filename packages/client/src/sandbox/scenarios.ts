@@ -1,6 +1,13 @@
-import type { CardView, CrisisId, PlayerEvent, PlayerView, StatusId } from '@ytcg-game/engine';
+import {
+  type CardView,
+  type CrisisId,
+  MAX_HAND,
+  type PlayerEvent,
+  type PlayerView,
+  type StatusId,
+} from '@ytcg-game/engine';
 import { TERRAIN_CLOSED, TERRAIN_OPENS, TERRAIN_THREE } from './terrains.ts';
-import { find, patch, powered, relocate, remove, withStatuses, withTerrain } from './view-edits.ts';
+import { evolved, find, patch, powered, relocate, remove, withStatuses, withTerrain } from './view-edits.ts';
 
 // Each scenario turns the base board into the FINAL view of a fabricated resolution, plus the events the replay plays.
 export interface Outcome {
@@ -44,8 +51,10 @@ function addedToHand(player: 0 | 1, from: string | null): Scenario['run'] {
     }
     const model = view.hand[2] ?? view.hand[0];
     const added: CardView[] = model === undefined ? [] : [{ ...model, uid: 'hNew' }];
+    // A full hand drops its last card: the added one must not go over MAX_HAND.
+    const kept = view.hand.slice(0, MAX_HAND - added.length);
     return {
-      view: { ...view, hand: [...view.hand, ...added] },
+      view: { ...view, hand: [...kept, ...added] },
       events:
         model === undefined ? [] : [{ type: 'cardAddedToHand', player, card: 'hNew', defId: model.defId, ...source }],
     };
@@ -169,7 +178,7 @@ export const SCENARIOS: Record<ScenarioId, Scenario> = {
       const from = find(view, 'y1').defId;
       const to = find(view, 'o1').defId;
       return {
-        view: patch(view, 'y1', (card) => ({ ...card, defId: to })),
+        view: patch(view, 'y1', evolved(to)),
         events: [{ type: 'cardTransformed', card: 'y1', from, to }],
       };
     },

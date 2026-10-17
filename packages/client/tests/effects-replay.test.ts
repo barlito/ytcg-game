@@ -1,4 +1,4 @@
-import { type CardView, type PlayerEvent } from '@ytcg-game/engine';
+import { type CardView, MAX_HAND, type PlayerEvent } from '@ytcg-game/engine';
 import { describe, expect, it } from 'vitest';
 import { cardFx, costView, explodes, sceneCard } from '../src/animation/fx.ts';
 import { departingAt, rowWithGhosts, trackPlacements } from '../src/animation/placements.ts';
@@ -140,6 +140,29 @@ describe('card as shown by the replay', () => {
   });
 });
 
+describe('power held back', () => {
+  const events: PlayerEvent[] = [
+    { type: 'statusChanged', card: 'a', status: 'enraged', stacks: 1 },
+    { type: 'powerChanged', card: 'a', delta: 1 },
+    { type: 'powerChanged', card: 'a', delta: 2 },
+  ];
+  const final = card('a', { power: 6, breakdown: { printed: 3, modifier: 3, ongoing: [] } });
+
+  it('keeps the power before each change until its own float plays', () => {
+    expect(sceneCard(sceneAt(events, 0), final).power).toBe(3);
+    expect(sceneCard(sceneAt(events, 0), final).breakdown.modifier).toBe(0);
+    expect(sceneCard(sceneAt(events, 1), final).power).toBe(4);
+    expect(cardFx(sceneAt(events, 1), 'a').float?.text).toBe('+1');
+    expect(sceneCard(sceneAt(events, 2), final).power).toBe(6);
+    expect(sceneCard(sceneAt(events, 3), final)).toEqual(final);
+  });
+
+  it('leaves the other cards alone', () => {
+    const other = card('b');
+    expect(sceneCard(sceneAt(events, 0), other)).toEqual(other);
+  });
+});
+
 describe('transformation replay', () => {
   const [, evolved = ''] = catalog.cards.keys();
   const events: PlayerEvent[] = [
@@ -147,13 +170,31 @@ describe('transformation replay', () => {
     { type: 'cardTransformed', card: 'a', from: defId, to: evolved },
   ];
 
-  it('keeps the older form until its step, then flips into the evolved one', () => {
+  it('turns the older form edge-on, then flips into the evolved one', () => {
     const final = card('a', { defId: evolved });
     expect(sceneCard(sceneAt(events, 0), final).defId).toBe(defId);
-    expect(sceneCard(sceneAt(events, 1), final).defId).toBe(evolved);
-    expect(cardFx(sceneAt(events, 1), 'a')).toMatchObject({ effect: 'transform', float: { text: 'Évolution' } });
+    // Lead half: still the older form, no float yet, the event is not logged.
+    const lead = sceneAt(events, 1);
+    expect(sceneCard(lead, final).defId).toBe(defId);
+    expect(cardFx(lead, 'a')).toMatchObject({ effect: 'transform-out', float: null });
+    expect(lead.unplayed).toEqual([events[1]]);
+    const landed = sceneAt(events, 2);
+    expect(sceneCard(landed, final).defId).toBe(evolved);
+    expect(cardFx(landed, 'a')).toMatchObject({ effect: 'transform', float: { text: 'Évolution' } });
+    expect(landed.unplayed).toEqual([]);
+    const transform = stepsFor(events.slice(1), 0, false);
+    expect(transform.map((step) => step.duration)).toEqual([350, 350]);
     expect(durationOf({ type: 'cardTransformed', card: 'a', from: defId, to: evolved }, 0)).toBe(700);
     expect(stepsFor(events, 0, true)).toEqual([]);
+  });
+
+  it('shows the printed power of the older form until the transformation', () => {
+    const older = catalog.card(defId);
+    const final = card('a', { defId: evolved, power: catalog.card(evolved).power + 1 });
+    final.breakdown = { printed: catalog.card(evolved).power, modifier: 1, ongoing: [] };
+    const shown = sceneCard(sceneAt(events, 0), final);
+    expect(shown.power).toBe(older.power + 1);
+    expect(shown.breakdown).toEqual({ printed: older.power, modifier: 1, ongoing: [] });
   });
 
   it('gives a ghost the evolved form it died in', () => {
@@ -162,12 +203,20 @@ describe('transformation replay', () => {
     expect(next.get('a')?.card.defId).toBe(evolved);
   });
 
-  it('has a sandbox scenario whose final view shows the new form', () => {
+  it('has a sandbox scenario whose final view shows the new form with its own cost and power', () => {
     const game = buildFixture(catalog, { ...DEFAULT_OPTIONS, scenario: 'transform' }, 0);
     const [event] = game.events;
     expect(event?.type).toBe('cardTransformed');
     const shown = game.view.locations.flatMap((location) => location.cards.you).find((c) => c.uid === 'y1');
     expect(event?.type === 'cardTransformed' && shown?.defId === event.to && event.from !== event.to).toBe(true);
+    const { breakdown, cost, power, defId: to } = shown ?? card('none');
+    const form = catalog.card(to);
+    const ongoing = breakdown.ongoing.reduce((sum, bonus) => sum + bonus.amount, 0);
+    expect([cost, breakdown.printed, power]).toEqual([
+      form.cost,
+      form.power,
+      form.power + breakdown.modifier + ongoing,
+    ]);
   });
 });
 
@@ -243,6 +292,12 @@ describe('sandbox scenarios', () => {
     for (const location of game.view.locations) {
       expect(catalog.locations.has(location.defId ?? '')).toBe(true);
     }
+  });
+
+  it.each(['added-card', 'added-deck'] as const)('%s never goes over a full hand', (id) => {
+    const game = buildFixture(catalog, { ...DEFAULT_OPTIONS, handCount: MAX_HAND, scenario: id }, 0);
+    expect(game.view.hand).toHaveLength(MAX_HAND);
+    expect(game.view.hand.at(-1)?.uid).toBe('hNew');
   });
 
   it('plays a scenario as a replay with a final view that already shows the result', () => {

@@ -6,6 +6,8 @@ export interface Step {
   duration: number;
   // The enlarged card or terrain shown before it lands on the board (followed by the landing step of the same event).
   spotlight?: boolean;
+  // First half of a two-part event (a transformation): it has not landed yet, the second step lands it.
+  lead?: boolean;
 }
 
 export type SpotlightEvent = Extract<PlayerEvent, { type: 'cardRevealed' | 'locationRevealed' }>;
@@ -57,8 +59,21 @@ export function isSpotlit(event: PlayerEvent): event is SpotlightEvent {
 }
 
 function stepsOf(event: PlayerEvent, you: PlayerIndex): Step[] {
-  const landing = { event, duration: durationOf(event, you) };
-  return isSpotlit(event) ? [{ event, duration: SPOTLIGHT_MS, spotlight: true }, landing] : [landing];
+  const duration = durationOf(event, you);
+  if (isSpotlit(event)) {
+    return [
+      { event, duration: SPOTLIGHT_MS, spotlight: true },
+      { event, duration },
+    ];
+  }
+  // The card turns edge-on in its older form, then comes back evolved.
+  if (event.type === 'cardTransformed') {
+    return [
+      { event, duration: duration / 2, lead: true },
+      { event, duration: duration / 2 },
+    ];
+  }
+  return [{ event, duration }];
 }
 
 // The engine announces onDestroyed after the destruction: the card must light up while it is still there.
@@ -115,10 +130,10 @@ export function upcomingEvents(queue: Queue): PlayerEvent[] {
   return queue.steps.slice(queue.index + 1).map((step) => step.event);
 }
 
-// Events not landed yet (a spotlighted reveal lands at its next step): the log holds them back.
+// Events not landed yet (a spotlighted reveal or a lead step lands at its next step): the log holds them back.
 export function unplayedEvents(queue: Queue): PlayerEvent[] {
   return queue.steps
     .slice(queue.index + 1)
-    .filter((step) => step.spotlight !== true)
+    .filter((step) => step.spotlight !== true && step.lead !== true)
     .map((step) => step.event);
 }

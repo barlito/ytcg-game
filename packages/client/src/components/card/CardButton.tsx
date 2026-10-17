@@ -3,6 +3,7 @@ import type { CardView } from '@ytcg-game/engine';
 import type { ReactNode } from 'react';
 import type { CardFx } from '../../animation/fx.ts';
 import { useFlight } from '../../lib/flight.ts';
+import type { TipMode } from '../../lib/handTip.ts';
 import { useTooltipAnchor } from '../../lib/useTooltipAnchor.ts';
 import { Tooltip } from '../Tooltip.tsx';
 import { CardDetails } from './CardDetails.tsx';
@@ -12,8 +13,9 @@ export interface CardButtonProps {
   fx: CardFx;
   className: string;
   label: string;
-  // Keeps the tooltip open (selected card, tap on touch screens).
+  // Keeps the tooltip open (selected card on a narrow hand).
   pinned?: boolean;
+  tip?: TipMode;
   disabled?: boolean;
   style?: React.CSSProperties;
   onClick?: (() => void) | undefined;
@@ -52,6 +54,7 @@ export function CardButton(props: CardButtonProps): React.JSX.Element {
     className,
     label,
     pinned = false,
+    tip = 'anchor',
     disabled = false,
     style,
     onClick,
@@ -60,7 +63,7 @@ export function CardButton(props: CardButtonProps): React.JSX.Element {
   } = props;
   const { anchor, setAnchor, id, open, handlers } = useTooltipAnchor(pinned);
   const setRef = useCardRef({ uid: card.uid, flight: fx.flight, setAnchor, dragRef });
-  const showTip = open && !fx.faceDown;
+  const showTip = open && !fx.faceDown && tip !== 'off';
   return (
     <>
       <button
@@ -81,7 +84,7 @@ export function CardButton(props: CardButtonProps): React.JSX.Element {
         {fx.effect === 'burst' && <Particles />}
       </button>
       {showTip && (
-        <Tooltip anchor={anchor} id={id}>
+        <Tooltip anchor={anchor} id={id} docked={tip === 'top'}>
           <CardDetails card={card} />
         </Tooltip>
       )}

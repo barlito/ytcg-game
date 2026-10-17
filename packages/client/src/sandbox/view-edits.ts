@@ -1,4 +1,6 @@
-import type { CardView, CrisisId, PlayerView, StatusId } from '@ytcg-game/engine';
+import type { CardView, CrisisId, LocationView, PlayerView, StatusId } from '@ytcg-game/engine';
+import { catalog } from '../catalog.ts';
+import { terrainState } from '../lib/terrainRules.ts';
 
 // Pure edits of a fabricated view, for the sandbox scenarios.
 type Statuses = Partial<Record<StatusId, number>>;
@@ -39,6 +41,19 @@ export const powered = (delta: number) => (card: CardView) => ({
   breakdown: { ...card.breakdown, modifier: card.breakdown.modifier + delta },
 });
 
+// The card in another form: printed cost and power of that form, permanent modifier and ongoing bonuses kept.
+export const evolved = (defId: string) => (card: CardView) => {
+  const { cost, power } = catalog.card(defId);
+  const ongoing = card.breakdown.ongoing.reduce((sum, bonus) => sum + bonus.amount, 0);
+  return {
+    ...card,
+    defId,
+    cost,
+    power: power + card.breakdown.modifier + ongoing,
+    breakdown: { ...card.breakdown, printed: power },
+  };
+};
+
 export const withStatuses =
   (statuses: Statuses, crisis: CrisisId | null = null) =>
   (card: CardView) => ({
@@ -61,10 +76,23 @@ export function relocate(view: PlayerView, uid: string, to: number): PlayerView 
   };
 }
 
+// Stands in for the engine's openLocations: a closed or full terrain takes no card.
+function playableHere(location: LocationView, turn: number): boolean {
+  if (location.defId === null) {
+    return true;
+  }
+  const terrain = terrainState(catalog.location(location.defId).rules, turn);
+  return terrain.closed === null && location.cards.you.length + location.yourPending.length < terrain.capacity;
+}
+
 export function withTerrain(view: PlayerView, terrains: Record<number, string>, turn: number): PlayerView {
-  return {
-    ...view,
-    turn,
-    locations: view.locations.map((location) => ({ ...location, defId: terrains[location.index] ?? location.defId })),
-  };
+  const locations = view.locations.map((location) => ({
+    ...location,
+    defId: terrains[location.index] ?? location.defId,
+  }));
+  const open = view.openLocations.filter((index) => {
+    const location = locations[index];
+    return location !== undefined && playableHere(location, turn);
+  });
+  return { ...view, turn, locations, openLocations: open };
 }

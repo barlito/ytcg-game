@@ -1,7 +1,13 @@
 import { describeCard } from '@ytcg-game/engine';
 import { describe, expect, it } from 'vitest';
 import { printedCard } from '../src/animation/placements.ts';
-import { placeName, revealedPower, spotlightContent, spotlightTarget } from '../src/animation/spotlight.ts';
+import {
+  placeName,
+  resolvedTurn,
+  revealedPower,
+  spotlightContent,
+  spotlightTarget,
+} from '../src/animation/spotlight.ts';
 import { catalog } from '../src/catalog.ts';
 import { rarityKey } from '../src/components/card/rarity.ts';
 import { stepDelay } from '../src/animation/useCountSteps.ts';
@@ -15,6 +21,20 @@ const seats = [
 ];
 
 describe('spotlight', () => {
+  it('labels a reveal with the turn being resolved, not the next one the view already shows', () => {
+    const reveal = { type: 'cardRevealed', card: 'p1c2', defId, player: 1, location: 1, holo: false } as const;
+    expect(resolvedTurn(6, [reveal, { type: 'turnStarted', turn: 6 }])).toBe(5);
+    expect(
+      resolvedTurn(2, [
+        { type: 'turnStarted', turn: 2 },
+        { type: 'locationRevealed', location: 1 },
+      ]),
+    ).toBe(1);
+    // A location revealed at the start of a turn, or the last turn's reveals: no turnStarted left to play.
+    expect(resolvedTurn(2, [{ type: 'locationRevealed', location: 1 }])).toBe(2);
+    expect(resolvedTurn(6, [reveal])).toBe(6);
+  });
+
   it('shows the printed card with its owner, its place and its full text', () => {
     const view = viewWith({});
     const reveal = { type: 'cardRevealed', card: 'p1c2', defId, player: 1, location: 1, holo: false } as const;

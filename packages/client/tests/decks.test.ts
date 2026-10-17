@@ -9,6 +9,7 @@ import { draftFrom, draftPayload, draftReducer, draftStatus } from '../src/decks
 import { NO_FILTER, buildPool, filterOptions, filterPool } from '../src/decks/pool.ts';
 import { errorsFromFailure, mapViolations } from '../src/decks/violations.ts';
 import { interpretResponse } from '../src/ytcg/api.ts';
+import { ytcgConfigured } from '../src/ytcg/session.ts';
 import { deckSchema } from '../src/ytcg/schemas.ts';
 import type { Deck, OwnedCard } from '../src/ytcg/schemas.ts';
 
@@ -175,6 +176,13 @@ describe('ytcg violations', () => {
 
 describe('ytcg responses', () => {
   const body = deck(randomDeck());
+
+  it('only calls ytcg in development when VITE_YTCG_URL points to it', () => {
+    expect(ytcgConfigured(true, undefined)).toBe(false);
+    expect(ytcgConfigured(true, '')).toBe(false);
+    expect(ytcgConfigured(true, 'https://ytcg.localhost')).toBe(true);
+    expect(ytcgConfigured(false, undefined)).toBe(true);
+  });
 
   it('reads successes, login requests, violations and refusals', () => {
     expect(interpretResponse(200, body, deckSchema)).toEqual({ ok: true, value: body });
