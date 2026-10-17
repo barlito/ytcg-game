@@ -114,6 +114,9 @@ function Controls({ options, onChange, onReplay, onScenario }: PanelProps): Reac
         Rejouer une révélation
       </button>
       <ScenarioButtons active={options.scenario} onScenario={onScenario} />
+      <a className="sandbox__link" href="?cards">
+        Galerie des cartes →
+      </a>
     </details>
   );
 }

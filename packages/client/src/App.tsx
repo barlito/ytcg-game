@@ -6,8 +6,9 @@ import { useDuel } from './useDuel.ts';
 // The catalog, the engine and the board load on demand: the first paint only needs React and the SDK.
 const Home = lazy(() => import('./components/Home.tsx'));
 const Board = lazy(() => import('./components/Board.tsx'));
-// Dev only: the constant is false in a production build, so the sandbox chunk is dropped.
+// Dev only: the constant is false in a production build, so the sandbox and gallery chunks are dropped.
 const Sandbox = import.meta.env.DEV ? lazy(() => import('./sandbox/Sandbox.tsx')) : null;
+const Gallery = import.meta.env.DEV ? lazy(() => import('./gallery/Gallery.tsx')) : null;
 
 function Loading(): React.JSX.Element {
   return (
@@ -45,10 +46,22 @@ function Screen(): React.JSX.Element {
   }
 }
 
+// ?sandbox (board test page) and ?cards (card gallery), dev only.
+function Page(): React.JSX.Element {
+  const params = new URLSearchParams(location.search);
+  if (Sandbox !== null && params.has('sandbox')) {
+    return <Sandbox />;
+  }
+  if (Gallery !== null && params.has('cards')) {
+    return <Gallery />;
+  }
+  return <Screen />;
+}
+
 export function App(): React.JSX.Element {
   return (
     <Suspense fallback={<Loading />}>
-      {Sandbox !== null && new URLSearchParams(location.search).has('sandbox') ? <Sandbox /> : <Screen />}
+      <Page />
     </Suspense>
   );
 }
