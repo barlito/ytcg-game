@@ -14,6 +14,12 @@ export const cardFilterShape = {
   tag: tagSchema.optional(),
   status: statusSchema.optional(),
   includeSelf: z.boolean().default(false),
+  // Printed cost of the card definition.
+  minCost: z.number().int().min(0).optional(),
+  maxCost: z.number().int().min(0).optional(),
+  // Current power: reads power, so never inside an ongoing ability.
+  minPower: z.number().int().optional(),
+  maxPower: z.number().int().optional(),
 };
 
 export const cardFilterSchema = z.object(cardFilterShape);

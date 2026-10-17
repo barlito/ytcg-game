@@ -33,6 +33,10 @@ Partagé par la condition `count`, la cible `cards` et l'effet `addPowerPerCard`
 | `tag` | `universe:kda`, `character:benj`, `family:linette`, `trait:machine`, `trait:epee`… | aucun |
 | `status` | `mad`, `high`, `tough`, `drunk`, `protected`, `overheat` (voir États) | aucun |
 | `includeSelf` | la carte elle-même compte-t-elle ? | `false` |
+| `minCost`, `maxCost` | coût **imprimé** de la carte (0 à 10) : « les cartes ennemies à 1 de coût ici », « de 2 à 4 de coût » | aucun |
+| `minPower`, `maxPower` | puissance **actuelle** : « avec 9 de puissance ou plus ». Lit la puissance : **refusé dans une capacité `ongoing`** | aucun |
+
+Un intervalle vide (`minCost` > `maxCost`, `minPower` > `maxPower`) est refusé au chargement.
 
 Sur un **lieu** (terrain), seul `side: "all"` a du sens (un terrain n'appartient à personne) et `self` n'existe pas.
 

@@ -13,7 +13,7 @@ import { MAX_HAND } from '../rules.ts';
 import { type GameEvent, type GameState, PLAYERS, type PlayerIndex } from '../state.ts';
 import { moveCard } from './move.ts';
 import { crisisBonus, runCrisis, startCrisis } from './crises.ts';
-import { inScope, onSide } from './filters.ts';
+import { cardMatches, inScope, onSide } from './filters.ts';
 import * as hand from './hand.ts';
 import * as statusChanges from './status-changes.ts';
 import { cardAt, locationAt } from './state-access.ts';
@@ -75,7 +75,7 @@ export class GameBoard implements Board {
         return [];
       }
       return PLAYERS.filter((player) => onSide(filter, source, player)).flatMap((player) =>
-        location.cards[player].filter((uid) => this.matches(uid, source, filter)),
+        location.cards[player].filter((uid) => cardMatches(this, uid, source, filter)),
       );
     });
   }
@@ -209,16 +209,6 @@ export class GameBoard implements Board {
 
   removeStatus(uid: string, status: StatusId | null): void {
     statusChanges.removeStatus(this, uid, status);
-  }
-
-  private matches(uid: string, source: AbilitySource, filter: CardFilter): boolean {
-    if (!filter.includeSelf && uid === source.card) {
-      return false;
-    }
-    if (filter.status !== undefined && stacksOf(cardAt(this.state, uid), filter.status) === 0) {
-      return false;
-    }
-    return filter.tag === undefined || this.definitionOf(uid).tags.includes(filter.tag);
   }
 
   // A card protected from power loss ignores the negative ongoing bonuses.

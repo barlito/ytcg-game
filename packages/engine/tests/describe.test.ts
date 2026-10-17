@@ -194,6 +194,29 @@ describe('text of the building blocks', () => {
           },
         ],
       }),
+      card('picky', {
+        abilities: [
+          {
+            trigger: 'onReveal',
+            target: { type: 'cards', side: 'enemy', maxCost: 1, minCost: 1 },
+            effect: { type: 'destroy' },
+          },
+          {
+            trigger: 'onReveal',
+            condition: { type: 'count', side: 'all', scope: 'everywhere', minPower: 9 },
+            effect: { type: 'addPower', amount: 2 },
+          },
+          {
+            trigger: 'endOfTurn',
+            effect: { type: 'addPowerPerCard', amount: 1, count: { minCost: 2, maxCost: 4, maxPower: 3 } },
+          },
+          {
+            trigger: 'onReveal',
+            target: { type: 'cards', side: 'enemy', minCost: 5, minPower: 2, maxPower: 4 },
+            effect: { type: 'destroy' },
+          },
+        ],
+      }),
       card('medic', {
         abilities: [
           {
@@ -340,6 +363,15 @@ describe('text of the building blocks', () => {
       'En fin de tour : si vous gagnez ce lieu, +1 puissance.',
       'À la révélation : si vous perdez ce lieu, pioche 1 carte.',
       'Quand elle se déplace : si ce lieu est à égalité, +2 puissance.',
+    ]);
+  });
+
+  it('writes cost and power filters', () => {
+    expect(describeCard(bricks, bricks.card('picky'))).toEqual([
+      'À la révélation : détruit les cartes ennemies à 1 de coût ici.',
+      "À la révélation : s'il y a une autre carte avec 9 de puissance ou plus sur le plateau, +2 puissance.",
+      'En fin de tour : +1 puissance par autre carte alliée de 2 à 4 de coût avec 3 de puissance ou moins ici.',
+      'À la révélation : détruit les cartes ennemies à 5 de coût ou plus avec 2 à 4 de puissance ici.',
     ]);
   });
 

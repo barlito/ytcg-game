@@ -19,6 +19,32 @@ export function onSide(filter: CardFilter, source: AbilitySource, player: Player
   return sideMatches(filter.side, source.owner, player);
 }
 
+// Does a revealed board card pass the filter (side and scope aside)?
+export function cardMatches(board: GameBoard, uid: string, source: AbilitySource, filter: CardFilter): boolean {
+  if (!filter.includeSelf && uid === source.card) {
+    return false;
+  }
+  if (filter.status !== undefined && stacksOf(cardAt(board.state, uid), filter.status) === 0) {
+    return false;
+  }
+  const definition = board.definitionOf(uid);
+  if (filter.tag !== undefined && !definition.tags.includes(filter.tag)) {
+    return false;
+  }
+  return inRange(definition.cost, filter.minCost, filter.maxCost) && powerInRange(board, uid, filter);
+}
+
+function powerInRange(board: GameBoard, uid: string, filter: CardFilter): boolean {
+  return (
+    (filter.minPower === undefined && filter.maxPower === undefined) ||
+    inRange(board.power(uid), filter.minPower, filter.maxPower)
+  );
+}
+
+function inRange(value: number, min: number | undefined, max: number | undefined): boolean {
+  return (min === undefined || value >= min) && (max === undefined || value <= max);
+}
+
 // Does the card that was just played pass the filter of an onCardPlayedHere ability?
 export function playedMatches(board: GameBoard, source: AbilitySource, uid: string, filter: PlayedFilter): boolean {
   const played = cardAt(board.state, uid);

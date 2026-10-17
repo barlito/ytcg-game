@@ -740,6 +740,26 @@ const phase6 = catalogWith(
         },
       ],
     }),
+    card('pricey', { cost: 3 }),
+    card('brute', { cost: 3, power: 9 }),
+    card('bargain-hunter', {
+      abilities: [
+        { trigger: 'onReveal', target: { type: 'cards', side: 'enemy', maxCost: 1 }, effect: { type: 'destroy' } },
+      ],
+    }),
+    card('giant-slayer', {
+      abilities: [
+        { trigger: 'onReveal', target: { type: 'cards', side: 'enemy', minPower: 4 }, effect: { type: 'destroy' } },
+      ],
+    }),
+    card('patron', {
+      abilities: [
+        {
+          trigger: 'ongoing',
+          effect: { type: 'addPowerPerCard', amount: 2, count: { side: 'all', scope: 'everywhere', minCost: 3 } },
+        },
+      ],
+    }),
     card('mess', { statuses: ['tough', 'high', 'overheat'] }),
     card('mechanic', {
       abilities: [
@@ -950,6 +970,42 @@ describe('location result condition', () => {
     }).state;
     expect(powerAt(phase6, next, 0, 'underdog')).toBe(1);
     expect(powerAt(phase6, next, 0, 'balance')).toBe(1);
+  });
+});
+
+describe('cost and power filters', () => {
+  it('filters targets by printed cost and by current power', () => {
+    const state = newGame(phase6, { p0: ['p2', 'pricey', 'brute', 'junkie'], p1: ['bargain-hunter', 'giant-slayer'] });
+    const turn1 = playTurn(phase6, state, {
+      p0: [
+        ['p2', 0],
+        ['pricey', 0],
+        ['brute', 1],
+        ['junkie', 1],
+      ],
+    }).state;
+    const turn2 = playTurn(phase6, turn1, {
+      p1: [
+        ['bargain-hunter', 0],
+        ['giant-slayer', 1],
+      ],
+    }).state;
+    expect(zoneOf(turn2, 0, 'p2')).toBe('destroyed');
+    expect(zoneOf(turn2, 0, 'pricey')).toBe('board');
+    expect(zoneOf(turn2, 0, 'brute')).toBe('destroyed');
+    expect(zoneOf(turn2, 0, 'junkie')).toBe('board');
+  });
+
+  it('counts cards by cost in an ongoing ability', () => {
+    const state = newGame(phase6, { p0: ['patron', 'pricey'], p1: ['brute'] });
+    const next = playTurn(phase6, state, {
+      p0: [
+        ['patron', 0],
+        ['pricey', 1],
+      ],
+      p1: [['brute', 2]],
+    }).state;
+    expect(powerAt(phase6, next, 0, 'patron')).toBe(1 + 2 * 2);
   });
 });
 

@@ -1,8 +1,9 @@
 import { z } from 'zod';
-import { type CardFilter, type Condition, type Effect, type TargetSelector, playedFilterSchema } from './board.ts';
+import { type Condition, type Effect, type TargetSelector, playedFilterSchema } from './board.ts';
 import { conditionSchema, createCondition } from './conditions.ts';
 import { ONGOING_EFFECTS, UNTARGETED_EFFECTS, createEffect, effectSchema } from './effects.ts';
 import { type StatusId, statusRule, statusSchema } from './statuses.ts';
+import { abilityFilters, rangeIssues, readsPower } from './filters.ts';
 import { createTarget, targetSchema } from './targets.ts';
 
 // onCardPlayedHere: another card is revealed on this location after this one. onDestroyed: this card was destroyed.
@@ -35,7 +36,7 @@ export const abilitySchema = z
   })
   .superRefine(
     (ability, ctx) => {
-      for (const issue of [...triggerIssues(ability), ...ongoingIssues(ability)]) {
+      for (const issue of [...triggerIssues(ability), ...ongoingIssues(ability), ...filterIssues(ability)]) {
         ctx.addIssue({ code: 'custom', ...issue });
       }
     },
@@ -79,7 +80,16 @@ function ongoingIssues(ability: AbilityParams): Issue[] {
   if (ability.condition?.type === 'location') {
     issues.push({ path: ['condition'], message: 'an ongoing condition cannot read power ("location")' });
   }
+  if (abilityFilters(ability).some(readsPower)) {
+    issues.push({ path: [], message: 'an ongoing ability cannot filter cards by power ("minPower", "maxPower")' });
+  }
   return issues;
+}
+
+function filterIssues(ability: AbilityParams): Issue[] {
+  return abilityFilters(ability)
+    .flatMap(rangeIssues)
+    .map((message) => ({ path: [], message }));
 }
 
 export type AbilityParams = z.output<typeof abilitySchema>;
@@ -136,19 +146,10 @@ export function cardAbilityIssues(tags: readonly string[], ability: AbilityParam
 // A location belongs to nobody: "self", "ally" and "enemy" mean nothing there.
 export function locationAbilityIssues(ability: AbilityParams): string[] {
   const issues = locationEffectIssues(ability);
-  const filters: CardFilter[] = [];
-  if (ability.target.type === 'cards') {
-    filters.push(ability.target);
-  }
-  if (ability.condition?.type === 'count') {
-    filters.push(ability.condition);
-  }
-  for (const effect of ability.effect) {
-    if (effect.type === 'addPowerPerCard') {
-      filters.push(effect.count);
-    }
-  }
-  if (filters.some((filter) => filter.side !== 'all') || (ability.played ?? { side: 'all' }).side !== 'all') {
+  if (
+    abilityFilters(ability).some((filter) => filter.side !== 'all') ||
+    (ability.played ?? { side: 'all' }).side !== 'all'
+  ) {
     issues.push('a location ability must use side "all"');
   }
   return issues;

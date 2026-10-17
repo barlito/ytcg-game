@@ -143,6 +143,34 @@ describe('catalog validation', () => {
     ).toContain('no "location" condition');
   });
 
+  it('keeps power filters off ongoing abilities and refuses empty ranges', () => {
+    const buff = { type: 'addPower', amount: 1 } as const;
+    const strong = { type: 'cards', minPower: 5 } as const;
+    expect(issuesOf([card('x', { abilities: [{ trigger: 'ongoing', target: strong, effect: buff }] })])[0]).toContain(
+      'cannot filter cards by power',
+    );
+    expect(
+      issuesOf([
+        card('x', {
+          abilities: [{ trigger: 'ongoing', effect: { type: 'addPowerPerCard', amount: 1, count: { maxPower: 2 } } }],
+        }),
+      ])[0],
+    ).toContain('cannot filter cards by power');
+    expect(() =>
+      catalogWith([
+        card('y', { abilities: [{ trigger: 'onReveal', target: strong, effect: buff }] }),
+        card('z', { abilities: [{ trigger: 'ongoing', target: { type: 'cards', maxCost: 2 }, effect: buff }] }),
+      ]),
+    ).not.toThrow();
+    expect(
+      issuesOf([
+        card('x', {
+          abilities: [{ trigger: 'onReveal', condition: { type: 'count', minCost: 4, maxCost: 2 }, effect: buff }],
+        }),
+      ])[0],
+    ).toContain('"minCost" must not exceed "maxCost"');
+  });
+
   it('refuses invalid trigger combinations', () => {
     const effect = { type: 'addPower', amount: 1 } as const;
     expect(issuesOf([card('x', { abilities: [{ trigger: 'onStatusGained', effect }] })])[0]).toContain(

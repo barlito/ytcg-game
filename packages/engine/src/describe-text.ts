@@ -31,7 +31,26 @@ export function cards(context: Context, filter: CardFilter, plural: boolean): st
   const tag = filter.tag === undefined ? '' : ` ${tagLabel(context.catalog, filter.tag)}`;
   const status = filter.status === undefined ? '' : ` ${statusRule(filter.status).adjective}${s}`;
   const side = filter.side === 'all' ? '' : ` ${filter.side === 'ally' ? 'alliée' : 'ennemie'}${s}`;
-  return `${other}carte${s}${tag}${status}${side}`;
+  return `${other}carte${s}${tag}${status}${side}${rangeText(filter)}`;
+}
+
+// « à 1 de coût », « de 2 à 4 de coût », « avec 9 de puissance ou plus », « avec 2 à 4 de puissance »
+function rangeText(filter: CardFilter): string {
+  const { minCost, maxCost } = filter;
+  const cost = range(minCost, maxCost, 'de coût');
+  const costPrefix = minCost !== undefined && maxCost !== undefined && minCost !== maxCost ? 'de' : 'à';
+  const power = range(filter.minPower, filter.maxPower, 'de puissance');
+  return `${cost === '' ? '' : ` ${costPrefix} ${cost}`}${power === '' ? '' : ` avec ${power}`}`;
+}
+
+function range(min: number | undefined, max: number | undefined, unit: string): string {
+  if (min !== undefined && max !== undefined) {
+    return min === max ? `${min} ${unit}` : `${min} à ${max} ${unit}`;
+  }
+  if (min !== undefined) {
+    return `${min} ${unit} ou plus`;
+  }
+  return max === undefined ? '' : `${max} ${unit} ou moins`;
 }
 
 export function scope(filter: CardFilter): string {
