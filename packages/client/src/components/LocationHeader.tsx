@@ -3,7 +3,9 @@ import { useScene } from '../animation/useReplay.ts';
 import { catalog } from '../catalog.ts';
 import { leadOf } from '../lib/lead.ts';
 import { terrainState } from '../lib/terrainRules.ts';
+import { useTooltipAnchor } from '../lib/useTooltipAnchor.ts';
 import { Artwork } from './Artwork.tsx';
+import { Tooltip } from './Tooltip.tsx';
 
 const OWNER_LABEL = { you: 'Ton terrain', opponent: 'Terrain adverse', random: 'Terrain aléatoire' } as const;
 
@@ -85,23 +87,59 @@ function RulePills({ pills }: { pills: readonly string[] }): React.JSX.Element |
   );
 }
 
+// The full text of the terrain: the tile may cut it on small screens.
+interface TipProps {
+  name: string;
+  lines: string[];
+  pills: readonly string[];
+}
+
+function TerrainTip({ name, lines, pills }: TipProps): React.JSX.Element {
+  return (
+    <div className="tip-card">
+      <p className="tip-title">{name}</p>
+      {lines.length === 0 ? (
+        <p className="tip-text is-empty">Aucun effet.</p>
+      ) : (
+        lines.map((line) => (
+          <p key={line} className="tip-text">
+            {line}
+          </p>
+        ))
+      )}
+      {pills.length > 0 && <p className="tip-note">{pills.join(' · ')}</p>}
+    </div>
+  );
+}
+
 function RevealedHeader({ location, defId, turn }: HeaderProps & { defId: string }): React.JSX.Element {
   const scene = useScene();
+  const { anchor, setAnchor, id, open, handlers } = useTooltipAnchor(false);
   const terrain = catalog.location(defId);
-  const text = describeLocation(catalog, terrain).join(' ') || 'Aucun effet.';
+  const lines = describeLocation(catalog, terrain);
+  const pills = terrainState(terrain.rules, turn).pills;
   const tone = location.chosenBy ?? 'random';
   return (
     <header
+      ref={setAnchor}
       className={`location-tile tone-${tone}${tileEffects(scene.current, location.index)}`}
       data-location-header={location.index}
+      tabIndex={0}
+      aria-describedby={open ? id : undefined}
+      {...handlers}
     >
       <Artwork key={terrain.id} image={terrain.image} className="location-art" />
       <TileBody location={location}>
         <span className="tile-owner">{OWNER_LABEL[tone]}</span>
         <span className="location-name">{terrain.name}</span>
-        <span className="location-text">{text}</span>
-        <RulePills pills={terrainState(terrain.rules, turn).pills} />
+        <span className="location-text">{lines.join(' ') || 'Aucun effet.'}</span>
+        <RulePills pills={pills} />
       </TileBody>
+      {open && (
+        <Tooltip anchor={anchor} id={id}>
+          <TerrainTip name={terrain.name} lines={lines} pills={pills} />
+        </Tooltip>
+      )}
     </header>
   );
 }
