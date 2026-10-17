@@ -59,3 +59,7 @@
 .sandbox button.is-active {
   outline: 1px solid #46e6e6;
 }
+
+.sandbox__link {
+  color: #46e6e6;
+}
