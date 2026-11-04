@@ -21,7 +21,7 @@
     "@colyseus/ws-transport": "^0.18.4",
     "@ytcg-game/engine": "*",
     "jose": "^6.2.12",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   },
   "exports": {
     "./protocol": "./src/protocol.ts"
